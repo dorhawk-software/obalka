@@ -1,0 +1,29 @@
+# Findings that are deliberately in the repository, each with the reason it is not a leak.
+#
+# Kept narrow on purpose. A scanner is only worth running if a red result means something, and the
+# fastest way to make one worthless is a broad ignore that quietly swallows the next real finding.
+# Every entry here names a specific file and says why.
+#
+# NOT ignored, and deliberately so: `android/sentry.properties` and `ios/sentry.properties`. Those
+# hold the real org auth token and the rule fires on them correctly. They are gitignored, so a CI
+# checkout does not contain them and the scan is clean there; a LOCAL scan will flag your own copy,
+# which is the right answer to "is my token sitting in the working tree?". If either file is ever
+# committed, this scan is what says so, and an ignore entry here would be the thing that hid it.
+
+secrets:
+  - id: obalka-recovery-key
+    paths:
+      - "src/i18n/strings.ts"
+    statement: >
+      Not a key: the string is the five-groups-of-four placeholder shown to a user who typed their
+      recovery key in the wrong shape. The letter used to stand in for a character happens to be
+      inside the key alphabet, so the format hint matches the pattern for a real key. (Spelled out
+      rather than quoted here: quoting it made this very file a finding.)
+
+  - id: obalka-recovery-key
+    paths:
+      - "src/services/backup/recoveryKey.ts"
+    statement: >
+      Not a key: an illustrative one in the doc comment above `generateRecoveryKey`, so a reader can
+      see the shape the function returns. Real keys are generated on the user's device and never
+      exist in this repository.

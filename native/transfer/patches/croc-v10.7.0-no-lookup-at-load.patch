@@ -1,0 +1,26 @@
+--- a/src/models/constants.go
++++ b/src/models/constants.go
+@@ -85,18 +85,7 @@
+ 	log.Trace("Using internal DNS: ", INTERNAL_DNS)
+-	var err error
+-	var addr string
+-	addr, err = lookup(DEFAULT_RELAY)
+-	if err == nil {
+-		DEFAULT_RELAY = net.JoinHostPort(addr, DEFAULT_PORT)
+-	} else {
+-		DEFAULT_RELAY = ""
+-	}
+-	log.Tracef("Default ipv4 relay: %s", addr)
+-	addr, err = lookup(DEFAULT_RELAY6)
+-	if err == nil {
+-		DEFAULT_RELAY6 = net.JoinHostPort(addr, DEFAULT_PORT)
+-	} else {
+-		DEFAULT_RELAY6 = ""
+-	}
+-	log.Tracef("Default ipv6 relay: %s", addr)
++	// Obalka: no DNS lookup while the library loads. On iOS the Go runtime starts with the process,
++	// so this ran at every app launch: it asked the network about the relay with nobody
++	// transferring anything, and a phone launched offline kept an empty relay address until the
++	// app was restarted. DEFAULT_RELAY and DEFAULT_RELAY6 stay host names; the wrapper adds the
++	// port, and the name is resolved when a transfer connects (native/transfer/transfer.go).
+ }

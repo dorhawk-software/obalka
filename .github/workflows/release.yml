@@ -1,0 +1,360 @@
+name: Release
+
+# A tag like v0.1.0 - made by `npm run release -- 0.1.0` (scripts/release.mjs) - builds the app for both
+# stores and ships it to their test tracks: iOS to TestFlight, Android to Google Play's internal testing.
+# Nothing here runs on an ordinary push. One-time setup, the secrets it reads, and what each store will
+# ask: docs/release-ci.md.
+#
+# A platform whose secrets are not set up yet is SKIPPED with a warning rather than failed, so Apple can
+# be switched on before Google (or the other way round). The GitHub release is created only when at least
+# one platform actually shipped.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+# One release at a time per tag, and never cancelled halfway: a cancelled upload can leave a build number
+# spent on one store and not the other.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      build: ${{ steps.version.outputs.build }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+      - name: The tag, package.json and the app agree on the version
+        id: version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(node -p "require('./package.json').version")
+          app=$(sed -n "s/^export const APP_VERSION = '\(.*\)';/\1/p" src/app/appInfo.ts)
+          if [ "$tag" != "$pkg" ] || [ "$tag" != "$app" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME, package.json ($pkg) and APP_VERSION ($app) disagree. Cut releases with: npm run release -- <version>"
+            exit 1
+          fi
+          echo "version=$tag" >> "$GITHUB_OUTPUT"
+          # Both stores reject a build number that does not go up. The run number always does, and the
+          # attempt keeps a re-run of a half-finished release (one store uploaded, the other failed) from
+          # reusing the number the first attempt already spent.
+          echo "build=$(( GITHUB_RUN_NUMBER * 100 + GITHUB_RUN_ATTEMPT ))" >> "$GITHUB_OUTPUT"
+          case "$tag" in
+            0.*) echo "prerelease=true" >> "$GITHUB_OUTPUT" ;;
+            *) echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+      - run: npm ci
+      # A tag on a commit that does not pass would ship it. `npm run release` runs this too; this is the
+      # copy that cannot be skipped.
+      - run: npm run verify
+
+  ios:
+    needs: verify
+    runs-on: macos-15
+    timeout-minutes: 90
+    outputs:
+      shipped: ${{ steps.upload.outputs.shipped }}
+    env:
+      # Xcode 26: react-native-vision-camera needs the iOS 26 SDK (see the `ios` job in ci.yml).
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+      # Read by the Xcode project (DEVELOPMENT_TEAM = $(APPLE_TEAM_ID)) and passed to xcodebuild below.
+      APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+      SENTRY_ORG: dorhawk-software
+      SENTRY_PROJECT: obalka
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Is TestFlight set up?
+        id: setup
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          missing=""
+          [ -n "$APPLE_TEAM_ID" ] || missing="$missing APPLE_TEAM_ID(variable)"
+          [ -n "$ASC_KEY_ID" ] || missing="$missing ASC_KEY_ID"
+          [ -n "$ASC_ISSUER_ID" ] || missing="$missing ASC_ISSUER_ID"
+          [ -n "$ASC_KEY_P8" ] || missing="$missing ASC_KEY_P8"
+          if [ -n "$missing" ]; then
+            echo "::warning::iOS skipped - TestFlight is not set up yet. Missing:$missing. See docs/release-ci.md."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Source maps and dSYMs, so a crash in a TestFlight build reads as a file and a line. Same auth path
+      # as ios-sideload.yml; without the token the upload is skipped, not the build.
+      - name: Configure Sentry upload
+        if: steps.setup.outputs.ready == 'true'
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          if [ -z "${SENTRY_AUTH_TOKEN}" ]; then
+            echo "::warning::SENTRY_AUTH_TOKEN is not set - this build's crashes will arrive unsymbolicated."
+            exit 0
+          fi
+          printf 'defaults.org=%s\ndefaults.project=%s\ndefaults.url=%s\nauth.token=%s\n' \
+            "${SENTRY_ORG}" "${SENTRY_PROJECT}" "https://sentry.io/" "${SENTRY_AUTH_TOKEN}" > ios/sentry.properties
+
+      - uses: actions/setup-node@v7
+        if: steps.setup.outputs.ready == 'true'
+        with:
+          node-version: 20
+          cache: npm
+      - if: steps.setup.outputs.ready == 'true'
+        run: npm ci
+
+      # The phone-to-phone transfer (025 T022). Unlike a developer build, a release never goes out
+      # without it: the script fails if the framework is not built, CocoaPods must say it linked it, and
+      # the archive is checked for it below.
+      - uses: actions/setup-go@v7
+        if: steps.setup.outputs.ready == 'true'
+        with:
+          go-version-file: native/transfer/go.mod
+          cache-dependency-path: native/transfer/go.sum
+      - name: Transfer framework (Go, gomobile)
+        if: steps.setup.outputs.ready == 'true'
+        run: ./scripts/build-transfer-xcframework.sh
+
+      - name: CocoaPods
+        if: steps.setup.outputs.ready == 'true'
+        working-directory: ios
+        env:
+          RCT_NEW_ARCH_ENABLED: '1'
+        run: |
+          set -o pipefail
+          pod install --repo-update | tee "$RUNNER_TEMP/pod-install.log"
+          grep -q "\[025\] ObalkaTransferModule: linking Obalkatransfer.xcframework" "$RUNNER_TEMP/pod-install.log" || {
+            echo "::error::CocoaPods did not link Obalkatransfer.xcframework - a release must not ship without the transfer."
+            exit 1
+          }
+
+      # Signed with Xcode's automatic signing, authenticated by the App Store Connect API key: Xcode
+      # fetches or creates the certificate and profile itself, so none are stored here. The version comes
+      # from the tag and the build number from the run; nothing native is edited by hand.
+      - name: Archive (signed, Release)
+        if: steps.setup.outputs.ready == 'true'
+        working-directory: ios
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          BUILD: ${{ needs.verify.outputs.build }}
+        run: |
+          set -o pipefail
+          printf '%s' "$ASC_KEY_P8" > "$RUNNER_TEMP/AuthKey.p8"
+          xcodebuild \
+            -workspace ObalkaDatovaSchranka.xcworkspace \
+            -scheme ObalkaDatovaSchranka \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Obalka.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="$BUILD" \
+            archive
+
+      # Before anything reaches Apple. The transfer must be in the archived app (see the script), and the
+      # binary must carry no bitcode: gomobile compiles the cgo half of the Go archive with
+      # -fembed-bitcode, the linker is expected to drop it, and App Store Connect refuses an executable
+      # that still has it (ITMS-90482) - cheaper to find out here than from Apple's e-mail.
+      - name: The transfer is in the archive, without bitcode
+        if: steps.setup.outputs.ready == 'true'
+        run: |
+          APP="$RUNNER_TEMP/Obalka.xcarchive/Products/Applications/ObalkaDatovaSchranka.app"
+          ./scripts/check-transfer-linked.sh "$APP"
+          if otool -l "$APP/ObalkaDatovaSchranka" | grep -q "segname __LLVM"; then
+            echo "::error::The app binary contains bitcode (__LLVM). Strip it (xcrun bitcode_strip -r) from the Go archive in scripts/build-transfer-xcframework.sh."
+            exit 1
+          fi
+          ls -l "$APP/ObalkaDatovaSchranka"
+
+      # destination=upload in ExportOptions.plist: the signed build goes straight to App Store Connect and
+      # appears in TestFlight after Apple's processing. There is no .ipa left behind to carry anywhere.
+      - name: Upload to TestFlight
+        id: upload
+        if: steps.setup.outputs.ready == 'true'
+        working-directory: ios
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Obalka.xcarchive" \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+          echo "shipped=true" >> "$GITHUB_OUTPUT"
+
+      - name: Remove the API key from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/AuthKey.p8" ios/sentry.properties
+
+  android:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      shipped: ${{ steps.built.outputs.shipped }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Is the Play upload key set up?
+        id: setup
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+        run: |
+          missing=""
+          [ -n "$KEYSTORE" ] || missing="$missing ANDROID_UPLOAD_KEYSTORE_BASE64"
+          [ -n "$STORE_PASSWORD" ] || missing="$missing ANDROID_UPLOAD_STORE_PASSWORD"
+          [ -n "$KEY_ALIAS" ] || missing="$missing ANDROID_UPLOAD_KEY_ALIAS"
+          [ -n "$KEY_PASSWORD" ] || missing="$missing ANDROID_UPLOAD_KEY_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::warning::Android skipped - the Play upload key is not set up yet. Missing:$missing. See docs/release-ci.md."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v4
+        if: steps.setup.outputs.ready == 'true'
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: actions/setup-node@v7
+        if: steps.setup.outputs.ready == 'true'
+        with:
+          node-version: 20
+          cache: npm
+      - if: steps.setup.outputs.ready == 'true'
+        run: npm ci
+
+      # The phone-to-phone transfer (025 T022). The .aar is gitignored and was built only by hand, so a
+      # release used to ship Android without it - silently, because the app hides the transfer when
+      # the archive is missing (FR-013). Built here for every ABI the bundle ships (the script checks
+      # them against gradle.properties), with the NDK the app is built with, and checked again inside
+      # the finished bundle below. Any failure fails the release.
+      - uses: actions/setup-go@v7
+        if: steps.setup.outputs.ready == 'true'
+        with:
+          go-version-file: native/transfer/go.mod
+          cache-dependency-path: native/transfer/go.sum
+      - name: Android NDK (the version android/build.gradle names)
+        if: steps.setup.outputs.ready == 'true'
+        run: ./scripts/install-ndk.sh
+      - name: Transfer library (Go, gomobile), every ABI the app ships
+        if: steps.setup.outputs.ready == 'true'
+        run: ./scripts/build-transfer-aar.sh
+
+      # Sentry's Gradle script uploads the release source maps. With the token it gets the same
+      # properties file the iOS job writes; without it the upload is switched off rather than failing
+      # the build.
+      - name: Configure Sentry upload
+        if: steps.setup.outputs.ready == 'true'
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          if [ -z "${SENTRY_AUTH_TOKEN}" ]; then
+            echo "::warning::SENTRY_AUTH_TOKEN is not set - this build's crashes will arrive unsymbolicated."
+            echo "SENTRY_DISABLE_AUTO_UPLOAD=true" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          printf 'defaults.org=%s\ndefaults.project=%s\ndefaults.url=%s\nauth.token=%s\n' \
+            dorhawk-software obalka "https://sentry.io/" "${SENTRY_AUTH_TOKEN}" > android/sentry.properties
+
+      # Every device ABI (gradle.properties): the single-ABI shortcut used for the emulator never ships.
+      - name: Build the signed app bundle
+        id: built
+        if: steps.setup.outputs.ready == 'true'
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          OBALKA_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_STORE_PASSWORD }}
+          OBALKA_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          OBALKA_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          BUILD: ${{ needs.verify.outputs.build }}
+        run: |
+          printf '%s' "$KEYSTORE" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          export OBALKA_UPLOAD_STORE_FILE="$RUNNER_TEMP/upload.jks"
+          cd android
+          ./gradlew bundleRelease -PobalkaVersionName="$VERSION" -PobalkaVersionCode="$BUILD"
+          cd ..
+          # Checked before `shipped` is set: a bundle without the transfer is not shipped.
+          ./scripts/check-transfer-linked.sh android/app/build/outputs/bundle/release/app-release.aab
+          echo "shipped=true" >> "$GITHUB_OUTPUT"
+
+      # Kept for 30 days: the very first build of a new app must be uploaded to the Play Console by hand,
+      # and this is where it comes from.
+      - uses: actions/upload-artifact@v7
+        if: steps.setup.outputs.ready == 'true'
+        with:
+          name: obalka-${{ needs.verify.outputs.version }}-android-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30
+
+      # Switched on with the repository variable PLAY_UPLOAD=true once the first build is in the Play
+      # Console. PLAY_RELEASE_STATUS stays `draft` until the app has left draft there, then `completed`.
+      - name: Upload to Google Play (internal testing)
+        if: steps.setup.outputs.ready == 'true' && vars.PLAY_UPLOAD == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: software.dorhawk.obalka
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: internal
+          status: ${{ vars.PLAY_RELEASE_STATUS || 'draft' }}
+
+      - name: Remove the upload key from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.jks" android/sentry.properties
+
+  github-release:
+    needs: [verify, ios, android]
+    if: >-
+      !cancelled() && needs.verify.result == 'success'
+      && needs.ios.result != 'failure' && needs.android.result != 'failure'
+      && (needs.ios.outputs.shipped == 'true' || needs.android.outputs.shipped == 'true')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          PRERELEASE: ${{ needs.verify.outputs.prerelease }}
+          IOS: ${{ needs.ios.outputs.shipped == 'true' && 'TestFlight' || 'not shipped' }}
+          ANDROID: ${{ needs.android.outputs.shipped == 'true' && 'built for Google Play' || 'not shipped' }}
+        run: |
+          flag=""
+          if [ "$PRERELEASE" = "true" ]; then flag="--prerelease"; fi
+          notes="iOS: $IOS · Android: $ANDROID"
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "Obálka $VERSION" --notes "$notes" --generate-notes $flag
