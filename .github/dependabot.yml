@@ -1,0 +1,45 @@
+# Dependabot - the half of dependency security that npm audit cannot do: telling you a fix exists
+# before you go looking.
+#
+# Four ecosystems, because this app is built from four. `npm` is the JS tree; `gradle` covers the
+# Android native side (Play Services, and anything else added to app/build.gradle); `bundler` covers
+# the Ruby tooling in the root `Gemfile` that installs the iOS pods (CocoaPods itself, xcodeproj,
+# activesupport, concurrent-ruby - six of the nine alerts closed on 2026-09-14 were against it, see
+# docs/release-ci.md); `github-actions` covers the workflows that build the IPA and run CI, which are
+# dependencies too and are the ones people forget.
+#
+# The pods themselves are NOT here: Dependabot reads the CocoaPods gem through `bundler`, but it has
+# no ecosystem for the `Podfile`. The iOS native dependencies therefore have no automated watch at
+# all - as do SQLCipher, OpenSSL and the pdf.js that `unpdf` vendors, all of which
+# `npm run audit:shipped` lists on every run precisely so the gap stays visible.
+#
+# Security updates arrive regardless of the schedules below; `open-pull-requests-limit: 0` turns OFF
+# routine version-bump noise while leaving security PRs on. React Native upgrades are a deliberate,
+# whole-tree exercise (a bump changes Metro, the CLI, Hermes and the native templates together), not
+# something to take one PR at a time. The Gemfile moves with them: its caps come from the React
+# Native template and its floors are advisory fixes, each explained where it is written, and no
+# `Gemfile.lock` is committed - so a routine bump could only rewrite those deliberate lines.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: gradle
+    directory: /android/app
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: bundler
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

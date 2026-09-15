@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Obálka</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Místní síť Obálka používá jen při přenosu archivu do jiného telefonu: jsou-li oba telefony na stejné Wi-Fi, data jdou přímo mezi nimi, ne přes internet.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Obálka používá Face ID k bezpečnému odemčení aplikace a ochraně vašich datových zpráv.</string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>PublicSans-Medium.ttf</string>
+		<string>BricolageGrotesque-ExtraBold.ttf</string>
+		<string>PublicSans-Regular.ttf</string>
+		<string>PublicSans-SemiBold.ttf</string>
+		<string>BricolageGrotesque-SemiBold.ttf</string>
+		<string>PublicSans-ExtraBold.ttf</string>
+		<string>BricolageGrotesque-Bold.ttf</string>
+		<string>PublicSans-Bold.ttf</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Fotoaparát se použije jen k načtení kódu z obrazovky druhého telefonu. Nic se nefotí a nic neodchází z telefonu.</string>
+</dict>
+</plist>

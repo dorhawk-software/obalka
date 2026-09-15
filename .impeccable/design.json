@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-09T13:00:58Z",
+  "title": "Design System: Obálka — datová schránka",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "purpose": "The page. The stock everything is printed on.",
+        "canonical": "#F4EEE2",
+        "darkVariant": "#1A1712",
+        "tonalRamp": [
+          "#372C15",
+          "#624E25",
+          "#8C6F35",
+          "#B69145",
+          "#C8AA6E",
+          "#D8C398",
+          "#E8DBC2",
+          "#F8F4ED"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Enclosed Sheet",
+        "purpose": "Cards, inputs, raised rows — the lightest plane.",
+        "canonical": "#FFFDF8",
+        "darkVariant": "#2A251E",
+        "tonalRamp": [
+          "#4C3700",
+          "#876000",
+          "#C18A00",
+          "#FBB400",
+          "#FFC637",
+          "#FFD671",
+          "#FFE7AB",
+          "#FFF8E5"
+        ]
+      },
+      "surface-alt": {
+        "role": "neutral",
+        "displayName": "Folded Sheet",
+        "purpose": "Bars, headers, sheets and dialogs.",
+        "canonical": "#FBF6EA",
+        "darkVariant": "#221E18",
+        "tonalRamp": [
+          "#40310C",
+          "#715616",
+          "#A27C1F",
+          "#D3A128",
+          "#DFB757",
+          "#E8CC88",
+          "#F2E1B9",
+          "#FBF6EA"
+        ]
+      },
+      "surface-sunken": {
+        "role": "neutral",
+        "displayName": "Recessed Panel",
+        "purpose": "The one surface that goes down — segmented track, icon wells.",
+        "canonical": "#F2EADB",
+        "darkVariant": "#322C24",
+        "tonalRamp": [
+          "#382C14",
+          "#634D24",
+          "#8E6E33",
+          "#B99043",
+          "#CAA96C",
+          "#D9C297",
+          "#E9DBC1",
+          "#F8F4EC"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Fold Line",
+        "purpose": "Every resting edge in the app.",
+        "canonical": "#ECE3D2",
+        "darkVariant": "#3A332A",
+        "tonalRamp": [
+          "#362B17",
+          "#5F4C28",
+          "#886D39",
+          "#B18D4B",
+          "#C4A772",
+          "#D5C19B",
+          "#E6DAC4",
+          "#F7F4ED"
+        ]
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Scored Fold",
+        "purpose": "Input borders and emphasis edges.",
+        "canonical": "#DCD2BF",
+        "darkVariant": "#4A4236",
+        "tonalRamp": [
+          "#312A1B",
+          "#574A30",
+          "#7D6944",
+          "#A28959",
+          "#B8A47D",
+          "#CDBEA3",
+          "#E1D9C9",
+          "#F6F3EF"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Printed Ink",
+        "purpose": "Primary text, and the dark primary-button fill.",
+        "canonical": "#211B12",
+        "darkVariant": "#F2ECE0",
+        "tonalRamp": [
+          "#32281B",
+          "#574730",
+          "#7D6644",
+          "#A38559",
+          "#B8A17D",
+          "#CDBCA3",
+          "#E1D8C9",
+          "#F6F3EE"
+        ]
+      },
+      "body-ink": {
+        "role": "neutral",
+        "displayName": "Body Ink",
+        "purpose": "Long-form message copy, a touch softer than ink.",
+        "canonical": "#3F392E",
+        "darkVariant": "#D8D0C2",
+        "tonalRamp": [
+          "#2C2820",
+          "#4E4639",
+          "#706551",
+          "#91836A",
+          "#AA9F8B",
+          "#C3BBAD",
+          "#DCD7CF",
+          "#F4F3F0"
+        ]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "purpose": "Secondary text.",
+        "canonical": "#6B6253",
+        "darkVariant": "#A89D8B",
+        "tonalRamp": [
+          "#2B2721",
+          "#4C463B",
+          "#6D6454",
+          "#8E826E",
+          "#A79E8E",
+          "#C1BAAF",
+          "#DAD6D0",
+          "#F4F3F1"
+        ]
+      },
+      "faint-ink": {
+        "role": "neutral",
+        "displayName": "Faint Ink",
+        "purpose": "Metadata and timestamps. The AA-corrected floor, not the design's original value.",
+        "canonical": "#736A57",
+        "darkVariant": "#9C9282",
+        "tonalRamp": [
+          "#2C2821",
+          "#4D473A",
+          "#6E6553",
+          "#8F846C",
+          "#A9A08D",
+          "#C2BBAE",
+          "#DBD7CF",
+          "#F4F3F0"
+        ]
+      },
+      "brand-blue": {
+        "role": "primary",
+        "displayName": "Registry Blue",
+        "purpose": "Every primary action, selection and link.",
+        "canonical": "#2A5C9A",
+        "darkVariant": "#6BA3DE",
+        "tonalRamp": [
+          "#10243C",
+          "#1D3F6A",
+          "#295B98",
+          "#3676C5",
+          "#6295D4",
+          "#8FB4E1",
+          "#BDD3ED",
+          "#EBF1FA"
+        ]
+      },
+      "brand-blue-deep": {
+        "role": "primary",
+        "displayName": "Deep Registry Blue",
+        "purpose": "Brand headings and strong brand text.",
+        "canonical": "#1E4E80",
+        "darkVariant": "#9BC2EC",
+        "tonalRamp": [
+          "#0F263E",
+          "#1A436D",
+          "#255F9C",
+          "#307CCC",
+          "#5D9AD9",
+          "#8CB7E4",
+          "#BBD5EF",
+          "#EAF2FA"
+        ]
+      },
+      "brand-blue-soft": {
+        "role": "primary",
+        "displayName": "Tinted Blue Wash",
+        "purpose": "Selected and info surfaces.",
+        "canonical": "#EEF4FB",
+        "darkVariant": "#233140",
+        "tonalRamp": [
+          "#0F243E",
+          "#1A406D",
+          "#255C9C",
+          "#3078CB",
+          "#5D96D9",
+          "#8CB5E4",
+          "#BBD3EF",
+          "#EAF2FA"
+        ]
+      },
+      "brand-tile": {
+        "role": "primary",
+        "displayName": "Brand Tile Blue",
+        "purpose": "Fixed in BOTH appearances — the solid tile behind the logo and lock marks.",
+        "canonical": "#2D6CB5",
+        "darkVariant": "#2D6CB5",
+        "tonalRamp": [
+          "#0F253D",
+          "#1B406C",
+          "#265C9B",
+          "#3278C9",
+          "#5F96D7",
+          "#8DB5E3",
+          "#BCD3EE",
+          "#EBF2FA"
+        ]
+      },
+      "gold": {
+        "role": "secondary",
+        "displayName": "Envelope Gold",
+        "purpose": "Unread, and the compose FAB. Nothing else.",
+        "canonical": "#E8A100",
+        "darkVariant": "#E8A100",
+        "tonalRamp": [
+          "#4C3500",
+          "#875E00",
+          "#C18600",
+          "#FBAE00",
+          "#FFC237",
+          "#FFD471",
+          "#FFE5AB",
+          "#FFF7E5"
+        ]
+      },
+      "gold-ink": {
+        "role": "secondary",
+        "displayName": "Legible Gold",
+        "purpose": "Gold at a strength that can be SEEN — the unread ring, the attention numeral, the FAB's edge.",
+        "canonical": "#A87400",
+        "darkVariant": "#E8A100",
+        "tonalRamp": [
+          "#4C3500",
+          "#875D00",
+          "#C18500",
+          "#FBAE00",
+          "#FFC137",
+          "#FFD371",
+          "#FFE5AB",
+          "#FFF7E5"
+        ]
+      },
+      "gold-soft": {
+        "role": "secondary",
+        "displayName": "Amber Wash",
+        "purpose": "The test-env banner, the cost card, the re-auth strip.",
+        "canonical": "#FBEFD0",
+        "darkVariant": "#3A2F12",
+        "tonalRamp": [
+          "#463506",
+          "#7C5D0B",
+          "#B2850F",
+          "#E8AD14",
+          "#EFC046",
+          "#F4D27C",
+          "#F8E5B2",
+          "#FDF7E8"
+        ]
+      },
+      "violet": {
+        "role": "tertiary",
+        "displayName": "Draft Violet",
+        "purpose": "The compose draft marker, and one of the six avatar hues.",
+        "canonical": "#5A4CA8",
+        "darkVariant": "#B0A4EE",
+        "tonalRamp": [
+          "#1C1835",
+          "#322A5D",
+          "#473C85",
+          "#5D4EAD",
+          "#8175C1",
+          "#A59DD3",
+          "#CAC5E5",
+          "#EFEDF7"
+        ]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "Delivered Green",
+        "purpose": "A completed delivery, a free message.",
+        "canonical": "#2E7D52",
+        "darkVariant": "#57B484",
+        "tonalRamp": [
+          "#153825",
+          "#246341",
+          "#348D5D",
+          "#44B879",
+          "#6DC997",
+          "#97D9B5",
+          "#C2E8D3",
+          "#ECF8F2"
+        ]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Undeliverable Red",
+        "purpose": "Destructive actions and terminal delivery failures.",
+        "canonical": "#B5362F",
+        "darkVariant": "#E27A73",
+        "tonalRamp": [
+          "#3D1210",
+          "#6B201C",
+          "#992E28",
+          "#C83C34",
+          "#D66660",
+          "#E2938E",
+          "#EEBFBC",
+          "#FAECEB"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The main screen title — home and welcome only.  Bricolage ExtraBold."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Stack-header titles, dialog titles, a message subject.  Bricolage ExtraBold."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headers, a box owner's name.  Bricolage Bold."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Primary readable text.  Public Sans Regular."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Form and metadata field labels.  Public Sans SemiBold."
+      }
+    },
+    "shadows": [
+      {
+        "name": "depth.lg",
+        "value": "inset 0px 1px 2px rgba(255,255,255,0.45), 0px 4px 6px rgba(0,0,0,0.18), 0px 6px 10px rgba(0,0,0,0.08)",
+        "purpose": "Dialogs. A layered stack — inset top highlight, tight contact shadow, soft ambient — so it reads in both appearances."
+      },
+      {
+        "name": "depth.md",
+        "value": "inset 0px 1px 2px rgba(255,255,255,0.30), 0px 2px 4px rgba(0,0,0,0.18), 0px 4px 8px rgba(0,0,0,0.08)",
+        "purpose": "Defined and deliberately unused. Tonal layering covers this level."
+      },
+      {
+        "name": "depth.sm",
+        "value": "inset 0px 1px 2px rgba(255,255,255,0.18), 0px 1px 2px rgba(0,0,0,0.18), 0px 2px 4px rgba(0,0,0,0.08)",
+        "purpose": "Defined and deliberately unused."
+      },
+      {
+        "name": "fab-lift",
+        "value": "0 8px 20px rgba(184,128,0,0.4)",
+        "purpose": "The compose FAB. Gold-tinted atmosphere; the FAB's actual boundary is a 1px gold-ink outline."
+      },
+      {
+        "name": "emblem-lift",
+        "value": "0px 14px 34px rgba(33,50,90,0.32)",
+        "purpose": "The 96dp brand tile on a success screen."
+      },
+      {
+        "name": "knob",
+        "value": "0 1px 3px rgba(0,0,0,0.25)",
+        "purpose": "The switch knob. One soft drop — no inset, no ambient layer."
+      }
+    ],
+    "motion": [
+      {
+        "name": "press-dip",
+        "value": "scale 0.97 / 90ms / timing / native driver",
+        "purpose": "A press is answered by a dip, not a bop. No spring, no overshoot."
+      },
+      {
+        "name": "refusal",
+        "value": "translateX ±4px / 3 × 50ms + warning haptic",
+        "purpose": "A blocked button answers instead of swallowing the press. Occupies no layout space."
+      },
+      {
+        "name": "sheet-in",
+        "value": "SlideInDown / 240ms",
+        "purpose": "Bottom sheets and pickers."
+      },
+      {
+        "name": "snackbar-in",
+        "value": "fade + slide up / 220ms",
+        "purpose": "Transient feedback."
+      },
+      {
+        "name": "sync-sweep",
+        "value": "translateX -110% → 320% of bar width / 1300ms / ease-in-out / infinite",
+        "purpose": "The 3px reserved sync strip. Shown static under Reduce Motion."
+      },
+      {
+        "name": "reduce-motion",
+        "value": "every animation above yields; haptics and focus changes survive",
+        "purpose": "A refusal still refuses without moving."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "<= 720dp — the content cap never binds"
+      },
+      {
+        "name": "content-max",
+        "value": "720dp — ContentColumn caps and centres; margins take the rest"
+      },
+      {
+        "name": "large-screen",
+        "value": ">= 600dp — governed by the OS from Android 16; orientation locks are ignored"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action a form exists to complete. Full width in a pinned footer.",
+      "html": "<button class=\"ds-btn-primary\">Přihlásit se</button>",
+      "css": ".ds-btn-primary{background:#2A5C9A;color:#FFFFFF;min-height:48px;padding:0 20px;border:none;border-radius:13px;font-family:'Public Sans',system-ui,sans-serif;font-weight:700;font-size:14px;transition:transform .09s ease,filter .09s ease}.ds-btn-primary:hover{filter:brightness(1.06)}.ds-btn-primary:active{transform:scale(.97)}.ds-btn-primary:focus-visible{outline:2px solid #1E4E80;outline-offset:2px}"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Used only where something is destroyed. Never the default in a dialog.",
+      "html": "<button class=\"ds-btn-danger\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6\"/></svg>Odebrat</button>",
+      "css": ".ds-btn-danger{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#B5362F;color:#FFFFFF;min-height:48px;padding:0 20px;border:none;border-radius:14px;font-family:'Public Sans',system-ui,sans-serif;font-weight:700;font-size:14px;transition:transform .09s ease}.ds-btn-danger:active{transform:scale(.97)}.ds-btn-danger:focus-visible{outline:2px solid #B5362F;outline-offset:2px}"
+    },
+    {
+      "name": "Compose FAB",
+      "kind": "custom",
+      "refersTo": "fab",
+      "description": "The inbox's one primary action. Gold, and the only other thing gold is spent on besides unread.",
+      "html": "<button class=\"ds-fab\"><svg width=\"21\" height=\"21\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z\"/></svg>Napsat</button>",
+      "css": ".ds-fab{display:inline-flex;align-items:center;gap:9px;min-width:56px;height:54px;padding:0 20px;background:#E8A100;color:#211B12;border:1px solid #A87400;border-radius:16px;box-shadow:0 8px 20px rgba(184,128,0,.4);font-family:'Public Sans',system-ui,sans-serif;font-weight:700;font-size:15px;transition:transform .09s ease}.ds-fab:active{transform:scale(.92)}.ds-fab:focus-visible{outline:2px solid #A87400;outline-offset:3px}"
+    },
+    {
+      "name": "Message Row",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The inbox's unit. Avatar, sender, subject, date — and a ringed gold dot when unread.",
+      "html": "<div class=\"ds-row\"><div class=\"ds-avatar\">SS</div><div class=\"ds-row-main\"><div class=\"ds-row-top\"><span class=\"ds-dot\"></span><span class=\"ds-sender\">Systémová schránka provozovatele ISDS</span><span class=\"ds-date\">13.06.</span></div><div class=\"ds-subject\">Základní informace k Vaší datové schránce</div></div></div>",
+      "css": ".ds-row{display:flex;gap:12px;align-items:flex-start;padding:13px 18px;background:#FFFDF8;border-top:1px solid #ECE3D2;font-family:'Public Sans',system-ui,sans-serif}.ds-row:hover{background:#FBF6EA}.ds-avatar{flex:0 0 auto;width:38px;height:38px;border-radius:11px;background:#2A5C9A;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}.ds-row-main{flex:1;min-width:0}.ds-row-top{display:flex;align-items:center;gap:7px}.ds-dot{flex:0 0 auto;width:7px;height:7px;border-radius:999px;background:#E8A100;border:1px solid #A87400}.ds-sender{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:13px;color:#211B12}.ds-date{flex:0 0 auto;font-size:12px;color:#736A57}.ds-subject{margin-top:2px;font-size:13px;color:#6B6253;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
+    },
+    {
+      "name": "Screen Header",
+      "kind": "nav",
+      "refersTo": "screen-header",
+      "description": "One bar for every stack screen. A 44dp chevron, a Bricolage title announced as a heading, a hairline below.",
+      "html": "<header class=\"ds-header\"><button class=\"ds-back\" aria-label=\"Zpět\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m15 18-6-6 6-6\"/></svg></button><h1 class=\"ds-header-title\">Nastavení</h1></header>",
+      "css": ".ds-header{display:flex;align-items:center;min-height:54px;padding:0 6px;background:#FBF6EA;border-bottom:1px solid #ECE3D2}.ds-back{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:none;background:none;border-radius:999px;color:#211B12;cursor:pointer}.ds-back:hover{opacity:.5}.ds-back:focus-visible{outline:2px solid #2A5C9A;outline-offset:-2px}.ds-header-title{margin:0;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:700;font-size:18px;line-height:23px;letter-spacing:-.3px;color:#211B12}"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Fills the header row in place of a title. Opens focused.",
+      "html": "<div class=\"ds-field\"><input class=\"ds-input\" placeholder=\"Hledat v archivu zpráv\" aria-label=\"Hledat v archivu zpráv\"></div>",
+      "css": ".ds-field{display:flex;align-items:center;min-height:44px;padding:0 14px;background:#F4EEE2;border:1px solid #ECE3D2;border-radius:12px}.ds-field:focus-within{border-color:#2A5C9A;border-width:1.5px}.ds-input{flex:1;border:none;background:none;outline:none;font-family:'Public Sans',system-ui,sans-serif;font-size:15px;color:#211B12}.ds-input::placeholder{color:#736A57}"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "States a fact the app knows — a delivery state, a cost, a deadline. Never a legal conclusion the app inferred.",
+      "html": "<span class=\"ds-chip\">Doručeno</span><span class=\"ds-chip ds-chip-fiction\">Fikce za 4 dny</span>",
+      "css": ".ds-chip{display:inline-flex;align-items:center;min-height:22px;padding:0 9px;margin-right:6px;border-radius:8px;background:#EEF4FB;color:#1E4E80;font-family:'Public Sans',system-ui,sans-serif;font-weight:700;font-size:11px;letter-spacing:.2px}.ds-chip-fiction{background:#FBEFD0;color:#8C6100}"
+    },
+    {
+      "name": "Switch",
+      "kind": "custom",
+      "refersTo": "switch-off",
+      "description": "48×28 drawn, 48×48 to a finger. Outlined while OFF so the control has a boundary against the row.",
+      "html": "<span class=\"ds-switch\" role=\"switch\" aria-checked=\"false\" tabindex=\"0\"><span class=\"ds-knob\"></span></span><span class=\"ds-switch ds-switch-on\" role=\"switch\" aria-checked=\"true\" tabindex=\"0\"><span class=\"ds-knob\"></span></span>",
+      "css": ".ds-switch{display:inline-flex;align-items:center;width:48px;height:28px;padding:2px;margin-right:12px;border:1px solid #8E7F62;border-radius:999px;background:#CFC4AE;cursor:pointer;justify-content:flex-start}.ds-switch-on{justify-content:flex-end;background:#2A5C9A;border:none;padding:3px}.ds-knob{width:22px;height:22px;border-radius:999px;background:#FFFFFF;box-shadow:0 1px 3px rgba(0,0,0,.25)}.ds-switch:focus-visible{outline:2px solid #2A5C9A;outline-offset:3px}"
+    },
+    {
+      "name": "Attention Block",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The app's signature: an oversized gold numeral counting things with legal consequences, stated nowhere else on the screen.",
+      "html": "<div class=\"ds-attn\"><span class=\"ds-attn-num\">3</span><div><div class=\"ds-attn-title\">Vyžaduje pozornost</div><div class=\"ds-attn-sub\">Termín, fikce nebo nepřečteno</div></div></div>",
+      "css": ".ds-attn{display:flex;align-items:center;gap:12px;padding:18px 18px 12px;background:#FFFDF8;border-top:1px solid #ECE3D2;font-family:'Public Sans',system-ui,sans-serif}.ds-attn-num{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:44px;line-height:36px;letter-spacing:-2px;color:#A87400}.ds-attn-title{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:17px;line-height:19px;letter-spacing:-.3px;color:#211B12}.ds-attn-sub{margin-top:3px;font-size:12px;font-weight:600;color:#736A57}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Paper Envelope",
+    "overview": "Obálka means envelope. The system takes that literally, and the literalism is what makes it decidable: paper #F4EEE2 is the stock, surface #FFFDF8 is the enclosed sheet, hairline #ECE3D2 is the fold, ink #211B12 is what was printed on it. When a question comes up about a new surface, the envelope answers it before taste has to.\n\nThe app holds legally binding government mail: records with consequences, deadlines that expire, and a delivery fiction that lands whether or not anyone opened the message. The design's whole job is to carry that weight without feeling like a government form. Warmth does the humanity, precision does the authority, and neither is allowed to borrow from the other.\n\nThe system replaced a cool-navy neutral ramp in feature 009. That is the one confirmed anti-reference: not cool greys, not a blue-tinted \"productivity app\" neutral. The brand blue and gold survived the change; the greys did not.",
+    "keyCharacteristics": [
+      "Warm neutrals throughout — there is no true grey and no pure white anywhere in the palette.",
+      "Two families, strictly divided: Bricolage Grotesque says what a thing is, Public Sans says what it contains.",
+      "Depth is tone, not shadow. Dark mode raises by getting lighter.",
+      "One accent doing one job: gold means unread, and almost nothing else.",
+      "Nothing moves once it is on screen. Space is reserved before it is needed."
+    ],
+    "rules": [
+      {
+        "name": "The One Job Rule",
+        "section": "colors",
+        "body": "Gold means unread. It is also spent on the compose FAB, because composing is the one action the inbox exists to offer — and nowhere else. A second gold thing on a screen makes the first one stop meaning anything."
+      },
+      {
+        "name": "The On-X Rule",
+        "section": "colors",
+        "body": "A token named on-<something> is safe only on that something. on-blue is ink that sits on brand-blue; in dark mode it is near-black, because dark mode's blue is bright. Anything painted on a fill that does not follow the theme — an avatar hue, the brand tile, a switch knob — takes on-solid, which is white in both appearances. This rule exists because it was broken: on-blue was silently doing both jobs, and when dark mode's blue was brightened, every avatar monogram in the app fell to 2.1–3.0:1."
+      },
+      {
+        "name": "The Measured Palette Rule",
+        "section": "colors",
+        "body": "Every foreground/background pair the app renders is asserted in __tests__/theme/contrast.test.ts, and the pairs are derived from where tokens are painted, not transcribed. A palette is edited by eye, and a number that used to pass is exactly the thing nobody re-measures."
+      },
+      {
+        "name": "The Face-Per-Weight Rule",
+        "section": "typography",
+        "body": "Both families ship as 4-style groups, so Medium / SemiBold / ExtraBold are separate families that fontFamily + fontWeight cannot reach. Overriding a weight must switch the face. Typography.tsx resolves this centrally; a screen that sets fontWeight by hand gets the base face and the \"all weights look identical\" bug."
+      },
+      {
+        "name": "The Growing Box Rule",
+        "section": "typography",
+        "body": "React Native scales fontSize and lineHeight with the system text size; a container measured in dp does not scale with them. Every box that holds text uses minHeight, never height. Asserted by __tests__/theme/fontScale.test.ts."
+      },
+      {
+        "name": "The Dense Rule",
+        "section": "typography",
+        "body": "The design sets ~1.4 leading on prose and leaves the font's tight metric leading on single-line list rows. Pass dense for a row; without it every row renders ~9dp taller than the design."
+      },
+      {
+        "name": "The Tonal-First Rule",
+        "section": "elevation",
+        "body": "Reach for a tonal level, then a hairline, then — only if the object truly floats — a shadow. depth.sm and depth.md exist and are currently unused; that is correct, not an oversight."
+      },
+      {
+        "name": "The Type Floor (unsettled)",
+        "section": "typography",
+        "body": "13 is the floor of the role scale, but 76 call sites across 18 files override fontSize down to 12, 11 or 10 — including every metadatum with legal weight on the inbox. This is recorded as an open decision rather than a rule, because nothing enforces it and an earlier draft of DESIGN.md asserted it held when it did not."
+      }
+    ],
+    "dos": [
+      "Do take every colour from useTheme(). scripts/check-no-raw-hex.sh fails the build on a raw hex literal outside the sanctioned palette files.",
+      "Do use minHeight on anything containing text, so it grows with the system text size.",
+      "Do derive a touch target from the drawn size with touchSlop(). A control may be drawn smaller than 48dp — the switch is 48×28, a segment is 34 — but its touch area never is.",
+      "Do reserve space for anything that will arrive later. A spinner, a chip or a badge that appears must not move the content around it (constitution V).",
+      "Do reach for a tonal level first, a hairline second, and a shadow only if the thing floats.",
+      "Do put a new shared pattern in src/theme/ and then use it everywhere it applies. Three components in this repo were written to prevent drift and then adopted once each; the drift happened anyway."
+    ],
+    "donts": [
+      "Don't use Alert.alert or any other system dialog. The app draws its own; enforced by __tests__/theme/noSystemAlert.test.ts with no allowlist.",
+      "Don't paint an on-<x> token on anything but <x>. Use on-solid for white-on-a-fixed-fill.",
+      "Don't spend gold on a second thing. One accent, one job.",
+      "Don't hand-tune spacing, radii or type per screen. The same pattern keeps the same numbers; a value that differs from the scale is a bug, not a refinement.",
+      "Don't animate anything that was not asked for. Motion answers an action; it never decorates one. Every animation yields to Reduce Motion, and the haptic and focus change survive when it does.",
+      "Don't write a docstring asserting a measured property without a test that measures it. Three comments in this codebase promised contrast ratios that had silently stopped being true."
+    ]
+  }
+}

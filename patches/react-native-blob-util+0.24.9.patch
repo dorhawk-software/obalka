@@ -1,0 +1,244 @@
+diff --git a/node_modules/react-native-blob-util/ios/ReactNativeBlobUtil/ReactNativeBlobUtil.mm b/node_modules/react-native-blob-util/ios/ReactNativeBlobUtil/ReactNativeBlobUtil.mm
+index adf1b13..9778883 100644
+--- a/node_modules/react-native-blob-util/ios/ReactNativeBlobUtil/ReactNativeBlobUtil.mm
++++ b/node_modules/react-native-blob-util/ios/ReactNativeBlobUtil/ReactNativeBlobUtil.mm
+@@ -26,6 +26,14 @@ dispatch_queue_t fsQueue;
+ 
+ #pragma mark ReactNativeBlobUtil exported methods
+ 
++// PATCHED (obalka): forward-declare the presentation helpers defined further down, so the
++// presentOptionsMenu / presentOpenInMenu call sites above their definitions do not trip clang's
++// "instance method not found (return type defaults to 'id')" warning.
++@interface ReactNativeBlobUtil ()
++- (UIWindow *)rnbuActiveWindow;
++- (UIViewController *)rnbuTopViewController;
++@end
++
+ @implementation ReactNativeBlobUtil
+ 
+ @synthesize filePathPrefix;
+@@ -812,12 +820,14 @@ RCT_EXPORT_METHOD(presentOptionsMenu:(NSString*)uri scheme:(NSString *)scheme re
+     NSURL * url = [[NSURL alloc] initWithString:utf8uri];
+     // NSURL * url = [[NSURL alloc] initWithString:uri];
+     documentController = [UIDocumentInteractionController interactionControllerWithURL:url];
+-    UIViewController *rootCtrl = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+     documentController.delegate = self;
+     if(scheme == nil || [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:scheme]]) {
+       CGRect rect = CGRectMake(0.0, 0.0, 0.0, 0.0);
+-      dispatch_sync(dispatch_get_main_queue(), ^{
+-          [documentController  presentOptionsMenuFromRect:rect inView:rootCtrl.view animated:YES];
++      // PATCHED (obalka): resolve the presenting view ON the main thread and from the TOPMOST
++      // controller (see rnbuTopViewController), and hop with dispatch_async rather than dispatch_sync.
++      dispatch_async(dispatch_get_main_queue(), ^{
++          UIViewController *rootCtrl = [self rnbuTopViewController];
++          [self->documentController presentOptionsMenuFromRect:rect inView:rootCtrl.view animated:YES];
+       });
+         resolve(@[[NSNull null]]);
+     } else {
+@@ -841,12 +851,13 @@ RCT_EXPORT_METHOD(presentOpenInMenu:(NSString*)uri scheme:(NSString *)scheme res
+     NSString * utf8uri = [uri stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+     NSURL * url = [[NSURL alloc] initWithString:utf8uri];
+     documentController = [UIDocumentInteractionController interactionControllerWithURL:url];
+-    UIViewController *rootCtrl = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+     documentController.delegate = self;
+     if(scheme == nil || [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:scheme]]) {
+       CGRect rect = CGRectMake(0.0, 0.0, 0.0, 0.0);
+-      dispatch_sync(dispatch_get_main_queue(), ^{
+-          [documentController  presentOpenInMenuFromRect:rect inView:rootCtrl.view animated:YES];
++      // PATCHED (obalka): same fix as presentOptionsMenu above.
++      dispatch_async(dispatch_get_main_queue(), ^{
++          UIViewController *rootCtrl = [self rnbuTopViewController];
++          [self->documentController presentOpenInMenuFromRect:rect inView:rootCtrl.view animated:YES];
+       });
+         resolve(@[[NSNull null]]);
+     } else {
+@@ -875,8 +886,12 @@ RCT_EXPORT_METHOD(presentPreview:(NSString*)uri scheme:(NSString *)scheme resolv
+     documentController.delegate = self;
+ 
+     if(scheme == nil || [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:scheme]]) {
+-        dispatch_sync(dispatch_get_main_queue(), ^{
+-            if([documentController presentPreviewAnimated:YES]) {
++        // PATCHED (obalka): dispatch_async, not dispatch_sync. Under the New Architecture this method
++        // can run on the JS thread while the main thread is already waiting on JS, and a sync hop to
++        // main then deadlocks — a wedged main thread renders the last frame forever and takes no
++        // input, indistinguishable from the dismissal freeze this patch also fixes.
++        dispatch_async(dispatch_get_main_queue(), ^{
++            if([self->documentController presentPreviewAnimated:YES]) {
+                 resolve(@[[NSNull null]]);
+             } else {
+                 reject(@"EINVAL", @"document is not supported", nil);
+@@ -915,10 +930,68 @@ RCT_EXPORT_METHOD(df:(RCTResponseSenderBlock)callback)
+     [ReactNativeBlobUtilFS df:callback];
+ }
+ 
++// PATCHED (obalka): resolve the window through the active foreground scene and walk to the TOPMOST
++// presented view controller, instead of `keyWindow.rootViewController`.
++//
++// `keyWindow` is deprecated since iOS 13 and can resolve to a window that is not the app's, or to nil.
++// When this delegate hands UIKit a nil or non-topmost controller, UIDocumentInteractionController
++// presents its preview into a window of its own making, and that window is not reliably torn down on
++// dismissal — it stays above the app's window, invisible, swallowing every touch. The app keeps
++// rendering and stops responding, which is exactly the reported "have to force-quit after closing an
++// attachment". Returning the real topmost controller keeps the preview inside the app's own window,
++// so dismissing it restores the hierarchy the normal way.
++- (UIWindow *)rnbuActiveWindow
++{
++    UIWindow *found = nil;
++    if (@available(iOS 13.0, *)) {
++        for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
++            if (![scene isKindOfClass:[UIWindowScene class]]) { continue; }
++            if (scene.activationState != UISceneActivationStateForegroundActive) { continue; }
++            for (UIWindow *window in ((UIWindowScene *)scene).windows) {
++                if (window.isKeyWindow) { found = window; break; }
++            }
++            if (found == nil) { found = ((UIWindowScene *)scene).windows.firstObject; }
++            if (found != nil) { break; }
++        }
++    }
++    if (found == nil) {
++        id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
++        if ([appDelegate respondsToSelector:@selector(window)]) { found = [appDelegate window]; }
++    }
++    return found;
++}
++
++- (UIViewController *)rnbuTopViewController
++{
++    UIViewController *controller = [self rnbuActiveWindow].rootViewController;
++    while (controller.presentedViewController != nil) {
++        controller = controller.presentedViewController;
++    }
++    return controller;
++}
++
+ - (UIViewController *)documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller
+ {
+-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+-    return window.rootViewController;
++    return [self rnbuTopViewController];
++}
++
++// PATCHED (obalka): the library never implemented ANY of the dismissal callbacks, so its single
++// retained `documentController` outlived every presentation, holding on to a controller whose view
++// controller and window are gone. Dropping it on dismissal is what lets UIKit finish tearing the
++// presentation down.
++- (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)controller
++{
++    if (self.documentController == controller) { self.documentController = nil; }
++}
++
++- (void)documentInteractionControllerDidDismissOptionsMenu:(UIDocumentInteractionController *)controller
++{
++    if (self.documentController == controller) { self.documentController = nil; }
++}
++
++- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
++{
++    if (self.documentController == controller) { self.documentController = nil; }
+ }
+ 
+ # pragma mark - Android Only methods
+diff --git a/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilConfig.java b/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilConfig.java
+--- a/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilConfig.java
++++ b/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilConfig.java
+@@ -22,6 +22,9 @@
+     public long timeout = 60000;
+     public Boolean increment = false;
+     public Boolean followRedirect = true;
++    // PATCHED (obalka): keep React Native's shared cookie jar out of this request, both ways. Read
++    // in ReactNativeBlobUtilReq, which says why.
++    public Boolean omitCookies = false;
+     public ReadableArray binaryContentTypes = null;
+ 
+     ReactNativeBlobUtilConfig(ReadableMap options) {
+@@ -51,6 +54,7 @@
+         this.mime = options.hasKey("contentType") ? options.getString("contentType") : null;
+         this.increment = options.hasKey("increment") && options.getBoolean("increment");
+         this.auto = options.hasKey("auto") && options.getBoolean("auto");
++        this.omitCookies = options.hasKey("omitCookies") && options.getBoolean("omitCookies");
+         if (options.hasKey("timeout")) {
+             this.timeout = options.getInt("timeout");
+         }
+diff --git a/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilReq.java b/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilReq.java
+--- a/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilReq.java
++++ b/node_modules/react-native-blob-util/android/src/main/java/com/ReactNativeBlobUtil/ReactNativeBlobUtilReq.java
+@@ -71,6 +71,7 @@
+ import okhttp3.Call;
+ import okhttp3.ConnectionPool;
+ import okhttp3.ConnectionSpec;
++import okhttp3.CookieJar;
+ import okhttp3.Headers;
+ import okhttp3.Interceptor;
+ import okhttp3.MediaType;
+@@ -323,14 +324,17 @@
+                 }
+ 
+                 // Attempt to add cookie, if it exists
+-                URL urlObj;
+-                try {
+-                    urlObj = new URL(url);
+-                    String baseUrl = urlObj.getProtocol() + "://" + urlObj.getHost();
+-                    String cookie = CookieManager.getInstance().getCookie(baseUrl);
+-                    req.addRequestHeader("Cookie", cookie);
+-                } catch (MalformedURLException e) {
+-                    e.printStackTrace();
++                // PATCHED (obalka): unless the caller asked to keep the shared jar out (omitCookies).
++                if (!this.options.omitCookies) {
++                    URL urlObj;
++                    try {
++                        urlObj = new URL(url);
++                        String baseUrl = urlObj.getProtocol() + "://" + urlObj.getHost();
++                        String cookie = CookieManager.getInstance().getCookie(baseUrl);
++                        req.addRequestHeader("Cookie", cookie);
++                    } catch (MalformedURLException e) {
++                        e.printStackTrace();
++                    }
+                 }
+ 
+                 DownloadManager dm = (DownloadManager) appCtx.getSystemService(Context.DOWNLOAD_SERVICE);
+@@ -389,6 +393,15 @@
+                 clientBuilder = ReactNativeBlobUtilUtils.getUnsafeOkHttpClient(client);
+             } else {
+                 clientBuilder = client.newBuilder();
++            }
++
++            // PATCHED (obalka): `omitCookies` keeps React Native's shared cookie jar out of this request.
++            // ReactNativeBlobUtilImpl installs that jar on the OkHttp client every request inherits, and
++            // OkHttp's BridgeInterceptor then REPLACES an explicit Cookie header with the jar's cookies
++            // whenever the jar holds any for the host, and saves every Set-Cookie back into it. A caller
++            // that carries its own session in the Cookie header must neither lose it nor leak it.
++            if (this.options.omitCookies) {
++                clientBuilder.cookieJar(CookieJar.NO_COOKIES);
+             }
+ 
+             // wifi only, need ACCESS_NETWORK_STATE permission
+diff --git a/node_modules/react-native-blob-util/ios/ReactNativeBlobUtilRequest.mm b/node_modules/react-native-blob-util/ios/ReactNativeBlobUtilRequest.mm
+--- a/node_modules/react-native-blob-util/ios/ReactNativeBlobUtilRequest.mm
++++ b/node_modules/react-native-blob-util/ios/ReactNativeBlobUtilRequest.mm
+@@ -130,6 +130,16 @@
+     }
+ 
+     defaultConfigObject.HTTPMaximumConnectionsPerHost = 10;
++
++    // PATCHED (obalka): `omitCookies` keeps the shared cookie store out of this request, both ways. A
++    // default session configuration adds NSHTTPCookieStorage.sharedHTTPCookieStorage's cookies to every
++    // request and stores every response's cookies in it; a caller that carries its own session in the
++    // Cookie header must neither pick up nor leave behind anybody else's.
++    if ([[options valueForKey:@"omitCookies"] boolValue]) {
++        defaultConfigObject.HTTPCookieStorage = nil;
++        defaultConfigObject.HTTPShouldSetCookies = NO;
++        defaultConfigObject.HTTPCookieAcceptPolicy = NSHTTPCookieAcceptPolicyNever;
++    }
+     session = [NSURLSession sessionWithConfiguration:defaultConfigObject delegate:self delegateQueue:operationQueue];
+ 
+     if (path || [self.options valueForKey:CONFIG_USE_TEMP]) {
+@@ -309,7 +319,8 @@
+ 
+ #pragma mark - handling cookies
+         // # 153 get cookies
+-        if (response.URL) {
++        // PATCHED (obalka): not into the shared store when the caller asked to keep it out (omitCookies).
++        if (response.URL && ![[self.options valueForKey:@"omitCookies"] boolValue]) {
+             NSHTTPCookieStorage * cookieStore = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+             NSArray<NSHTTPCookie *> * cookies = [NSHTTPCookie cookiesWithResponseHeaderFields: headers forURL:response.URL];
+             if (cookies.count) {

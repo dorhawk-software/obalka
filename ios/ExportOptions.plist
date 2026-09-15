@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyLists/PropertyList-1.0.dtd">
+<!--
+  How the release workflow exports the signed archive (.github/workflows/release.yml).
+
+  app-store-connect + upload: xcodebuild signs for App Store distribution and sends the build straight
+  to App Store Connect, where it appears in TestFlight after Apple's processing - there is no .ipa to
+  carry anywhere. Signing is automatic: the App Store Connect API key the workflow passes lets Xcode
+  create or reuse the distribution certificate and profile itself. No teamID here: it comes from the
+  archive, which took it from APPLE_TEAM_ID.
+
+  The version and build number are set by the workflow from the git tag and the run, so App Store
+  Connect is told not to change them.
+-->
+<plist version="1.0">
+<dict>
+	<key>method</key>
+	<string>app-store-connect</string>
+	<key>destination</key>
+	<string>upload</string>
+	<key>signingStyle</key>
+	<string>automatic</string>
+	<key>uploadSymbols</key>
+	<true/>
+	<key>manageAppVersionAndBuildNumber</key>
+	<false/>
+</dict>
+</plist>
