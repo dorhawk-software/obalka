@@ -1,0 +1,3 @@
+node_modules/
+# Auto-generated ISDS wire models (regenerate with `npm run codegen:isds`)
+src/services/isds/generated/

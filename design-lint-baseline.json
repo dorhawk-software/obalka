@@ -1,0 +1,152 @@
+{
+  "src/app/LaunchScreen.tsx": {
+    "space-scale": 2
+  },
+  "src/app/Snackbar.tsx": {
+    "no-raw-color": 1
+  },
+  "src/app/lock/LockGate.tsx": {
+    "no-raw-color": 2,
+    "radius-steps": 1,
+    "role-typography": 2,
+    "space-scale": 4
+  },
+  "src/app/settings/BackupScreen.tsx": {
+    "role-typography": 10
+  },
+  "src/app/settings/DebugScreen.tsx": {
+    "role-typography": 1
+  },
+  "src/app/settings/FaqScreen.tsx": {
+    "radius-steps": 1,
+    "role-typography": 5,
+    "space-scale": 1
+  },
+  "src/app/settings/LicenceDetailScreen.tsx": {
+    "role-typography": 1,
+    "space-scale": 1
+  },
+  "src/app/settings/LicenceGroupScreen.tsx": {
+    "role-typography": 1
+  },
+  "src/app/settings/LicencesScreen.tsx": {
+    "radius-steps": 1,
+    "role-typography": 4,
+    "space-scale": 2
+  },
+  "src/app/settings/SettingsScreen.tsx": {
+    "role-typography": 8
+  },
+  "src/app/settings/SettingsSection.tsx": {
+    "role-typography": 2
+  },
+  "src/app/settings/TelemetryConsent.tsx": {
+    "role-typography": 5,
+    "space-scale": 1
+  },
+  "src/app/settings/TransferScreen.tsx": {
+    "role-typography": 6
+  },
+  "src/features/accounts/screens/AddBoxForm.tsx": {
+    "role-typography": 1,
+    "space-scale": 2
+  },
+  "src/features/accounts/screens/AliasEditor.tsx": {
+    "role-typography": 1
+  },
+  "src/features/accounts/screens/BoxIdentityLine.tsx": {
+    "role-typography": 2
+  },
+  "src/features/accounts/screens/BoxRow.tsx": {
+    "radius-steps": 3,
+    "space-scale": 1
+  },
+  "src/features/accounts/screens/BoxSwitcherSheet.tsx": {
+    "no-raw-color": 1,
+    "role-typography": 1
+  },
+  "src/features/accounts/screens/LoginFlow.tsx": {
+    "role-typography": 1,
+    "space-scale": 5
+  },
+  "src/features/accounts/screens/OtpForm.tsx": {
+    "role-typography": 2,
+    "space-scale": 2
+  },
+  "src/features/accounts/screens/ReauthForm.tsx": {
+    "space-scale": 1
+  },
+  "src/features/accounts/screens/UnifiedRow.tsx": {
+    "radius-steps": 1
+  },
+  "src/features/accounts/screens/Welcome.tsx": {
+    "no-raw-color": 2,
+    "radius-steps": 1,
+    "role-typography": 8,
+    "space-scale": 4
+  },
+  "src/features/messages/screens/AddressLines.tsx": {
+    "role-typography": 4
+  },
+  "src/features/messages/screens/BoxPill.tsx": {
+    "no-raw-color": 1,
+    "role-typography": 2
+  },
+  "src/features/messages/screens/ComposeScreen.tsx": {
+    "radius-steps": 2,
+    "role-typography": 6,
+    "space-scale": 4
+  },
+  "src/features/messages/screens/DeliveryRecord.tsx": {
+    "role-typography": 4,
+    "space-scale": 2
+  },
+  "src/features/messages/screens/MessageDetail.tsx": {
+    "radius-steps": 3,
+    "role-typography": 11,
+    "space-scale": 1
+  },
+  "src/features/messages/screens/MessageList.tsx": {
+    "radius-steps": 3,
+    "role-typography": 16,
+    "space-scale": 5
+  },
+  "src/features/messages/screens/SearchScreen.tsx": {
+    "radius-steps": 1,
+    "role-typography": 1,
+    "space-scale": 3
+  },
+  "src/features/messages/screens/SenderPicker.tsx": {
+    "radius-steps": 1
+  },
+  "src/features/messages/screens/SignedOriginalSection.tsx": {
+    "role-typography": 3
+  },
+  "src/features/messages/screens/TermPicker.tsx": {
+    "role-typography": 1
+  },
+  "src/services/files/textToPdf.ts": {
+    "space-scale": 1
+  },
+  "src/theme/Avatar.tsx": {
+    "no-raw-color": 2
+  },
+  "src/theme/BottomSheet.tsx": {
+    "no-raw-color": 1
+  },
+  "src/theme/Fab.tsx": {
+    "no-raw-color": 1
+  },
+  "src/theme/SegmentedControl.tsx": {
+    "no-raw-color": 2
+  },
+  "src/theme/Toggle.tsx": {
+    "no-raw-color": 1
+  },
+  "src/theme/iconTiers.tsx": {
+    "no-raw-color": 1
+  },
+  "src/theme/useScrim.ts": {
+    "no-raw-color": 1
+  }
+}

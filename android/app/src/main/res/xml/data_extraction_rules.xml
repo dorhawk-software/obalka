@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Nothing of this app goes into the phone's own backups or its phone-to-phone migration - Android 12+
+  (API 31) and later read this file; `backup_rules.xml` says the same to Android 11 and older.
+  Owner decision, 2026-09-24.
+
+  WHY. The archive is SQLCipher under a key the Keystore holds as this-device-only, and the saved
+  passwords and sessions are sealed under the vault key, which is this-device-only as well. A copy
+  that lands on another phone cannot be opened there. What such a copy DOES carry readably is the plain
+  files beside the database - downloaded attachments (.pdf), signed originals (.zfo), debug ZIPs and
+  backup files - and they would end up in Google's cloud or on whatever computer the migration went
+  through. The app's own encrypted backup (006) and its phone-to-phone transfer (025) are the ways an
+  archive moves, and both are encrypted under a key the user holds.
+
+  WHY THIS FILE AND NOT ONLY `allowBackup="false"`. For an app targeting Android 12 or newer (this
+  one targets 36), `allowBackup="false"` stops the cloud backup but NOT a device-to-device transfer:
+  Android's documentation says so in as many words. `<device-transfer>` is the only switch for that.
+
+  EVERY DOMAIN, both sections. `root` alone would cover `file`, `database` and `sharedpref`, which sit
+  under it; they are listed anyway so the intent does not rest on knowing that. `external` is the
+  app's external files directory, outside `root`. The `device_*` domains are the device-protected
+  (Direct Boot) twins of the same four, a separate tree the app does not use today.
+
+  `path="."` is the domain's own directory, and a directory rule covers everything under it,
+  including what is created after this was written. It is ".", not "./": Android lint treats a "/" in
+  a `sharedpref` or `database` path as a subdirectory, which those domains do not allow, and that
+  check is fatal in a release build.
+
+  `<cross-platform-transfer>` (Android 16 QPR2, a move to an iPhone) is opt-in: an app that does not
+  declare it is not part of that transfer, so it is left out deliberately.
+
+  Pinned by `__tests__/security/androidBackupRules.test.ts`.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+        <exclude domain="device_root" path="." />
+        <exclude domain="device_file" path="." />
+        <exclude domain="device_database" path="." />
+        <exclude domain="device_sharedpref" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+        <exclude domain="device_root" path="." />
+        <exclude domain="device_file" path="." />
+        <exclude domain="device_database" path="." />
+        <exclude domain="device_sharedpref" path="." />
+    </device-transfer>
+</data-extraction-rules>
