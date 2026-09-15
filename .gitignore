@@ -1,0 +1,112 @@
+# OSX
+#
+.DS_Store
+
+# Xcode
+#
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+**/.xcode.env.local
+
+# Android/IntelliJ
+#
+build/
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
+.kotlin/
+
+# node.js
+#
+# No trailing slash: in an agent worktree node_modules is a symlink, which `node_modules/` does not match.
+node_modules
+npm-debug.log
+yarn-error.log
+
+# fastlane
+#
+# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
+# screenshots whenever they are needed.
+# For more information about the recommended setup visit:
+# https://docs.fastlane.tools/best-practices/source-control/
+
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Bundle artifact
+*.jsbundle
+
+# Ruby / CocoaPods
+**/Pods/
+/vendor/bundle/
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
+
+# testing
+/coverage
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# design reference image (not source)
+/actual-app.png
+/codepen-dumps/
+/recraft.png
+
+# Recraft icon source exports (reference; chosen one vendored to src/assets/logo.svg)
+/minimalist-flat-vector-app-icon-*.svg
+
+# UX / App Store review reference screenshots — contain personal data, NEVER commit.
+*.jpeg
+*.jpg
+/hate/
+/love/
+/sselects.png
+
+# graphify knowledge-graph output — regenerable from the repo (~6 MB; graph.json + graph.html
+# are rewritten wholesale on every rebuild). Run `/graphify` or `graphify update` to recreate.
+graphify-out/
+
+# Sentry
+#
+# `sentry.properties` is what the wizard writes the AUTH TOKEN into - a real credential that can read
+# and write the whole org, unlike the DSN (which is public by design and lives in
+# src/services/telemetry/dsn.ts). Ignored here BEFORE the wizard runs, so it cannot be committed by
+# an `add -A` in the same breath as the build config it also writes.
+sentry.properties
+.sentryclirc
+.env.sentry-build-plugin
+
+# Built by scripts/build-transfer-aar.sh (025). A toolchain artefact, not source.
+android/app/libs/
+# Built by scripts/build-transfer-xcframework.sh on macOS (025 T022). Same reason.
+ios/ObalkaTransferModule/Obalkatransfer.xcframework/
+# A historical checkout made by scripts/make-backup-fixture.mjs, removed again when it finishes.
+.fixture-worktree/

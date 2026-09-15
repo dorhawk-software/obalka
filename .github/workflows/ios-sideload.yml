@@ -1,0 +1,156 @@
+name: iOS - unsigned IPA (for Sideloadly)
+
+# Builds an UNSIGNED .ipa and uploads it as an artifact. No Apple Developer account or signing
+# secrets are needed here - Sideloadly re-signs the .ipa with YOUR Apple ID when you load it onto
+# your iPhone (see docs/sideload-ios.md). Trigger it manually from the Actions tab → "Run workflow",
+# on any branch (the branch picker there), or with `gh workflow run ios-sideload.yml --ref <branch>`.
+
+on:
+  workflow_dispatch:
+
+# Read-only, stated rather than inherited. The repository's default is already read-only, but a default
+# can be changed in Settings without a commit; a workflow that names its own permissions cannot be
+# widened that way (CodeQL actions/missing-workflow-permissions).
+permissions:
+  contents: read
+
+jobs:
+  ipa:
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      # Xcode 26, not the runner's default 16.4. react-native-vision-camera 5.2.3 names
+      # `kCVPixelFormatType_96VersatileBayerPacked12`, a CoreVideo constant that exists only from the
+      # iOS 26 SDK on: probed on this image 2026-09-16, every Xcode 16.x SDK has zero hits for it and
+      # every 26.x has one. Without this the build compiles for twenty minutes and then fails on that
+      # one file. `macos-15` ships 26.0 through 26.3 beside the default; pinned rather than "latest" so
+      # a runner-image refresh cannot move the SDK under the build without a commit saying so.
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+      # The ONLY place the Sentry org and project are written. Both are public - they are derivable
+      # from the DSN, which ships inside the app - so neither is a secret; only the token is.
+      #
+      # CHANGING THE ORG: change the one line below, and the matching `defaults.org` in your local
+      # `android/sentry.properties` and `ios/sentry.properties` (gitignored) and the URL in
+      # `.mcp.json`. The DSN does NOT change: it encodes the numeric org ID, not the slug, so a
+      # rename leaves every already-shipped copy of the app reporting correctly. The preflight in
+      # "Configure Sentry upload" checks this value against the API before the build, so a wrong
+      # slug costs one second rather than one silent release.
+      SENTRY_ORG: dorhawk-software
+      SENTRY_PROJECT: obalka
+    steps:
+      - uses: actions/checkout@v7
+
+      # FIRST, deliberately: this step needs nothing but the checkout and curl, and its whole
+      # job is to fail before anything expensive. Behind `npm ci` and `pod install --repo-update`
+      # it still worked, but it spent about five minutes of a macOS runner before saying a
+      # sentence it could have said immediately.
+      #
+      # Source maps and dSYMs, which are what turn a release crash from an unreadable bundle offset
+      # into a file and a line. The Xcode build phase the Sentry wizard added reads these from the
+      # environment; on a developer machine it reads `ios/sentry.properties` instead, which is
+      # gitignored because it holds the same token.
+      #
+      # WITHOUT `SENTRY_AUTH_TOKEN` THE UPLOAD SKIPS SILENTLY. sentry-cli is invoked in a mode that
+      # warns and continues rather than failing the build - deliberately, so a missing token cannot
+      # break someone's release - which means the only symptom is stack traces that are still
+      # minified weeks later. The guard below turns that silence into a line in the log.
+      # `sentry-xcode-debug-files.sh` defaults `SENTRY_PROPERTIES=sentry.properties`, a file that
+      # exists on a developer machine and is gitignored because it holds an org-wide token. Writing
+      # it here makes CI's auth path IDENTICAL to the local one, rather than depending on sentry-cli
+      # preferring an environment variable over a file it was explicitly pointed at. `SENTRY_ORG`
+      # and `SENTRY_PROJECT` reach the build from the job env, which is what the JS source-map
+      # upload reads.
+      - name: Configure Sentry upload
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          if [ -z "${SENTRY_AUTH_TOKEN}" ]; then
+            echo "::warning::SENTRY_AUTH_TOKEN is not set - this build's source maps and dSYMs will NOT be uploaded, and its crashes will arrive unsymbolicated."
+            exit 0
+          fi
+          # Fail FAST and LOUD on a bad org/project rather than after a 20-minute build. This is the
+          # exact endpoint both uploads use, and `org:ci` - the only scope the token carries - is
+          # enough to call it, so a 200 here means the uploads can authenticate. A renamed org
+          # answers 404, which is otherwise invisible until crashes show up unsymbolicated.
+          # sentry.io routes to the org's own region (this project is EU), so the probe does not
+          # need to know the region URL - verified against the live org, which answers 200 here.
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer ${SENTRY_AUTH_TOKEN}" \
+            "https://sentry.io/api/0/organizations/${SENTRY_ORG}/chunk-upload/")
+          if [ "$code" != "200" ]; then
+            echo "::error::Sentry preflight failed: ${SENTRY_ORG} answered HTTP ${code} (expected 200)."
+            echo "::error::404 means the org slug is wrong - most likely it was RENAMED. Fix SENTRY_ORG in this workflow."
+            echo "::error::401/403 means SENTRY_AUTH_TOKEN is invalid, expired, or lacks the org:ci scope."
+            exit 1
+          fi
+          printf 'defaults.org=%s\ndefaults.project=%s\ndefaults.url=%s\nauth.token=%s\n' \
+            "${SENTRY_ORG}" "${SENTRY_PROJECT}" "https://sentry.io/" "${SENTRY_AUTH_TOKEN}" > ios/sentry.properties
+          echo "Wrote ios/sentry.properties; dSYMs and source maps will upload to ${SENTRY_ORG}/${SENTRY_PROJECT}."
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      # The phone-to-phone transfer (025 T022), before CocoaPods: the podspec decides at `pod install`
+      # whether the module and the framework go in. A sideloaded build is one a person walks, so it
+      # must carry the transfer; the script fails if the framework or its symbols are missing.
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: native/transfer/go.mod
+          cache-dependency-path: native/transfer/go.sum
+      - name: Transfer framework (Go, gomobile)
+        run: ./scripts/build-transfer-xcframework.sh
+
+      - name: CocoaPods
+        working-directory: ios
+        env:
+          RCT_NEW_ARCH_ENABLED: '1' # match android (newArchEnabled=true)
+        run: |
+          set -o pipefail
+          pod install --repo-update | tee "$RUNNER_TEMP/pod-install.log"
+          grep -q "\[025\] ObalkaTransferModule: linking Obalkatransfer.xcframework" "$RUNNER_TEMP/pod-install.log" || {
+            echo "::error::CocoaPods did not link Obalkatransfer.xcframework - the app would have no phone-to-phone transfer."
+            exit 1
+          }
+
+      - name: Build (unsigned, Release)
+        working-directory: ios
+        env:
+          # Read by the "Upload Debug Symbols to Sentry" build phase. SENTRY_ORG and SENTRY_PROJECT
+          # are inherited from the job env above; only the token comes from secrets.
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace ObalkaDatovaSchranka.xcworkspace \
+            -scheme ObalkaDatovaSchranka \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: The transfer is linked into the app
+        run: ./scripts/check-transfer-linked.sh ios/build/Build/Products/Release-iphoneos/ObalkaDatovaSchranka.app
+
+      - name: Package unsigned IPA
+        working-directory: ios/build/Build/Products/Release-iphoneos
+        run: |
+          mkdir -p Payload
+          cp -R *.app Payload/
+          zip -qr ObalkaDatovaSchranka-unsigned.ipa Payload
+          ls -la
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ObalkaDatovaSchranka-unsigned-ipa
+          path: ios/build/Build/Products/Release-iphoneos/ObalkaDatovaSchranka-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14

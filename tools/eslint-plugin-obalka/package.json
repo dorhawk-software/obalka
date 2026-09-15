@@ -1,0 +1,8 @@
+{
+  "name": "eslint-plugin-obalka",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Obálka's design system as ESLint rules (spec 028).",
+  "main": "index.js",
+  "license": "MIT"
+}

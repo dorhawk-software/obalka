@@ -1,0 +1,5 @@
+node_modules/
+# Auto-generated — owned by the generator's formatting
+src/services/isds/generated/
+# Vendored upstream schemas
+src/services/isds/schema/

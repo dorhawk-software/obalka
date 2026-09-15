@@ -1,0 +1,37 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/BricolageGrotesque-Bold.ttf",
+      "sha1": "0c48c38c9f84c40d05753b18f03e430804abef7e"
+    },
+    {
+      "path": "assets/fonts/BricolageGrotesque-ExtraBold.ttf",
+      "sha1": "10b684c54b5daf2dd97883d1e425b193db6b0957"
+    },
+    {
+      "path": "assets/fonts/BricolageGrotesque-SemiBold.ttf",
+      "sha1": "87104d5573f33b6a347484832c03059a58d201d2"
+    },
+    {
+      "path": "assets/fonts/PublicSans-Bold.ttf",
+      "sha1": "4d4ebfd1623f183b793217349b3c6877c2ddfc65"
+    },
+    {
+      "path": "assets/fonts/PublicSans-ExtraBold.ttf",
+      "sha1": "ae47482702f916019e11b12d93dc5e3576d5b6a0"
+    },
+    {
+      "path": "assets/fonts/PublicSans-Medium.ttf",
+      "sha1": "6cb093f7f53db1ed4ea6e6993873c6c61384977d"
+    },
+    {
+      "path": "assets/fonts/PublicSans-Regular.ttf",
+      "sha1": "cafbee7866861023b7ff5af3f17f54e505e8fb86"
+    },
+    {
+      "path": "assets/fonts/PublicSans-SemiBold.ttf",
+      "sha1": "bcea61ded2609fffc317772ea9234e4ac1621a88"
+    }
+  ]
+}

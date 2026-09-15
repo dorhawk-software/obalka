@@ -1,0 +1,96 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Lets the app hide overlays that OTHER apps draw on top of it (Android 12+). An overlay
+         attack puts a convincing control over a real one, so a tap that looks like it lands here
+         lands somewhere else. Normal-level: granted at install, never prompts, and it takes
+         capability away from other apps rather than giving any to this one. -->
+    <uses-permission android:name="android.permission.HIDE_OVERLAY_WINDOWS" />
+    <!-- Tactile haptics (react-native-haptic-feedback) on Android. iOS uses the Taptic Engine, no permission. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- The app's FIRST camera permission (025, and 006 T012b rides on it). Asked for one thing
+         only: reading a code off another phone's screen. Nothing here ever takes a photograph, and
+         the camera is live only while a scanner screen is open. The vision-camera libraries declare
+         the camera as an optional `uses-feature`, so a phone without one still installs - and the
+         scan button simply is not offered there. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!--
+      Permissions declared by `app.notifee:core` that this app must NOT ship (feature 010, T027).
+
+      Notifee's AAR declares every permission any of its code paths might need, whether or not the app
+      uses that path. We use exactly one: a WorkManager-backed timestamp trigger for a user-set
+      reminder. We never schedule an exact alarm, never run a foreground service, and never touch Do
+      Not Disturb — so declaring these would claim capabilities the app does not have, which is the
+      permission-list equivalent of the false lock-screen promise 013 shipped.
+
+      SCHEDULE_EXACT_ALARM matters most: Google restricts it to alarm-clock and calendar apps and
+      requires a Play policy declaration for it. An app for reading government mail would be claiming
+      to be an alarm clock.
+
+      Safe to remove because `notifeeNotifier.ts` never passes the `alarmManager` option — asserted by
+      a test, precisely so this stays true.
+    -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" tools:node="remove" />
+    <uses-permission android:name="android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS" tools:node="remove" />
+
+    <!--
+      The phone's own backups and phone-to-phone migration get nothing of this app (owner decision,
+      2026-09-24). The keys that open the archive are this-device-only, so a copy restored elsewhere
+      is unreadable - except the plain files beside it (attachments, signed originals, debug ZIPs,
+      backup files), which would sit readable in Google's cloud. Moving an archive is the app's own
+      encrypted backup (006) and transfer (025).
+
+      Three attributes, because no one of them covers every version:
+      * `allowBackup="false"` - no cloud backup anywhere, and on Android 11 and older no
+        phone-to-phone transfer either. For an app targeting 12+ it does NOT stop the transfer.
+      * `dataExtractionRules` - Android 12+: every domain excluded from `<cloud-backup>` AND from
+        `<device-transfer>`, the only switch for the latter.
+      * `fullBackupContent` - Android 11 and older read this instead; every domain excluded, so the
+        answer stays "nothing" even if `allowBackup` is ever turned back on.
+      `tools:targetApi="31"` only tells lint that older versions ignoring `dataExtractionRules` is
+      intended. The why of each domain is in `res/xml/data_extraction_rules.xml`. Pinned by
+      `__tests__/security/androidBackupRules.test.ts`.
+    -->
+    <application
+      android:name=".MainApplication"
+      android:label="@string/app_name"
+      android:icon="@mipmap/ic_launcher"
+      android:roundIcon="@mipmap/ic_launcher_round"
+      android:allowBackup="false"
+      android:dataExtractionRules="@xml/data_extraction_rules"
+      android:fullBackupContent="@xml/backup_rules"
+      tools:targetApi="31"
+      android:theme="@style/AppTheme"
+      android:usesCleartextTraffic="${usesCleartextTraffic}"
+      android:supportsRtl="true">
+      <!--
+        `screenOrientation="portrait"` matches iOS, which is portrait-locked and iPhone-only. Android
+        was the odd one out: nothing was declared, so the app rotated freely into a layout that had
+        no landscape design at all.
+
+        Deliberately NOT a way to avoid large screens. From Android 16 (targetSdk 36) this attribute
+        is IGNORED on displays >=600dp, so a tablet and an unfolded foldable still get landscape and
+        free resizing — which is correct, and is what `ContentColumn` in `src/theme/` is for. This
+        constrains the one form factor the design was drawn for and leaves the ones the OS now
+        governs to the OS.
+      -->
+      <activity
+        android:name=".MainActivity"
+        android:label="@string/app_name"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+        android:launchMode="singleTask"
+        android:screenOrientation="portrait"
+        android:windowSoftInputMode="adjustResize"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+      </activity>
+    </application>
+</manifest>
