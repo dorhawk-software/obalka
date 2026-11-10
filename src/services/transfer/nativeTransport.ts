@@ -16,6 +16,8 @@ import {
   PhraseRefusedError,
   TransferCancelledError,
   TransferFailedError,
+  TransferNoAnswerError,
+  TransferOfferExpiredError,
   TransferUnavailableError,
   type Transport,
   type TransferOptions,
@@ -102,6 +104,12 @@ function toError(e: unknown): Error {
   if (code === 'phrase' || /phrase refused/i.test(message)) {
     // The remedy is "read it again", never "check your network" (FR-006).
     return new PhraseRefusedError();
+  }
+  if (code === 'noAnswer') {
+    return new TransferNoAnswerError();
+  }
+  if (code === 'expired') {
+    return new TransferOfferExpiredError();
   }
   return new TransferFailedError(message);
 }

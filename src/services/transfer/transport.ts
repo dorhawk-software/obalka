@@ -64,6 +64,32 @@ export class PhraseRefusedError extends Error {
   }
 }
 
+/**
+ * A receiver heard nothing back from a sender (025 T027).
+ *
+ * Nobody was offering under the phrase's first four characters, the offer had ended, or the rest of
+ * the phrase was wrong - the sender refuses that handshake on its own screen and this side only hears
+ * silence, so the three cannot be told apart here. The native side gives up after half a minute; the
+ * receiver used to wait at the relay for hours, and every later transfer queued behind it.
+ */
+export class TransferNoAnswerError extends Error {
+  constructor(message = 'The other phone did not answer.') {
+    super(message);
+    this.name = 'TransferNoAnswerError';
+  }
+}
+
+/**
+ * Nobody took an offer within its limit (025 T027). An offer keeps the display on, so one forgotten
+ * on a desk would otherwise keep the phone lit until the battery ran out.
+ */
+export class TransferOfferExpiredError extends Error {
+  constructor(message = 'Nobody took the offer in time.') {
+    super(message);
+    this.name = 'TransferOfferExpiredError';
+  }
+}
+
 /** The transfer began and did not finish. Distinct from a phrase that was never right. */
 export class TransferFailedError extends Error {
   constructor(message: string) {

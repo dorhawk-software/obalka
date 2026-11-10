@@ -70,9 +70,26 @@ describe('what a snapshot carries', () => {
 
   it('leaves out what describes THIS device rather than the archive', async () => {
     // `activeBoxId` is which box this phone had open. Restoring it onto another device states
-    // something that was never true there.
+    // something that was never true there - so it travels only as `backup.activeBox`, a hint for a
+    // phone that has no box of its own chosen yet (025 T027).
     const payload = await buildPayload(source());
-    expect(payload.settings).toEqual({ themeMode: 'dark' });
+    expect(payload.settings).toEqual({ themeMode: 'dark', 'backup.activeBox': 'abc123' });
+    expect(payload.settings).not.toHaveProperty('activeBoxId');
+  });
+
+  it('passes on only the box THIS phone has open, never a hint it was given (025 T027)', async () => {
+    // A phone filled by a transfer holds the sending phone's hint. Its own next backup must say which
+    // box IT has open, or the hint would travel on as if it were this phone's.
+    const withHint = await buildPayload(
+      source({
+        allSettings: async () => ({ activeBoxId: 'mine', 'backup.activeBox': 'theirs' }),
+      }),
+    );
+    expect(withHint.settings).toEqual({ 'backup.activeBox': 'mine' });
+    const noneOpen = await buildPayload(
+      source({ allSettings: async () => ({ 'backup.activeBox': 'theirs' }) }),
+    );
+    expect(noneOpen.settings).toEqual({});
   });
 
   it('leaves out which backups this phone s retention is holding (2026-09-15)', async () => {

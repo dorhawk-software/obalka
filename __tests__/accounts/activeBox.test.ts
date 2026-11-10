@@ -47,6 +47,21 @@ describe('resolveActiveBoxId (fallback chain)', () => {
     expect(resolveActiveBoxId('b1', [])).toBeNull();
     expect(resolveActiveBoxId(null, [])).toBeNull();
   });
+
+  // 025 T027: a phone filled by a transfer opened the first box in the list, not the one the person
+  // had open on the phone the boxes came from.
+  it('opens the box the backup came from with when this phone has chosen none', () => {
+    expect(resolveActiveBoxId(null, ['b1', 'b2', 'b3'], 'b2')).toBe('b2');
+    expect(resolveActiveBoxId('gone', ['b1', 'b2', 'b3'], 'b3')).toBe('b3');
+  });
+
+  it('never moves a phone off its own choice for that hint', () => {
+    expect(resolveActiveBoxId('b1', ['b1', 'b2'], 'b2')).toBe('b1');
+  });
+
+  it('ignores a hint naming a box that is not here', () => {
+    expect(resolveActiveBoxId(null, ['b1', 'b2'], 'gone')).toBe('b1');
+  });
 });
 
 describe('readActiveBoxId / writeActiveBoxId', () => {

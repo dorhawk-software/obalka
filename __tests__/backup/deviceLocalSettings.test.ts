@@ -89,6 +89,8 @@ describe('the device-local settings', () => {
     }
     const payload = await buildPayload(backupSource(stores));
     expect(payload.settings).toEqual({
+      // Not `activeBoxId` itself: the open box travels only as a hint (025 T027).
+      'backup.activeBox': 'abc',
       'backup.automatic': '1',
       locale: 'en',
       'scanDismiss:abc:1': '1',

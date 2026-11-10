@@ -271,7 +271,8 @@ RCT_EXPORT_METHOD(receive
       } else {
         // A stopped run ends in whatever error croc gives up with ("context canceled"), and that is
         // the stop arriving rather than a broken transfer. A refused phrase is its own outcome with
-        // its own remedy (FR-006). Go's error text arrives as the NSError's description.
+        // its own remedy (FR-006), and so are the two time limits (native/transfer/transfer.go). Go's
+        // error text arrives as the NSError's description.
         NSString *message = error.localizedDescription ?: @"The transfer failed.";
         NSString *code = @"failed";
         if (flag.stopped) {
@@ -279,6 +280,12 @@ RCT_EXPORT_METHOD(receive
         } else if ([message rangeOfString:@"phrase refused" options:NSCaseInsensitiveSearch].location !=
                    NSNotFound) {
           code = @"phrase";
+        } else if ([message rangeOfString:@"no answer" options:NSCaseInsensitiveSearch].location !=
+                   NSNotFound) {
+          code = @"noAnswer";
+        } else if ([message rangeOfString:@"offer expired" options:NSCaseInsensitiveSearch].location !=
+                   NSNotFound) {
+          code = @"expired";
         }
         reject(code, message, nil);
       }

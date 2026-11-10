@@ -808,6 +808,12 @@ const cs: Record<string, string> = {
   'transfer.count.documents.few': '{n} přílohy',
   'transfer.count.documents.many': '{n} příloh',
   'transfer.phrase.waiting': 'Čekám na druhý telefon…',
+  // Jak heslo opsat (025 T027): nebylo jasné, jestli se píšou pomlčky, a jestli s mezerami kolem.
+  'transfer.phrase.hint':
+    'Na oddělovačích ani velikosti písmen nezáleží: slova stačí oddělit mezerou.',
+  // Přenos běží jen na očích (FR-014). Zamknutí telefonu nebo odchod z aplikace ho zastaví, a to žádná
+  // aplikace zakázat nemůže - takže se to říká předem, ne až potom.
+  'transfer.keepOpen': 'Nechte aplikaci otevřenou a telefon odemčený, dokud přenos neskončí.',
   'transfer.phrase.placeholder': 'Heslo z druhého telefonu',
   // FR-008. Velikost je vidět před přenosem vždy; tohle je navíc pro mobilní data, kde ji člověk
   // platí. Ptá se jen u přenosu, který stojí za zeptání - u samotných zpráv (kilobajty) ne.
@@ -827,7 +833,10 @@ const cs: Record<string, string> = {
   // zatím nemá co zadat - říct v tu chvíli "čekám na druhý telefon" je nepravda.
   'transfer.stage.preparing': 'Připravuji odeslání…',
   'transfer.stage.preparing.count': 'Připravuji přílohy: {done} z {total}',
-  'transfer.stage.connecting': 'Navazuji spojení',
+  'transfer.stage.connecting': 'Navazuji spojení…',
+  'transfer.stage.received': 'Přijato',
+  // Výzva systému k zámku obrazovky, když se ukládá heslo k záloze, které přišlo s přenosem.
+  'transfer.prompt.keepKey': 'Převzít heslo k záloze z druhého telefonu',
   'transfer.stage.transferring': 'Přenáším',
   'transfer.stage.finishing': 'Dokončuji',
   // Ukládání toho, co přišlo, už není přenos: nic nejde po síti, jen se zapisuje do archivu. Zrušit ho
@@ -858,6 +867,13 @@ const cs: Record<string, string> = {
   // FR-011. Přihlašovací údaje se nepřenášejí a nikdy se nepřenášely; po obnovení se do schránek
   // přihlásíte znovu. Řečeno tady, protože tady je člověk, který si myslí, že je hotovo.
   'transfer.done.signIn': 'Do schránek se ještě budete muset přihlásit.',
+  // Poslední slovo ODESÍLAJÍCÍHO telefonu (025 T027). Dřív tu stálo jen "Do schránek se ještě budete
+  // muset přihlásit", věta pro druhý telefon - že se něco odeslalo, neřeklo nic.
+  'transfer.sent': 'Odesláno. Na druhém telefonu se do schránek ještě budete muset přihlásit.',
+  // FR-007 i po konci: malý archiv přejde za vteřinu a věta o cestě během přenosu jen probleskne.
+  'transfer.route.went.direct': 'Přenos šel přímo mezi telefony.',
+  'transfer.route.went.relayed':
+    'Přenos šel přes veřejný přenosový server {host}. Ten viděl velikost a čas, obsah ne - byl zašifrovaný.',
   // Archiv je uložený, jen heslo k záloze, které přišlo s ním, se uložit nepodařilo (třeba odmítnutá
   // výzva k zámku obrazovky). Řečeno, jinak by člověk věřil, že nový telefon zálohuje.
   'transfer.done.keyNotSaved':
@@ -866,7 +882,19 @@ const cs: Record<string, string> = {
   // obrazovka zálohy, jakmile je na očích - jinak by to neřekl nikdo.
   'transfer.outcome.title': 'Přenos z druhého telefonu',
   'transfer.error.phrase': 'Heslo nesouhlasí. Nechte si na druhém telefonu ukázat nové.',
-  'transfer.error.failed': 'Přenos se nepodařil dokončit.',
+  // Heslo se ani neodeslalo: překlep se opraví pohledem na druhý telefon, ne novým heslem.
+  'transfer.error.typo': 'Takové heslo být nemůže. Porovnejte ho s druhým telefonem: na začátku 4 znaky, pak 4 slova.',
+  'transfer.error.typo.word': 'Slovo „{word}“ v hesle být nemůže. Porovnejte ho s druhým telefonem.',
+  'transfer.error.failed': 'Přenos se nepodařilo dokončit.',
+  // 025 T027. Přijímající telefon neslyší nic: druhý telefon už heslo neukazuje, nebo se heslo liší.
+  // Odesílající pozná špatné heslo sám a řekne to svou větou níž - tady se to rozeznat nedá.
+  'transfer.error.noAnswer':
+    'Druhý telefon neodpověděl. Zkontrolujte, že na něm heslo pořád svítí a že jste ho opsali přesně, a zkuste to znovu.',
+  'transfer.error.expired':
+    'Heslo vypršelo, nikdo ho do 10 minut nezadal. Chcete-li zálohu přenést, odešlete ji znovu.',
+  // Špatné heslo, jak ho vidí ODESÍLAJÍCÍ: zadávalo se na druhém telefonu, tady se nic opravit nedá.
+  'transfer.error.phrase.sender':
+    'Na druhém telefonu bylo zadané jiné heslo, takže se nic neodeslalo. Odešlete zálohu znovu a nové heslo opište přesně.',
   // Předchozí přenos se pořád zapisuje do archivu (třeba po návratu na obrazovku) a nový by mu smazal
   // soubory, ze kterých čte. Proto se nový nespustí a tady se řekne, na co se čeká.
   'transfer.error.busy':
@@ -1802,6 +1830,8 @@ const en: Record<string, string> = {
   'transfer.count.documents.one': '1 document',
   'transfer.count.documents.other': '{n} documents',
   'transfer.phrase.waiting': 'Waiting for the other phone…',
+  'transfer.phrase.hint': 'Separators and capitals do not matter: a space between the words is enough.',
+  'transfer.keepOpen': 'Keep the app open and the phone unlocked until the transfer is done.',
   'transfer.phrase.placeholder': 'Password from the other phone',
   'transfer.metered.title': 'You are on mobile data',
   'transfer.metered.body':
@@ -1817,7 +1847,9 @@ const en: Record<string, string> = {
   'transfer.cancel': 'Cancel the transfer',
   'transfer.stage.preparing': 'Getting ready to send…',
   'transfer.stage.preparing.count': 'Getting the documents ready: {done} of {total}',
-  'transfer.stage.connecting': 'Connecting',
+  'transfer.stage.connecting': 'Connecting…',
+  'transfer.stage.received': 'Received',
+  'transfer.prompt.keepKey': 'Keep the backup password from the other phone',
   'transfer.stage.transferring': 'Transferring',
   'transfer.stage.finishing': 'Finishing',
   'transfer.stage.applying': 'Saving to this phone’s archive…',
@@ -1837,11 +1869,23 @@ const en: Record<string, string> = {
   'transfer.done.missing.one': '1 document could not be restored.',
   'transfer.done.missing.other': '{n} documents could not be restored.',
   'transfer.done.signIn': 'You still need to sign in to the data boxes.',
+  'transfer.sent': 'Sent. On the other phone you still need to sign in to the data boxes.',
+  'transfer.route.went.direct': 'The transfer went straight between the phones.',
+  'transfer.route.went.relayed':
+    'The transfer went through the public relay {host}. It saw the size and the timing, not the contents - those were encrypted.',
   'transfer.done.keyNotSaved':
     'The backup password could not be saved on this phone. Check it on the Archive backup screen.',
   'transfer.outcome.title': 'The transfer from the other phone',
   'transfer.error.phrase': 'That password does not match. Ask the other phone for a fresh one.',
+  'transfer.error.typo': 'That cannot be the password. Compare it with the other phone: 4 characters, then 4 words.',
+  'transfer.error.typo.word': 'The password cannot contain “{word}”. Compare it with the other phone.',
   'transfer.error.failed': 'The transfer could not be completed.',
+  'transfer.error.noAnswer':
+    'The other phone did not answer. Check that it is still showing the password and that you typed it exactly, then try again.',
+  'transfer.error.expired':
+    'The password expired: nobody entered it within 10 minutes. To transfer the backup, send it again.',
+  'transfer.error.phrase.sender':
+    'A different password was typed on the other phone, so nothing was sent. Send the backup again and copy the new password exactly.',
   'transfer.error.busy':
     'The previous transfer is still being saved to the archive. Wait until it finishes, then try again.',
   'transfer.stopped.background':

@@ -5,7 +5,9 @@
 //
 //   * WHERE THE MAIL IS GOING, said while it is going (FR-007). Three states, not two: until a route
 //     is negotiated the honest answer is "working it out", and the device run proved why that
-//     matters - the flag said "relayed" while the bytes went straight to a private address.
+//     matters - the flag said "relayed" while the bytes went straight to a private address. And said
+//     again at the end: a small archive crosses in a second, and the sentence during it only flashed
+//     past (025 T027).
 //   * NOTHING IS SAVED UNTIL IT IS AGREED TO (FR-004). The receiving side fetches, then stops and
 //     shows a date and a size. The archive is only touched after a second tap.
 //   * THE BOXES STILL NEED SIGNING IN TO (FR-011). Said at the end, because that is where somebody
@@ -17,7 +19,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import { XStack, YStack, Input } from '../../theme/ui';
 import { Code, Label, Meta } from '../../theme/Typography';
-import { ProgressBar } from '../../theme/ProgressBar';
+import { ProgressBar, WaitingBar } from '../../theme/ProgressBar';
 import { Dialog } from '../../theme/Dialog';
 import { QrCode } from '../../theme/QrCode';
 import { useTheme } from '../../theme/ThemeProvider';
@@ -39,10 +41,12 @@ import {
   TRANSFER_RELAY,
   TransferBackupGoneError,
   TransferBusyError,
+  TransferNoAnswerError,
+  TransferOfferExpiredError,
   TransferUnavailableError,
   type TransferProgress,
 } from '../../services/transfer/transport';
-import { parseCodePhrase } from '../../services/transfer/codePhrase';
+import { parseCodePhrase, unknownPhraseWord } from '../../services/transfer/codePhrase';
 import {
   METERED_ASK_BYTES,
   isMetered,
@@ -95,21 +99,28 @@ export function routeText(relayed: boolean | null): string {
 }
 
 /**
- * The longest of the three route sentences, laid out invisibly to hold the route line's height.
+ * The route once it is over, in the past tense, or nothing when it never became known (025 T027).
  *
- * The line starts as one short sentence and becomes the relayed one - four lines on a phone, and
- * longer since it names its hosts - the moment a route is known, which is mid-transfer. Everything
- * under it moved when it did, the cancel row included, under a thumb that may be about to press it
- * (constitution V). Measured by length, which is a fair stand-in here: in both languages the relayed
- * sentence is about three times either of the others. The note drawn in the same place while what
- * arrived is being saved is measured with them, so it can never be the sentence that overflows.
+ * The sentence during the transfer is right for a large archive and invisible for a small one: the
+ * walk moved three boxes in about a second, and nobody could say afterwards which way they had gone.
  */
-export function routeReserveText(): string {
-  const candidates = [
-    ...([null, false, true] as const).map(relayed => routeText(relayed)),
-    t('transfer.applying.note'),
-  ];
-  return candidates.reduce((longest, next) => (next.length > longest.length ? next : longest));
+export function wentText(relayed: boolean | null): string | null {
+  if (relayed === null) {
+    return null;
+  }
+  return relayed
+    ? t('transfer.route.went.relayed', { host: TRANSFER_RELAY.host })
+    : t('transfer.route.went.direct');
+}
+
+/**
+ * The last word, and the route as a paragraph of its own under it when the route is known. Run
+ * on as one paragraph, "it went through the relay" read as part of "sign in to the boxes" (T027).
+ */
+type Done = { readonly text: string; readonly went: string | null };
+
+function lastWord(text: string, relayed: boolean | null = null): Done {
+  return { text, went: wentText(relayed) };
 }
 
 /**
@@ -176,10 +187,20 @@ export function doneText(restored: AppliedTransfer): string {
 /**
  * The sentence for a transfer that did not finish (FR-006), so the outcomes stay told apart whichever
  * way the failure reaches the screen: from a run it started, or from a save it found running.
+ *
+ * A refused phrase reads differently on the two phones. It was typed on the receiving one, so that is
+ * where it can be fixed; the sending phone can only start again, and "ask the other phone for a new
+ * one" would send its user looking for a password they are the one showing (025 T027).
  */
-export function errorText(e: unknown): string {
+export function errorText(e: unknown, side: 'sending' | 'receiving' = 'receiving'): string {
   if (e instanceof PhraseRefusedError) {
-    return t('transfer.error.phrase');
+    return side === 'sending' ? t('transfer.error.phrase.sender') : t('transfer.error.phrase');
+  }
+  if (e instanceof TransferNoAnswerError) {
+    return t('transfer.error.noAnswer');
+  }
+  if (e instanceof TransferOfferExpiredError) {
+    return t('transfer.error.expired');
   }
   if (e instanceof TransferUnavailableError) {
     return t('transfer.unavailable');
@@ -255,9 +276,14 @@ export function TransferScreen({
   const [waitingForApply, setWaitingForApply] = useState(() => controller.isApplying());
   const [typed, setTyped] = useState('');
   const [progress, setProgress] = useState<TransferProgress | null>(null);
+  /**
+   * The route the run in flight was seen to take, kept past its end for the last word (`wentText`).
+   * A ref, because the run's own callbacks read it, and `progress` is cleared before they do.
+   */
+  const routeSeen = useRef<boolean | null>(null);
   const [got, setGot] = useState<ReceivedTransfer | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<string | null>(null);
+  const [done, setDone] = useState<Done | null>(null);
   const [cancel, setCancel] = useState({ cancelled: false });
   const [scanning, setScanning] = useState(false);
   /** A send held back until the mobile-data question is answered (FR-008). */
@@ -342,7 +368,7 @@ export function TransferScreen({
     if (outcome.ok) {
       haptics.success();
       setError(null);
-      setDone(doneText(outcome.applied));
+      setDone(lastWord(doneText(outcome.applied)));
     } else {
       setDone(null);
       setError(errorText(outcome.error));
@@ -445,8 +471,19 @@ export function TransferScreen({
   );
 
   /** Every failure funnels through here so the three outcomes stay told apart (FR-006). */
-  const report = (e: unknown) => {
-    setError(errorText(e));
+  const report = (e: unknown, side: 'sending' | 'receiving') => {
+    setError(errorText(e, side));
+  };
+
+  /** A run's progress, with the route it reports kept for after its end. */
+  const progressFor = (signal: { cancelled: boolean }) => (p: TransferProgress) => {
+    if (signal.cancelled) {
+      return;
+    }
+    if (p.relayed !== null) {
+      routeSeen.current = p.relayed;
+    }
+    setProgress(p);
   };
 
   /** Everything the send does once it is allowed to. */
@@ -462,18 +499,11 @@ export function TransferScreen({
     setCancel(signal);
     setMode('sending');
     setSendingManifest(manifest);
+    routeSeen.current = null;
     // Every result below is dropped once the run was stopped. The screen has already said why and
     // moved on - possibly to a newer run, whose state a late event from this one must not overwrite.
     void controller
-      .offer(
-        manifest,
-        p => {
-          if (!signal.cancelled) {
-            setProgress(p);
-          }
-        },
-        signal,
-      )
+      .offer(manifest, progressFor(signal), signal)
       .then(offer => {
         if (!signal.cancelled) {
           setPhrase(offer.phrase);
@@ -488,13 +518,15 @@ export function TransferScreen({
         }
         haptics.success();
         reset();
-        setDone(t('transfer.done.signIn'));
+        // That it WENT, first: the sign-in reminder alone was the sentence for the other phone, and
+        // left this one's user guessing whether anything had been sent (025 T027).
+        setDone(lastWord(t('transfer.sent'), routeSeen.current));
       })
       .catch(e => {
         if (signal.cancelled) {
           return;
         }
-        report(e);
+        report(e, 'sending');
         reset();
         if (e instanceof TransferBackupGoneError) {
           // Chosen, then deleted - by retention after a newer backup, most likely. The list is read
@@ -540,16 +572,9 @@ export function TransferScreen({
     const signal = { cancelled: false };
     setCancel(signal);
     setMode('receiving');
+    routeSeen.current = null;
     void controller
-      .receive(
-        parsed,
-        p => {
-          if (!signal.cancelled) {
-            setProgress(p);
-          }
-        },
-        signal,
-      )
+      .receive(parsed, progressFor(signal), signal)
       .then(received => {
         if (signal.cancelled) {
           // The controller refuses a receive that was stopped and sweeps what it staged, so this is
@@ -567,7 +592,7 @@ export function TransferScreen({
         if (signal.cancelled) {
           return;
         }
-        report(e);
+        report(e, 'receiving');
         reset();
       });
   };
@@ -575,8 +600,10 @@ export function TransferScreen({
   const onReceive = () => {
     const parsed = parseCodePhrase(typed);
     if (!parsed) {
-      // Not a transport failure and not a refused phrase: this one never left the phone.
-      setError(t('transfer.error.phrase'));
+      // Not a transport failure and not a refused phrase: this one never left the phone, so the
+      // fix is to look again - not the "ask for a new one" a refused phrase gets.
+      const word = unknownPhraseWord(typed);
+      setError(word ? t('transfer.error.typo.word', { word }) : t('transfer.error.typo'));
       return;
     }
     startReceive(parsed);
@@ -620,8 +647,9 @@ export function TransferScreen({
     setApplying(true);
     void controller
       .apply(received, key, {
-        // Keeping the key that arrived asks for the screen lock on Android, in the backup screen's words.
-        promptTitle: t('backup.prompt.enable'),
+        // Keeping the key that arrived asks for the screen lock on Android. Its own words: the backup
+        // screen's "Uložit heslo k záloze" read as if a new password were being set (025 T027).
+        promptTitle: t('transfer.prompt.keepKey'),
         onProgress: setApplyProgress,
       })
       .then(restored => {
@@ -631,7 +659,7 @@ export function TransferScreen({
         }
         controller.takeOutcome();
         haptics.success();
-        setDone(doneText(restored));
+        setDone(lastWord(doneText(restored), routeSeen.current));
         reset();
       })
       .catch(e => {
@@ -639,7 +667,7 @@ export function TransferScreen({
           return;
         }
         controller.takeOutcome();
-        report(e);
+        report(e, 'receiving');
         reset();
       });
   };
@@ -800,9 +828,14 @@ export function TransferScreen({
             >
               <Card>
                 <CardRow last={false}>
-                  <Label fontWeight="400" flex={1} color={theme.textMuted}>
-                    {t('transfer.receive.desc')}
-                  </Label>
+                  <YStack flex={1} gap={4}>
+                    <Label fontWeight="400" color={theme.textMuted}>
+                      {t('transfer.receive.desc')}
+                    </Label>
+                    <Meta color={theme.textFaint} testID="transfer-receive-hint">
+                      {t('transfer.phrase.hint')}
+                    </Meta>
+                  </YStack>
                 </CardRow>
                 {scanningAvailable() ? (
                   <CardRow
@@ -868,29 +901,27 @@ export function TransferScreen({
                     <XStack
                       flexWrap="wrap"
                       alignItems="center"
-                      columnGap={6}
                       rowGap={2}
                       accessibilityLabel={phrase}
                       testID="transfer-phrase"
                     >
-                      {phrase.split('-').map((part, i) => (
-                        <XStack key={part + String(i)} alignItems="center" columnGap={6}>
-                          {/* A DASH, because that is the character the phrase actually contains and
-                              the one somebody has to type. A middle dot looked tidier and was a lie:
-                              it is not on any keyboard, and it left the reader guessing between a
-                              dot, a space and a dash. What is shown is what you type. */}
-                          {i > 0 ? (
-                            <Code color={theme.textFaint}>
-                              -
-                            </Code>
+                      {phrase.split('-').map((part, i, parts) => (
+                        // A DASH, because that is the character the phrase actually contains. A
+                        // middle dot looked tidier and was a lie: it is not on any keyboard. Set
+                        // tight against the word before it, as it is typed: with space around it the
+                        // phrase read as "8END - harfa - ...", and nobody could tell whether those
+                        // spaces were part of it (025 T027). The hint under it says the rest.
+                        <Code key={part + String(i)}>
+                          {part}
+                          {i < parts.length - 1 ? (
+                            <Code color={theme.textFaint}>-</Code>
                           ) : null}
-                          <Code
-                          >
-                            {part}
-                          </Code>
-                        </XStack>
+                        </Code>
                       ))}
                     </XStack>
+                    <Meta color={theme.textFaint} testID="transfer-phrase-hint">
+                      {t('transfer.phrase.hint')}
+                    </Meta>
                     {/* Which backup this is (026 US3): the one chosen, never a newer one in its place. */}
                     {sendingManifest ? (
                       <Meta color={theme.textFaint} testID="transfer-which">
@@ -930,9 +961,13 @@ export function TransferScreen({
                   <Label fontWeight="400" color={theme.textMuted} testID="transfer-stage">
                     {/* "Waiting for the other phone" is only true once there IS a phrase to type.
                         Before that the app is still packing, and the walk measured 25 seconds of it
-                        on an archive with nine documents. */}
+                        on an archive with nine documents. A receive has nothing to pack: it is
+                        connecting from the first frame, and said "Getting ready to send" (T027).
+                        Once it has arrived it says so, under the question about saving it. */}
                     {saving
                       ? t('transfer.stage.applying')
+                      : got
+                      ? t('transfer.stage.received')
                       : progress?.stage === 'preparing' && progress.total > 0
                       ? t('transfer.stage.preparing.count', {
                           done: String(progress.sent),
@@ -942,55 +977,40 @@ export function TransferScreen({
                       ? t(`transfer.stage.${progress.stage}`)
                       : phrase
                       ? t('transfer.phrase.waiting')
+                      : mode === 'receiving'
+                      ? t('transfer.stage.connecting')
                       : t('transfer.stage.preparing')}
                   </Label>
-                  {/* Reserved whether or not it is drawn, so nothing below moves (constitution V). */}
-                  <YStack height={6} justifyContent="center">
-                    {saving ? (
-                      applyProgress ? (
-                        <ProgressBar
-                          fraction={applyProgress.fraction}
-                          label={t('transfer.stage.applying')}
-                          testID="transfer-progress"
-                        />
-                      ) : null
-                    ) : progress && progress.total > 0 ? (
+                  {/* Always a bar in the same place: counting when there is something to count,
+                      travelling when there is not (025 T027), full once it has all arrived. An empty
+                      reserved line here read as a margin under the stage twice the one above it. */}
+                  {saving ? (
+                    applyProgress ? (
                       <ProgressBar
-                        fraction={progress.sent / progress.total}
-                        label={t(`transfer.stage.${progress.stage}`)}
-                        now={progress.sent}
-                        total={progress.total}
+                        fraction={applyProgress.fraction}
+                        label={t('transfer.stage.applying')}
                         testID="transfer-progress"
                       />
-                    ) : null}
-                  </YStack>
-                  {/* FR-007, said WHILE it is happening rather than afterwards. The route is only
-                      known part-way through and its sentence grows then, so the longest one holds
-                      the height from the first frame and the true one is drawn over it: nothing
-                      below moves (constitution V). The reserve is invisible to screen readers too,
-                      or they would read a route that is not the one being taken. */}
-                  <YStack>
-                    <Meta
-                      opacity={0}
-                      accessibilityElementsHidden
-                      importantForAccessibility="no-hide-descendants"
-                      testID="transfer-route-reserve"
-                    >
-                      {routeReserveText()}
-                    </Meta>
-                    {/* While it saves nothing is on the network, so there is no route to state - and
-                        no cancel row below, so this place says why there is none. */}
-                    <Meta
-                      position="absolute"
-                      top={0}
-                      left={0}
-                      right={0}
-                      color={theme.textFaint}
-                      testID={saving ? 'transfer-applying-note' : 'transfer-route'}
-                    >
-                      {saving ? t('transfer.applying.note') : routeText(progress?.relayed ?? null)}
-                    </Meta>
-                  </YStack>
+                    ) : (
+                      <WaitingBar label={t('transfer.stage.applying')} testID="transfer-waiting" />
+                    )
+                  ) : got ? (
+                    <ProgressBar
+                      fraction={1}
+                      label={t('transfer.stage.received')}
+                      testID="transfer-progress"
+                    />
+                  ) : progress && progress.total > 0 ? (
+                    <ProgressBar
+                      fraction={progress.sent / progress.total}
+                      label={t(`transfer.stage.${progress.stage}`)}
+                      now={progress.sent}
+                      total={progress.total}
+                      testID="transfer-progress"
+                    />
+                  ) : (
+                    <WaitingBar label={t('transfer.phrase.waiting')} testID="transfer-waiting" />
+                  )}
                 </YStack>
               </CardRow>
 
@@ -1013,6 +1033,32 @@ export function TransferScreen({
                 </CardRow>
               )}
             </Card>
+            {/* Under the card, last on the screen while a run is up. FR-007's route is known only
+                part-way through and its sentence grows then, from one line to four. Inside the card
+                it moved the cancel row under a thumb, so it used to hold the longest sentence's
+                height from the first frame - which read as an empty line under the short one
+                (025 T027). Here, growing moves nothing at all (constitution V). */}
+            <YStack gap={4} marginHorizontal={4} paddingTop={8}>
+              {/* FR-014: leaving the app or locking the phone stops the transfer, and no app can
+                  forbid either. So it is said before, not only after. */}
+              {saving ? null : (
+                <Meta color={theme.textFaint} testID="transfer-keep-open">
+                  {t('transfer.keepOpen')}
+                </Meta>
+              )}
+              {/* While it saves nothing is on the network, so there is no route to state - and no
+                  cancel row, so this place says why there is none. */}
+              <Meta
+                color={theme.textFaint}
+                testID={saving ? 'transfer-applying-note' : 'transfer-route'}
+              >
+                {/* The route seen, not only the last event's: `progress` is cleared once what
+                    arrived is on screen, and the line under the question said "working it out". */}
+                {saving
+                  ? t('transfer.applying.note')
+                  : routeText(progress?.relayed ?? routeSeen.current)}
+              </Meta>
+            </YStack>
           </Section>
         ) : null}
 
@@ -1024,10 +1070,15 @@ export function TransferScreen({
           </YStack>
         ) : null}
         {done ? (
-          <YStack paddingHorizontal={16} paddingTop={4}>
+          <YStack paddingHorizontal={16} paddingTop={4} gap={8}>
             <Label fontWeight="400" color={theme.textMuted} testID="transfer-done">
-              {done}
+              {done.text}
             </Label>
+            {done.went ? (
+              <Label fontWeight="400" color={theme.textMuted} testID="transfer-done-route">
+                {done.went}
+              </Label>
+            ) : null}
           </YStack>
         ) : null}
         {/* Last, so it moves nothing when it arrives. Not while a transfer runs: a new one started

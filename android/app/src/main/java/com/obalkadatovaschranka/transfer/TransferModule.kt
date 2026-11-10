@@ -164,12 +164,14 @@ class TransferModule(private val reactContext: ReactApplicationContext) :
           val message = cause.message ?: "The transfer failed."
           // A stopped run ends in whatever error croc gives up with ("context canceled"), and that
           // is the stop arriving rather than a broken transfer. A refused phrase is its own outcome
-          // with its own remedy. The TypeScript side turns each code into the sentence the user
-          // reads (FR-006).
+          // with its own remedy, and so are the two time limits (native/transfer/transfer.go). The
+          // TypeScript side turns each code into the sentence the user reads (FR-006).
           val code =
               when {
                 cancelled.get() -> "cancelled"
                 message.contains("phrase refused", true) -> "phrase"
+                message.contains("no answer", true) -> "noAnswer"
+                message.contains("offer expired", true) -> "expired"
                 else -> "failed"
               }
           promise.reject(code, message)
@@ -183,6 +185,13 @@ class TransferModule(private val reactContext: ReactApplicationContext) :
       promise.reject("failed", e.message ?: "The transfer could not be started.")
     }
   }
+
+  // `NativeEventEmitter` asks every module it wraps for these two and warns when they are missing
+  // (seen on the walk as a yellow box on every receive). Events go out through
+  // RCTDeviceEventEmitter whether anybody listens or not, so there is nothing to count.
+  @ReactMethod fun addListener(@Suppress("UNUSED_PARAMETER") eventName: String) {}
+
+  @ReactMethod fun removeListeners(@Suppress("UNUSED_PARAMETER") count: Double) {}
 
   /** Go calls this as bytes move. Nothing about the CONTENT crosses — a stage and two counts. */
   private fun progressProxy(loader: ClassLoader, runId: String): Any =

@@ -13,15 +13,18 @@ import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import {
   TransferScreen,
   countList,
+  errorText,
   routeKey,
-  routeReserveText,
   routeText,
+  wentText,
 } from '../../src/app/settings/TransferScreen';
 import type { TransferController } from '../../src/features/transfer/state/transferController';
 import {
   PhraseRefusedError,
   TransferBusyError,
   TransferFailedError,
+  TransferNoAnswerError,
+  TransferOfferExpiredError,
   TransferUnavailableError,
 } from '../../src/services/transfer/transport';
 import { BACKUP_SCHEMA_VERSION, type BackupManifest } from '../../src/services/backup/schema';
@@ -205,9 +208,10 @@ describe('saying where the mail went (FR-007)', () => {
 });
 
 describe('a route line that does not move what is under it (constitution V)', () => {
-  it('holds the height of the longest sentence from the first frame, and hides it from readers', async () => {
+  it('sits under the card, after the cancel row, so its growing moves nothing', async () => {
     // The route is known only part-way through, and the relayed sentence is several lines where
-    // "working it out" is one - the cancel row used to jump down the moment it arrived.
+    // "working it out" is one. Inside the card it moved the cancel row under a thumb; the fix was a
+    // reserved height, which read as an empty line under the short sentence (025 T027).
     const { controller, state } = fake();
     state.receiveHangs = true;
     state.receiveQuiet = true;
@@ -216,33 +220,88 @@ describe('a route line that does not move what is under it (constitution V)', ()
     await waitFor(() =>
       expect(view.getByTestId('transfer-route').props.children).toBe(routeText(null)),
     );
-    const reserve = () =>
-      view.getByTestId('transfer-route-reserve', { includeHiddenElements: true });
-    expect(reserve().props.children).toBe(routeText(true));
-    expect(reserve().props.importantForAccessibility).toBe('no-hide-descendants');
-    expect(reserve().props.accessibilityElementsHidden).toBe(true);
+    expect(view.queryByTestId('transfer-route-reserve', { includeHiddenElements: true })).toBeNull();
+    const ids = collectTestIds(view.toJSON());
+    expect(ids.indexOf('transfer-cancel')).toBeLessThan(ids.indexOf('transfer-keep-open'));
+    expect(ids.indexOf('transfer-keep-open')).toBeLessThan(ids.indexOf('transfer-route'));
+    expect(ids[ids.length - 1]).toBe('transfer-route');
 
     await act(async () => {
       state.progress[0]({ stage: 'transferring', sent: 1, total: 2, relayed: true });
     });
     expect(view.getByTestId('transfer-route').props.children).toBe(routeText(true));
-    expect(reserve().props.children).toBe(routeText(true));
   });
 
-  it('reserves for the longest route sentence in both languages', () => {
-    // Measured by length, so it holds only while the relayed sentence is the longest - pinned here
-    // so a rewording of either locale says so rather than quietly reserving too little.
-    for (const locale of ['cs', 'en'] as const) {
-      const sentences = [
-        'transfer.route.unknown',
-        'transfer.route.direct',
-        'transfer.route.relayed',
-      ].map(key => STRINGS_FOR_TEST[locale][key]);
-      expect(Math.max(...sentences.map(s => s.length))).toBe(sentences[2].length);
-    }
-    expect(routeReserveText()).toBe(routeText(true));
+  it('says to keep the app open while a run is up (FR-014, 025 T027)', async () => {
+    const { controller, state } = fake();
+    state.receiveHangs = true;
+    const view = await mount(controller);
+    await startReceiving(view);
+    await waitFor(() =>
+      expect(view.getByTestId('transfer-keep-open').props.children).toBe(t('transfer.keepOpen')),
+    );
   });
 });
+
+describe('a wait that reads as a wait (025 T027)', () => {
+  it('moves while nothing can be counted, and stops once the bar counts', async () => {
+    const { controller, state } = fake();
+    state.receiveHangs = true;
+    state.receiveQuiet = true;
+    const view = await mount(controller);
+    await startReceiving(view);
+    await waitFor(() => expect(view.getByTestId('transfer-waiting')).toBeTruthy());
+    await act(async () => {
+      state.progress[0]({ stage: 'transferring', sent: 1, total: 2, relayed: true });
+    });
+    expect(view.queryByTestId('transfer-waiting')).toBeNull();
+  });
+
+  it('stops waiting once it has arrived, and keeps the route it took under the question', async () => {
+    const { controller, state } = fake();
+    state.receiveHangs = true;
+    state.receiveQuiet = true;
+    const view = await mount(controller);
+    await startReceiving(view);
+    await act(async () => {
+      state.progress[0]({ stage: 'transferring', sent: 1, total: 2, relayed: true });
+    });
+    await act(async () => {
+      state.settle?.resolve(state.received);
+    });
+    await waitFor(() => expect(view.getByTestId('transfer-received-dialog')).toBeTruthy());
+    expect(view.queryByTestId('transfer-waiting')).toBeNull();
+    expect(view.getByTestId('transfer-stage').props.children).toBe(t('transfer.stage.received'));
+    expect(view.getByTestId('transfer-progress')).toBeTruthy();
+    expect(view.getByTestId('transfer-route').props.children).toBe(routeText(true));
+  });
+
+  it('says a receive is connecting, not getting ready to send', async () => {
+    const { controller, state } = fake();
+    state.receiveHangs = true;
+    state.receiveQuiet = true;
+    const view = await mount(controller);
+    await startReceiving(view);
+    await waitFor(() =>
+      expect(view.getByTestId('transfer-stage').props.children).toBe(
+        t('transfer.stage.connecting'),
+      ),
+    );
+  });
+});
+
+/** Every testID in render order, depth first - the order they are drawn down the screen. */
+function collectTestIds(node: unknown): string[] {
+  if (node == null || typeof node !== 'object') {
+    return [];
+  }
+  if (Array.isArray(node)) {
+    return node.flatMap(collectTestIds);
+  }
+  const n = node as { props?: { testID?: string }; children?: unknown };
+  const own = n.props?.testID ? [n.props.testID] : [];
+  return [...own, ...collectTestIds(n.children ?? null)];
+}
 
 describe('the sending side', () => {
   it('shows the phrase and the size once the offer is up', async () => {
@@ -258,9 +317,12 @@ describe('the sending side', () => {
         '7K2M-ryba-kotva-duha-lampa',
       ),
     );
-    for (const part of ['7K2M', 'ryba', 'kotva', 'duha', 'lampa']) {
+    // Each dash set tight against the word before it, as it is typed - with space around the dashes
+    // nobody could tell whether the spaces were part of it (025 T027) - and the hint says the rest.
+    for (const part of ['7K2M-', 'ryba-', 'kotva-', 'duha-', 'lampa']) {
       expect(view.getByText(part)).toBeTruthy();
     }
+    expect(view.getByTestId('transfer-phrase-hint').props.children).toBe(t('transfer.phrase.hint'));
   });
 
   it('offers to make a backup when there is none, instead of a send that cannot work (026 US3)', async () => {
@@ -448,8 +510,21 @@ describe('telling the three failures apart (FR-006)', () => {
     await act(async () => {
       fireEvent.press(view.getByTestId('transfer-receive'));
     });
+    expect(view.getByTestId('transfer-error').props.children).toBe(t('transfer.error.typo'));
+    expect(state.calls).toEqual([]);
+  });
+
+  it('names the word that cannot be in a phrase, and does not ask for a new one (T027)', async () => {
+    const { controller, state } = fake();
+    const view = await mount(controller);
+    await act(async () => {
+      fireEvent.changeText(view.getByTestId('transfer-phrase-input'), 'F4HY cuk prsten melodie placka');
+    });
+    await act(async () => {
+      fireEvent.press(view.getByTestId('transfer-receive'));
+    });
     expect(view.getByTestId('transfer-error').props.children).toBe(
-      t('transfer.error.phrase'),
+      t('transfer.error.typo.word', { word: 'cuk' }),
     );
     expect(state.calls).toEqual([]);
   });
@@ -774,11 +849,12 @@ describe('saving what arrived (025 review, 2026-09-15)', () => {
     expect(view.getByTestId('transfer-receive')).toBeTruthy();
   });
 
-  it('hands the save the backup screen s prompt title, so keeping the password asks in our words', async () => {
+  it('asks for the screen lock in words about the password that arrived, not about setting one (T027)', async () => {
     const { controller, state } = fake();
     const view = await mount(controller);
     await receiveAndConfirm(view);
-    expect(state.applyOptions[0]).toMatchObject({ promptTitle: t('backup.prompt.enable') });
+    expect(state.applyOptions[0]).toMatchObject({ promptTitle: t('transfer.prompt.keepKey') });
+    expect(t('transfer.prompt.keepKey')).not.toBe(t('backup.prompt.enable'));
   });
 
   it('says when the backup password that arrived could not be kept', async () => {
@@ -961,6 +1037,81 @@ describe('counts both phones can be read against (US1 scenarios 1 and 3)', () =>
         '1 přílohu se nepodařilo obnovit.',
         t('transfer.done.signIn'),
       ].join(' '),
+    );
+    // The fake's receive reports a relayed route; the last word repeats it, as its own paragraph,
+    // because it says something else than what was restored (025 T027).
+    expect(view.getByTestId('transfer-done-route').props.children).toBe(wentText(true));
+  });
+});
+
+describe('the last word on each phone (025 T027)', () => {
+  it('leaves the route paragraph out when the route was never known', async () => {
+    const { controller, state } = fake();
+    state.receiveQuiet = true;
+    const view = await mount(controller);
+    await receiveAndConfirm(view);
+    await waitFor(() => expect(view.getByTestId('transfer-done')).toBeTruthy());
+    expect(view.queryByTestId('transfer-done-route')).toBeNull();
+  });
+
+  it('tells the sending phone that it went, and which way', async () => {
+    let finish: () => void = () => undefined;
+    const { controller } = fake({
+      async offer(_m: BackupManifest, onProgress: OnProgress) {
+        onProgress({ stage: 'transferring', sent: 1, total: 2, relayed: false });
+        return {
+          phrase: '7K2M-ryba-kotva-duha-lampa',
+          sizeBytes: 10,
+          contents: null,
+          done: new Promise<void>(resolve => {
+            finish = resolve;
+          }),
+        };
+      },
+    });
+    const view = await mount(controller);
+    await act(async () => {
+      fireEvent.press(view.getByTestId('transfer-send'));
+    });
+    await waitFor(() => expect(view.getByTestId('transfer-phrase')).toBeTruthy());
+    await act(async () => {
+      finish();
+    });
+    await waitFor(() =>
+      expect(view.getByTestId('transfer-done').props.children).toBe(t('transfer.sent')),
+    );
+    expect(view.getByTestId('transfer-done-route').props.children).toBe(wentText(false));
+  });
+
+  it('says nothing about a route that never became known', () => {
+    expect(wentText(null)).toBeNull();
+    expect(wentText(true)).toContain('croc.schollz.com');
+  });
+
+  it('tells the sender that a phrase was refused on the OTHER phone', () => {
+    // "Ask the other phone for a fresh one" sent the person showing the phrase looking for another.
+    expect(errorText(new PhraseRefusedError(), 'sending')).toBe(
+      t('transfer.error.phrase.sender'),
+    );
+    expect(errorText(new PhraseRefusedError(), 'receiving')).toBe(t('transfer.error.phrase'));
+  });
+
+  it('says a silent other phone and an expired offer in their own words', () => {
+    expect(errorText(new TransferNoAnswerError())).toBe(t('transfer.error.noAnswer'));
+    expect(errorText(new TransferOfferExpiredError(), 'sending')).toBe(
+      t('transfer.error.expired'),
+    );
+  });
+
+  it('shows the no-answer sentence when the receive gives up', async () => {
+    const { controller, state } = fake();
+    state.receiveFails = new TransferNoAnswerError();
+    const view = await mount(controller);
+    await startReceiving(view);
+    await waitFor(() =>
+      expect(view.getByTestId('transfer-error').props.children).toBe(
+        t('transfer.error.noAnswer'),
+      ),
     );
   });
 });

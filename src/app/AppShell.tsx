@@ -81,6 +81,7 @@ import {
 import { Dialog } from '../theme/Dialog';
 import {
   readActiveBoxId,
+  readRestoredActiveBoxId,
   readUnified,
   resolveActiveBoxId,
   resolveUnified,
@@ -639,10 +640,11 @@ export function AppShell() {
       // Seed the active box from the persisted LAST-USED id (FR-001): resolve it against the boxes
       // that exist - stale/garbled/missing degrades to the first box; zero boxes → null → Welcome.
       const persisted = await readActiveBoxId();
+      const restoredHint = await readRestoredActiveBoxId();
       if (!alive()) {
         return;
       }
-      const resolved = resolveActiveBoxId(persisted, list.map(a => a.boxId));
+      const resolved = resolveActiveBoxId(persisted, list.map(a => a.boxId), restoredHint);
       selectBox(resolved); // re-persists the resolved id (so a fallback becomes the new last-used)
       // …and whether they were last looking at the merged view. AFTER the box, and through
       // `selectBox` above rather than `setActive`, or restoring it would be undone in the same tick.
@@ -707,13 +709,15 @@ export function AppShell() {
     async (list: readonly DataBoxAccount[], from: Route) => {
       const ids = list.map(a => a.boxId);
       const last = await readActiveBoxId();
+      // The box the sending phone had open, for a phone that has none of its own yet (025 T027).
+      const restoredHint = await readRestoredActiveBoxId();
       const merged = await readUnified();
       // Only from where it was asked from. Both reads wait on the settings table, and a person who
       // tapped "Přidat datovou schránku" meanwhile is not pulled out of the sign-in form.
       if (routeRef.current !== from) {
         return;
       }
-      selectBox(resolveActiveBoxId(last, ids));
+      selectBox(resolveActiveBoxId(last, ids, restoredHint));
       setUnified(resolveUnified(merged, list.length));
       setRoute('home');
     },

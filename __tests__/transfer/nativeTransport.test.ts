@@ -38,6 +38,8 @@ jest.mock('../../src/services/telemetry/telemetry', () => ({
 import { nativeTransport } from '../../src/services/transfer/nativeTransport';
 import {
   TransferCancelledError,
+  TransferNoAnswerError,
+  TransferOfferExpiredError,
   type TransferProgress,
 } from '../../src/services/transfer/transport';
 
@@ -152,6 +154,21 @@ describe('a stop reaches only the run it was meant for (025 review, 2026-09-15)'
     );
     await expect(nativeTransport.send('/work/out', OPTIONS)).rejects.toBeInstanceOf(
       TransferCancelledError,
+    );
+  });
+
+  it('tells the two time limits apart from a broken transfer (025 T027)', async () => {
+    rn.__fake.native.receive.mockImplementationOnce(() =>
+      Promise.reject(Object.assign(new Error('no answer'), { code: 'noAnswer' })),
+    );
+    await expect(nativeTransport.receive('/work/in', OPTIONS)).rejects.toBeInstanceOf(
+      TransferNoAnswerError,
+    );
+    rn.__fake.native.send.mockImplementationOnce(() =>
+      Promise.reject(Object.assign(new Error('offer expired'), { code: 'expired' })),
+    );
+    await expect(nativeTransport.send('/work/out', OPTIONS)).rejects.toBeInstanceOf(
+      TransferOfferExpiredError,
     );
   });
 

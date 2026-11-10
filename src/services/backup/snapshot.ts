@@ -22,7 +22,11 @@
 import { decodeUtf8, encodeUtf8Async } from '../text/textCodec';
 import { throwIfCancelled, type CancelSignal } from './progress';
 import type { MessageFolder } from '../db/messagesStore';
-import { isDeviceLocalSetting } from '../../app/settings/settingsKeys';
+import {
+  ACTIVE_BOX_KEY,
+  BACKUP_ACTIVE_BOX_KEY,
+  isDeviceLocalSetting,
+} from '../../app/settings/settingsKeys';
 import {
   BACKUP_SCHEMA_VERSION,
   type BackupAccount,
@@ -116,6 +120,14 @@ export async function buildPayload(
     if (!isDeviceLocalSetting(key)) {
       portable[key] = value;
     }
+  }
+  // Which box this phone has open, as a hint for a phone that has none chosen yet (025 T027). Taken
+  // from THIS phone's own key every time, so a hint that arrived here in an earlier restore is never
+  // passed on as if it were this phone's.
+  delete portable[BACKUP_ACTIVE_BOX_KEY];
+  const open = settings[ACTIVE_BOX_KEY];
+  if (typeof open === 'string' && open.length > 0) {
+    portable[BACKUP_ACTIVE_BOX_KEY] = open;
   }
 
   return {

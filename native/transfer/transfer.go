@@ -29,6 +29,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/schollz/croc/v10/src/comm"
 	"github.com/schollz/croc/v10/src/croc"
 	"github.com/schollz/croc/v10/src/models"
 )
@@ -56,6 +57,35 @@ type Canceller interface {
 // Told apart from a transport failure on purpose: PAKE gives exactly one guess per attempt, so a
 // person WILL hit this, and "check the phrase" and "check the network" are different remedies.
 var ErrPhraseRefused = errors.New("phrase refused")
+
+// ErrNoAnswer is returned to a receiver that no sender answered in time (025 T027).
+//
+// A receiver joins the relay room named by the phrase's first four characters and waits there. Nobody
+// in the room - the other phone stopped offering, or the phrase starts differently - and a phrase that
+// matches the room but not the rest look the same from here: the sender refuses the handshake and
+// says so on its own screen, and this side simply hears nothing back. Before this limit existed the
+// receiver waited at the relay for hours.
+var ErrNoAnswer = errors.New("no answer")
+
+// ErrOfferExpired is returned to a sender nobody took the offer from in time.
+//
+// An offer keeps the display on (FR-014), so one left alone on a desk would otherwise keep the phone
+// lit, and a connection at the relay, until the battery ran out.
+var ErrOfferExpired = errors.New("offer expired")
+
+// How long each side waits for the handshake to complete. A receiver is only started once somebody
+// has typed the phrase the sender is showing, so the sender is already there: the handshake takes
+// a second or two even over mobile data, and half a minute without one means it is not coming. A
+// sender waits for a person to find the other phone and type four words.
+const (
+	answerLimit = 30 * time.Second
+	offerLimit  = 10 * time.Minute
+)
+
+// How long a stopped run is given to wind down once its connections are closed. croc returns within
+// milliseconds of losing them; the bound is there so a croc that does not cannot hold the thread
+// every later transfer runs on. A variable only so the tests need not wait it out.
+var windDown = 3 * time.Second
 
 // relayAddress is one of croc's relay host names with its port, resolved only when a transfer
 // connects to it (025 T022).
@@ -102,6 +132,11 @@ func options(secret string, onlyLocal bool, isSender bool) croc.Options {
 		Curve:         "p256",
 		HashAlgorithm: "xxhash",
 		Debug:         false,
+		// croc is a command line tool first and prints for a person at a terminal: the phrase
+		// itself ("Code is: ...", and the command to type on the other computer) and progress bars.
+		// On Android that output lands in the system log, where the phrase - the only secret of the
+		// transfer - could be read back with a bug report (found on the 025 T027 walk).
+		Quiet: true,
 	}
 }
 
@@ -145,6 +180,8 @@ func Send(dir string, secret string, onlyLocal bool, p Progress, c Canceller) er
 	ctx, stop := watch(c)
 	defer stop()
 
+	conns := track()
+	defer conns.release()
 	client, err := croc.NewCtx(ctx, options(secret, onlyLocal, true))
 	if err != nil {
 		return classify(err)
@@ -155,7 +192,7 @@ func Send(dir string, secret string, onlyLocal bool, p Progress, c Canceller) er
 	// OnlyLocal is a guarantee, so it can be stated up front. Everything else has to be watched for:
 	// the device run reported "relayed" from the flag while the bytes were going straight to
 	// 10.0.0.2, which is exactly the claim FR-007 exists to prevent.
-	stopRoute := watchRoute(client, onlyLocal, p)
+	stopRoute := watchRoute(client, onlyLocal, true, p)
 	defer stopRoute()
 	// The CONTENTS of dir, never dir itself. Handing croc a directory makes the receiver recreate
 	// it - the device run put the bundle at `<in>/out/backup.obalka` instead of `<in>/backup.obalka`,
@@ -168,8 +205,11 @@ func Send(dir string, secret string, onlyLocal bool, p Progress, c Canceller) er
 	if err != nil {
 		return fmt.Errorf("transfer: %w", err)
 	}
-	if err := client.Send(files, emptyFolders, totalFolders); err != nil {
-		return classify(err)
+	err = supervise(ctx, conns, client, offerLimit, ErrOfferExpired, func() error {
+		return client.Send(files, emptyFolders, totalFolders)
+	})
+	if err != nil {
+		return err
 	}
 	if p != nil {
 		p.Step("finishing", client.TotalSent, client.TotalSent)
@@ -185,6 +225,8 @@ func Receive(dir string, secret string, onlyLocal bool, p Progress, c Canceller)
 	if err := chdir(dir); err != nil {
 		return fmt.Errorf("transfer: %w", err)
 	}
+	conns := track()
+	defer conns.release()
 	client, err := croc.NewCtx(ctx, options(secret, onlyLocal, false))
 	if err != nil {
 		return classify(err)
@@ -192,10 +234,11 @@ func Receive(dir string, secret string, onlyLocal bool, p Progress, c Canceller)
 	if p != nil {
 		p.Step("connecting", 0, 0)
 	}
-	stopRoute := watchRoute(client, onlyLocal, p)
+	stopRoute := watchRoute(client, onlyLocal, false, p)
 	defer stopRoute()
-	if err := client.Receive(); err != nil {
-		return classify(err)
+	err = supervise(ctx, conns, client, answerLimit, ErrNoAnswer, client.Receive)
+	if err != nil {
+		return err
 	}
 	if p != nil {
 		p.Step("finishing", client.TotalSent, client.TotalSent)
@@ -203,12 +246,120 @@ func Receive(dir string, secret string, onlyLocal bool, p Progress, c Canceller)
 	return nil
 }
 
+// supervise runs one croc call and makes sure it ends: when the host stops the run, and when the
+// handshake has not completed within limit (then the result is onLimit).
+//
+// Both end the same way: every connection croc opened for this run is closed, which wakes whatever
+// read it is blocked in. Then it gets windDown to return; if it has not, the call is left behind and
+// this returns anyway, so the host's transfer thread is free for the next run. Once the handshake is
+// done there is no limit: a whole archive over mobile data takes as long as it takes, and the person
+// watching it can stop it.
+func supervise(ctx context.Context, conns *tracked, client *croc.Client, limit time.Duration, onLimit error, call func() error) error {
+	done := make(chan error, 1)
+	go func() { done <- call() }()
+	start := time.Now()
+	tick := time.NewTicker(100 * time.Millisecond)
+	defer tick.Stop()
+	for {
+		select {
+		case err := <-done:
+			return classify(err)
+		case <-ctx.Done():
+			conns.closeAll()
+			windDownOrLeave(done)
+			return ctx.Err()
+		case <-tick.C:
+			// Read without a lock, as watchRoute reads ExternalIPConnected: croc writes it once, from
+			// false to true, right after the field watchRoute waits for.
+			if !client.Step1ChannelSecured && time.Since(start) > limit {
+				conns.closeAll()
+				windDownOrLeave(done)
+				return onLimit
+			}
+		}
+	}
+}
+
+func windDownOrLeave(done <-chan error) {
+	select {
+	case <-done:
+	case <-time.After(windDown):
+	}
+}
+
+// tracked holds the connections croc opened during one run (patches/croc-v10.7.0-close-on-stop.patch).
+//
+// The host runs one transfer at a time, so one run is current at a time; a connection croc opens for
+// a run that has already been released - a call left behind by windDownOrLeave - is closed on the spot.
+type tracked struct {
+	mu     sync.Mutex
+	conns  []net.Conn
+	closed bool
+}
+
+var (
+	currentMu sync.Mutex
+	current   *tracked
+)
+
+func init() {
+	comm.Opened = func(c net.Conn) {
+		currentMu.Lock()
+		t := current
+		currentMu.Unlock()
+		if t == nil {
+			// Nothing is running, so nothing will ever close this.
+			_ = c.Close()
+			return
+		}
+		t.add(c)
+	}
+}
+
+func track() *tracked {
+	t := &tracked{}
+	currentMu.Lock()
+	current = t
+	currentMu.Unlock()
+	return t
+}
+
+func (t *tracked) add(c net.Conn) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if t.closed {
+		_ = c.Close()
+		return
+	}
+	t.conns = append(t.conns, c)
+}
+
+func (t *tracked) closeAll() {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	t.closed = true
+	for _, c := range t.conns {
+		_ = c.Close()
+	}
+	t.conns = nil
+}
+
+// release ends the run: anything still open is closed, and the run stops being current.
+func (t *tracked) release() {
+	t.closeAll()
+	currentMu.Lock()
+	if current == t {
+		current = nil
+	}
+	currentMu.Unlock()
+}
+
 // watchRoute reports whether the bytes are crossing a relay, once that is actually known.
 //
-// `ExternalIPConnected` is the address croc settled on: a private one means the peer was reached
-// directly, and anything else means the relay. Until it is set, the honest answer is "not known
-// yet", which is why the value the app carries is `boolean | null` rather than a boolean.
-func watchRoute(c *croc.Client, onlyLocal bool, p Progress) func() {
+// Known once `ExternalIPConnected` is set - croc sets it at the handshake, or earlier on a receiver
+// that found the sender on the local network. Until then the honest answer is "not known yet",
+// which is why the value the app carries is `boolean | null` rather than a boolean.
+func watchRoute(c *croc.Client, onlyLocal, isSender bool, p Progress) func() {
 	if p == nil {
 		return func() {}
 	}
@@ -218,7 +369,15 @@ func watchRoute(c *croc.Client, onlyLocal bool, p Progress) func() {
 		return func() {}
 	}
 	done := make(chan struct{})
-	var once sync.Once
+	var once, reported sync.Once
+	check := func() bool {
+		if c.ExternalIPConnected == "" {
+			return false
+		}
+		relayed := routeRelayed(c, isSender)
+		reported.Do(func() { p.Relayed(relayed) })
+		return true
+	}
 	go func() {
 		for {
 			select {
@@ -226,14 +385,35 @@ func watchRoute(c *croc.Client, onlyLocal bool, p Progress) func() {
 				return
 			default:
 			}
-			if addr := c.ExternalIPConnected; addr != "" {
-				p.Relayed(!isPrivateAddr(addr))
+			if check() {
 				return
 			}
 			time.Sleep(100 * time.Millisecond)
 		}
 	}()
-	return func() { once.Do(func() { close(done) }) }
+	// One last look on the way out. A small archive over a fast link is done inside one tick, and
+	// the walk's receiver said "working out the route" under what had already arrived (025 T027).
+	return func() {
+		once.Do(func() {
+			close(done)
+			check()
+		})
+	}
+}
+
+// routeRelayed reads the route from the address this side actually connected through.
+//
+// A sender is told the receiver's address as the relay it joined saw it: a private one means the
+// receiver came in over the local network, anything else crossed the relay. A receiver is NOT
+// told anything it can use the same way: what arrives is the sender's own report, and a sender
+// joins its own local relay at 127.0.0.1 half a second into every offer and reports that - so every
+// receive read "direct", through the relay too (025 T027). The receiver's own answer is where it
+// dialled: the sender's local-network address when discovery found it, the public relay otherwise.
+func routeRelayed(c *croc.Client, isSender bool) bool {
+	if isSender {
+		return !isPrivateAddr(c.ExternalIPConnected)
+	}
+	return !isPrivateAddr(c.Options.RelayAddress)
 }
 
 // isPrivateAddr answers whether an address is on a local network.
@@ -279,7 +459,9 @@ func classify(err error) error {
 		return nil
 	}
 	msg := strings.ToLower(err.Error())
-	for _, s := range []string{"could not secure channel", "bad password", "incorrect password", "pake"} {
+	// "message authentication failed" is the SENDER's side of a wrong phrase: the receiver's first
+	// message is sealed with a key derived from what was typed, and it does not open (025 T027).
+	for _, s := range []string{"could not secure channel", "bad password", "incorrect password", "pake", "message authentication failed"} {
 		if strings.Contains(msg, s) {
 			return ErrPhraseRefused
 		}

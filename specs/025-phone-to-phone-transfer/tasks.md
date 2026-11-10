@@ -805,7 +805,10 @@ release. The design and its reasons are in `spec.md` (amendment of the same date
   (five, run by both builds; `TestRelaysAreNotResolvedWhileTheLibraryLoads` fails without the patch, and
   did on this machine, which has no IPv6 route: `RelayAddress6` came out empty). The old hand-built
   `.aar` contains `models.lookup`; the new one does not.
-- [~] T026 **In the workflows 2026-09-24; not yet run.** `ci.yml`: the `ios` job builds the framework
+- [x] T026 **Green 2026-11-10** (CI run 42796002017, on 3cbb48f): `check`, `transfer-android`, `ios` and
+  `secrets` passed, and the `ios` log shows `[025] ObalkaTransferModule: linking Obalkatransfer.xcframework`
+  and `check-transfer-linked: croc and ObalkaTransferModule are in ObalkaDatovaSchranka.app`. As written
+  2026-09-24, **in the workflows; not yet run:** `ci.yml`: the `ios` job builds the framework
   before `pod install`, fails unless CocoaPods prints `[025] ObalkaTransferModule: linking
   Obalkatransfer.xcframework`, and runs `check-transfer-linked.sh` on the Debug `.app`; a new
   `transfer-android` job builds the `.aar` on every push (a few minutes on Linux, free for a public
@@ -814,7 +817,44 @@ release. The design and its reasons are in `spec.md` (amendment of the same date
   CocoaPods, and checks the archive for the transfer and for bitcode before the upload; the Android job
   installs the app's NDK (`scripts/install-ndk.sh`), builds the `.aar` and checks the bundle before it
   counts as shipped. Done when a run is green and its logs show the lines above.
-- [ ] T027 **The iPhone walk**, on a sideloaded build (`ios-sideload.yml`):
+- [~] T027 **Walked 2026-11-10** between an iPhone 15 Pro (iOS 27, a Release build installed from the Mac
+  with `devicectl`, not the sideload workflow) and the arm64 Android emulator, both directions. What it
+  found, all fixed and walked again the same day:
+  * **A run that never got an answer could not be stopped, and blocked every later one.** A thread dump
+    showed the worker parked in croc's relay read, which ignores the context; Cancel only flagged it, and
+    the single-threaded native worker queued each next run behind it. A wrong-but-valid phrase therefore
+    hung the receiver for ever. `native/transfer/patches/croc-v10.7.0-close-on-stop.patch` reports every
+    connection croc opens (`comm.Opened`); `transfer.go` closes them on a stop, ends a run with no
+    handshake after 30 s (`noAnswer`) and an unanswered offer after 10 min (`expired`), and leaves a call
+    that will not end behind after 3 s so the worker is free. Walked: a receive cancelled and the next one
+    started at once came through; nobody answering ends at 30 s; a wrong phrase ends in 5 s on both sides,
+    the sender saying the other phone typed a different phrase.
+  * **The phrase was in the Android log** (croc's progress output): `Quiet` is set.
+  * **The sender never said it had finished**; now "Odesláno…" with the route.
+  * **The route was wrong or missing.** The receiver read the sender's self-report, which becomes
+    `127.0.0.1` half a second into every offer (its own local relay), so every receive said "direct";
+    it now reads where it dialled. A transfer done inside the 100 ms poll reported no route; the watch
+    looks once more on the way out. The route line is kept under the result, as its own paragraph.
+    Walked: direct when the emulator found the iPhone over the USB cable (iOS counted the bytes as
+    "wired"), the relay with the cable out or when discovery missed - each run said the route it took.
+  * **The wait looked like a hang**, then like the platform spinner: `WaitingBar` (`src/theme/ProgressBar.tsx`)
+    travels in the progress bar's own place, which also evened the gap under the stage line. Under the
+    "received" question the stage now says "Přijato" with a full bar instead of still connecting.
+  * **Copy**: the dash/space rule under the phrase, "keep the app open and the phone unlocked", "se
+    nepodařilo", a typo that never left the phone names the word instead of asking for a new phrase, and
+    the screen-lock prompt when keeping the arrived password says so ("Převzít heslo k záloze z druhého
+    telefonu", not the backup screen's "Uložit heslo k záloze").
+  * **The receiving phone opened a different box than the sender had selected**: the backup carries
+    `backup.activeBox`, used only when this phone has no choice of its own.
+  * Android's module lacked `addListener`/`removeListeners`, so every receive raised a dev warning.
+  * Backgrounding: the iPhone locked mid-offer said why on return ("Přenos se zastavil…").
+
+  **Still owed:** the route on one Wi-Fi between two phones (the emulator cannot share the iPhone's
+  Wi-Fi; T004's hardware); the local-network prompt refused once; the display staying on through a long
+  transfer (every walked one took about a second); the new screen-lock prompt title, which needs a phone
+  receiving the password for the first time; the IPA size (SC-005).
+
+  As first written, **the iPhone walk**, on a sideloaded build (`ios-sideload.yml`):
   * iPhone → Android and Android → iPhone, each on one Wi-Fi (the route line should say local) and with
     the iPhone on mobile data (relayed, naming the relay);
   * the local-network prompt: it should appear at the first transfer and name the sentence from

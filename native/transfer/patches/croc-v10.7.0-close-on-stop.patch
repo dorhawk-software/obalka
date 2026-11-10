@@ -1,0 +1,26 @@
+--- a/src/comm/comm.go
++++ b/src/comm/comm.go
+@@ -20,6 +20,13 @@
+ var Socks5Proxy = ""
+ var HttpProxy = ""
+ 
++// Obalka: Opened is told about every connection croc wraps, so the app can close them. A croc run
++// spends its waits in blocking reads that never look at the context it was given - for the other
++// phone to join the relay room, for an answer to the handshake - so cancelling the context left the
++// run, and the thread the app runs transfers on, waiting until the relay gave up hours later.
++// Closing the socket ends the read at once (native/transfer/transfer.go).
++var Opened func(net.Conn)
++
+ var MAGIC_BYTES = []byte("croc")
+ 
+ const maxReadMessageSize = 64 * 1024 * 1024
+@@ -98,6 +105,9 @@
+ 
+ // New returns a new comm
+ func New(c net.Conn) *Comm {
++	if Opened != nil {
++		Opened(c)
++	}
+ 	if err := c.SetReadDeadline(time.Now().Add(3 * time.Hour)); err != nil {
+ 		log.Warnf("error setting read deadline: %v", err)
+ 	}

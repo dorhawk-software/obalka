@@ -15,16 +15,23 @@ const read = (path: string) => readFileSync(join(ROOT, path), 'utf8');
 const KOTLIN = read('android/app/src/main/java/com/obalkadatovaschranka/transfer/TransferModule.kt');
 const OBJC = read('ios/ObalkaTransferModule/ObalkaTransferModule.m');
 const TS = read('src/services/transfer/nativeTransport.ts');
+const GO = read('native/transfer/transfer.go');
 const PODSPEC = read('ios/ObalkaTransferModule/ObalkaTransferModule.podspec');
 const PODFILE = read('ios/Podfile');
 const XCFRAMEWORK_SCRIPT = read('scripts/build-transfer-xcframework.sh');
 
 const sorted = (xs: Iterable<string>) => [...new Set(xs)].sort();
 
+/**
+ * `NativeEventEmitter` asks the module it wraps for these. iOS inherits them from RCTEventEmitter;
+ * Android has to declare them, or every receive shows a yellow warning (025 T027).
+ */
+const EMITTER_METHODS = ['addListener', 'removeListeners'];
 /** `@ReactMethod fun name(` */
-const kotlinMethods = sorted(
+const kotlinDeclared = sorted(
   [...KOTLIN.matchAll(/@ReactMethod\s+fun\s+(\w+)\s*\(/g)].map(m => m[1]),
 );
+const kotlinMethods = kotlinDeclared.filter(m => !EMITTER_METHODS.includes(m));
 /** `RCT_EXPORT_METHOD(name` - the JavaScript name is the selector's first part. */
 const objcMethods = sorted(
   [...OBJC.matchAll(/RCT_EXPORT_METHOD\(\s*(\w+)/g)].map(m => m[1]),
@@ -43,6 +50,11 @@ describe('the native transfer modules', () => {
     expect(tsMethods).toEqual(['available', 'cancel', 'keepScreenOn', 'receive', 'send']);
     expect(kotlinMethods).toEqual(tsMethods);
     expect(objcMethods).toEqual(tsMethods);
+  });
+
+  it('give NativeEventEmitter what it asks for on both platforms', () => {
+    expect(kotlinDeclared).toEqual(expect.arrayContaining(EMITTER_METHODS));
+    expect(OBJC).toMatch(/@interface ObalkaTransferModule : RCTEventEmitter\b/);
   });
 
   it('take the run id first, then the directory, the phrase and the local-only flag', () => {
@@ -74,12 +86,19 @@ describe('the native transfer modules', () => {
 
   it('reject with the codes the transport tells apart', () => {
     // `failed` is everything else, so the transport reads it as the default rather than by name.
-    for (const code of ['cancelled', 'phrase']) {
+    // `noAnswer` and `expired` are the Go side's two time limits (025 T027), told apart by the
+    // sentence of the error Go returns - the same words on both platforms.
+    for (const code of ['cancelled', 'phrase', 'noAnswer', 'expired']) {
       expect(TS).toContain(`code === '${code}'`);
     }
-    for (const code of ['cancelled', 'phrase', 'failed']) {
+    for (const code of ['cancelled', 'phrase', 'noAnswer', 'expired', 'failed']) {
       expect(KOTLIN).toContain(`"${code}"`);
       expect(OBJC).toContain(`@"${code}"`);
+    }
+    for (const text of ['no answer', 'offer expired']) {
+      expect(GO).toContain(`errors.New("${text}")`);
+      expect(KOTLIN).toContain(`"${text}"`);
+      expect(OBJC).toContain(`@"${text}"`);
     }
   });
 });

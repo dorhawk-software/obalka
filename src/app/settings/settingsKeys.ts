@@ -27,6 +27,14 @@ export const APP_LOCK_KEY = 'appLock';
 /** Which box this phone had open last (011, `activeBox.ts`). */
 export const ACTIVE_BOX_KEY = 'activeBoxId';
 
+/**
+ * Which box the phone a backup was MADE on had open (025 T027). Written by the snapshot from
+ * `ACTIVE_BOX_KEY`, so unlike that key it travels - but only as a fallback: `resolveActiveBoxId` reads
+ * it when this phone has no box of its own chosen, which is the phone a transfer has just filled.
+ * There it opened the first box in the list rather than the one the person had been using.
+ */
+export const BACKUP_ACTIVE_BOX_KEY = 'backup.activeBox';
+
 /** Whether this phone was last showing the merged view rather than one box (024, `activeBox.ts`). */
 export const UNIFIED_INBOX_KEY = 'unifiedInbox';
 

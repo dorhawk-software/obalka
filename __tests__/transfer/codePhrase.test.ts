@@ -11,6 +11,7 @@ import {
   WORDS_EN,
   generateCodePhrase,
   parseCodePhrase,
+  unknownPhraseWord,
 } from '../../src/services/transfer/codePhrase';
 import { setActiveLocale } from '../../src/i18n/strings';
 
@@ -152,5 +153,17 @@ describe('reading a phrase back', () => {
     // The alphabet has no I, L, O or U precisely because they get miscopied; a phrase claiming to
     // contain one was not generated here.
     expect(parseCodePhrase('7K2$-ryba-kotva-duha-lampa')).toBeNull();
+  });
+});
+
+describe('unknownPhraseWord', () => {
+  it('names the first word on neither list, as typed', () => {
+    expect(unknownPhraseWord('F4HY cuk prsten melodie placka')).toBe('cuk');
+    expect(unknownPhraseWord('F4HY-cukr-Prstn-melodie-placka')).toBe('Prstn');
+  });
+
+  it('finds nothing in a phrase made of listed words, in either language or case', () => {
+    expect(unknownPhraseWord('F4HY Cukr prsten melodie placka')).toBeNull();
+    expect(unknownPhraseWord('F4HY cabin comet coral crown')).toBeNull();
   });
 });

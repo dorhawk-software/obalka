@@ -8,6 +8,7 @@ import { settingsStore } from '../deps';
 import { reportFailure } from '../../../services/telemetry/telemetry';
 import {
   ACTIVE_BOX_KEY,
+  BACKUP_ACTIVE_BOX_KEY,
   UNIFIED_INBOX_KEY,
 } from '../../../app/settings/settingsKeys';
 
@@ -15,6 +16,20 @@ import {
 export async function readActiveBoxId(): Promise<string | null> {
   try {
     const value = await settingsStore.getSetting(ACTIVE_BOX_KEY);
+    return typeof value === 'string' && value.length > 0 ? value : null;
+  } catch (e) {
+    reportFailure('settings.read', e, { stage: 'persist' });
+    return null;
+  }
+}
+
+/**
+ * The box the phone a restored backup came from had open (`BACKUP_ACTIVE_BOX_KEY`), or `null`. Only
+ * ever a fallback for `resolveActiveBoxId`. Never throws.
+ */
+export async function readRestoredActiveBoxId(): Promise<string | null> {
+  try {
+    const value = await settingsStore.getSetting(BACKUP_ACTIVE_BOX_KEY);
     return typeof value === 'string' && value.length > 0 ? value : null;
   } catch (e) {
     reportFailure('settings.read', e, { stage: 'persist' });
@@ -35,20 +50,27 @@ export async function writeActiveBoxId(id: string | null): Promise<void> {
 
 /**
  * The fallback chain for "which box is active", given the persisted id and the boxes that exist:
- *   • no boxes            → `null`  (the shell shows Welcome)
- *   • persisted id exists → that id (last-used restore)
- *   • else                → the first box (stale/missing/garbled id degrades gracefully)
- * Pure + total - the single source of truth for active-box resolution, unit-tested independently.
+ *   • no boxes                → `null`  (the shell shows Welcome)
+ *   • persisted id exists     → that id (last-used restore)
+ *   • restored hint exists    → that id: this phone has chosen nothing, and the phone its boxes came
+ *                               from had this one open (025 T027)
+ *   • else                    → the first box (stale/missing/garbled id degrades gracefully)
+ * This phone's own choice always wins, so a backup restored onto a phone already in use never moves
+ * it to another box. Pure + total - the single source of truth for active-box resolution.
  */
 export function resolveActiveBoxId(
   persisted: string | null,
   boxIds: string[],
+  restored: string | null = null,
 ): string | null {
   if (boxIds.length === 0) {
     return null;
   }
   if (persisted != null && boxIds.includes(persisted)) {
     return persisted;
+  }
+  if (restored != null && boxIds.includes(restored)) {
+    return restored;
   }
   return boxIds[0];
 }
