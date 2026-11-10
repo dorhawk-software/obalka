@@ -29,8 +29,8 @@
     "@react-native-cookies/cookies": "^6.2.1",
     "@react-native-documents/picker": "^12.0.1",
     "@react-native/new-app-screen": "0.86.0",
-    "@react-navigation/native": "^7.3.1",
-    "@react-navigation/native-stack": "^7.17.3",
+    "@react-navigation/native": "^7.5.1",
+    "@react-navigation/native-stack": "^7.21.0",
     "@sentry/react-native": "^8.26.0",
     "@tamagui/config": "^2.2.0",
     "fast-xml-parser": "^5.8.0",
@@ -41,7 +41,7 @@
     "react-dom": "^19.2.3",
     "react-native": "0.86.0",
     "react-native-argon2": "^4.0.0",
-    "react-native-blob-util": "^0.24.9",
+    "react-native-blob-util": "0.24.9",
     "react-native-gesture-handler": "^3.0.1",
     "react-native-get-random-values": "^2.0.0",
     "react-native-haptic-feedback": "^2.3.4",
@@ -92,15 +92,14 @@
     "react-test-renderer": "19.2.3",
     "typescript": "^5.8.3"
   },
-  "overrides": {
-    "query-string": {
-      "decode-uri-component": "^0.5.0"
-    }
-  },
   "engines": {
     "node": ">= 22.11.0"
   },
   "op-sqlite": {
     "sqlcipher": true
+  },
+  "allowScripts": {
+    "@sentry/cli": true,
+    "fsevents": true
   }
 }

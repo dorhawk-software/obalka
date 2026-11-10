@@ -220,8 +220,11 @@ Evidence:
   Every one of its tests fails against the pre-fix lockfile, Gemfile and `node_modules`.
 - **Audit gate and licences.** `scripts/audit-shipped.mjs` no longer accepts decode-uri-component. That acceptance argued that nothing could reach the decoder; with the fixed decoder shipping, the argument is no longer needed. The Licence screen list (`src/content/attributions.generated.ts`) now names decode-uri-component 0.5.0 and metro-runtime 0.84.6.
 
-Still open:
-
-- When @react-navigation/core moves to query-string 9.5 or later, delete the override and the patch together. The react-navigation 8 alphas already ask for `^9.4.0`.
+**Closed for good on 2026-11-10.** A second advisory against decode-uri-component 0.5.0
+(GHSA-qr28-fpjm-wq7f, quadratic replacement of percent-encoded runs) turned `npm run audit:shipped` red.
+@react-navigation/core 7.24 parses URLs itself and depends on neither query-string nor the decoder, so
+`@react-navigation/native` went to ^7.5.1 and `native-stack` to ^7.21.0, and the `overrides` entry and
+`patches/query-string+7.1.3.patch` were deleted. The guard test now runs core's own parser on the same
+hostile input; it keeps an undecodable escape literal where query-string wrote U+FFFD.
 - A `node_modules` installed before this change still holds the old Metro, query-string and decoder, and `npm run attributions:check` will then disagree with the committed list. Run `npm ci`.
 - Not yet seen on a device: a Metro 0.84.6 release bundle, and the navigator loading the ESM decoder under Hermes.

@@ -86,7 +86,9 @@ describe('navigator route registry', () => {
 
     // `routeNames` is react-navigation's own answer to "what can I navigate to", read from the mounted
     // navigator rather than from the source - which is the only version that could have caught the bug.
-    const registered = [...(navigationRef.getRootState().routeNames ?? [])].sort();
+    const state = navigationRef.getRootState();
+    expect(state).toBeDefined();
+    const registered = [...(state?.routeNames ?? [])].sort();
     expect(registered).toEqual(Object.keys(screens).sort());
   });
 

@@ -47,7 +47,8 @@ const FAILING = new Set(['moderate', 'high', 'critical']);
  * Empty since 2026-09-14. Its one entry, decode-uri-component (GHSA-vcc3-ghjq-m6fr), was accepted
  * because the app gives react-navigation's URL parser no input; 0.5.0 then fixed it, and the fix is
  * now shipped instead (an `overrides` entry plus patches/query-string+7.1.3.patch), so the argument
- * no longer has to keep holding.
+ * no longer has to keep holding. Since 2026-11-10 neither ships: @react-navigation/core 7.24 parses
+ * URLs itself, so a second advisory against 0.5.0 (GHSA-qr28-fpjm-wq7f) was closed by removing it.
  */
 const ACCEPTED = [];
 

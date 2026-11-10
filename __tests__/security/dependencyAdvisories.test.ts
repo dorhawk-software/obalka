@@ -6,21 +6,20 @@
 //
 // - image-size (two high, and no patched release exists). Metro 0.84.5 replaced it with vendored
 //   parsers, so the fix is its absence; a lockfile that brings it back brings back an unpatched copy.
-// - decode-uri-component (moderate). The fix is 0.5.0, which query-string 7 - the line
-//   @react-navigation/core 7 depends on - never asks for. package.json forces it with `overrides`,
-//   and patches/query-string+7.1.3.patch makes it loadable, because 0.5.0 is pure ESM. Either half
-//   alone breaks URL parsing, so the parsing tests here run the installed pair, not a mock.
+// - decode-uri-component (moderate, then a second advisory in 2026-11). @react-navigation/core 7.24
+//   parses URLs itself and no longer ships query-string or the decoder at all, which retired the
+//   `overrides` entry and the query-string patch that kept 0.5.0 loadable. The parsing test below runs
+//   react-navigation's own code on the same hostile input, so a regression in its parser shows here.
 // - activesupport and concurrent-ruby (six, in the CocoaPods tooling). The Gemfile floors are the
 //   fix, and React Native's upgrade helper copies the template's vulnerable ranges straight back.
 //
-// The timing budget is deliberately loose. On the hostile input below the patched decoder takes well
-// under a millisecond; the old one took about 17 seconds under jest (2.8 s in plain Node) on the same
-// machine, so there is no threshold in between that a slow CI runner could trip by accident.
+// The timing budget is deliberately loose. On the hostile input below a linear decoder takes well
+// under a millisecond; the vulnerable one took about 17 seconds under jest (2.8 s in plain Node) on the
+// same machine, so there is no threshold in between that a slow CI runner could trip by accident.
 
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { getPathFromState, getStateFromPath } from '@react-navigation/native';
-import { parse } from 'query-string';
 
 const ROOT = join(__dirname, '../..');
 const read = (file: string) => readFileSync(join(ROOT, file), 'utf8');
@@ -97,29 +96,18 @@ describe('npm advisories', () => {
   });
 });
 
-describe('URL query parsing with the patched decoder', () => {
-  it('decodes malformed percent-encoding in linear time, and valid input as before', () => {
-    const { value, ms } = timed(() => parse(`q=${HOSTILE}`));
-    expect(ms).toBeLessThan(LINEAR_BUDGET_MS);
-    expect(value.q).toBe('\uFFFD'.repeat(HOSTILE_ESCAPES));
-
-    // Czech text, `+` as a space, and escapes that cannot be decoded left literal: the same result
-    // query-string gave with the old decoder.
-    expect(
-      parse('q=%C5%BDlu%C5%A5ou%C4%8Dk%C3%BD+k%C5%AF%C5%88&bad=%E0%A4%A&lone=%'),
-    ).toEqual({ q: 'Žluťoučký kůň', bad: '%E0%A4%A', lone: '%' });
-  });
-
+describe('URL query parsing', () => {
   // The app does not hand react-navigation a URL today (no scheme, no `linking`), but this is the
-  // path one would take the day it does - and the one that proves the ESM decoder loads through
-  // react-navigation's own import of query-string, not only through a direct one.
+  // path one would take the day it does.
   it('reaches react-navigation path parsing, which stays fast and round-trips Czech', () => {
     const config = { screens: { Search: 'search' } };
     const { value: hostile, ms } = timed(() =>
       getStateFromPath(`search?q=${HOSTILE}`, config),
     );
     expect(ms).toBeLessThan(LINEAR_BUDGET_MS);
-    expect(hostile?.routes[0]?.params).toEqual({ q: '\uFFFD'.repeat(HOSTILE_ESCAPES) });
+    // core 7.24's own parser keeps an escape it cannot decode as it was typed; query-string's decoder
+    // replaced each with U+FFFD. Either is safe - what matters is the time above.
+    expect(hostile?.routes[0]?.params).toEqual({ q: HOSTILE });
 
     const czech = getStateFromPath('search?q=%C5%BDlu%C5%A5ou%C4%8Dk%C3%BD+k%C5%AF%C5%88', config);
     expect(czech?.routes[0]).toMatchObject({ name: 'Search', params: { q: 'Žluťoučký kůň' } });

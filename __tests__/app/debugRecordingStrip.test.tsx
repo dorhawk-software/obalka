@@ -100,7 +100,11 @@ async function mountNavigator() {
 
 /** One strip per screen in the stack, except the Debug screen - read from the navigator itself. */
 function stripsExpected(): number {
-  return navigationRef.getRootState().routes.filter(r => r.name !== 'Debug').length;
+  const state = navigationRef.getRootState();
+  if (!state) {
+    throw new Error('the navigator is not mounted');
+  }
+  return state.routes.filter(r => r.name !== 'Debug').length;
 }
 
 /**
