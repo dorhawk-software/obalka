@@ -1,4 +1,4 @@
-import { metricLeading, type, type TextRole } from './typography';
+import { metricLeading, type, type TextRole } from './typeScale';
 
 // The smallest thing a finger can be asked to hit.
 //

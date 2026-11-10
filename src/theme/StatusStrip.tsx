@@ -29,7 +29,7 @@ import { useTheme } from './ThemeProvider';
 import type { Theme } from './theme';
 import { ChevronRightIcon } from './icons';
 import { MIN_TARGET } from './touchTarget';
-import { type as typeScale } from './typography';
+import { type as typeScale } from './typeScale';
 
 /** Above and below the label: DESIGN.md spacing `sm`. */
 export const STATUS_STRIP_PADDING_VERTICAL = 6;

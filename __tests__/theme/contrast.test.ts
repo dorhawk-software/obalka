@@ -29,7 +29,7 @@
 import { darkTheme, lightTheme, type Theme } from '../../src/theme/theme';
 import { chipTone, type ChipKind } from '../../src/theme/chipTone';
 import { scrimColor } from '../../src/theme/useScrim';
-import { AVATAR_COLORS } from '../../src/theme/avatar';
+import { AVATAR_COLORS } from '../../src/theme/avatarPalette';
 import { BOX_COLORS } from '../../src/theme/boxColor';
 import { MONOGRAM_SHADE } from '../../src/features/messages/screens/BoxPill';
 import { statusStripColors } from '../../src/theme/StatusStrip';
@@ -80,7 +80,7 @@ const pairs = (t: Theme): [string, string, string][] => [
   ['textFaint on surface', t.textFaint, t.surface],
   ['onBlue on blue', t.onBlue, t.blue],
   // `onSolid` is white in BOTH themes, and these are the theme-independent fills it is white ON.
-  // Derived from `avatar.ts` rather than copied, so a new hue is covered the day it is added.
+  // Derived from `avatarPalette.ts` rather than copied, so a new hue is covered the day it is added.
   ['onSolid on brandTile', t.onSolid, t.brandTile],
   ...AVATAR_COLORS.map(
     (hue): [string, string, string] => [`onSolid on avatar ${hue}`, t.onSolid, hue],

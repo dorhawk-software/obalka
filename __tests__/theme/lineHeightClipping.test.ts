@@ -18,7 +18,7 @@
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
 import ts from 'typescript';
-import { fonts } from '../../src/theme/typography';
+import { fonts } from '../../src/theme/typeScale';
 import { inkFor, inkSafeLineHeight, iosClips, naturalLeading } from '../../src/theme/inkClipping';
 
 const ROOT = join(__dirname, '../..');
@@ -44,7 +44,7 @@ const ROLES = new Set(
 );
 
 /** The type scale's own entries are design lines the role components make safe (inkClipping.test). */
-const SCALE_FILE = join(SRC, 'theme/typography.ts');
+const SCALE_FILE = join(SRC, 'theme/typeScale.ts');
 
 const MARGINS = ['margin', 'marginVertical', 'marginTop', 'marginBottom'];
 

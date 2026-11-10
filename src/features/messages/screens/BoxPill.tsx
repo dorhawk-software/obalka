@@ -15,7 +15,7 @@
 import { XStack, YStack } from '../../../theme/ui';
 import { Tag } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { avatarColor, monogram } from '../../../theme/avatar';
+import { avatarColor, monogram } from '../../../theme/avatarPalette';
 import { boxColor } from '../../../theme/boxColor';
 import { concentric } from '../../../theme/radius';
 import type { DataBoxAccount } from '../../../services/isds/types';

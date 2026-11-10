@@ -13,7 +13,7 @@ import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { Text } from '../../src/theme/ui';
 import * as roles from '../../src/theme/Typography';
-import { fonts, metricLeading, type as typeScale, type TextRole } from '../../src/theme/typography';
+import { fonts, metricLeading, type as typeScale, type TextRole } from '../../src/theme/typeScale';
 import {
   bundledInk,
   inkFor,

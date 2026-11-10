@@ -1,5 +1,5 @@
 // Text role components - the typography "visual library". Each bakes in a role's size/weight/
-// line-height (from `typography.ts`) plus an AA-contrast default color, so screens compose legible,
+// line-height (from `typeScale.ts`) plus an AA-contrast default color, so screens compose legible,
 // consistent text without repeating fontSize/color. Any prop (color, numberOfLines, flex, margins…)
 // can still be overridden inline; overriding `fontSize` rescales the line box with it. Pass `dense` for
 // the design's tight single-line list rows. On iOS, a line too short for the face's ink is drawn taller,
@@ -17,7 +17,7 @@ import {
   metricLeading,
   type as typeScale,
   type TextRole,
-} from './typography';
+} from './typeScale';
 
 // ui.Text is the Tamagui Text (typed `any` via the shim); role props are therefore passthrough.
 type RoleProps = Record<string, unknown>;

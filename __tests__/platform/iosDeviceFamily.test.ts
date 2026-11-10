@@ -23,7 +23,8 @@ const INFO_PLIST = join(IOS, 'ObalkaDatovaSchranka/Info.plist');
 
 describe('the iOS target', () => {
   const project = readFileSync(PBXPROJ, 'utf8');
-  const families = [...project.matchAll(/TARGETED_DEVICE_FAMILY = "([^"]*)";/g)].map(
+  // Quoted or not: Xcode writes `"1"`, while `pod install` (xcodeproj) rewrites it as a bare `1`.
+  const families = [...project.matchAll(/TARGETED_DEVICE_FAMILY = "?([^";]*)"?;/g)].map(
     m => m[1],
   );
 

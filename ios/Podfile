@@ -12,7 +12,8 @@ require Pod::Executable.execute_command('node', ['-p',
 # follows React Native's minimum), so nothing requires 15.5 any more; the floor is kept where it was
 # rather than lowered to a version the app has never been built or run on. Taken as the HIGHER of the
 # two so a future React Native bump raises this floor rather than silently lowering it.
-platform :ios, [Gem::Version.new(min_ios_version_supported), Gem::Version.new('15.5')].max.to_s
+APP_MIN_IOS = [Gem::Version.new(min_ios_version_supported), Gem::Version.new('15.5')].max
+platform :ios, APP_MIN_IOS.to_s
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -44,5 +45,17 @@ target 'ObalkaDatovaSchranka' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+    # No pod may target an iOS older than the app. A few pods still declare 11.0 or 12.4
+    # (react-native-blob-util's privacy bundle, RNSVG's filters), and Xcode 27 refuses anything below
+    # 15.0 - "The iOS Simulator deployment target ... is set to 11.0" - while Xcode 26 only warned.
+    # Raising them to the app's own floor changes nothing at run time: the app never runs below it.
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |build|
+        declared = build.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+        if declared && Gem::Version.new(declared) < APP_MIN_IOS
+          build.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = APP_MIN_IOS.to_s
+        end
+      end
+    end
   end
 end

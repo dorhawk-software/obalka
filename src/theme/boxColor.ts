@@ -10,7 +10,7 @@
 // greens. Every one keeps the white monogram at WCAG AA (`__tests__/theme/contrast.test.ts` measures
 // each), and they do not follow the theme, like the sender avatars.
 
-import { avatarColor } from './avatar';
+import { avatarColor } from './avatarPalette';
 
 export const BOX_COLORS = [
   '#2A5C9A', // brand blue

@@ -21,7 +21,7 @@ import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import { lightTheme } from '../../src/theme/theme';
 import { space } from '../../src/theme/spacing';
-import { fonts } from '../../src/theme/typography';
+import { fonts } from '../../src/theme/typeScale';
 import { Text } from '../../src/theme/ui';
 import { Card, CardRow, RowTitle, Section } from '../../src/app/settings/SettingsSection';
 import { SubScreen } from '../../src/app/settings/SubScreen';

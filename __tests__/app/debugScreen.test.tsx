@@ -22,7 +22,7 @@ import RNBlobUtil from 'react-native-blob-util';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
-import { type as typeScale } from '../../src/theme/typography';
+import { type as typeScale } from '../../src/theme/typeScale';
 import { t } from '../../src/i18n/strings';
 import {
   DebugScreen,

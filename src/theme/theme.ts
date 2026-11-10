@@ -38,8 +38,8 @@ export interface Theme {
    * flipped to near-black (6.79:1 on every primary button). Six sites were reading it as "white",
    * and three of them were not on `theme.blue` at all:
    *
-   *   * every avatar monogram, on the six fixed hues in `avatar.ts` - **2.11–3.05:1** in dark mode,
-   *     on the app's most repeated element, while `avatar.ts` promised ≥4.5:1 in both themes;
+   *   * every avatar monogram, on the six fixed hues in `avatarPalette.ts` - **2.11–3.05:1** in dark mode,
+   *     on the app's most repeated element, while `avatarPalette.ts` promised ≥4.5:1 in both themes;
    *   * the `EmblemIcon` glyph on `brandTile` - 3.36:1, where its own docstring and `brandTile`'s
    *     token comment both say "a white glyph";
    *   * the `Toggle` knob, documented as "near-white", rendering near-black at night.

@@ -3,7 +3,7 @@ import { Animated } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import { XStack, YStack } from './ui';
 import { Body, Caption } from './Typography';
-import { fonts } from './typography';
+import { fonts } from './typeScale';
 import { useTheme } from './ThemeProvider';
 import { haptics } from '../services/haptics';
 

@@ -1,4 +1,4 @@
-import { metricLeading, type as typeScale } from '../../src/theme/typography';
+import { metricLeading, type as typeScale } from '../../src/theme/typeScale';
 
 // The line BOX has to follow the font size. Role components used to keep the role's line-height when a
 // caller overrode only `fontSize`, so 14px text sat in the 21px box meant for 15px - every list row

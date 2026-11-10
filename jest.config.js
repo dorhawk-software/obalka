@@ -11,7 +11,9 @@ module.exports = {
   // `Platform.OS` itself. The preset's default, stated here because the iOS clipping audit depends on
   // it: it judges what iOS draws, and the role components only lift a line for the ink on iOS.
   haste: { ...rnPreset.haste, defaultPlatform: 'ios' },
-  moduleFileExtensions: ['js', 'mjs', 'json', 'jsx', 'ts', 'tsx', 'node'],
+  // JSON after every code extension: on a Mac the disk ignores case, so with 'json' before 'tsx' the
+  // import '../App' found React Native's own app.json before App.tsx (__tests__/lint/moduleNameCase.test.ts).
+  moduleFileExtensions: ['js', 'mjs', 'jsx', 'ts', 'tsx', 'json', 'node'],
   setupFiles: ['<rootDir>/jest.setup.js'],
   // Fails a test that rendered a Text iOS would clip (the check itself is wired in jest.setup.js).
   setupFilesAfterEnv: ['<rootDir>/jest.afterEnv.js'],

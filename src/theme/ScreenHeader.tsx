@@ -28,7 +28,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { XStack, YStack } from './ui';
 import { Title } from './Typography';
 import { useTheme } from './ThemeProvider';
-import { fonts } from './typography';
+import { fonts } from './typeScale';
 import { ChevronLeftIcon } from './icons';
 import { touchSlop } from './touchTarget';
 import { t } from '../i18n/strings';

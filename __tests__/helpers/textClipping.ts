@@ -6,7 +6,7 @@
 // against fontTools' outline bounds, 2026-09-24) - so the measure errs toward clipping.
 
 import { fontFace } from './fontMetrics';
-import { fonts } from '../../src/theme/typography';
+import { fonts } from '../../src/theme/typeScale';
 import type { FaceInk } from '../../src/theme/inkClipping';
 
 /**

@@ -25,7 +25,7 @@ import { OptionGroup } from '../../theme/OptionGroup';
 import { Dialog } from '../../theme/Dialog';
 import { useTheme } from '../../theme/ThemeProvider';
 import { space } from '../../theme/spacing';
-import { type as typeScale } from '../../theme/typography';
+import { type as typeScale } from '../../theme/typeScale';
 import { plural, t } from '../../i18n/strings';
 import { haptics } from '../../services/haptics';
 import { SubScreen } from './SubScreen';

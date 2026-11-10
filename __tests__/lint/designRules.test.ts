@@ -28,7 +28,7 @@ describe('obalka/role-typography', () => {
         errors: [
           {
             message: [
-              '<Caption fontSize={12}> restyles a text role. <Caption> (13/17 Public Sans 500) by design (src/theme/typography.ts).',
+              '<Caption fontSize={12}> restyles a text role. <Caption> (13/17 Public Sans 500) by design (src/theme/typeScale.ts).',
               '  Fix: use <Meta> (12/16 Public Sans 500); keep a different weight with `fontWeight`.',
               '  Why: one size per role is what keeps two screens from drifting apart (constitution V, DESIGN.md › Typography).',
             ].join('\n'),
@@ -41,9 +41,9 @@ describe('obalka/role-typography', () => {
         errors: [
           {
             message: [
-              '<Body fontSize={19}> restyles a text role. <Body> (15/21 Public Sans 400) by design (src/theme/typography.ts).',
+              '<Body fontSize={19}> restyles a text role. <Body> (15/21 Public Sans 400) by design (src/theme/typeScale.ts).',
               '  Fix: no Public Sans role is 19px.',
-              '  If nothing fits: if the design really uses 19px Public Sans, that is a missing role - add it to `type` in src/theme/typography.ts and to DESIGN.md › Typography, then use it here. Not here.',
+              '  If nothing fits: if the design really uses 19px Public Sans, that is a missing role - add it to `type` in src/theme/typeScale.ts and to DESIGN.md › Typography, then use it here. Not here.',
               '  Why: one size per role is what keeps two screens from drifting apart (constitution V, DESIGN.md › Typography).',
             ].join('\n'),
           },

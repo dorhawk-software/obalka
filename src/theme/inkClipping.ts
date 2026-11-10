@@ -50,7 +50,7 @@
 // its grid is whole: 2x or 3x. A whole-dp line and whole-dp margins are then whole pixels, and nothing
 // is rounded - which is why the lift is whole dp on each side, never half of an odd one.
 
-import { fonts } from './typography';
+import { fonts } from './typeScale';
 
 /** One face's vertical metrics and the reach of its ink, in ems of the font size. */
 export interface FaceInk {

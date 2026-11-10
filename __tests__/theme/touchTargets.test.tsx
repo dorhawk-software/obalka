@@ -22,7 +22,7 @@ import { Welcome } from '../../src/features/accounts/screens/Welcome';
 import { Toggle } from '../../src/theme/Toggle';
 import { SegmentedControl } from '../../src/theme/SegmentedControl';
 import { MIN_TARGET, textSlop, touchSlop } from '../../src/theme/touchTarget';
-import { metricLeading, type } from '../../src/theme/typography';
+import { metricLeading, type } from '../../src/theme/typeScale';
 import type { DataBoxAccount } from '../../src/services/isds/types';
 import { occupiedLine } from '../helpers/textClipping';
 

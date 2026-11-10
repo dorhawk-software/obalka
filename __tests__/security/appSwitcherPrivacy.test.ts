@@ -69,14 +69,22 @@ describe('app-switcher privacy', () => {
       'utf8',
     );
 
+    // On the SCENE delegate since 2026-11-10: an app built with the iOS 27 SDK must adopt the scene
+    // lifecycle, and under it UIKit never calls the `application…` versions of these on the app
+    // delegate. The cover would then silently never show, so their return is a failure too.
     it('covers the UI once the app is backgrounded', () => {
-      expect(source).toMatch(/func applicationDidEnterBackground/);
+      expect(source).toMatch(/func sceneDidEnterBackground/);
       expect(source).toMatch(/showPrivacyCover\(\)/);
     });
 
     it('uncovers it on return, or the app would look dead', () => {
-      expect(source).toMatch(/func applicationDidBecomeActive/);
+      expect(source).toMatch(/func sceneDidBecomeActive/);
       expect(source).toMatch(/hidePrivacyCover\(\)/);
+    });
+
+    it('does not rely on app-delegate callbacks the scene lifecycle never sends', () => {
+      expect(source).not.toMatch(/func applicationDidEnterBackground/);
+      expect(source).not.toMatch(/func applicationDidBecomeActive/);
     });
 
     it('does NOT cover on resign-active, which is stricter than intended', () => {
@@ -86,6 +94,7 @@ describe('app-switcher privacy', () => {
       // protect the image iOS WRITES TO DISK, which is the one somebody else can see. Restoring
       // this would reverse that decision silently, so it fails here instead.
       expect(source).not.toMatch(/func applicationWillResignActive/);
+      expect(source).not.toMatch(/func sceneWillResignActive/);
     });
 
     it('is told which appearance to draw, or it follows the phone instead', () => {

@@ -7,7 +7,7 @@
 
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { type as typeScale } from '../../src/theme/typography';
+import { type as typeScale } from '../../src/theme/typeScale';
 import { space } from '../../src/theme/spacing';
 import { darkTheme, lightTheme } from '../../src/theme/theme';
 

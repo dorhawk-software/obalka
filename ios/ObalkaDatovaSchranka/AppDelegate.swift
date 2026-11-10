@@ -5,10 +5,31 @@ import ReactAppDependencyProvider
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-  var window: UIWindow?
-
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
+
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    let delegate = ReactNativeDelegate()
+    let factory = RCTReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+
+    // The window is made by SceneDelegate. Apps built with the iOS 27 SDK must adopt the UIScene
+    // lifecycle: without a scene manifest UIKit stops the app at launch (EXC_BREAKPOINT in
+    // `_UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`), which Xcode 26 only warned about.
+    return true
+  }
+}
+
+/// The app's one window. `Info.plist` names this class in `UIApplicationSceneManifest`; the app has a
+/// single scene (`UIApplicationSupportsMultipleScenes` is false), so this is where the app starts.
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+  var window: UIWindow?
 
   /// Hides the UI whenever the app stops being frontmost, so the app switcher cannot show mail.
   ///
@@ -22,26 +43,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   /// way, and a reader who opens the switcher is not always the person who owns the mailbox.
   private var privacyCover: UIView?
 
-  func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-  ) -> Bool {
-    let delegate = ReactNativeDelegate()
-    let factory = RCTReactNativeFactory(delegate: delegate)
-    delegate.dependencyProvider = RCTAppDependencyProvider()
+  func scene(
+    _ scene: UIScene,
+    willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
+  ) {
+    guard let windowScene = scene as? UIWindowScene,
+          let factory = (UIApplication.shared.delegate as? AppDelegate)?.reactNativeFactory else { return }
 
-    reactNativeDelegate = delegate
-    reactNativeFactory = factory
+    let window = UIWindow(windowScene: windowScene)
+    self.window = window
 
-    window = UIWindow(frame: UIScreen.main.bounds)
-
-    factory.startReactNative(
-      withModuleName: "ObalkaDatovaSchranka",
-      in: window,
-      launchOptions: launchOptions
-    )
-
-    return true
+    // No launch options: under the scene lifecycle they arrive as `connectionOptions`, and the app
+    // reads none of them (no URL scheme; a reminder's tap reaches notifee through
+    // UNUserNotificationCenter, which does not depend on the lifecycle).
+    factory.startReactNative(withModuleName: "ObalkaDatovaSchranka", in: window, launchOptions: nil)
   }
 
   // MARK: - App-switcher privacy
@@ -54,11 +70,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   // WRITES TO DISK, which is the one that outlives the moment and can be seen by somebody else.
   //
   // iOS takes that snapshot after this method returns, so covering here is in time for it.
-  func applicationDidEnterBackground(_ application: UIApplication) {
+  //
+  // Under the scene lifecycle UIKit sends these to the scene, never to the app delegate: left on
+  // AppDelegate as `applicationDidEnterBackground` they would simply stop being called.
+  func sceneDidEnterBackground(_ scene: UIScene) {
     showPrivacyCover()
   }
 
-  func applicationDidBecomeActive(_ application: UIApplication) {
+  func sceneDidBecomeActive(_ scene: UIScene) {
     hidePrivacyCover()
   }
 

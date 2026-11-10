@@ -6,7 +6,7 @@
 import { Text, XStack, YStack } from '../../../theme/ui';
 import { BodyStrong, Meta } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { fonts } from '../../../theme/typography';
+import { fonts } from '../../../theme/typeScale';
 import { AlertIcon, CheckIcon } from '../../../theme/icons';
 import { Avatar } from '../../../theme/Avatar';
 import { BoxOverflowMenu } from './BoxOverflowMenu';

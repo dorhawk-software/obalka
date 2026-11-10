@@ -3,13 +3,13 @@
 // monogram (FÚ, OŠ, EČ - the *who* at a glance). One component for list / search / detail.
 //
 // The monogram is `onSolid` - white in both appearances - because the fill is one of six FIXED hues
-// from `avatar.ts` that do not follow the theme. It used to be `onBlue`, which is white only in light
+// from `avatarPalette.ts` that do not follow the theme. It used to be `onBlue`, which is white only in light
 // mode; in dark mode that put near-black ink on those hues at **2.11–3.05:1**, on the most repeated
 // element in the app. See the `onSolid` doc comment in `theme.ts`.
 
 import { Text, YStack } from './ui';
 import { useTheme } from './ThemeProvider';
-import { avatarColor, monogram } from './avatar';
+import { avatarColor, monogram } from './avatarPalette';
 
 export function Avatar({
   name,

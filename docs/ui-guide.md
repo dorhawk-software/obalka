@@ -1,7 +1,7 @@
 # Obálka UI guide - modern, clean, trustworthy
 
 > **Superseded.** The current design system is [`DESIGN.md`](../DESIGN.md); tokens are code in
-> `src/theme/theme.ts`, `typography.ts` and `chipTone.ts`. §1 and the spacing values in §3 are the
+> `src/theme/theme.ts`, `typeScale.ts` and `chipTone.ts`. §1 and the spacing values in §3 are the
 > pre-009 cool-navy guide, kept as history. Still current: the no-layout-jumps rule and "same pattern
 > → same metrics" (§3), and the haptics vocabulary (§5a). *Amended 2026-09-14:* the elevation scale
 > (§2), the radius scale (§3), §4, §5, §5a, §6 and §7 were corrected against the code; where this
@@ -87,7 +87,7 @@ shadow.** Don't give the same component pattern different elevation on different
 
 ## 4. Typography
 
-Defined once in `src/theme/typography.ts` (the scale) and exposed as role components in
+Defined once in `src/theme/typeScale.ts` (the scale) and exposed as role components in
 `src/theme/Typography.tsx` - **screens compose these, never raw `fontSize`/`color`** - so sizing and
 contrast stay consistent. Clear hierarchy, few sizes, **negative letter-spacing** on headings.
 

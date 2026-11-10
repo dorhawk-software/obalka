@@ -1,7 +1,7 @@
 // A box's own colour (027 US3): ten of them, handed out distinct, read through one function.
 
 import { BOX_COLORS, boxColor, isBoxColor, nextBoxColor } from '../../src/theme/boxColor';
-import { avatarColor } from '../../src/theme/avatar';
+import { avatarColor } from '../../src/theme/avatarPalette';
 
 describe('the box palette', () => {
   it('has ten colours, none twice', () => {

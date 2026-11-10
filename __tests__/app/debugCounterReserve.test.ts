@@ -14,7 +14,7 @@
 // `debugScreen.test.tsx` holds it to that.
 
 import { plural, setActiveLocale } from '../../src/i18n/strings';
-import { type as typeScale } from '../../src/theme/typography';
+import { type as typeScale } from '../../src/theme/typeScale';
 import {
   recordingCounter,
   recordingCounterReserve,

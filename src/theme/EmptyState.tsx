@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
 import { YStack } from './ui';
 import { Body, Heading } from './Typography';
 import { useTheme } from './ThemeProvider';
-import { fonts } from './typography';
+import { fonts } from './typeScale';
 
 export function EmptyState({
   icon,

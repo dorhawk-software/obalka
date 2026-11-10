@@ -4,7 +4,7 @@ const tokens = require('../tokens.json');
 const { message } = require('../message');
 
 const COLOR = /#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?(?:[0-9a-fA-F]{2})?\b|rgba?\(/;
-const PALETTE_FILES = /src[\\/](theme[\\/](theme\.ts|color\.ts|ObalkaMark\.tsx|QrCode\.tsx|avatar\.ts|boxColor\.ts|chipTone\.ts|icons\.tsx|artwork\.tsx|depth\.ts)|services[\\/]notifications[\\/]notifeeNotifier\.ts)$/;
+const PALETTE_FILES = /src[\\/](theme[\\/](theme\.ts|color\.ts|ObalkaMark\.tsx|QrCode\.tsx|avatarPalette\.ts|boxColor\.ts|chipTone\.ts|icons\.tsx|artwork\.tsx|depth\.ts)|services[\\/]notifications[\\/]notifeeNotifier\.ts)$/;
 
 module.exports = {
   meta: { type: 'problem', schema: [], docs: { description: 'Colours come from theme tokens.' } },

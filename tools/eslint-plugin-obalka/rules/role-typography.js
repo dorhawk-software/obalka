@@ -26,7 +26,7 @@ module.exports = {
           const prop = attr.name.name;
           const value = numberOf(attr.value);
           const shown = value !== undefined ? `{${value}}` : '{…}';
-          const what = `<${role} ${prop}=${shown}> restyles a text role. ${describe(role, r)} by design (src/theme/typography.ts).`;
+          const what = `<${role} ${prop}=${shown}> restyles a text role. ${describe(role, r)} by design (src/theme/typeScale.ts).`;
           let fix;
           let otherwise;
           if (prop === 'fontSize' && value === r.size) {
@@ -39,7 +39,7 @@ module.exports = {
               : `no ${r.family} role is ${value}px.`;
             otherwise = same.length
               ? undefined
-              : `if the design really uses ${value}px ${r.family}, that is a missing role - add it to \`type\` in src/theme/typography.ts and to DESIGN.md › Typography, then use it here. Not here.`;
+              : `if the design really uses ${value}px ${r.family}, that is a missing role - add it to \`type\` in src/theme/typeScale.ts and to DESIGN.md › Typography, then use it here. Not here.`;
           } else if (prop === 'fontFamily') {
             fix = `delete it and say the weight instead (\`fontWeight="600"\`) - ${role} picks the face for a weight itself (DESIGN.md › The Face-Per-Weight Rule). A different family means a different role.`;
           } else if (prop === 'lineHeight') {

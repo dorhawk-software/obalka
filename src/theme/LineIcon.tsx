@@ -8,7 +8,7 @@
 import type { ReactNode } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { YStack } from './ui';
-import { type as typeScale, type TextRole } from './typography';
+import { type as typeScale, type TextRole } from './typeScale';
 
 export function LineIcon({ role, children }: { readonly role: TextRole; readonly children: ReactNode }) {
   const { fontScale } = useWindowDimensions();
