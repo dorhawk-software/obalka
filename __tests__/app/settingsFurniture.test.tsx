@@ -181,6 +181,7 @@ describe('a sub-screen', () => {
       onOpenBackup={() => {}}
       onOpenDebug={() => {}}
       onOpenLicences={() => {}}
+      onOpenChangelog={() => {}}
     />
   );
 

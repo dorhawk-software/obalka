@@ -27,6 +27,11 @@ import { FaqScreen } from './settings/FaqScreen';
 import { DEMO_DATA } from '../dev/demoData';
 import type { FaqId } from '../content/faq';
 import { TelemetryConsent } from './settings/TelemetryConsent';
+import { WHATS_NEW_SEEN_KEY } from './settings/settingsKeys';
+import { APP_VERSION } from './appInfo';
+import { CHANGELOG } from '../content/changelog.generated';
+import { decideWhatsNew, releasesSince } from './whatsNew/whatsNew';
+import { WhatsNewSheet } from './whatsNew/WhatsNewSheet';
 import { AppNavigator } from './AppNavigator';
 import { navigate, resetToInbox } from './navigationRef';
 import {
@@ -144,7 +149,7 @@ export function AppShell() {
   // form keeps every keystroke because it never unmounts.
   // Read here rather than threaded down: the consent gate is a ROUTE decision, and routes are this
   // component's job. AppShell is mounted inside `SettingsProvider` (see App.tsx), so this is legal.
-  const { ready, telemetry, setTelemetry, setAppLock } = useSettings();
+  const { ready, telemetry, setTelemetry, setAppLock, locale } = useSettings();
   // Read through a ref by `handleRemove`, which switches the lock off when the last box goes (001
   // T037). The provider hands out a new setter on every render; depending on it directly would
   // rebuild the removal callback, and everything it is passed down to, each time.
@@ -977,6 +982,37 @@ export function AppShell() {
   // the background lost it for good - the app said nothing on return about a removal that had not
   // finished - and closing is the user's answer, not the phone's.
   const covered = useAppCovered();
+
+  // What's new (029): once per launch, when the inbox is up - after the lock, a first box and the
+  // diagnostics question, so it never stands between anyone and getting in. `whatsNewSince` holds the
+  // version this phone had; the sheet draws from the changelog in the CURRENT language, so switching
+  // languages behind it cannot leave it in the other one. The version is written when the sheet is
+  // decided on, not when it closes: a launch that dies with it open does not show it again, and the
+  // same text stays in Settings → O aplikaci → Co je nového.
+  const [whatsNewSince, setWhatsNewSince] = useState<string | null>(null);
+  const whatsNewChecked = useRef(false);
+  useEffect(() => {
+    if (!ready || telemetry === null || shownRoute !== 'home' || whatsNewChecked.current) {
+      return;
+    }
+    whatsNewChecked.current = true;
+    void (async () => {
+      try {
+        const seen = await settingsStore.getSetting(WHATS_NEW_SEEN_KEY);
+        const decision = decideWhatsNew(CHANGELOG.cs, APP_VERSION, seen);
+        if (decision.show || decision.remember) {
+          await settingsStore.setSetting(WHATS_NEW_SEEN_KEY, APP_VERSION);
+        }
+        if (decision.show) {
+          setWhatsNewSince(decision.since);
+        }
+      } catch {
+        // Saying what changed is a courtesy; a store that cannot be read is not a reason to say
+        // anything else. Tried again at the next launch, since nothing was written.
+      }
+    })();
+  }, [ready, telemetry, shownRoute]);
+  const closeWhatsNew = useCallback(() => setWhatsNewSince(null), []);
   const closeNotice = useCallback(
     (closing: ShellNotice) => {
       setNotices(prev => prev.filter(n => n !== closing));
@@ -1213,6 +1249,14 @@ export function AppShell() {
         onRefreshAll={refreshAll}
       />
       {noticeDialog}
+      {/* Behind any notice, and held - not closed - while the app is covered, like the notices. */}
+      {whatsNewSince != null && notice == null && !covered ? (
+        <WhatsNewSheet
+          releases={releasesSince(CHANGELOG[locale], APP_VERSION, whatsNewSince)}
+          since={whatsNewSince}
+          onClose={closeWhatsNew}
+        />
+      ) : null}
     </>
   );
 }

@@ -35,6 +35,7 @@ import { SettingsScreen } from './settings/SettingsScreen';
 import { FaqScreen } from './settings/FaqScreen';
 import type { FaqId } from '../content/faq';
 import { LicencesScreen } from './settings/LicencesScreen';
+import { ChangelogScreen } from './whatsNew/ChangelogScreen';
 import type { BoxAttention } from '../features/messages/state/crossBox';
 import { BackupScreen } from './settings/BackupScreen';
 import { TransferScreen } from './settings/TransferScreen';
@@ -69,6 +70,8 @@ export type RootStackParamList = {
   Transfer: undefined;
   Debug: undefined;
   Licences: undefined;
+  /** Every release's changes (029). */
+  Changelog: undefined;
   LicenceGroup: { spdx: string };
   LicenceDetail: { spdx: string };
 };
@@ -266,6 +269,7 @@ function SettingsRoute({
       onOpenBackup={() => navigation.navigate('Backup')}
       onOpenDebug={() => navigation.navigate('Debug')}
       onOpenLicences={() => navigation.navigate('Licences')}
+      onOpenChangelog={() => navigation.navigate('Changelog')}
     />
   );
 }
@@ -373,6 +377,12 @@ function DebugRoute({
   navigation,
 }: Readonly<NativeStackScreenProps<RootStackParamList, 'Debug'>>) {
   return <DebugScreen onBack={() => navigation.goBack()} />;
+}
+
+function ChangelogRoute({
+  navigation,
+}: Readonly<NativeStackScreenProps<RootStackParamList, 'Changelog'>>) {
+  return <ChangelogScreen onBack={() => navigation.goBack()} />;
 }
 
 function LicencesRoute({
@@ -578,6 +588,7 @@ export const screens: {
   Transfer: localized(TransferRoute),
   Debug: localized(DebugRoute),
   Licences: localized(LicencesRoute),
+  Changelog: localized(ChangelogRoute),
   LicenceGroup: localized(LicenceGroupRoute),
   LicenceDetail: localized(LicenceDetailRoute),
 };

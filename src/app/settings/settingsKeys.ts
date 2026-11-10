@@ -67,6 +67,13 @@ export const AUTO_DOWNLOAD_SINCE_KEY = 'attachments.autoDownloadSince';
 export const AUTO_DOWNLOAD_WIFI_KEY = 'attachments.autoDownloadWifiOnly';
 
 /**
+ * The app version this phone last told the person about (spec 029, `whatsNew.ts`). Device-local: it
+ * records what was shown HERE, so a backup carrying it to a new phone would make that phone either
+ * repeat an old What's new or skip one it never showed.
+ */
+export const WHATS_NEW_SEEN_KEY = 'whatsNew.seen';
+
+/**
  * Settings that describe THIS install, and are therefore never carried to another one: a backup leaves
  * them out and a restore or a phone transfer skips them, also when an older backup still has them.
  *
@@ -98,6 +105,7 @@ export const AUTO_DOWNLOAD_WIFI_KEY = 'attachments.autoDownloadWifiOnly';
  */
 export const DEVICE_LOCAL_SETTINGS: readonly string[] = [
   ACTIVE_BOX_KEY,
+  WHATS_NEW_SEEN_KEY,
   UNIFIED_INBOX_KEY,
   APP_LOCK_KEY,
   UNFINISHED_REMOVALS_KEY,

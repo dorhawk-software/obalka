@@ -336,6 +336,20 @@ function demoPdf(kb: number, label: string): string {
 }
 
 /**
+ * The file name an office would give the document: its subject, without diacritics, words joined by
+ * underscores ("Rozhodnuti_o_ulozeni_pokuty.pdf"). The demo shows up in the store screenshots, and a
+ * message id in the name reads as test data.
+ */
+function demoFileName(subject: string): string {
+  const words = subject
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean);
+  return `${words.join('_')}.pdf`;
+}
+
+/**
  * Write the fictional archive.
  *
  * Refuses on a device that already has a box, because the alternative is quietly mixing invented
@@ -389,7 +403,7 @@ export async function seedDemoArchive(): Promise<boolean> {
     for (const envelope of withFiles) {
       const attachments: MessageAttachment[] = [
         {
-          name: `${envelope.id}-pisemnost.pdf`,
+          name: demoFileName(envelope.subject),
           mimeType: 'application/pdf',
           metaType: 'main',
           contentBase64: demoPdf(envelope.attachmentSize ?? 1, envelope.id),

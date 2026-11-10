@@ -7,21 +7,50 @@ one adjustment there.
 ## How a release works
 
 1. On an up-to-date, clean `main`: `npm run release -- 0.1.0`. The command (`scripts/release.mjs`) checks
-   that the version goes up and the tag is free, runs `npm run verify`, sets the version in
-   `package.json` and `src/app/appInfo.ts`, commits `Release v0.1.0`, tags `v0.1.0`, and pushes the commit
-   and the tag together.
+   that the version goes up, the tag is free and the changelog says what the release changes (below),
+   runs `npm run verify`, sets the version in `package.json` and `src/app/appInfo.ts`, dates the
+   changelog's "Unreleased" as `## 0.1.0 (<today>)` and regenerates the app's copy of it, commits
+   `Release v0.1.0`, tags `v0.1.0`, and pushes the commit and the tag together.
 2. The tag starts **`.github/workflows/release.yml`**:
-   - **verify** - the tag, `package.json` and `APP_VERSION` must agree, then the full `npm run verify`.
+   - **verify** - the tag, `package.json` and `APP_VERSION` must agree, the changelog must have the
+     version's section in both languages, then the full `npm run verify`.
    - **ios** (macOS, Xcode 26.3) - a signed archive, uploaded to App Store Connect; it appears in
      TestFlight once Apple has processed it, usually within half an hour.
    - **android** - a signed app bundle for every device ABI, kept as a workflow artifact and uploaded to
      Google Play's internal testing track once that is switched on (below).
    - **github-release** - a GitHub release for the tag, marked pre-release while the major number is 0,
-     created only when at least one platform shipped.
+     created only when at least one platform shipped. Its text is the changelog's section, Czech then
+     English, not GitHub's list of commits.
+   - Google Play gets the section's points as its release notes (`whatsnew-cs-CZ`, `whatsnew-en-US`).
 3. A platform whose secrets are not set up yet is **skipped with a warning**, not failed, so Apple can be
    switched on before Google or the other way round.
 4. Both platform jobs build the **phone-to-phone transfer's Go archive** first (below) and fail the
    release if it is missing - a developer build without it just hides the transfer, a release must not.
+
+## The changelog (spec 029)
+
+`CHANGELOG.md` (Czech) and `CHANGELOG.en.md` (English) are written by hand for the people using the app,
+never generated from commits. **Every change a user would notice adds an entry under `## Unreleased` in
+both files, in the same commit**, under one of the kinds, in this order: Nové / New, Lepší / Better,
+Změněno / Changed, Opraveno / Fixed, Pod kapotou / Underneath (what the app is built on: a dependency's
+update; it is listed, but on its own it interrupts nobody after an update). An entry starts with its point
+in bold: `- **Co se změnilo.** Proč na tom záleží.`
+
+`scripts/changelog.mjs` holds the rules and `npm run verify` runs its check: both files read, the two
+languages hold the same releases, dates, kinds and number of entries, every release's points fit Google
+Play's 500 characters, and `src/content/changelog.generated.ts` (the app's built-in copy, released
+versions only) is current. `npm run release` refuses an empty Unreleased in either file.
+
+One section, everywhere:
+
+- **The app** - after an update, once, a sheet lists what changed since the version that phone had
+  (`src/app/whatsNew/`); Settings → O aplikaci → Co je nového lists every release. Nothing is fetched.
+- **GitHub** - the release's text (`--notes`).
+- **Google Play** - the release notes, the points only (`--store <version> <cs|en> --short`).
+- **App Store and TestFlight** - `uv run tools/asc.py whatsnew <version>` sets the App Store's "What's
+  New" on the version being prepared and TestFlight's "What to Test" on its newest build, in both
+  languages. Run it once the build is in TestFlight. Apple takes no "What's New" on an app's very first
+  version; the command says so rather than failing.
 
 ## The transfer's Go archives (025)
 
@@ -103,8 +132,10 @@ and AES-256-GCM for backups - all standard algorithms. The phone-to-phone transf
 PAKE key exchange over the NIST P-256 curve (`schollz/pake`), then PBKDF2-SHA256 and AES-256-GCM from
 Go's standard library, over a plain TCP connection - standard algorithms again, protecting only the
 user's own data in transit. Whether all of that qualifies for an exemption is a legal declaration the
-developer makes. Once decided, the key `ITSAppUsesNonExemptEncryption` in
-`ios/ObalkaDatovaSchranka/Info.plist` records it and builds stop asking.
+developer makes. **Decided 2026-11-10 (owner):** standard algorithms only, protecting the user's own data,
+so exempt - `ITSAppUsesNonExemptEncryption` is `false` in `ios/ObalkaDatovaSchranka/Info.plist` and
+builds no longer ask (`__tests__/platform/exportCompliance.test.ts` keeps it there). Adding a
+non-standard or proprietary algorithm would undo the answer.
 
 ## One-time setup: Google Play (internal testing)
 

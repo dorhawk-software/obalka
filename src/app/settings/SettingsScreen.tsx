@@ -54,6 +54,7 @@ export function SettingsScreen({
   onOpenBackup,
   onOpenDebug,
   onOpenLicences,
+  onOpenChangelog,
 }: {
   readonly onBack: () => void;
   /** `focus` opens the FAQ with one answer already expanded (010 US3). */
@@ -61,6 +62,8 @@ export function SettingsScreen({
   readonly onOpenBackup: () => void;
   readonly onOpenDebug: () => void;
   readonly onOpenLicences: () => void;
+  /** Every release's changes (029). */
+  readonly onOpenChangelog: () => void;
 }) {
   const theme = useTheme();
   const contentBottom = useContentBottom(28);
@@ -367,7 +370,7 @@ export function SettingsScreen({
           </Card>
         </Section>
 
-        {/* One card, five rows, hairline-separated (design). The version row is a VALUE row; the rest
+        {/* One card, six rows, hairline-separated (design). The version row is a VALUE row; the rest
             navigate - the privacy-policy and source-code rows leave the app, so they carry the
             external-link mark rather than a chevron. */}
         <Section label={t('settings.about')}>
@@ -377,6 +380,11 @@ export function SettingsScreen({
             <AboutRow last={false}>
               <RowTitle>{t('settings.version')}</RowTitle>
               <Value color={theme.textFaint}>{APP_VERSION}</Value>
+            </AboutRow>
+            {/* Under the version it describes (029): what changed in it and before it. */}
+            <AboutRow last={false} onPress={onOpenChangelog}>
+              <RowTitle>{t('settings.whatsNew')}</RowTitle>
+              <ChevronRightIcon size={18} color={theme.textFaint} />
             </AboutRow>
             <AboutRow last={false} onPress={() => onOpenFaq()}>
               <RowTitle>{t('settings.faq')}</RowTitle>

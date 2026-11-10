@@ -56,6 +56,7 @@ async function openPolicyIn(locale: Locale): Promise<unknown[][]> {
             onOpenBackup={() => {}}
             onOpenDebug={() => {}}
             onOpenLicences={() => {}}
+            onOpenChangelog={() => {}}
           />
         </AppThemeProvider>
       </TamaguiProvider>,

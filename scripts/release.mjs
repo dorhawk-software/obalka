@@ -6,7 +6,12 @@
 //   npm run release -- 0.1.0
 //
 // It refuses rather than guesses. A dirty tree, a branch other than main, a main behind origin, a
-// version that does not go up, or a tag that already exists all stop it before anything is written.
+// version that does not go up, a tag that already exists, or a changelog with nothing under
+// "Unreleased" (or Czech and English that disagree) all stop it before anything is written.
+//
+// The changelog (spec 029): "## Unreleased" in CHANGELOG.md and CHANGELOG.en.md becomes
+// "## <version> (<today>)", and the app's built-in copy is regenerated, in the release commit. That
+// section is what the release workflow publishes on GitHub and the stores, and what the app shows.
 // `npm run verify` runs first, because a tag on a red commit ships a red commit.
 //
 // Where the version is kept, and why each copy exists:
@@ -19,6 +24,15 @@
 
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
+import {
+  FILES as CHANGELOG_FILES,
+  GENERATED as CHANGELOG_GENERATED,
+  count,
+  dated,
+  generated,
+  mismatches,
+  parse,
+} from './changelog.mjs';
 
 const APP_INFO = 'src/app/appInfo.ts';
 const APP_VERSION_LINE = /export const APP_VERSION = '([^']*)';/;
@@ -55,9 +69,36 @@ export function withAppVersion(source, version) {
   return source.replace(APP_VERSION_LINE, `export const APP_VERSION = '${version}';`);
 }
 
-/** Every reason not to release now, in the order a person would want to fix them. Empty = go. */
-export function releaseProblems({ version, current, branch, dirty, behind, tagExists }) {
+/**
+ * Every reason not to release now, in the order a person would want to fix them. Empty = go.
+ *
+ * @param {{
+ *   version: string | undefined, current: string, branch: string, dirty: boolean, behind: number,
+ *   tagExists: boolean, unreleased?: { cs: number, en: number }, changelogProblems?: string[],
+ * }} facts
+ * @returns {string[]}
+ */
+export function releaseProblems({
+  version,
+  current,
+  branch,
+  dirty,
+  behind,
+  tagExists,
+  unreleased = { cs: 1, en: 1 },
+  changelogProblems = [],
+}) {
   const problems = [];
+  if (unreleased.cs === 0 || unreleased.en === 0) {
+    problems.push(
+      'Nothing under "## Unreleased" in ' +
+        [unreleased.cs === 0 ? 'CHANGELOG.md' : null, unreleased.en === 0 ? 'CHANGELOG.en.md' : null]
+          .filter(Boolean)
+          .join(' and ') +
+        ': say what this release changes for the people using it, in both languages.',
+    );
+  }
+  problems.push(...changelogProblems);
   if (!parseVersion(version)) {
     problems.push(`"${version ?? ''}" is not a version like 0.1.0 (numbers only).`);
   } else if (!isNewer(version, current)) {
@@ -85,6 +126,17 @@ function git(...args) {
 function main() {
   const version = process.argv[2];
   const current = JSON.parse(readFileSync('package.json', 'utf8')).version;
+  let changelog = null;
+  const changelogProblems = [];
+  try {
+    changelog = {
+      cs: parse(readFileSync(CHANGELOG_FILES.cs, 'utf8'), 'cs'),
+      en: parse(readFileSync(CHANGELOG_FILES.en, 'utf8'), 'en'),
+    };
+    changelogProblems.push(...mismatches(changelog.cs, changelog.en).map(p => `The changelogs disagree: ${p}.`));
+  } catch (err) {
+    changelogProblems.push(`The changelog does not read: ${err.message}`);
+  }
 
   git('fetch', '--quiet', '--tags', 'origin', 'main');
   const problems = releaseProblems({
@@ -96,6 +148,8 @@ function main() {
     tagExists:
       git('tag', '--list', `v${version}`) !== '' ||
       git('ls-remote', '--tags', 'origin', `refs/tags/v${version}`) !== '',
+    unreleased: { cs: count(changelog?.cs[0]), en: count(changelog?.en[0]) },
+    changelogProblems,
   });
   if (problems.length > 0) {
     console.error('release: not releasing.');
@@ -111,8 +165,28 @@ function main() {
 
   execFileSync('npm', ['version', version, '--no-git-tag-version'], { stdio: 'inherit' });
   writeFileSync(APP_INFO, withAppVersion(readFileSync(APP_INFO, 'utf8'), version));
+  const today = new Date().toISOString().slice(0, 10);
+  for (const lang of ['cs', 'en']) {
+    const file = CHANGELOG_FILES[lang];
+    writeFileSync(file, dated(readFileSync(file, 'utf8'), version, today));
+  }
+  writeFileSync(
+    CHANGELOG_GENERATED,
+    generated(
+      parse(readFileSync(CHANGELOG_FILES.cs, 'utf8'), 'cs'),
+      parse(readFileSync(CHANGELOG_FILES.en, 'utf8'), 'en'),
+    ),
+  );
 
-  git('add', 'package.json', 'package-lock.json', APP_INFO);
+  git(
+    'add',
+    'package.json',
+    'package-lock.json',
+    APP_INFO,
+    CHANGELOG_FILES.cs,
+    CHANGELOG_FILES.en,
+    CHANGELOG_GENERATED,
+  );
   git('commit', '-m', `Release v${version}`);
   git('tag', '-a', `v${version}`, '-m', `Obálka ${version}`);
   // Atomic: the commit and the tag land together or not at all, so a tag can never point at a

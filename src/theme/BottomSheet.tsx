@@ -32,12 +32,18 @@ export function BottomSheet({
   onClose,
   title,
   testID,
+  footer,
   children,
 }: {
   readonly onClose: () => void;
   /** The sheet's heading (Bricolage 16/700, inset 6 like the rows under it). */
   readonly title?: string;
   readonly testID?: string;
+  /**
+   * Pinned under the scrolling content, so it stays in reach however long that runs: the one action
+   * that closes the sheet (What's new's "Pokračovat", spec 029).
+   */
+  readonly footer?: ReactNode;
   readonly children: ReactNode;
 }) {
   const theme = useTheme();
@@ -118,6 +124,7 @@ export function BottomSheet({
                 >
                   {children}
                 </ScrollView>
+                {footer}
               </YStack>
             </Pressable>
           </Animated.View>

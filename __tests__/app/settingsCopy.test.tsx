@@ -42,7 +42,7 @@ const mount = async () => {
     <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
       <AppThemeProvider isDark={false}>
         <SettingsScreen onBack={() => {}} onOpenFaq={() => {}} onOpenBackup={() => {}}
-      onOpenDebug={() => {}} onOpenLicences={() => {}} />
+      onOpenDebug={() => {}} onOpenLicences={() => {}} onOpenChangelog={() => {}} />
       </AppThemeProvider>
     </TamaguiProvider>,
   );

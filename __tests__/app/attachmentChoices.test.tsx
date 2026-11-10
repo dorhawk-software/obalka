@@ -123,6 +123,7 @@ describe('"Stahovat přílohy automaticky?" (026 US4)', () => {
             onOpenBackup={() => {}}
             onOpenDebug={() => {}}
             onOpenLicences={() => {}}
+            onOpenChangelog={() => {}}
           />
         </AppThemeProvider>
       </TamaguiProvider>,

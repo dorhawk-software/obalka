@@ -114,3 +114,5 @@ android/app/libs/
 ios/ObalkaTransferModule/Obalkatransfer.xcframework/
 # A historical checkout made by scripts/make-backup-fixture.mjs, removed again when it finishes.
 .fixture-worktree/
+# Python bytecode from the tools/ scripts (asc.py, store_screens.py run with uv).
+__pycache__/

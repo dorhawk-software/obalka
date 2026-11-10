@@ -88,3 +88,22 @@ describe('before anything is written', () => {
     expect(releaseProblems({ ...ready, version: undefined as unknown as string })).toHaveLength(1);
   });
 });
+
+describe('the changelog (spec 029)', () => {
+  it('refuses a release with nothing under "Unreleased", naming the file that is empty', () => {
+    const problems = releaseProblems({ ...ready, unreleased: { cs: 2, en: 0 } });
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toMatch(/CHANGELOG\.en\.md/);
+    expect(problems[0]).not.toMatch(/CHANGELOG\.md /);
+  });
+
+  it('passes on what is wrong with the changelog itself', () => {
+    expect(releaseProblems({ ...ready, changelogProblems: ['The changelogs disagree: x.'] })).toEqual([
+      'The changelogs disagree: x.',
+    ]);
+  });
+
+  it('goes when both languages describe the release', () => {
+    expect(releaseProblems({ ...ready, unreleased: { cs: 1, en: 1 } })).toEqual([]);
+  });
+});

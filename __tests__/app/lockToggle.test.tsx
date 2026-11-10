@@ -57,6 +57,7 @@ const mount = async () => {
           onOpenBackup={() => {}}
           onOpenDebug={() => {}}
           onOpenLicences={() => {}}
+          onOpenChangelog={() => {}}
         />
       </AppThemeProvider>
     </TamaguiProvider>,

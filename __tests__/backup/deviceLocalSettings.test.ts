@@ -51,7 +51,7 @@ const oldPayload = (settings: Record<string, string>): BackupPayload => ({
 });
 
 describe('the device-local settings', () => {
-  it('are the box this phone had open, its merged view, its app lock, its unfinished removals, its diagnostics answer, its backup holds, its open sign-in handshake and its automatic download', () => {
+  it('are the box this phone had open, its merged view, its app lock, its unfinished removals, its diagnostics answer, its backup holds, its open sign-in handshake, its automatic download and the version its What’s new was decided for', () => {
     expect([...DEVICE_LOCAL_SETTINGS].sort()).toEqual(
       [
         'attachments.autoDownload',
@@ -64,6 +64,7 @@ describe('the device-local settings', () => {
         'telemetry',
         'unifiedInbox',
         'unfinishedRemovals',
+        'whatsNew.seen',
       ].sort(),
     );
     expect(isDeviceLocalSetting(APP_LOCK_KEY)).toBe(true);
