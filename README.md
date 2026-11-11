@@ -16,7 +16,7 @@
   <a href="#instalace-a-vývoj"><img src="https://img.shields.io/badge/platformy-Android%20%C2%B7%20iOS-1E4E80?style=flat-square" alt="Platformy Android a iOS" /></a>
   <a href="package.json"><img src="https://img.shields.io/badge/React%20Native-0.86-2563A6?style=flat-square" alt="React Native 0.86" /></a>
   <a href="https://github.com/dorhawk-software/obalka/actions/workflows/ci.yml"><img src="https://github.com/dorhawk-software/obalka/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="#stav-projektu"><img src="https://img.shields.io/badge/stav-p%C5%99ed%20beta-8C6100?style=flat-square" alt="Stav: před beta verzí" /></a>
+  <a href="#stav-projektu"><img src="https://img.shields.io/badge/stav-beta%20(TestFlight)-8C6100?style=flat-square" alt="Stav: beta na TestFlightu" /></a>
   <a href="#postaveno-s-ai"><img src="https://img.shields.io/badge/postaveno%20s-Claude-8C6100?style=flat-square" alt="Postaveno s Claude" /></a>
 </p>
 
@@ -255,7 +255,7 @@ přepínače aplikací nevrátí k `FLAG_SECURE`, které by uživateli vzalo sn�
 
 ## Stav projektu
 
-**Před první beta verzí.**
+**Beta na iPhonu přes TestFlight; na Androidu zatím bez beta verze.**
 
 - ✅ Účty a přihlášení (jméno a heslo, SMS kód, Mobilní klíč), izolace session po schránkách
 - ✅ Zprávy a přílohy, místní archiv a hledání
@@ -266,9 +266,13 @@ přepínače aplikací nevrátí k `FLAG_SECURE`, které by uživateli vzalo sn�
 - ✅ Přenos do jiného telefonu na Androidu
 - ✅ Zámek aplikace, režim ladění, světlý a tmavý motiv, čeština a angličtina
 - 🟡 Podepsané originály zpráv – hotové, na zařízení zatím neprojité
-- 🟡 Přenos do jiného telefonu na iPhonu – hotový v kódu, na iPhonu zatím neprojitý
+- 🟡 Přenos do jiného telefonu na iPhonu – prošlý na iPhonu i mezi iPhonem a Androidem, zbývá pár kontrol
+  (Wi-Fi, odmítnutá místní síť, dlouhý přenos)
+- 🟡 Změna hesla ke schránce v aplikaci a upozornění, že heslo brzy vyprší – změna prošlá na iPhonu,
+  samotné upozornění zatím neviděné
 - 🟡 Automatické stahování příloh a zálohy se všemi přílohami – hotové, proti testovací schránce zatím neprojité
-- ⚪ Beta v App Store a Google Play
+- 🟡 Beta – TestFlight běží, veřejný odkaz čeká na Beta App Review; Google Play zatím jen sestavení
+  (bez interního testování)
 - ⚪ Zálohování do cloudu (Google Drive, iCloud)
 
 Poctivý přehled po jednotlivých funkcích, včetně toho, co hotové **není**, je v

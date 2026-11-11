@@ -16,7 +16,7 @@
   <a href="#installing-and-developing"><img src="https://img.shields.io/badge/platforms-Android%20%C2%B7%20iOS-1E4E80?style=flat-square" alt="Platforms: Android and iOS" /></a>
   <a href="package.json"><img src="https://img.shields.io/badge/React%20Native-0.86-2563A6?style=flat-square" alt="React Native 0.86" /></a>
   <a href="https://github.com/dorhawk-software/obalka/actions/workflows/ci.yml"><img src="https://github.com/dorhawk-software/obalka/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="#project-status"><img src="https://img.shields.io/badge/status-pre--beta-8C6100?style=flat-square" alt="Status: pre-beta" /></a>
+  <a href="#project-status"><img src="https://img.shields.io/badge/status-beta%20(TestFlight)-8C6100?style=flat-square" alt="Status: beta on TestFlight" /></a>
   <a href="#built-with-ai"><img src="https://img.shields.io/badge/built%20with-Claude-8C6100?style=flat-square" alt="Built with Claude" /></a>
 </p>
 
@@ -258,7 +258,7 @@ which would take the user's own screenshots away.
 
 ## Project status
 
-**Before the first beta.**
+**In beta on iPhone through TestFlight; no beta on Android yet.**
 
 - ✅ Accounts and sign-in (password, SMS code, Mobile Key), per-box session isolation
 - ✅ Messages and attachments, the local archive and search
@@ -269,9 +269,13 @@ which would take the user's own screenshots away.
 - ✅ Phone-to-phone transfer on Android
 - ✅ App lock, debug mode, light and dark themes, Czech and English
 - 🟡 Signed originals of messages – done, not yet walked on a device
-- 🟡 Phone-to-phone transfer on iPhone – done in code, not yet walked on an iPhone
+- 🟡 Phone-to-phone transfer on iPhone – walked on an iPhone and between an iPhone and Android, a few
+  checks left (Wi-Fi, a refused local network, a long transfer)
+- 🟡 Changing a box's password in the app, and a notice before it expires – the change walked on an
+  iPhone, the notice itself not seen yet
 - 🟡 Automatic attachment download and backups with every attachment – done, not yet walked against the test box
-- ⚪ Beta on the App Store and Google Play
+- 🟡 Beta – TestFlight is running, the public link waits for Beta App Review; Google Play has builds
+  only (no internal testing yet)
 - ⚪ Backing up to the cloud (Google Drive, iCloud)
 
 An honest per-feature breakdown, including what is **not** done, lives in
