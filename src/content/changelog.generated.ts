@@ -47,7 +47,7 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
             "body": "Při otevření aplikace se načtou odeslané zprávy všech schránek, takže se dostanou do archivu, zálohy, přenosu i hledání dřív, než je ISDS po 90 dnech smaže."
           },
           {
-            "lead": "Počty nepřečtených u schránky platí hned po obnovení jen té schránky.",
+            "lead": "Počty nepřečtených platí hned po obnovení jedné schránky.",
             "body": "Dřív se aktualizovaly až při obnovení všech schránek."
           },
           {
@@ -65,7 +65,7 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
             "body": ""
           },
           {
-            "lead": "Automatické stahování „jen nových zpráv“ nestahuje staré odeslané zprávy.",
+            "lead": "Stahování „jen nových zpráv“ vynechá staré odeslané zprávy.",
             "body": "Za nové se počítají jen zprávy doručené po zapnutí."
           }
         ],

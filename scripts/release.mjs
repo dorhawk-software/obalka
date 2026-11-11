@@ -221,6 +221,19 @@ function main() {
     ),
   );
 
+  // The changelog's rules once more, on what it now says. Verify above read it BEFORE the release was
+  // written into it, and folding Unreleased into a version makes that section longer: 1.0.0 (3) was
+  // tagged with points past Google Play's 500 characters and refused only by the workflow's verify,
+  // after the tag was out (2026-11-11). Refused here, nothing is committed and the files go back.
+  try {
+    execFileSync('node', ['scripts/changelog.mjs', '--check'], { stdio: 'inherit' });
+  } catch {
+    git('checkout', '--', 'package.json', 'package-lock.json', APP_INFO, CHANGELOG_FILES.cs,
+      CHANGELOG_FILES.en, CHANGELOG_GENERATED);
+    console.error(`\nrelease: the changelog would not pass as ${version}'s section; nothing was committed.`);
+    process.exit(1);
+  }
+
   git(
     'add',
     'package.json',
