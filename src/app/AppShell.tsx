@@ -24,6 +24,7 @@ import { LoginFlow } from '../features/accounts/screens/LoginFlow';
 import { ChangePasswordForm } from '../features/accounts/screens/ChangePasswordForm';
 import { changeBoxPassword } from '../features/accounts/state/changePassword';
 import { passwordNudges } from '../features/accounts/state/passwordNudge';
+import { formatExpiryDate } from '../features/accounts/state/passwordExpiry';
 import { portalUrl } from '../services/isds/endpoints';
 import { Welcome } from '../features/accounts/screens/Welcome';
 import { useSettings } from './settings/SettingsProvider';
@@ -204,6 +205,13 @@ export function AppShell() {
    * notification permission for the password nudge - never at launch.
    */
   const askNudgePermission = useRef(false);
+  /**
+   * The box whose expiry the app is about to ask notification permission for. The app's own dialog says
+   * what the notifications are for FIRST; the OS dialog cannot say it and comes only on "Upozorňovat"
+   * (owner 2026-11-11: a bare iOS prompt after adding a box "did not tell me what the notifications
+   * would be for - very bad").
+   */
+  const [nudgeAsk, setNudgeAsk] = useState<{ boxName: string; expiresAt: number } | null>(null);
   /** When ISDS refused the box being re-authenticated, if the screen was opened from that refusal. */
   const [reauthRefusedAt, setReauthRefusedAt] = useState<number | undefined>(undefined);
   /**
@@ -1007,17 +1015,38 @@ export function AppShell() {
       if (nudges.length > 0 && askNudgePermission.current) {
         askNudgePermission.current = false;
         try {
-          if ((await settingsStore.getSetting(NUDGE_PERMISSION_ASKED_KEY)) == null) {
-            await settingsStore.setSetting(NUDGE_PERMISSION_ASKED_KEY, '1');
-            await notifier.requestPermission();
+          if (
+            (await settingsStore.getSetting(NUDGE_PERMISSION_ASKED_KEY)) == null &&
+            (await notifier.notificationAccess()) !== 'on'
+          ) {
+            // The soonest one: the date the dialog names.
+            const first = nudges.reduce((a, b) => (b.expiresAt < a.expiresAt ? b : a));
+            setNudgeAsk({ boxName: first.boxName, expiresAt: first.expiresAt });
           }
         } catch (e) {
           reportFailure('notify.permission', e, { stage: 'persist' });
         }
       }
+      // Schedules nothing while notifications are off; the answer to the dialog syncs again.
       await notifier.syncPasswordNudges(nudges);
     })();
   }, [accounts, route]);
+
+  /** The answer to the dialog. Either way it is not asked again; only "allow" raises the OS dialog. */
+  const answerNudgeAsk = useCallback(async (allow: boolean) => {
+    setNudgeAsk(null);
+    try {
+      await settingsStore.setSetting(NUDGE_PERMISSION_ASKED_KEY, '1');
+    } catch (e) {
+      reportFailure('notify.permission', e, { stage: 'persist' });
+    }
+    if (!allow) {
+      return;
+    }
+    if (await notifier.requestPermission()) {
+      await notifier.syncPasswordNudges(passwordNudges(accountsRef.current, Date.now()));
+    }
+  }, []);
 
   // Reminder deep-link (010 FR-005): resolve a tapped reminder → switch the OWNING box active (set +
   // persist) and open the message; degrade safely (missing box → active inbox; missing message →
@@ -1399,8 +1428,30 @@ export function AppShell() {
         onReceivedListed={handleReceivedListed}
       />
       {noticeDialog}
+      {nudgeAsk != null && notice == null && !covered ? (
+        <Dialog
+          testID="nudgeAsk"
+          title={t('notif.passwordAsk.title')}
+          subtitle={nudgeAsk.boxName}
+          body={t('notif.passwordAsk.body', { date: formatExpiryDate(nudgeAsk.expiresAt) })}
+          onDismiss={() => void answerNudgeAsk(false)}
+          actions={[
+            {
+              label: t('notif.passwordAsk.later'),
+              onPress: () => void answerNudgeAsk(false),
+              testID: 'nudgeAskLater',
+            },
+            {
+              label: t('notif.passwordAsk.allow'),
+              onPress: () => void answerNudgeAsk(true),
+              tone: 'primary',
+              testID: 'nudgeAskAllow',
+            },
+          ]}
+        />
+      ) : null}
       {/* Behind any notice, and held - not closed - while the app is covered, like the notices. */}
-      {whatsNewSince != null && notice == null && !covered ? (
+      {whatsNewSince != null && nudgeAsk == null && notice == null && !covered ? (
         <WhatsNewSheet
           releases={releasesSince(CHANGELOG[locale], APP_VERSION, whatsNewSince)}
           since={whatsNewSince}

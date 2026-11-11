@@ -83,7 +83,17 @@ Captured on the test environment on 2026-11-11 with the box `7bi62r`:
 3. A new date (a sign-in, a re-auth, a change in the app) moves both notifications; a removed box's are
    cancelled; a moment already past is skipped; a box with no date has none.
 4. The app asks for notification permission once, the first time it schedules one, after a sign-in the
-   person started - never at launch.
+   person started - never at launch. **Its own dialog comes first** ("Upozornit, než heslo vyprší?", the
+   box and the date, a week and a day before, scheduled by the phone with no ISDS call): the OS dialog
+   cannot say what the notifications are for, and it is raised only on "Upozorňovat". "Teď ne" raises
+   nothing, and neither answer is asked again. Skipped when notifications are already on. (Owner,
+   2026-11-11, after adding a box on build 5: the bare iOS prompt came "without actually telling me
+   what the notifications would be for - very bad".)
+6. Until notifications are allowed - off, or not answered yet - nothing is scheduled: iOS refuses each one
+   ("Source is not authorized"), and that refusal is never reported as a failure. Allowing them in the
+   dialog schedules them. (Sentry, build 5: the owner ALLOWED them, but while the OS dialog was open the
+   accounts changed again - the refresh after adding a box - and that sync tried to schedule against a
+   permission not yet answered.)
 5. Nothing here talks to ISDS: the date is the one stored at the person's own last sign-in, and the OS
    holds the timer (014, 010 FR-010 as amended below).
 

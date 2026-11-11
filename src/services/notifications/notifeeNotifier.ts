@@ -81,6 +81,17 @@ async function ensurePlatform(): Promise<void> {
   }
 }
 
+/**
+ * iOS refusing to schedule because notifications are not allowed for the app ("Repository could not
+ * save notification. Source is not authorized.", UNErrorCodeNotificationsNotAllowed). That is the
+ * person's answer, not a failure, so it is not reported (Sentry, 2026-11-11, build 5).
+ */
+export function isNotificationsNotAllowed(error: unknown): boolean {
+  const message =
+    error instanceof Error ? error.message : typeof error === 'string' ? error : '';
+  return /not authorized|notifications? (are )?not allowed|NotificationsNotAllowed/i.test(message);
+}
+
 export class NotifeeNotifier implements Notifier {
   async requestPermission(): Promise<boolean> {
     try {
@@ -155,8 +166,11 @@ export class NotifeeNotifier implements Notifier {
       await this.create(ids.onDay, input, input.timers.onDay, false);
     } catch (e) {
       // A reminder the user deliberately set, which then never fires, is this feature failing
-      // completely - and it fails by ABSENCE, so nobody notices and nobody reports it.
-      reportFailure('notify.schedule', e, { stage: 'native' });
+      // completely - and it fails by ABSENCE, so nobody notices and nobody reports it. Notifications
+      // switched off is the exception: the reminder chip already says alerts are off.
+      if (!isNotificationsNotAllowed(e)) {
+        reportFailure('notify.schedule', e, { stage: 'native' });
+      }
       // Best-effort: the chip is the reminder, this is the announcement (FR-006).
     }
   }
@@ -194,6 +208,13 @@ export class NotifeeNotifier implements Notifier {
           await notifee.cancelTriggerNotification(id).catch(() => {});
         }
       }
+      // Nothing to create until notifications are allowed: iOS refuses every one, and "not answered
+      // yet" counts - a sync that ran while the permission dialog was still open is what Sentry caught
+      // on build 5. The shell syncs again when the person allows them.
+      const { authorizationStatus } = await notifee.getNotificationSettings();
+      if (authorizationStatus < AuthorizationStatus.AUTHORIZED) {
+        return;
+      }
       for (const nudge of nudges) {
         const ids = passwordNudgeIds(nudge.boxId);
         await this.createNudge(ids.weekBefore, nudge, nudge.timers.weekBefore);
@@ -201,8 +222,10 @@ export class NotifeeNotifier implements Notifier {
       }
     } catch (e) {
       // The only warning that reaches someone who does not open the app in the fortnight the strip
-      // shows; a failure is silent, which is why it is reported.
-      reportFailure('notify.schedule', e, { stage: 'native' });
+      // shows; a failure is silent, which is why it is reported - unless it is notifications being off.
+      if (!isNotificationsNotAllowed(e)) {
+        reportFailure('notify.schedule', e, { stage: 'native' });
+      }
     }
   }
 

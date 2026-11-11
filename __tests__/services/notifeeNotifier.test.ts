@@ -8,13 +8,21 @@
 
 import notifee from '@notifee/react-native';
 import { Linking, Platform } from 'react-native';
-import { NotifeeNotifier } from '../../src/services/notifications/notifeeNotifier';
+import {
+  NotifeeNotifier,
+  isNotificationsNotAllowed,
+} from '../../src/services/notifications/notifeeNotifier';
+import { reportFailure } from '../../src/services/telemetry/telemetry';
 import { reminderNotificationIds } from '../../src/features/messages/state/reminders';
 import type {
   PasswordNudge,
   ScheduleReminderInput,
 } from '../../src/services/notifications/notifications';
 import { passwordNudgeIds } from '../../src/features/accounts/state/passwordNudge';
+
+jest.mock('../../src/services/telemetry/telemetry', () => ({
+  reportFailure: jest.fn(),
+}));
 
 const create = notifee.createTriggerNotification as jest.Mock;
 const cancel = notifee.cancelTriggerNotification as jest.Mock;
@@ -233,6 +241,7 @@ describe('NotifeeNotifier - password nudges', () => {
     jest.clearAllMocks();
     Platform.OS = 'android';
     getIds.mockResolvedValue([]);
+    (notifee.getNotificationSettings as jest.Mock).mockResolvedValue({ authorizationStatus: 1 });
   });
 
   it('schedules both moments on the password channel, with the box and the date in the body', async () => {
@@ -274,5 +283,47 @@ describe('NotifeeNotifier - password nudges', () => {
   it('never rejects', async () => {
     getIds.mockRejectedValueOnce(new Error('native'));
     await expect(new NotifeeNotifier().syncPasswordNudges([nudge()])).resolves.toBeUndefined();
+  });
+
+  it.each([
+    ['declined', 0],
+    ['never asked', -1],
+  ])('creates nothing while notifications are %s - and still cancels what is no longer wanted', async (_, status) => {
+    Platform.OS = 'ios';
+    (notifee.getNotificationSettings as jest.Mock).mockResolvedValue({ authorizationStatus: status });
+    const gone = passwordNudgeIds('b2');
+    getIds.mockResolvedValue([gone.weekBefore]);
+    await new NotifeeNotifier().syncPasswordNudges([nudge()]);
+    expect(create).not.toHaveBeenCalled();
+    expect(cancel).toHaveBeenCalledWith(gone.weekBefore);
+    expect(reportFailure).not.toHaveBeenCalled();
+  });
+
+  it('does not report iOS refusing a notification the app may not show (Sentry, build 5)', async () => {
+    create.mockRejectedValueOnce(
+      new Error('Repository could not save notification. Source is not authorized.'),
+    );
+    await new NotifeeNotifier().syncPasswordNudges([nudge()]);
+    expect(reportFailure).not.toHaveBeenCalled();
+  });
+
+  it('still reports any other failure to schedule', async () => {
+    create.mockRejectedValueOnce(new Error('native'));
+    await new NotifeeNotifier().syncPasswordNudges([nudge()]);
+    expect(reportFailure).toHaveBeenCalledWith('notify.schedule', expect.any(Error), {
+      stage: 'native',
+    });
+  });
+});
+
+describe('what counts as notifications being switched off', () => {
+  it.each([
+    ['Repository could not save notification. Source is not authorized.', true],
+    ['Notifications are not allowed for this application', true],
+    ['UNErrorCodeNotificationsNotAllowed', true],
+    ['native', false],
+    ['Invalid trigger timestamp', false],
+  ])('%p → %p', (message, off) => {
+    expect(isNotificationsNotAllowed(new Error(message))).toBe(off);
   });
 });

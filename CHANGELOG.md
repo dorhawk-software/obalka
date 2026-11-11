@@ -13,6 +13,11 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+### Lepší
+
+- **Než telefon požádá o oznámení, Obálka řekne, k čemu jsou.** Po přidání schránky nejdřív vysvětlí
+  upozornění na konec platnosti hesla; systémový dotaz přijde, jen když je chcete.
+
 ## 1.1.0 (2026-11-11)
 
 ### Nové

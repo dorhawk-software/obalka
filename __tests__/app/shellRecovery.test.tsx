@@ -42,6 +42,10 @@ const mockWorld = {
   signInAs: 'a',
   /** Reads of the table that fail once a box has been added. */
   listFailuresAfterAdd: 0,
+  /** What the phone answers about notifications, how often the OS dialog was raised, and each sync. */
+  notifyAccess: 'unasked' as 'unasked' | 'on' | 'off',
+  permissionAsked: 0,
+  nudgeSyncs: [] as string[][],
 };
 
 jest.mock('../../src/features/accounts/deps', () => {
@@ -99,7 +103,17 @@ jest.mock('../../src/features/accounts/deps', () => {
     backupController: { subscribe: () => () => {}, currentRun: () => null },
     transferController: { available: () => false },
     // 030: the password-expiry nudge and the in-app change.
-    notifier: { requestPermission: async () => true, syncPasswordNudges: async () => {} },
+    notifier: {
+      notificationAccess: async () => mockWorld.notifyAccess,
+      requestPermission: async () => {
+        mockWorld.permissionAsked += 1;
+        mockWorld.notifyAccess = 'on';
+        return true;
+      },
+      syncPasswordNudges: async (nudges: { boxId: string }[]) => {
+        mockWorld.nudgeSyncs.push(nudges.map(n => n.boxId));
+      },
+    },
     passwordChanger: { changePassword: async () => ({ type: 'serverFault' }) },
     remindersController: { listForBox: async () => [] },
     scanController: { clearBox: async () => {} },
@@ -222,6 +236,9 @@ beforeEach(() => {
   mockWorld.synced = [];
   mockWorld.signInAs = 'a';
   mockWorld.listFailuresAfterAdd = 0;
+  mockWorld.notifyAccess = 'unasked';
+  mockWorld.permissionAsked = 0;
+  mockWorld.nudgeSyncs = [];
 });
 
 afterEach(() => {
@@ -386,5 +403,57 @@ describe('the inbox strip and the re-auth screen', () => {
     await waitFor(() => expect(view.getByText(t('reauth.intro.credentials'))).toBeTruthy());
     expect(view.queryByText(t('reauth.intro.passwordExpired'))).toBeNull();
     expect(view.queryByTestId('reauthPortal')).toBeNull();
+  });
+});
+
+// 030 US3.4, as amended 2026-11-11: the owner added a box and got the bare iOS prompt, "without
+// actually telling me what the notifications would be for - very bad". The app's own dialog says it
+// first, and only its "Upozorňovat" raises the OS one.
+describe('asking for notifications after a sign-in', () => {
+  async function reauthBoxWithADate() {
+    mockWorld.accounts = [
+      { ...mockAccount('a', 'Alfa'), passwordExpiresAt: Date.now() + 20 * 86_400_000 },
+      mockAccount('b', 'Beta'),
+    ];
+    mockWorld.signedIn = new Set(['b']);
+    const view = await renderShell();
+    await waitFor(() => expect(view.getByTestId('reauth')).toBeTruthy());
+    expect(view.queryByTestId('nudgeAsk')).toBeNull(); // never at launch
+    await press(view, 'reauth');
+    await type(view, 'password', 'new');
+    await press(view, 'submit');
+    return view;
+  }
+
+  it('says what the notifications are for before the phone asks - and "not now" never raises it', async () => {
+    const view = await reauthBoxWithADate();
+    await waitFor(() => expect(view.getByTestId('nudgeAsk')).toBeTruthy());
+    expect(view.getByText(t('notif.passwordAsk.title'))).toBeTruthy();
+    expect(view.getByTestId('nudgeAsk')).toHaveTextContent(/Alfa/);
+    expect(mockWorld.permissionAsked).toBe(0);
+
+    await press(view, 'nudgeAskLater');
+    expect(view.queryByTestId('nudgeAsk')).toBeNull();
+    expect(mockWorld.permissionAsked).toBe(0);
+  });
+
+  it('raises the OS dialog on "Upozorňovat" and schedules the notifications once allowed', async () => {
+    const view = await reauthBoxWithADate();
+    await waitFor(() => expect(view.getByTestId('nudgeAsk')).toBeTruthy());
+    const syncsBefore = mockWorld.nudgeSyncs.length;
+
+    await press(view, 'nudgeAskAllow');
+    expect(mockWorld.permissionAsked).toBe(1);
+    await waitFor(() => expect(mockWorld.nudgeSyncs.length).toBeGreaterThan(syncsBefore));
+    expect(mockWorld.nudgeSyncs[mockWorld.nudgeSyncs.length - 1]).toEqual(['a']);
+    expect(view.queryByTestId('nudgeAsk')).toBeNull();
+  });
+
+  it('asks nothing when notifications are already on', async () => {
+    mockWorld.notifyAccess = 'on';
+    const view = await reauthBoxWithADate();
+    await waitFor(() => expect(mockWorld.nudgeSyncs.some(ids => ids.includes('a'))).toBe(true));
+    expect(view.queryByTestId('nudgeAsk')).toBeNull();
+    expect(mockWorld.permissionAsked).toBe(0);
   });
 });

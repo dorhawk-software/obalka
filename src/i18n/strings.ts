@@ -510,6 +510,13 @@ const cs: Record<string, string> = {
   'notif.password.title': 'Heslo ke schránce brzy vyprší',
   'notif.password.body':
     '{box}: platnost hesla končí {date}. Změňte ho, ať se do schránky dostanete i dál.',
+  // Shown BEFORE the OS asks (owner 2026-11-11: the bare iOS prompt "did not tell me what the
+  // notifications would be for - very bad"). The OS dialog cannot carry an explanation of its own.
+  'notif.passwordAsk.title': 'Upozornit, než heslo vyprší?',
+  'notif.passwordAsk.body':
+    'Heslo ke schránce platí do {date}. Týden a den předem vám Obálka pošle oznámení, abyste ho stihli změnit – s prošlým heslem se do schránky nedostanete.\n\nOznámení naplánuje telefon sám, aplikace se kvůli nim k ISDS nepřipojuje. Vypnout je můžete kdykoli v nastavení telefonu.',
+  'notif.passwordAsk.allow': 'Upozorňovat',
+  'notif.passwordAsk.later': 'Teď ne',
   // The reminder picker (010 US2), named "Termín" until 2026-10-03: the owner found it unclear, and
   // what the user sets here IS a reminder. "Vaše připomínka" and "nastavujete si ji sami" are
   // load-bearing: the app does not compute legal deadlines and this must not be read as if it did
@@ -1703,6 +1710,11 @@ const en: Record<string, string> = {
   'notif.password.title': 'A box password expires soon',
   'notif.password.body':
     '{box}: the password expires on {date}. Change it to keep access to the box.',
+  'notif.passwordAsk.title': 'Get a reminder before the password expires?',
+  'notif.passwordAsk.body':
+    'The box password is valid until {date}. A week and a day before, Obálka will send you a notification so you can change it in time – with an expired password you cannot get into the box.\n\nYour phone schedules the notifications itself; the app does not contact ISDS for them. You can turn them off at any time in the phone’s settings.',
+  'notif.passwordAsk.allow': 'Remind me',
+  'notif.passwordAsk.later': 'Not now',
   'term.action': 'Reminder',
   'term.title': 'Your reminder',
   'term.sub': 'You set it yourself. We will tell you the day before and on the day.',

@@ -13,6 +13,11 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+### Better
+
+- **Obálka says what notifications are for before the phone asks.** After a box is added it first
+  explains the password-expiry notice; the system prompt comes only if you want them.
+
 ## 1.1.0 (2026-11-11)
 
 ### New
