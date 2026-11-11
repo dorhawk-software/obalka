@@ -134,7 +134,11 @@ them, downloading what is missing. Cancel leaves the switch off.
   "gone" rule stay as 002/004 define them; it never calls `markRead`.
 - **FR-004** "Jen nové zprávy" is decided by a new `messages.firstSeenAt` column (migration 15), set
   when a listing first inserts a row and never updated. Rows that existed before, restored rows and
-  rows of a phone transfer have none and count as not new.
+  rows of a phone transfer have none and count as not new. **Amended 2026-11-11 (owner):** a message
+  delivered before the switch was turned on is not new either, however late a listing first brings it
+  onto the phone - a box's Odeslané first listed after the switch brought its whole 90 days in as new,
+  each download counting toward ISDS's weekly limit, against the dialog's "zprávy, které přijdou od
+  teď". A message without a delivery time (sent, not yet delivered) is decided by `firstSeenAt` alone.
 - **FR-005** Auto-download settings are device-local (`DEVICE_LOCAL_SETTINGS`): storage and mobile data
   are this phone's, and a restore must not switch on downloads on another one.
 - **FR-006** An automatic backup never signs in. While the downloader runs, automatic backups wait, so

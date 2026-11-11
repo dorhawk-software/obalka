@@ -64,7 +64,9 @@ const data: AppData = {
     crossBox: [],
     unified: false,
     onOpenUnified: jest.fn(),
-    onRefreshAll: jest.fn(),
+    onRefreshAll: jest.fn(async () => {}),
+    onRefreshSent: jest.fn(async () => {}),
+    onReceivedListed: jest.fn(),
 };
 
 async function mountNavigator() {

@@ -5,9 +5,13 @@
 // may still hold it, or a plain statement that it cannot be had any more. What ISDS still holds is
 // decided in `signedOriginal.ts`, never here.
 //
-// Nothing moves while something is in flight (constitution V). The caption is reserved at two lines
-// and the trailing slot at 24dp, so a spinner, an error or a finished fetch changes what is inside
-// them and not where anything else on the screen sits.
+// Nothing moves while something is in flight (constitution V). An offer to fetch reserves its caption
+// at two lines and the trailing slot is 24dp, so a spinner or an error changes what is inside them
+// and not where anything else on the screen sits. A stored original reserves one line (2026-11-11,
+// reported from a phone: two lines for its one-line file name made it taller than the attachment rows
+// above it, which it is meant to match): nothing it shows can grow - an open that fails says so in a
+// dialog - and the one change of height, a finished fetch, is the user's own command and moves
+// nothing, the row being the last thing on the screen.
 
 import { useEffect, useRef, useState } from 'react';
 import { AppState, useWindowDimensions } from 'react-native';
@@ -52,7 +56,7 @@ import { Card } from '../../../theme/Card';
 
 /** The caption's line height, as the attachment rows' 12pt caption sets it. */
 const CAPTION_LINE = 16;
-/** Lines the caption reserves, so a note, a long error and a file name all fit the same row. */
+/** Lines an offer's caption reserves, so its note and a long error fit the same row. */
 const CAPTION_LINES = 2;
 
 /** The caption of a row that is not showing an error. */
@@ -235,6 +239,7 @@ export function SignedOriginalSection({
       ? t('detail.original.fetch')
       : t('detail.original.unavailable');
   const caption = error ?? signedOriginalCaption(row, formatSize);
+  const captionLines = row.kind === 'stored' && error == null ? 1 : CAPTION_LINES;
 
   const body = (
     <Card flexDirection="row"
@@ -268,9 +273,9 @@ export function SignedOriginalSection({
           // Two lines, at the reader's text size: RN scales the line height with the system font and
           // leaves a dp minHeight alone, so a bare 32 would let a one-line caption turning into a
           // two-line error grow the row at any size but the default (constitution V).
-          minHeight={CAPTION_LINES * CAPTION_LINE * fontScale}
+          minHeight={captionLines * CAPTION_LINE * fontScale}
           color={error ? theme.danger : theme.textFaint}
-          numberOfLines={2}
+          numberOfLines={captionLines}
         >
           {caption}
         </Meta>

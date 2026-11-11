@@ -40,6 +40,7 @@ const mockEnvelope: MessageEnvelope = {
 jest.mock('../../src/features/accounts/deps', () => ({
   messagesController: {
     getCachedEnvelope: jest.fn(async () => mockEnvelope),
+    getCachedSyncedAt: jest.fn(async () => null),
     getCachedDetail: (...args: unknown[]) => mockGetCachedDetail(...args),
     markRead: jest.fn(async () => false),
     getDetail: (...args: unknown[]) => mockGetDetail(...args),

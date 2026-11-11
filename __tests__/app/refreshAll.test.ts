@@ -6,7 +6,12 @@
 // `void`. These run the per-box half (`refreshAll.ts`) over fakes that fail one box at a time; the
 // shell's half is driven through the mounted shell in `crossBoxRefreshing.test.tsx`.
 
-import { refreshBox, refreshBoxes, type RefreshAllDeps } from '../../src/app/refreshAll';
+import {
+  refreshBox,
+  refreshBoxes,
+  refreshSentBoxes,
+  type RefreshAllDeps,
+} from '../../src/app/refreshAll';
 import type {
   MessagesOutcome,
 } from '../../src/features/messages/state/messagesController';
@@ -44,15 +49,20 @@ const LOADED: MessagesOutcome = { kind: 'loaded', messages: [], downloaded: [], 
 /** What the fake database was asked to store, per box. */
 interface Written {
   synced: string[];
+  sent: string[];
   credit: string[];
   flags: [string, SyncFailure][];
 }
 
 function world(over: Partial<RefreshAllDeps> = {}): RefreshAllDeps & { written: Written } {
-  const written: Written = { synced: [], credit: [], flags: [] };
+  const written: Written = { synced: [], sent: [], credit: [], flags: [] };
   return {
     written,
     listReceived: async () => LOADED,
+    listSent: async a => {
+      written.sent.push(a.boxId);
+      return LOADED;
+    },
     getCredit: async () => 120,
     recordSync: async (boxId: string, _messages: MessageEnvelope[]) => {
       written.synced.push(boxId);
@@ -263,3 +273,141 @@ describe('a box removed while it is being refreshed', () => {
     expect(deps.written.credit).toEqual(['b']);
   });
 });
+
+describe('the sent list, in every refresh (owner, 2026-11-11)', () => {
+  // A box whose Odeslané nobody opened had no sent messages in the archive, a backup, a transfer or a
+  // search, and ISDS deletes them 90 days after delivery.
+  it('lists a box\'s sent messages after its received ones', async () => {
+    const order: string[] = [];
+    const deps = world({
+      listReceived: async () => {
+        order.push('received');
+        return LOADED;
+      },
+      listSent: async () => {
+        order.push('sent');
+        return LOADED;
+      },
+    });
+    expect(await refreshBox(account('a'), undefined, deps, signal())).toBeNull();
+    expect(order).toEqual(['received', 'sent']);
+  });
+
+  it('lists no sent messages for a box skipped for a sign-in, or one whose received list failed', async () => {
+    const skipped = world();
+    await refreshBox(account('a'), 'reauth', skipped, signal());
+    expect(skipped.written.sent).toEqual([]);
+    const refused = world({ listReceived: async () => ({ kind: 'reauth' }) });
+    await refreshBox(account('a'), undefined, refused, signal());
+    expect(refused.written.sent).toEqual([]);
+  });
+
+  it('reports the box refreshed when only its sent list did not arrive', async () => {
+    const deps = world({
+      listSent: async () => {
+        throw new Error('offline');
+      },
+    });
+    expect(await refreshBox(account('a'), undefined, deps, signal())).toBeNull();
+    expect(deps.written.synced).toEqual(['a']);
+    expect(deps.written.flags).toEqual([]);
+  });
+});
+
+describe("every box's sent list, for the merged Odeslané (2026-11-11)", () => {
+  const sentWorld = (listSent: (account: DataBoxAccount) => Promise<MessagesOutcome>) => {
+    const asked: string[] = [];
+    const flags: [string, SyncFailure][] = [];
+    return {
+      asked,
+      flags,
+      deps: {
+        listSent: async (box: DataBoxAccount) => {
+          asked.push(box.boxId);
+          return listSent(box);
+        },
+        recordSyncFailure: async (boxId: string, state: SyncFailure) => {
+          flags.push([boxId, state]);
+        },
+      },
+    };
+  };
+
+  it('fetches every box, the ones never opened included', async () => {
+    const w = sentWorld(async () => LOADED);
+    const failed = await refreshSentBoxes(
+      [account('zivnost'), account('osobni')],
+      {},
+      w.deps,
+      new AbortController().signal,
+    );
+    expect(w.asked.sort()).toEqual(['osobni', 'zivnost']);
+    expect(failed).toEqual({});
+    expect(w.flags).toEqual([]);
+  });
+
+  it('does not send a refused sign-in again: a box waiting for one is skipped and keeps its flag', async () => {
+    const w = sentWorld(async () => LOADED);
+    const failed = await refreshSentBoxes(
+      [account('a'), account('b')],
+      { b: 'reauth' },
+      w.deps,
+      new AbortController().signal,
+    );
+    expect(w.asked).toEqual(['a']);
+    expect(failed).toEqual({});
+  });
+
+  it("flags only the box that failed, and the others' lists still land", async () => {
+    const w = sentWorld(async a =>
+      a.boxId === 'b' ? { kind: 'reauth' } : LOADED,
+    );
+    const failed = await refreshSentBoxes(
+      [account('a'), account('b'), account('c')],
+      {},
+      w.deps,
+      new AbortController().signal,
+    );
+    expect(w.asked.sort()).toEqual(['a', 'b', 'c']);
+    expect(failed).toEqual({ b: 'reauth' });
+    expect(w.flags).toEqual([['b', 'reauth']]);
+  });
+
+  it('flags no box for a sent list that did not arrive offline - its flag is about received mail', async () => {
+    const w = sentWorld(async () => ({ kind: 'error', messageKey: 'messages.error.network' }));
+    const failed = await refreshSentBoxes(
+      [account('a'), account('b')],
+      {},
+      w.deps,
+      new AbortController().signal,
+    );
+    expect(failed).toEqual({});
+    expect(w.flags).toEqual([]);
+  });
+
+  it('never rejects: a fault under one box is reported and flags nothing', async () => {
+    const w = sentWorld(async a => {
+      if (a.boxId === 'a') {
+        throw new Error('boom');
+      }
+      return LOADED;
+    });
+    const failed = await refreshSentBoxes(
+      [account('a'), account('b')],
+      {},
+      w.deps,
+      new AbortController().signal,
+    );
+    expect(failed).toEqual({});
+  });
+
+  it('flags nothing when the fetch was stopped', async () => {
+    const ctrl = new AbortController();
+    ctrl.abort();
+    const w = sentWorld(async () => ({ kind: 'error', messageKey: 'messages.error.network' }));
+    const failed = await refreshSentBoxes([account('a')], {}, w.deps, ctrl.signal);
+    expect(failed).toEqual({});
+    expect(w.flags).toEqual([]);
+  });
+});
+

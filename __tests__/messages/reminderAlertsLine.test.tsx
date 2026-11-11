@@ -41,6 +41,7 @@ const mockTurnOnAlerts = jest.fn(async () => {});
 jest.mock('../../src/features/accounts/deps', () => ({
   messagesController: {
     getCachedEnvelope: jest.fn(async () => mockEnvelope),
+    getCachedSyncedAt: jest.fn(async () => null),
     getCachedDetail: jest.fn(async () => null),
     markRead: jest.fn(async () => false),
     getDetail: jest.fn(),

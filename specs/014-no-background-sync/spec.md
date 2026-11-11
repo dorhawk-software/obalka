@@ -192,6 +192,13 @@ use is making a claim with the permission dialog.
   from the database.
 - **FR-009**: A user-initiated sync MUST still surface everything a background sync would have found —
   delivery receipts, fikce, undeliverable outcomes and re-auth — at the moment the user opens the app.
+  **Met for the sent side 2026-11-11 (owner)**, after an audit found only re-auth carried over: every
+  refresh - launch included - lists each box's sent messages after its received ones
+  (`refreshBox`), and a sent message the listing moves to 3, 5, 6 or 8 is marked
+  (`messages.stateNewsAt`, migration 17) and shown as a dot on Odeslané until that folder is seen,
+  per box or for every box in `Vše`. Before it, a box's sent list was listed only when its own
+  Odeslané opened, so a box whose Odeslané nobody opened also lost its sent messages from the archive
+  when ISDS deleted them after 90 days.
 
 ### Key Entities
 

@@ -377,6 +377,12 @@ export interface MessageListProps {
    */
   readonly onReauth: (refusedAt: number) => void;
   /**
+   * A box's received list arrived from opening or pulling this box (2026-11-11). The shell records it
+   * as the all-box refresh records one - counts, sync time, the box's failure flag cleared - so the
+   * switcher badges and the Jinde line stop reporting the state from before it.
+   */
+  readonly onReceivedListed?: (boxId: string, messages: MessageEnvelope[]) => void;
+  /**
    * Incremented by the shell when a re-authentication SUCCEEDS.
    *
    * Without it the expired-session strip survived a successful sign-in: this screen clears the strip
@@ -407,7 +413,9 @@ export interface MessageListProps {
   readonly unified?: {
     accounts: readonly DataBoxAccount[];
     /** Refresh every box - the shell's `refreshAll`, the same call launch makes. */
-    onRefreshAll: () => void;
+    onRefreshAll: () => Promise<void>;
+    /** Fetch every box's sent list into the archive - the shell's `refreshSent`. */
+    onRefreshSent: (signal: AbortSignal) => Promise<void>;
     /** Re-authenticate one box, from the "could not reach" strip. */
     onReauthBox: (boxId: string) => void;
   } | null;
@@ -435,6 +443,7 @@ export function MessageList({
   onOpenMessage,
   onCompose,
   onReauth,
+  onReceivedListed,
   resyncNonce = 0,
   crossBox = [],
   unified = null,
@@ -449,6 +458,8 @@ export function MessageList({
   // the FAB rather than guessed, so the two cannot drift apart.
   const fabClearance = useFabClearance();
   const [state, setState] = useState<State>({ status: 'loading' });
+  /** Sent messages whose outcome changed since this Odeslané was last seen - the tab's dot. */
+  const [sentNews, setSentNews] = useState(0);
   // The box's reminders, for the attention group and the row chips. Local-only, so this is a cheap
   // read with no network and no legal consequence - reloaded on focus because the detail screen is
   // where a reminder is set, and coming back must show it.
@@ -548,6 +559,8 @@ export function MessageList({
   const isUnified = unified != null;
   const unifiedRef = useRef(unified);
   unifiedRef.current = unified;
+  const onReceivedListedRef = useRef(onReceivedListed);
+  onReceivedListedRef.current = onReceivedListed;
 
   const refresh = useCallback(
     async (ctrl: AbortController, isUserRefresh: boolean): Promise<void> => {
@@ -558,9 +571,23 @@ export function MessageList({
       if (isUserRefresh) {
         setRefreshing(true);
       }
-      // MERGED: read the local archive across every box. No network call, so entering this view
-      // cannot deliver anybody's mail (17/3); refreshing it is the shell's `refreshAll`, which is
-      // the same command shape launch already runs.
+      // MERGED: read the local archive across every box, after the shell has fetched into it what
+      // this command asks for. Entering Přijaté fetches nothing - launch already listed every box,
+      // and a received list is what delivers mail (17/3). A pull there is the shell's `refreshAll`,
+      // the same command shape launch runs. Odeslané - opened or pulled - fetches every box's sent
+      // list, as opening it in one box does (2026-11-11: a box whose own Odeslané had never been
+      // opened was missing here); a sent list delivers nothing, and opening a folder is a user
+      // command (014 FR-001). The read waits for both, so what they fetched is on screen at once.
+      const shell = unifiedRef.current;
+      if (shell) {
+        await Promise.all([
+          isUserRefresh ? shell.onRefreshAll() : null,
+          folder === 'sent' ? shell.onRefreshSent(ctrl.signal) : null,
+        ]);
+        if (ctrl.signal.aborted) {
+          return; // a newer sync is in flight; it owns the indicators
+        }
+      }
       const outcome: MessagesOutcome = isUnified
         ? await messagesController
             .getMergedMessages(folder)
@@ -592,6 +619,9 @@ export function MessageList({
       setNeedsReauth(outcome.kind === 'reauth');
       if (outcome.kind === 'reauth') {
         setRefusedAt(Date.now());
+      }
+      if (outcome.kind === 'loaded' && !isUnified && folder === 'received') {
+        onReceivedListedRef.current?.(current.boxId, outcome.messages);
       }
       if (outcome.kind === 'loaded') {
         setState({
@@ -634,6 +664,32 @@ export function MessageList({
 
   /** Which boxes the merged view merges, as a value that only changes when the set does. */
   const unifiedKey = unified ? unified.accounts.map(a => a.boxId).sort().join(',') : null;
+
+  // The Odeslané dot (014 FR-009, owner 2026-11-11). Read from the archive whenever a list lands, and
+  // when the shell's refresh lands (the accounts and the cross-box summary are re-read after it, and
+  // it is what lists every box's sent messages at launch). Showing Odeslané is seeing it: once its
+  // list is on screen, what changed there is read - in this box, or in every box the merged view shows.
+  const newsBoxes = unifiedKey ?? account.boxId;
+  const newsFolder = state.status === 'loaded' ? state.folder : null;
+  useEffect(() => {
+    let alive = true;
+    const boxIds = newsBoxes.split(',');
+    const settle =
+      newsFolder === 'sent'
+        ? messagesController.markSentNewsSeen(boxIds).then(() => 0)
+        : messagesController.getSentNews(boxIds);
+    settle.then(
+      n => {
+        if (alive) {
+          setSentNews(n);
+        }
+      },
+      (e: unknown) => reportFailure('db.read', e, { stage: 'persist' }),
+    );
+    return () => {
+      alive = false;
+    };
+  }, [newsBoxes, newsFolder, state, account, crossBox]);
 
   // Open the current folder: show its CACHE instantly (snappy, offline-first), THEN sync in the
   // background. Re-runs on box/folder change - switching tabs is immediate from cache.
@@ -705,10 +761,9 @@ export function MessageList({
     inFlight.current?.abort();
     const ctrl = new AbortController();
     inFlight.current = ctrl;
-    // MERGED: a pull here means "refresh every box", which is the shell's `refreshAll` and the same
-    // command shape launch already runs (014 FR-001 permits pull-to-refresh explicitly). The local
-    // re-read below then picks up whatever it wrote, so the rows update either way.
-    unifiedRef.current?.onRefreshAll();
+    // MERGED: a pull here means "refresh every box", which `refresh` hands to the shell (014 FR-001
+    // permits pull-to-refresh explicitly) and waits for before re-reading the archive. It used to start
+    // the shell's refresh without waiting and re-read at once, so a pull showed the rows from before it.
     void refresh(ctrl, true);
   }, [refresh]);
 
@@ -947,7 +1002,17 @@ export function MessageList({
           <SegmentedControl
             segments={[
               { key: 'received' as const, label: t('messages.segment.received') },
-              { key: 'sent' as const, label: t('messages.segment.sent') },
+              {
+                key: 'sent' as const,
+                label: t('messages.segment.sent'),
+                // 014 FR-009: a sent message delivered, served by fiction or found undeliverable since
+                // this Odeslané was last looked at. Never on the tab being looked at.
+                dot: sentNews > 0 && folder !== 'sent',
+                accessibilityLabel:
+                  sentNews > 0 && folder !== 'sent'
+                    ? t(`messages.segment.sent.news.${plural(sentNews)}`, { n: sentNews })
+                    : undefined,
+              },
             ]}
             value={folder}
             onChange={setFolder}
@@ -1231,6 +1296,7 @@ export function MessageList({
     );
     content = (
       <SectionList<MessageEnvelope, InboxSection>
+        testID="messagesList"
         sections={sections}
         keyExtractor={m => m.id}
         style={{ flex: 1 }}

@@ -6,7 +6,7 @@
 // box it came from. So these tests are mostly about that single prop, and about the things that must
 // NOT appear in one mode or the other.
 
-import { render, waitFor, type RenderResult } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor, type RenderResult } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { TamaguiProvider } from 'tamagui';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -16,6 +16,11 @@ import type { DataBoxAccount, MessageEnvelope } from '../../src/services/isds/ty
 import type { MergedList } from '../../src/services/db/messagesStore';
 
 const mockMerged = jest.fn<Promise<MergedList>, [string?]>();
+// The shell's two all-box fetches. Resolved by the test when it needs the order observed.
+const mockSentNews = jest.fn(async (_boxIds: readonly string[]) => 0);
+const mockSentNewsSeen = jest.fn(async (_boxIds: readonly string[]) => {});
+const mockRefreshAll = jest.fn(async () => {});
+const mockRefreshSent = jest.fn(async (_signal: AbortSignal) => {});
 const mockListReceived = jest.fn(async () => ({
   kind: 'loaded' as const,
   messages: [] as MessageEnvelope[],
@@ -25,6 +30,8 @@ const mockListReceived = jest.fn(async () => ({
 
 jest.mock('../../src/features/accounts/deps', () => ({
   messagesController: {
+    getSentNews: (boxIds: readonly string[]) => mockSentNews(boxIds),
+    markSentNewsSeen: (boxIds: readonly string[]) => mockSentNewsSeen(boxIds),
     listReceived: () => mockListReceived(),
     listSent: () => mockListReceived(),
     getMergedMessages: (folder?: string) => mockMerged(folder),
@@ -87,6 +94,7 @@ const envelope = (id: string, over: Partial<MessageEnvelope> = {}): MessageEnvel
 const mount = (
   accounts: DataBoxAccount[],
   unified: boolean,
+  onReceivedListed?: (boxId: string, messages: MessageEnvelope[]) => void,
 ): Promise<RenderResult> =>
   render(
     <SafeAreaProvider initialMetrics={SAFE_AREA_METRICS}>
@@ -100,11 +108,13 @@ const mount = (
             onCompose={() => {}}
             onReauth={() => {}}
             onOpenFaq={() => {}}
+            onReceivedListed={onReceivedListed}
             unified={
               unified
                 ? {
                     accounts,
-                    onRefreshAll: () => {},
+                    onRefreshAll: mockRefreshAll,
+                    onRefreshSent: mockRefreshSent,
                     onReauthBox: () => {},
                   }
                 : null
@@ -117,6 +127,10 @@ const mount = (
 
 beforeEach(() => {
   mockMerged.mockReset();
+  mockRefreshAll.mockReset().mockImplementation(async () => {});
+  mockSentNews.mockReset().mockImplementation(async () => 0);
+  mockSentNewsSeen.mockReset().mockImplementation(async () => {});
+  mockRefreshSent.mockReset().mockImplementation(async () => {});
   mockListReceived.mockClear();
   mockMerged.mockResolvedValue({ hits: [], downloaded: [], syncedAt: null });
 });
@@ -162,6 +176,70 @@ describe('what the merged view reads', () => {
     await mount([box('a'), box('b')], true);
     await waitFor(() => expect(mockMerged).toHaveBeenCalled());
     expect(mockListReceived).not.toHaveBeenCalled();
+  });
+
+  it('fetches nothing on entering Přijaté - launch already listed every box', async () => {
+    await mount([box('a'), box('b')], true);
+    await waitFor(() => expect(mockMerged).toHaveBeenCalledWith('received'));
+    expect(mockRefreshAll).not.toHaveBeenCalled();
+    expect(mockRefreshSent).not.toHaveBeenCalled();
+  });
+
+  it("fetches every box's sent list on opening Odeslané, and reads the archive once they landed", async () => {
+    // 2026-11-11, two real boxes on a phone: a box whose own Odeslané had never been opened was
+    // missing from the merged one, which read only the archive.
+    let land: () => void = () => {};
+    mockRefreshSent.mockImplementation(() => new Promise<void>(resolve => (land = resolve)));
+    const view = await mount([box('a'), box('b')], true);
+    await waitFor(() => expect(mockMerged).toHaveBeenCalledWith('received'));
+    fireEvent.press(view.getByTestId('messagesFolder-sent'));
+    await waitFor(() => expect(mockRefreshSent).toHaveBeenCalledTimes(1));
+    expect(mockMerged).not.toHaveBeenCalledWith('sent');
+    await act(async () => land());
+    await waitFor(() => expect(mockMerged).toHaveBeenCalledWith('sent'));
+    expect(mockRefreshAll).not.toHaveBeenCalled();
+    expect(mockListReceived).not.toHaveBeenCalled();
+  });
+
+  it('waits for the pull to refresh every box before reading the archive again', async () => {
+    let land: () => void = () => {};
+    mockRefreshAll.mockImplementation(() => new Promise<void>(resolve => (land = resolve)));
+    mockMerged.mockResolvedValue({
+      hits: [{ boxId: 'a', folder: 'received', envelope: envelope('m1') }],
+      downloaded: [],
+      syncedAt: null,
+    });
+    const view = await mount([box('a'), box('b')], true);
+    await waitFor(() => view.getByTestId('message-m1'));
+    expect(mockMerged).toHaveBeenCalledTimes(1);
+    // The pull itself: RefreshControl renders nothing under test, so its handler is called from the list.
+    await act(async () => view.getByTestId('messagesList').props.refreshControl.props.onRefresh());
+    expect(mockRefreshAll).toHaveBeenCalledTimes(1);
+    expect(mockMerged).toHaveBeenCalledTimes(1);
+    await act(async () => land());
+    await waitFor(() => expect(mockMerged).toHaveBeenCalledTimes(2));
+    expect(mockRefreshSent).not.toHaveBeenCalled();
+  });
+
+  it("hands a box's own received listing to the shell, so its badge and flag follow it", async () => {
+    // 2026-11-11: only the all-box refresh recorded a listing, so a pull in one box left its switcher
+    // badge and its "nenačtená" mark describing the time before.
+    mockListReceived.mockResolvedValue({
+      kind: 'loaded' as const,
+      messages: [envelope('m1')],
+      downloaded: [],
+      syncedAt: null,
+    });
+    const listed = jest.fn();
+    await mount([box('a')], false, listed);
+    await waitFor(() => expect(listed).toHaveBeenCalledWith('a', [expect.objectContaining({ id: 'm1' })]));
+  });
+
+  it('hands nothing on from the merged view, which listed nothing itself', async () => {
+    const listed = jest.fn();
+    await mount([box('a'), box('b')], true, listed);
+    await waitFor(() => expect(mockMerged).toHaveBeenCalled());
+    expect(listed).not.toHaveBeenCalled();
   });
 
   it('leaves the per-box inbox reading ISDS as it always did', async () => {
@@ -210,3 +288,41 @@ it('titles itself for the merged view rather than for a box', async () => {
     new RegExp(t('unified.title')),
   );
 });
+
+describe('the Odeslané dot (014 FR-009, owner 2026-11-11)', () => {
+  it("marks Odeslané while a sent message's outcome is unseen, and clears it once Odeslané is shown", async () => {
+    let news = 2;
+    mockSentNews.mockImplementation(async () => news);
+    mockSentNewsSeen.mockImplementation(async () => {
+      news = 0;
+    });
+    const view = await mount([box('a')], false);
+    await waitFor(() => view.getByTestId('messagesFolder-sent-dot'));
+    expect(mockSentNews).toHaveBeenCalledWith(['a']);
+    expect(view.getByTestId('messagesFolder-sent')).toHaveProp(
+      'accessibilityLabel',
+      t('messages.segment.sent.news.few', { n: 2 }),
+    );
+    fireEvent.press(view.getByTestId('messagesFolder-sent'));
+    await waitFor(() => expect(mockSentNewsSeen).toHaveBeenCalledWith(['a']));
+    fireEvent.press(view.getByTestId('messagesFolder-received'));
+    await waitFor(() => expect(view.getByTestId('messagesFolder-received')).toBeTruthy());
+    expect(view.queryByTestId('messagesFolder-sent-dot')).toBeNull();
+  });
+
+  it('counts every box in the merged view, and clears every box there', async () => {
+    mockSentNews.mockImplementation(async () => 1);
+    const view = await mount([box('a'), box('b')], true);
+    await waitFor(() => view.getByTestId('messagesFolder-sent-dot'));
+    expect(mockSentNews).toHaveBeenCalledWith(['a', 'b']);
+    fireEvent.press(view.getByTestId('messagesFolder-sent'));
+    await waitFor(() => expect(mockSentNewsSeen).toHaveBeenCalledWith(['a', 'b']));
+  });
+
+  it('shows no dot when nothing changed', async () => {
+    const view = await mount([box('a')], false);
+    await waitFor(() => expect(mockSentNews).toHaveBeenCalled());
+    expect(view.queryByTestId('messagesFolder-sent-dot')).toBeNull();
+  });
+});
+

@@ -31,6 +31,8 @@ const mockListSent = jest.fn(async (_account?: DataBoxAccount) => ({
 
 jest.mock('../../src/features/accounts/deps', () => ({
   messagesController: {
+    getSentNews: async () => 0,
+    markSentNewsSeen: async () => {},
     listReceived: (account: DataBoxAccount) => mockListReceived(account),
     listSent: (account: DataBoxAccount) => mockListSent(account),
     getCachedMessages: jest.fn(async () => ({

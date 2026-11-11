@@ -57,6 +57,7 @@ const mockFetchOriginal = jest.fn();
 jest.mock('../../src/features/accounts/deps', () => ({
   messagesController: {
     getCachedEnvelope: jest.fn(async () => mockEnvelope),
+    getCachedSyncedAt: jest.fn(async () => null),
     getCachedDetail: jest.fn(async () => mockDetail),
     markRead: jest.fn(async () => false),
     getDetail: jest.fn(),

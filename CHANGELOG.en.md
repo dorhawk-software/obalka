@@ -13,6 +13,30 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+### New
+
+- **A dot on Sent.** When a message you sent is delivered, served by fiction or found undeliverable, a
+  dot on Sent says so until you open it.
+
+### Better
+
+- **Sent messages are archived without opening Sent.** Opening the app lists every box's sent
+  messages, so they reach the archive, a backup, a transfer and search before ISDS deletes them after
+  90 days.
+- **A box's unread count is right as soon as you refresh just that box.** It used to wait for a
+  refresh of every box.
+- **A sent message says when its state was last checked.** While the state can still change, the
+  delivery status shows "State as of …", so you can tell how old it is.
+
+### Fixed
+
+- **Sent in all boxes at once shows the messages of every box.** A box whose own Sent you had not
+  opened yet was missing. Pulling down now waits for the boxes to refresh and shows the new messages
+  straight away.
+- **The signed original's row is as tall as the attachments above it.**
+- **Downloading "new messages only" no longer fetches old sent messages.** Only messages delivered
+  after it was turned on count as new.
+
 ## 1.0.0 (2026-11-11)
 
 ### New

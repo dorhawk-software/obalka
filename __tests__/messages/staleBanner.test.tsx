@@ -36,6 +36,8 @@ const mockOutcome: { value: unknown } = { value: null };
 
 jest.mock('../../src/features/accounts/deps', () => ({
   messagesController: {
+    getSentNews: async () => 0,
+    markSentNewsSeen: async () => {},
     listReceived: jest.fn(async () => mockOutcome.value),
     listSent: jest.fn(async () => mockOutcome.value),
     getCachedMessages: jest.fn(async () => ({

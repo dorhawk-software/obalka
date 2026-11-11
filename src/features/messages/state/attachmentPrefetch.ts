@@ -112,7 +112,16 @@ export function inScope(message: UndownloadedMessage, scope: PrefetchScope): boo
     return true;
   }
   // A row without the stamp was here before the switch could have been turned on (026 FR-004).
-  return message.firstSeenAt != null && message.firstSeenAt >= scope.since;
+  if (message.firstSeenAt == null || message.firstSeenAt < scope.since) {
+    return false;
+  }
+  // …and first seen is not enough on its own (2026-11-11): a folder listed for the first time after
+  // the switch - a box's Odeslané nobody had opened - brought its whole 90 days in as "new", and each
+  // of those downloads counts toward ISDS's weekly limit. "Zprávy, které přijdou od teď" is about when
+  // a message arrived, so a known delivery before the switch is not new. Without one (a sent message
+  // not yet delivered), being first seen after the switch is all there is to go on.
+  const delivered = message.envelope.deliveryTime;
+  return delivered == null || delivered >= scope.since;
 }
 
 export class AttachmentPrefetcher {

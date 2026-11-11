@@ -57,6 +57,8 @@ jest.mock('../../src/features/accounts/deps', () => {
     removalQueue: new (jest.requireActual('../../src/features/accounts/state/removalQueue').RemovalQueue)(),
     boxWork: new (jest.requireActual('../../src/features/messages/state/boxWork').BoxWork)(),
     messagesController: {
+      getSentNews: async () => 0,
+      markSentNewsSeen: async () => {},
       listReceived: (...args: unknown[]) => (mockCalls.listReceived as (...a: unknown[]) => unknown)(...args),
       listSent: (...args: unknown[]) => (mockCalls.listSent as (...a: unknown[]) => unknown)(...args),
       getCachedMessages: (...args: unknown[]) => (mockCalls.getCachedMessages as (...a: unknown[]) => unknown)(...args),

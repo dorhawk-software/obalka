@@ -130,6 +130,11 @@ export interface MessagesStore {
     boxId: string,
     messageId: string,
   ): Promise<MessageEnvelope | null>;
+  /**
+   * When a listing last brought this message's envelope - so its state - onto the phone, or null when
+   * none has (a restored or transferred row, `NEVER_SYNCED`, or no row).
+   */
+  getSyncedAt(boxId: string, messageId: string): Promise<number | null>;
   /** Store a downloaded message's full detail (incl. attachment content) for offline use. */
   cacheDetail(
     boxId: string,
@@ -186,8 +191,28 @@ export interface MessagesStore {
    * through; everything else about whether to ask ISDS for one is theirs to decide.
    */
   listUndownloaded(boxId: string): Promise<UndownloadedMessage[]>;
+  /**
+   * Per box, how many sent messages a listing found changed to an outcome the sender acts on since the
+   * user last looked at that box's Odeslané (`SENT_NEWS_STATES`, 014 FR-009). Boxes with none are absent.
+   */
+  sentNews(): Promise<Record<string, number>>;
+  /** The user has seen these boxes' Odeslané: their sent news is read. */
+  clearSentNews(boxIds: readonly string[]): Promise<void>;
   /** Drop a box's cached messages (when the box is removed). */
   clearBox(boxId: string): Promise<void>;
+}
+
+/**
+ * The sent-message states that are news to the sender when a listing moves a message into them: served
+ * by fiction (5) or by sign-in (6), and the two dead ends, failed the antivirus check (3) and
+ * undeliverable (8) - what 014 FR-009 lists. Not 4, "in the box": it is the step to these, and
+ * every sent message passes it.
+ */
+export const SENT_NEWS_STATES: readonly number[] = [3, 5, 6, 8];
+
+/** Whether a listing moving a message from `before` to `after` is news on the Odeslané tab. */
+export function isSentNews(folder: MessageFolder, before: number | undefined, after: number): boolean {
+  return folder === 'sent' && before !== undefined && before !== after && SENT_NEWS_STATES.includes(after);
 }
 
 // ---- In-memory (tests / reference) -----------------------------------------
@@ -201,6 +226,8 @@ interface Row {
   syncedAt: number | null;
   /** When a listing first inserted it (026), or null. */
   firstSeenAt?: number | null;
+  /** When a listing moved a sent message to news (`isSentNews`), until the folder is seen. */
+  stateNewsAt?: number | null;
 }
 
 export class InMemoryMessagesStore implements MessagesStore {
@@ -234,6 +261,9 @@ export class InMemoryMessagesStore implements MessagesStore {
         syncedAt: stamps.length > 0 ? Math.max(...stamps) : null,
         // Once, on the insert - as the SQLite store does.
         firstSeenAt: existing ? existing.firstSeenAt ?? null : syncedAt ?? null,
+        stateNewsAt: isSentNews(folder, existing?.envelope.state, env.state)
+          ? syncedAt ?? 0
+          : existing?.stateNewsAt ?? null,
       });
     }
   }
@@ -311,6 +341,11 @@ export class InMemoryMessagesStore implements MessagesStore {
     return this.box(boxId).get(messageId)?.envelope ?? null;
   }
 
+  async getSyncedAt(boxId: string, messageId: string): Promise<number | null> {
+    const at = this.box(boxId).get(messageId)?.syncedAt ?? null;
+    return at == null || at === NEVER_SYNCED ? null : at;
+  }
+
   async markRead(boxId: string, messageId: string): Promise<void> {
     const row = this.box(boxId).get(messageId);
     if (row) {
@@ -382,6 +417,25 @@ export class InMemoryMessagesStore implements MessagesStore {
       .map(r => ({ folder: r.folder, envelope: r.envelope, firstSeenAt: r.firstSeenAt ?? null }));
   }
 
+  async sentNews(): Promise<Record<string, number>> {
+    const out: Record<string, number> = {};
+    for (const [boxId, rows] of this.boxes) {
+      const n = [...rows.values()].filter(r => r.folder === 'sent' && r.stateNewsAt != null).length;
+      if (n > 0) {
+        out[boxId] = n;
+      }
+    }
+    return out;
+  }
+
+  async clearSentNews(boxIds: readonly string[]): Promise<void> {
+    for (const boxId of boxIds) {
+      for (const row of this.box(boxId).values()) {
+        row.stateNewsAt = null;
+      }
+    }
+  }
+
   async clearBox(boxId: string): Promise<void> {
     this.boxes.delete(boxId);
   }
@@ -421,6 +475,8 @@ export class SqliteMessagesStore implements MessagesStore {
       // Upsert envelope fields; detailJson / downloadedAt are deliberately NOT touched (preserved).
       await db.execute(
         // `firstSeenAt` only on the insert: the conflict branch below leaves it alone (026 FR-004).
+        // `stateNewsAt` only on the conflict branch, where the row's old state is there to compare
+        // (`isSentNews`); SQLite evaluates every SET expression against the row as it was.
         `INSERT INTO messages
            (boxId, messageId, folder, subject, sender, senderAddress, recipient, recipientAddress, deliveryTime, acceptanceTime, state, attachmentSize, searchText, syncedAt, firstSeenAt)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -430,7 +486,11 @@ export class SqliteMessagesStore implements MessagesStore {
            recipient = excluded.recipient, recipientAddress = excluded.recipientAddress,
            deliveryTime = excluded.deliveryTime, acceptanceTime = excluded.acceptanceTime,
            state = excluded.state, attachmentSize = excluded.attachmentSize,
-           searchText = excluded.searchText, syncedAt = MAX(syncedAt, excluded.syncedAt)`,
+           searchText = excluded.searchText, syncedAt = MAX(syncedAt, excluded.syncedAt),
+           stateNewsAt = CASE
+             WHEN excluded.folder = 'sent' AND excluded.state <> COALESCE(state, -1)
+               AND excluded.state IN (${SENT_NEWS_STATES.join(', ')})
+             THEN excluded.syncedAt ELSE stateNewsAt END`,
         [
           boxId,
           e.id,
@@ -556,6 +616,16 @@ export class SqliteMessagesStore implements MessagesStore {
     return res.rows[0] ? rowToEnvelope(res.rows[0]) : null;
   }
 
+  async getSyncedAt(boxId: string, messageId: string): Promise<number | null> {
+    const db = await getDb();
+    const res = await db.execute(
+      'SELECT syncedAt FROM messages WHERE boxId = ? AND messageId = ? LIMIT 1',
+      [boxId, messageId],
+    );
+    const at = num(res.rows[0]?.syncedAt);
+    return at == null || at === NEVER_SYNCED ? null : at;
+  }
+
   async getDetail(
     boxId: string,
     messageId: string,
@@ -663,6 +733,30 @@ export class SqliteMessagesStore implements MessagesStore {
       envelope: rowToEnvelope(r),
       firstSeenAt: num(r.firstSeenAt),
     }));
+  }
+
+  async sentNews(): Promise<Record<string, number>> {
+    const db = await getDb();
+    const res = await db.execute(
+      "SELECT boxId, COUNT(*) AS n FROM messages WHERE folder = 'sent' AND stateNewsAt IS NOT NULL GROUP BY boxId",
+    );
+    const out: Record<string, number> = {};
+    for (const r of res.rows) {
+      out[String(r.boxId)] = Number(r.n);
+    }
+    return out;
+  }
+
+  async clearSentNews(boxIds: readonly string[]): Promise<void> {
+    if (boxIds.length === 0) {
+      return;
+    }
+    const db = await getDb();
+    await db.execute(
+      `UPDATE messages SET stateNewsAt = NULL
+         WHERE stateNewsAt IS NOT NULL AND boxId IN (${boxIds.map(() => '?').join(', ')})`,
+      [...boxIds],
+    );
   }
 
   async clearBox(boxId: string): Promise<void> {

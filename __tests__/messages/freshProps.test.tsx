@@ -45,11 +45,14 @@ jest.mock('../../src/features/accounts/deps', () => {
       (mockCalls as Record<string, (...a: unknown[]) => unknown>)[name](...args);
   return {
     messagesController: {
+      getSentNews: async () => 0,
+      markSentNewsSeen: async () => {},
       listReceived: call('listReceived'),
       listSent: call('listReceived'),
       getMergedMessages: call('getMergedMessages'),
       getCachedMessages: call('getCachedMessages'),
       getCachedEnvelope: call('getCachedEnvelope'),
+      getCachedSyncedAt: async () => null,
       getCachedDetail: call('getCachedDetail'),
       markRead: call('markRead'),
       getDetail: call('getDetail'),
@@ -130,7 +133,7 @@ function inbox(unified: boolean) {
             onReauth={() => {}}
             onOpenFaq={() => {}}
             crossBox={[]}
-            unified={unified ? { accounts, onRefreshAll: () => {}, onReauthBox: () => {} } : null}
+            unified={unified ? { accounts, onRefreshAll: async () => {}, onRefreshSent: async () => {}, onReauthBox: () => {} } : null}
           />
         </NavigationContainer>
       </TamaguiProvider>

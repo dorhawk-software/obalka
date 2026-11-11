@@ -94,6 +94,8 @@ type State =
       incomplete: boolean;
       /** The signed original the cached detail records, or null (004 amendment). */
       original: SignedOriginal | null;
+      /** When a listing last brought the envelope's state, or null - the sent card's "Stav k". */
+      syncedAt: number | null;
     }
   | { status: 'error'; messageKey: string };
 
@@ -275,9 +277,12 @@ export function MessageDetail({
   const load = useCallback(async () => {
     const box = accountRef.current;
     setState({ status: 'loading' });
-    const [envelope, cachedDetail] = await Promise.all([
+    // The sync time with the envelope, in the same read: a "Stav k" line arriving after the card has
+    // drawn would push everything under it down (constitution V).
+    const [envelope, cachedDetail, syncedAt] = await Promise.all([
       messagesController.getCachedEnvelope(box.boxId, messageId),
       messagesController.getCachedDetail(box.boxId, messageId),
+      messagesController.getCachedSyncedAt(box.boxId, messageId),
     ]);
     if (envelope) {
       setState({
@@ -287,6 +292,7 @@ export function MessageDetail({
         unavailable: cachedDetail?.attachmentsUnavailable ?? false,
         incomplete: cachedDetail?.enclosuresMissingFrom != null,
         original: cachedDetail?.signedZfo ?? null,
+        syncedAt,
       });
       // Opening a RECEIVED message reads it: mark it read on ISDS + in the cache (so the list drops the
       // unread treatment). Fire-and-forget, only for unread - never blocks the detail. A SENT message is
@@ -636,6 +642,12 @@ export function MessageDetail({
     noteKey: 'sent.merged.note',
   });
   const stopWhyKey = stopReasonKey(envelope.state);
+  // Submitted, stamped or in the box: a later listing can still move it on. Everything else is final.
+  const stateCanChange =
+    envelope.state === MESSAGE_STATE.submitted ||
+    envelope.state === MESSAGE_STATE.stamped ||
+    envelope.state === MESSAGE_STATE.delivered;
+  const stateAsOf = stateCanChange ? state.syncedAt : null;
 
   // Standing "no longer in ISDS" notice (B2) - shown wherever a re-download would otherwise be offered.
   // Standalone (nothing downloaded) it carries the section's own 22dp top margin; inside the downloaded
@@ -1025,6 +1037,26 @@ export function MessageDetail({
                     </XStack>
                   );
                 })}
+                {/* How old the state is, while it can still change (owner, 2026-11-11). The card reads
+                    the archive, so opened from search or offline it can show "Dodáno" days after the
+                    message was served. A final state never changes, so it gets no date; nor does a row
+                    no listing has brought (a restore, a transfer). The footnote's own pattern, below. */}
+                {stateAsOf != null ? (
+                  <YStack
+                    borderTopWidth={1}
+                    borderTopColor={theme.border}
+                    marginTop={6}
+                    marginHorizontal={-16}
+                    paddingHorizontal={16}
+                    paddingTop={12}
+                    paddingBottom={4}
+                    testID="state-as-of"
+                  >
+                    <Caption color={theme.textFaint}>
+                      {t('detail.stateAsOf', { d: formatDateTime(stateAsOf) })}
+                    </Caption>
+                  </YStack>
+                ) : null}
                 {/* Why it stopped, and what to do instead - a terminal state without this is just a
                     dead end the user has to interpret. Full-bleed hairline above, like the design. */}
                 {stopWhyKey ? (

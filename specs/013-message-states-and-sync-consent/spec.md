@@ -156,6 +156,11 @@ built on the side where it cannot fire.
   outcome.~~ **Removed by 014.**
 - **FR-010**: Notification switches MUST actually gate what they claim to gate. *(Added during the
   014 follow-up, when they were found to be stored and never read. Moot once notifications went.)*
+- **FR-011**: A sent message's delivery card MUST say how old its state is while that state can still
+  change (1, 2, 4): "Stav k <the row's last listing>", the card's footnote pattern. A final state gets
+  no date, nor does a row no listing brought (a restore, a transfer). *(Owner, 2026-11-11: the card
+  reads the archive, so opened from search or offline it could show "Dodáno" days after the message
+  had been served. Read with the envelope, so the line never arrives after the card has drawn.)*
 
 ### Key Entities
 

@@ -120,6 +120,8 @@ jest.mock('../../src/features/accounts/deps', () => {
     removalQueue: new (jest.requireActual('../../src/features/accounts/state/removalQueue').RemovalQueue)(),
     boxWork: new (jest.requireActual('../../src/features/messages/state/boxWork').BoxWork)(),
     messagesController: {
+      getSentNews: async () => 0,
+      markSentNewsSeen: async () => {},
       listReceived: async (listed: DataBoxAccount, signal: AbortSignal) => {
         mockWorld.listSignals.set(listed.boxId, signal);
         await mockWorld.listHeld.get(listed.boxId);

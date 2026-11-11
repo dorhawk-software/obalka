@@ -21,17 +21,26 @@ import { touchSlop } from './touchTarget';
 import { haptics } from '../services/haptics';
 import { depth } from './depth';
 import { withAlpha } from './color';
+import { space } from './spacing';
 
 const isAndroid = Platform.OS === 'android';
 const PAD = 3; // track padding
 const GAP = isAndroid ? 3 : 2; // gap between segments
 const SEG_H = 34; // segment height
 const RADIUS = 8; // segment / indicator radius
+const DOT = 7; // the unseen-news dot after a label - the unread dot's size
 
 
 export interface Segment<K extends string> {
   key: K;
   label: string;
+  /**
+   * A small dot after the label: something in that segment the user has not seen. Drawn outside the
+   * label's box, so the label stays where it is when the dot comes and goes (constitution V).
+   */
+  dot?: boolean;
+  /** What a screen reader says for the segment when it differs from the label - with the dot, say. */
+  accessibilityLabel?: string;
 }
 
 export function SegmentedControl<K extends string>({
@@ -135,16 +144,32 @@ export function SegmentedControl<K extends string>({
             })}
             accessibilityRole="tab"
             accessibilityState={{ selected }}
-            accessibilityLabel={s.label}
+            accessibilityLabel={s.accessibilityLabel ?? s.label}
             testID={`${testID}-${s.key}`}
           >
-            <Text
-              fontSize={13}
-              fontWeight="700"
-              color={selected ? theme.text : theme.textMuted}
-            >
-              {s.label}
-            </Text>
+            <XStack>
+              <Text
+                fontSize={13}
+                fontWeight="700"
+                color={selected ? theme.text : theme.textMuted}
+              >
+                {s.label}
+              </Text>
+              {s.dot ? (
+                <XStack
+                  position="absolute"
+                  left="100%"
+                  top="50%"
+                  marginLeft={space.sm}
+                  marginTop={-DOT / 2}
+                  width={DOT}
+                  height={DOT}
+                  borderRadius={999}
+                  backgroundColor={theme.blue}
+                  testID={`${testID}-${s.key}-dot`}
+                />
+              ) : null}
+            </XStack>
           </Pressable>
         );
       })}

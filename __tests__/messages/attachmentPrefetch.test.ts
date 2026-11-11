@@ -95,6 +95,19 @@ describe('which messages ISDS may be asked for', () => {
     expect(inScope(undownloaded({}, 'received', null), { kind: 'since', since })).toBe(false);
     expect(inScope(undownloaded({}, 'received', null), { kind: 'all' })).toBe(true);
   });
+
+  it('counts nothing delivered before the switch as new, however late this phone first saw it', () => {
+    // 2026-11-11: a box's Odeslané first listed after the switch brought 90 days of old sent mail in
+    // as "new", each download counting toward ISDS's weekly limit.
+    const since = NOW - 2 * DAY;
+    const old = { deliveryTime: NOW - 30 * DAY };
+    expect(inScope(undownloaded(old, 'sent', NOW - DAY), { kind: 'since', since })).toBe(false);
+    expect(inScope(undownloaded(old, 'received', NOW - DAY), { kind: 'since', since })).toBe(false);
+    // Not yet delivered - first seen after the switch is all there is to go on.
+    expect(inScope(undownloaded({ deliveryTime: null }, 'sent', NOW - DAY), { kind: 'since', since })).toBe(true);
+    // All messages means all of them.
+    expect(inScope(undownloaded(old, 'sent', NOW - DAY), { kind: 'all' })).toBe(true);
+  });
 });
 
 /** A phone: a store, a download that records what it was asked, and the switches. */

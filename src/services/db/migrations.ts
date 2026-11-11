@@ -245,6 +245,16 @@ export const MIGRATIONS: Migration[] = [
     // NULL until assigned: a new box gets one on add, existing boxes once on the next list.
     statements: ['ALTER TABLE accounts ADD COLUMN color TEXT;'],
   },
+  {
+    version: 17,
+    name: 'message_state_news',
+    // When a listing found a SENT message's journey changed to an outcome the sender acts on - served
+    // by fiction or by sign-in, failed the antivirus check, undeliverable - and the user has not looked
+    // at that box's Odeslané since (014 FR-009, owner 2026-11-11). Set by `cacheList` when the state
+    // moves, cleared when the folder is shown; what the dot on the Odeslané tab counts. A row inserted
+    // already in such a state is not news: nothing changed that the user had seen.
+    statements: ['ALTER TABLE messages ADD COLUMN stateNewsAt INTEGER;'],
+  },
 ];
 
 /**

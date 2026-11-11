@@ -62,11 +62,13 @@ import {
 import { BackupScreen } from './settings/BackupScreen';
 import { TransferScreen } from './settings/TransferScreen';
 import { SnackbarProvider } from './Snackbar';
-import type { DataBoxAccount, SyncFailure } from '../services/isds/types';
+import type { DataBoxAccount, MessageEnvelope, SyncFailure } from '../services/isds/types';
 import {
   boxesToFetch,
   refreshBoxes,
+  refreshSentBoxes,
   type RefreshAllDeps,
+  type RefreshSentDeps,
 } from './refreshAll';
 import {
   removalFailureReport,
@@ -129,6 +131,7 @@ const unfinished = unfinishedRemovals(settingsStore);
 /** What `refreshAll` fetches and records through - the two controllers, as `refreshBox` needs them. */
 const refreshDeps: RefreshAllDeps = {
   listReceived: (account, signal) => messagesController.listReceived(account, signal),
+  listSent: (account, signal) => messagesController.listSent(account, signal),
   getCredit: (account, signal) => messagesController.getCredit(account, signal),
   recordSync: (boxId, messages) => accountsController.recordSync(boxId, messages),
   recordCredit: (boxId, credit) => accountsController.recordCredit(boxId, credit),
@@ -137,6 +140,8 @@ const refreshDeps: RefreshAllDeps = {
   // while it was fetched must neither be written back nor flagged (`BoxWork`).
   forBox: (boxId, signal, work) => boxWork.run(boxId, signal, work),
 };
+
+const refreshSentDeps: RefreshSentDeps = refreshDeps;
 
 export function AppShell() {
   const theme = useTheme();
@@ -322,10 +327,10 @@ export function AppShell() {
     return list;
   }, []);
 
-  // Refresh every box: fetch its received messages and stamp lastSyncedAt on success. What happens to
-  // each box - the skip for a box waiting for a sign-in (re-auth itself clears that flag, see
-  // handleReauthDone), the per-box failure flags - is `refreshBox` in `refreshAll.ts`, where it is
-  // tested box by box. What stays here is the shell's bookkeeping around it.
+  // Refresh every box: fetch its received messages, stamp lastSyncedAt on success, then list its sent
+  // ones. What happens to each box - the skip for a box waiting for a sign-in (re-auth itself clears
+  // that flag, see handleReauthDone), the per-box failure flags - is `refreshBox` in `refreshAll.ts`,
+  // where it is tested box by box. What stays here is the shell's bookkeeping around it.
   //
   // It never rejects. Every caller starts it with `void` - launch, adding a box, re-auth, the merged
   // view's pull - so a rejection had nowhere to land. A box that fails is that box's flag; a table that
@@ -365,6 +370,55 @@ export function AppShell() {
     }
     setRefreshing(false);
   }, [refresh]);
+
+  // Every box's sent list - the merged view's Odeslané, on opening it and on a pull there (2026-11-11).
+  // The rows land in the archive, which the merged view reads once this resolves; a box that failed
+  // gets its flag here as a received refresh would give it. Never rejects, like `refreshAll`.
+  const refreshSent = useCallback(
+    async (signal: AbortSignal) => {
+      try {
+        const list = await accountsController.listAccounts();
+        const failed = await refreshSentBoxes(list, syncStatesRef.current, refreshSentDeps, signal);
+        if (Object.keys(failed).length > 0) {
+          setSyncStates(prev => ({ ...prev, ...failed }));
+          await refresh();
+        }
+      } catch (e) {
+        reportFailure('db.read', e, { stage: 'persist' });
+      }
+    },
+    [refresh],
+  );
+
+  // One box's received list, fetched from its own inbox (2026-11-11). Only the all-box refresh recorded
+  // a listing, so after a pull in one box its switcher badge, its Jinde unread count and its "last known
+  // state" mark kept describing the time before it - offline at launch, pulled once online, and still
+  // "nenačtená". Recorded as `refreshBox` records one: counts and time (which also clears the stored
+  // flag), the in-memory flag dropped, the list re-read. No ISDS call: the listing has already happened.
+  const handleReceivedListed = useCallback(
+    (boxId: string, messages: MessageEnvelope[]) => {
+      void (async () => {
+        try {
+          await accountsController.recordSync(boxId, messages);
+        } catch (e) {
+          reportFailure('db.write', e, { stage: 'persist' });
+          return;
+        }
+        if (syncStatesRef.current[boxId] !== undefined) {
+          const cleared = { ...syncStatesRef.current };
+          delete cleared[boxId];
+          syncStatesRef.current = cleared;
+          setSyncStates(cleared);
+        }
+        try {
+          await refresh();
+        } catch (e) {
+          reportFailure('db.read', e, { stage: 'persist' });
+        }
+      })();
+    },
+    [refresh],
+  );
 
   const handleSignedIn = useCallback(async () => {
     let list: DataBoxAccount[];
@@ -1247,6 +1301,8 @@ export function AppShell() {
         unified={unified}
         onOpenUnified={enterUnified}
         onRefreshAll={refreshAll}
+        onRefreshSent={refreshSent}
+        onReceivedListed={handleReceivedListed}
       />
       {noticeDialog}
       {/* Behind any notice, and held - not closed - while the app is covered, like the notices. */}

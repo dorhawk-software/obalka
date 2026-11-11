@@ -41,6 +41,8 @@ let mockStores: BackupStores | null = null;
 
 jest.mock('../../src/features/accounts/deps', () => ({
   messagesController: {
+    getSentNews: async () => 0,
+    markSentNewsSeen: async () => {},
     // The box's sign-in has expired, as it had on the emulator: the live sync is refused and the
     // screen keeps what the archive gave it.
     listReceived: async () => ({ kind: 'reauth' as const }),
@@ -224,7 +226,7 @@ const mount = (unified: boolean): Promise<RenderResult> =>
             onOpenFaq={() => {}}
             unified={
               unified
-                ? { accounts: [account(BOX)], onRefreshAll: () => {}, onReauthBox: () => {} }
+                ? { accounts: [account(BOX)], onRefreshAll: async () => {}, onRefreshSent: async () => {}, onReauthBox: () => {} }
                 : null
             }
           />

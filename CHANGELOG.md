@@ -13,6 +13,30 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+### Nové
+
+- **Tečka u Odeslaných.** Když se odeslaná zpráva doručí, doručí fikcí nebo ji nejde doručit, ukáže to
+  tečka u Odeslaných, dokud je neotevřete.
+
+### Lepší
+
+- **Odeslané zprávy se archivují i bez otevírání Odeslaných.** Při otevření aplikace se načtou odeslané
+  zprávy všech schránek, takže se dostanou do archivu, zálohy, přenosu i hledání dřív, než je ISDS po
+  90 dnech smaže.
+- **Počty nepřečtených u schránky platí hned po obnovení jen té schránky.** Dřív se aktualizovaly až
+  při obnovení všech schránek.
+- **Odeslaná zpráva říká, ke kdy platí její stav.** Dokud se stav může změnit, ukáže u stavu doručení
+  „Stav k …“, takže je poznat, jak je starý.
+
+### Opraveno
+
+- **Odeslané ve všech schránkách najednou ukazují zprávy ze všech schránek.** Dřív chyběly zprávy
+  schránky, jejíž Odeslané jste ještě neotevřeli zvlášť. Stažení dolů teď počká, až se schránky
+  aktualizují, a hned ukáže nové zprávy.
+- **Řádek podepsaného originálu je stejně vysoký jako přílohy nad ním.**
+- **Automatické stahování „jen nových zpráv“ nestahuje staré odeslané zprávy.** Za nové se počítají
+  jen zprávy doručené po zapnutí.
+
 ## 1.0.0 (2026-11-11)
 
 ### Nové

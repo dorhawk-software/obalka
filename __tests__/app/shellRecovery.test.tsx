@@ -85,6 +85,8 @@ jest.mock('../../src/features/accounts/deps', () => {
     removalQueue: new (jest.requireActual('../../src/features/accounts/state/removalQueue').RemovalQueue)(),
     boxWork: new (jest.requireActual('../../src/features/messages/state/boxWork').BoxWork)(),
     messagesController: {
+      getSentNews: async () => 0,
+      markSentNewsSeen: async () => {},
       listReceived: async (account: DataBoxAccount) =>
         mockWorld.signedIn.has(account.boxId)
           ? { kind: 'loaded', messages: [], downloaded: [], syncedAt: Date.now() }

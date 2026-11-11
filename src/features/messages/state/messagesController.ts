@@ -480,6 +480,25 @@ export class MessagesController {
     return this.deps.messagesStore.listAcrossBoxes(folder, limit);
   }
 
+  /**
+   * How many sent messages changed to an outcome the sender acts on since the user last looked, in
+   * these boxes together - the dot on the Odeslané tab (014 FR-009, owner 2026-11-11). Archive only.
+   */
+  async getSentNews(boxIds: readonly string[]): Promise<number> {
+    const news = await this.deps.messagesStore.sentNews();
+    return boxIds.reduce((n, boxId) => n + (news[boxId] ?? 0), 0);
+  }
+
+  /** The user is looking at these boxes' Odeslané, so what changed there is no longer news. */
+  markSentNewsSeen(boxIds: readonly string[]): Promise<void> {
+    return this.deps.messagesStore.clearSentNews(boxIds);
+  }
+
+  /** When a listing last brought this message's state onto the phone, or null - the detail's "Stav k". */
+  getCachedSyncedAt(boxId: string, messageId: string): Promise<number | null> {
+    return this.deps.messagesStore.getSyncedAt(boxId, messageId);
+  }
+
   /** A single cached envelope - the detail screen renders from this without downloading attachments. */
   getCachedEnvelope(
     boxId: string,

@@ -24,6 +24,7 @@ import {
 /** The slice of the accounts and messages controllers a refresh uses. */
 export interface RefreshAllDeps {
   listReceived(account: DataBoxAccount, signal: AbortSignal): Promise<MessagesOutcome>;
+  listSent(account: DataBoxAccount, signal: AbortSignal): Promise<MessagesOutcome>;
   getCredit(account: DataBoxAccount, signal: AbortSignal): Promise<number | null>;
   recordSync(boxId: string, messages: MessageEnvelope[]): Promise<void>;
   recordCredit(boxId: string, pdzCreditCzk: number | null): Promise<void>;
@@ -113,6 +114,19 @@ export async function refreshBox(
   } catch (e) {
     reportFailure('db.write', e, { stage: 'persist' });
   }
+  // The sent list too (owner, 2026-11-11). It was listed only when the box's own Odeslané opened, so a
+  // box whose Odeslané nobody opened had no sent messages in the archive, a backup, a transfer or a
+  // search - and ISDS deletes them 90 days after delivery, for good. A refresh is a user command (014
+  // FR-001), a sent list delivers nothing (17/3 is about received ones), and it brings the delivery
+  // outcomes of what the user sent with it (014 FR-009). After the received list, which is what the
+  // box's flag is about: a sent list that did not arrive changes nothing the refresh reports.
+  try {
+    await deps.listSent(account, signal);
+  } catch (e) {
+    if (!signal.aborted) {
+      reportFailure('isds.listSent', e, { stage: 'transport' });
+    }
+  }
   return null;
 }
 
@@ -123,7 +137,7 @@ export async function refreshBox(
 async function keepFlag(
   boxId: string,
   state: SyncFailure,
-  deps: RefreshAllDeps,
+  deps: Pick<RefreshAllDeps, 'recordSyncFailure'>,
 ): Promise<void> {
   try {
     await deps.recordSyncFailure(boxId, state);
@@ -160,3 +174,69 @@ export async function refreshBoxes(
   }
   return next;
 }
+
+/** The slice a refresh of every box's SENT list uses. */
+export type RefreshSentDeps = Pick<RefreshAllDeps, 'listSent' | 'recordSyncFailure' | 'forBox'>;
+
+/**
+ * Fetch every box's sent list, each on its own: the merged view's Odeslané (2026-11-11). It read only
+ * the archive, so a box whose own Odeslané had never been opened was missing from it - reported on a
+ * phone with two real boxes. Opening a folder is a user command (014 FR-001), and a sent list delivers
+ * nothing (17/3 is about received ones), so this is the per-box tab's call made for every box.
+ *
+ * The same skip as `refreshBox`: a box waiting for a sign-in is not sent its refused credentials again.
+ * Only a sign-in failure is a flag here - it is the box's, whichever list met it. A sent list that did
+ * not arrive for any other reason (offline, ISDS down) flags nothing: the box's flag says its RECEIVED
+ * state is old, which a sent list cannot tell, and an offline Odeslané marked every box "nenačtená" until
+ * the next full refresh. Resolves with the sign-in flags met (a box missing from it fetched, failed
+ * otherwise, or was skipped and keeps its flag); never rejects. Nothing else is recorded: the rows are
+ * cached by `listSent` itself, and the received counts and the box's sync time are not about this list.
+ */
+export async function refreshSentBoxes(
+  accounts: readonly DataBoxAccount[],
+  known: Readonly<Record<string, SyncFailure>>,
+  deps: RefreshSentDeps,
+  signal: AbortSignal,
+): Promise<Record<string, SyncFailure>> {
+  const fetchOne = async (
+    account: DataBoxAccount,
+    boxSignal: AbortSignal,
+  ): Promise<SyncFailure | null> => {
+    let outcome: MessagesOutcome;
+    try {
+      outcome = await deps.listSent(account, boxSignal);
+    } catch (e) {
+      if (!boxSignal.aborted) {
+        reportFailure('isds.listSent', e, { stage: 'transport' });
+      }
+      return null;
+    }
+    if (outcome.kind === 'loaded' || boxSignal.aborted) {
+      return null;
+    }
+    const state = classifyFailure(account, outcome);
+    if (!needsSignIn(state)) {
+      return null;
+    }
+    await keepFlag(account.boxId, state, deps);
+    return state;
+  };
+  const results = await Promise.all(
+    accounts
+      .filter(account => !needsSignIn(known[account.boxId]))
+      .map(async account => {
+        const state = deps.forBox
+          ? await deps.forBox(account.boxId, signal, boxSignal => fetchOne(account, boxSignal))
+          : await fetchOne(account, signal);
+        return [account.boxId, state] as const;
+      }),
+  );
+  const failed: Record<string, SyncFailure> = {};
+  for (const [boxId, state] of results) {
+    if (state) {
+      failed[boxId] = state;
+    }
+  }
+  return failed;
+}
+

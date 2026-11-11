@@ -49,6 +49,8 @@ const mockMessages: MessageEnvelope[] = [
 
 jest.mock('../../src/features/accounts/deps', () => ({
   messagesController: {
+    getSentNews: async () => 0,
+    markSentNewsSeen: async () => {},
     listReceived: jest.fn(async () => ({
       kind: 'loaded' as const,
       messages: mockMessages,

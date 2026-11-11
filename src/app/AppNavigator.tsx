@@ -21,7 +21,7 @@ import {
 import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { DataBoxAccount } from '../services/isds/types';
+import type { DataBoxAccount, MessageEnvelope } from '../services/isds/types';
 import type { MessageFolder } from '../services/db/messagesStore';
 import { BoxSwitcherSheet } from '../features/accounts/screens/BoxSwitcherSheet';
 import { MessageList } from '../features/messages/screens/MessageList';
@@ -105,7 +105,11 @@ export interface AppData {
   /** Enter the merged view. Only offered when at least two boxes exist. */
   onOpenUnified: () => void;
   /** Refresh every box - the same call the shell makes at launch. The merged view's pull. */
-  onRefreshAll: () => void;
+  onRefreshAll: () => Promise<void>;
+  /** Fetch every box's sent list - the merged view's Odeslané, opened or pulled. */
+  onRefreshSent: (signal: AbortSignal) => Promise<void>;
+  /** Record one box's received list, fetched from that box's own inbox. */
+  onReceivedListed: (boxId: string, messages: MessageEnvelope[]) => void;
 }
 
 const AppDataContext = createContext<AppData | null>(null);
@@ -140,6 +144,8 @@ function MessagesScreen({
     unified,
     onOpenUnified,
     onRefreshAll,
+    onRefreshSent,
+    onReceivedListed,
     resyncNonce,
     reloadAccounts,
   } = useAppData();
@@ -157,8 +163,8 @@ function MessagesScreen({
   // the accounts - and a fresh object or arrow here is a changed dependency to every effect and memo
   // below it. Hooks, so above the early return.
   const unifiedProp = useMemo(
-    () => (unified ? { accounts, onRefreshAll, onReauthBox: onReauth } : null),
-    [unified, accounts, onRefreshAll, onReauth],
+    () => (unified ? { accounts, onRefreshAll, onRefreshSent, onReauthBox: onReauth } : null),
+    [unified, accounts, onRefreshAll, onRefreshSent, onReauth],
   );
   const openSwitcher = useCallback(() => {
     setSwitcherOpen(true);
@@ -209,6 +215,7 @@ function MessagesScreen({
         onOpenMessage={openMessage}
         onCompose={compose}
         onReauth={reauth}
+        onReceivedListed={onReceivedListed}
         onOpenFaq={openFaq}
         resyncNonce={resyncNonce}
         crossBox={crossBox}
@@ -617,16 +624,16 @@ export function AppNavigator(props: Readonly<AppData>) {
   // notice - so every screen reading this context, mounted or not, re-rendered each time.
   const {
     accounts, activeBoxId, setActive, addBox, removeBox, setAlias, onReauth, resyncNonce,
-    reloadAccounts, crossBox, unified, onOpenUnified, onRefreshAll,
+    reloadAccounts, crossBox, unified, onOpenUnified, onRefreshAll, onRefreshSent, onReceivedListed,
   } = props;
   const data = useMemo<AppData>(
     () => ({
       accounts, activeBoxId, setActive, addBox, removeBox, setAlias, onReauth, resyncNonce,
-      reloadAccounts, crossBox, unified, onOpenUnified, onRefreshAll,
+      reloadAccounts, crossBox, unified, onOpenUnified, onRefreshAll, onRefreshSent, onReceivedListed,
     }),
     [
       accounts, activeBoxId, setActive, addBox, removeBox, setAlias, onReauth, resyncNonce,
-      reloadAccounts, crossBox, unified, onOpenUnified, onRefreshAll,
+      reloadAccounts, crossBox, unified, onOpenUnified, onRefreshAll, onRefreshSent, onReceivedListed,
     ],
   );
   return (

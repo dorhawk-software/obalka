@@ -219,6 +219,12 @@ sections, the rows, the empty states, the pull-to-refresh - is the code that was
   re-auth; otherwise it opens the switcher, where each broken box is marked. The "3 of 4" count and
   the box name were not built.
 - Compose, credit and the sent folder stay per box. `Vše` is a reading surface, not an acting one.
+  Reading the sent folder is not per box (2026-11-11, found on a phone with two real boxes): `Vše` ›
+  Odeslané listed only the archive, so a box whose own Odeslané had never been opened was missing.
+  Opening or pulling it now lists every box's sent messages first (`refreshSentBoxes`, skipping a box
+  waiting for a sign-in), the per-box tab's call made for each box; a sent list delivers nothing, and
+  opening a folder is a user command (014 FR-001). A pull on `Vše` also waits for the refresh before it
+  re-reads, so the new rows show at once.
 
 ### The one-box question, settled
 

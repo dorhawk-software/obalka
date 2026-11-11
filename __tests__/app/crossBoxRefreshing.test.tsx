@@ -111,6 +111,8 @@ jest.mock('../../src/features/accounts/deps', () => ({
     },
   },
   messagesController: {
+    getSentNews: async () => 0,
+    markSentNewsSeen: async () => {},
     listReceived: (account: DataBoxAccount) => mockListing(account.boxId),
     listSent: async () => ({ kind: 'loaded', messages: [], downloaded: [] }),
     getCachedMessages: async (boxId: string) => ({

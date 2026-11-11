@@ -52,7 +52,9 @@ function makeData(activeBoxId: string, over: Partial<AppData> = {}): AppData {
     crossBox: [],
     unified: false,
     onOpenUnified: jest.fn(),
-    onRefreshAll: jest.fn(),
+    onRefreshAll: jest.fn(async () => {}),
+    onRefreshSent: jest.fn(async () => {}),
+    onReceivedListed: jest.fn(),
     ...over,
   };
 }

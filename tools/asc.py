@@ -14,6 +14,7 @@ The private key never touches the disk or the repository: every run reads it fro
     uv run tools/asc.py listing [--dry]  # cs and en-US listing, links, categories and copyright, from docs/store/listing.md
     uv run tools/asc.py age            # the age rating answers below, then the rating Apple computes
     uv run tools/asc.py version <x.y.z>  # names the version being prepared (SemVer, as the tag)
+    uv run tools/asc.py build <number>  # attaches that processed build to the version being prepared
     uv run tools/asc.py whatsnew <version> [--dry]  # App Store What's New + TestFlight What to Test, from the changelog
     uv run tools/asc.py screenshots <dir> cs|en-US [--dry]  # the framed iPhone 6.9" set, in file order
 """
@@ -372,6 +373,26 @@ def set_version(version: str):
     print(f"  version: {have} -> {version}")
 
 
+def set_build(number: str):
+    """Attaches build `number` of the version being prepared to it: the build App Review gets, and the one
+    App Store Connect takes the app's icon from. Nothing is submitted; a later build can replace it until
+    the version goes to review."""
+    v = _editable("appStoreVersions", "appStoreState", ("READY_FOR_SALE", "REPLACED_WITH_NEW_VERSION"))
+    version = v["attributes"]["versionString"]
+    found = get(f"/v1/builds?filter[app]={app_id()}&filter[version]={number}"
+                f"&filter[preReleaseVersion.version]={version}")["data"]
+    assert found, f"no build {number} of {version}"
+    build = found[0]
+    state = build["attributes"]["processingState"]
+    assert state == "VALID", f"build {number} is {state}, not VALID yet"
+    have = get(f"/v1/appStoreVersions/{v['id']}/relationships/build")["data"]
+    if have and have["id"] == build["id"]:
+        print(f"  build: {version} ({number}) already attached")
+        return
+    api("PATCH", f"/v1/appStoreVersions/{v['id']}/relationships/build", json={"data": {"type": "builds", "id": build["id"]}})
+    print(f"  build: {version} ({number}) attached")
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
@@ -384,6 +405,8 @@ def main():
         age()
     elif cmd == "version":
         set_version(args[0])
+    elif cmd == "build":
+        set_build(args[0])
     elif cmd == "whatsnew":
         whatsnew(args[0], dry="--dry" in args)
     elif cmd == "screenshots":

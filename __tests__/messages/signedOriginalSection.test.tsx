@@ -200,6 +200,16 @@ describe('the signed original row', () => {
     expect(StyleSheet.flatten(caption.props.style).minHeight).toBe(2 * 16 * fontScale);
   });
 
+  it('keeps a stored original one line tall, as the attachment rows above it are', async () => {
+    // 2026-11-11, from a phone: the two lines reserved for an offer's note made the stored row - a
+    // one-line file name - taller than the attachments it sits under.
+    const { fontScale } = Dimensions.get('window');
+    const { view } = await section({ original: stored });
+    const caption = await view.findByText(/DZ_1234567\.zfo · 2 kB/);
+    expect(StyleSheet.flatten(caption.props.style).minHeight).toBe(16 * fontScale);
+    expect(caption.props.numberOfLines).toBe(1);
+  });
+
   it('calls a recorded original whose file has gone missing, and offers it again', async () => {
     mockExists.mockImplementation(async () => false);
     const { view } = await section({ original: stored });

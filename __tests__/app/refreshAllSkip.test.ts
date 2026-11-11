@@ -49,6 +49,7 @@ function isds(): RefreshAllDeps & { listed: string[] } {
       listed.push(a.boxId);
       return { kind: 'loaded', messages: [], downloaded: [], syncedAt: 0 };
     },
+    listSent: async () => ({ kind: 'loaded', messages: [], downloaded: [], syncedAt: 0 }),
     getCredit: async () => null,
     recordSync: async () => {},
     recordCredit: async () => {},
