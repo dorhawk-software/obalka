@@ -16,7 +16,7 @@ import { BOX_COLORS, boxColor, boxColorKey, type BoxColor } from '../../../theme
 import { boxTypeShort } from '../state/boxType';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useScrim } from '../../../theme/useScrim';
-import { depth } from '../../../theme/depth';
+import { raised } from '../../../theme/depth';
 import { t } from '../../../i18n/strings';
 import type { DataBoxAccount } from '../../../services/isds/types';
 
@@ -103,7 +103,7 @@ export function AliasEditor({
               paddingHorizontal={24}
               paddingBottom={18}
               maxHeight="100%"
-              style={{ boxShadow: depth.lg }}
+              style={{ boxShadow: raised(theme.name, 'float') }}
             >
               {/* When the keyboard leaves less room than the dialog needs, it scrolls inside the safe
                   area rather than growing past it. */}

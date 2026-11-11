@@ -21,7 +21,7 @@ import { XStack, YStack } from '../../../theme/ui';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useScrim } from '../../../theme/useScrim';
 import { SheetDismissGesture } from '../../../theme/SheetDismissGesture';
-import { depth } from '../../../theme/depth';
+import { raised } from '../../../theme/depth';
 import { DashedOutline } from '../../../theme/DashedOutline';
 import { PlusIcon, SettingsIcon } from '../../../theme/icons';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
@@ -73,10 +73,7 @@ export function BoxSwitcherSheet({
   // depth.lg carries an inset white top-highlight (rgba 255,255,255,.45) - a subtle bevel on light
   // surfaces, but a harsh bright line along the sheet's top edge against the dark scrim. Soften it in
   // dark mode (barely-there highlight + a soft ambient lift); keep the full bevel in light mode.
-  const sheetShadow =
-    theme.name === 'dark'
-      ? depth.sheetDark
-      : depth.lg;
+  const sheetShadow = raised(theme.name, 'sheet');
   const insets = useSafeAreaInsets();
   const maxHeight = useSheetMaxHeight();
   const reduceMotion = useReducedMotion();

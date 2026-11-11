@@ -21,7 +21,7 @@ import { BodyStrong, Caption, Heading, Value } from './Typography';
 import { useTheme } from './ThemeProvider';
 import { useScrim } from './useScrim';
 import { PressScale } from './PressScale';
-import { depth } from './depth';
+import { raised } from './depth';
 
 export interface DialogAction {
   label: string;
@@ -126,7 +126,7 @@ export function Dialog({
             paddingHorizontal={20}
             paddingBottom={18}
             flexShrink={1}
-            style={{ boxShadow: depth.lg }}
+            style={{ boxShadow: raised(theme.name, 'float') }}
             // Keeps the VoiceOver cursor inside the dialog instead of wandering the page behind it.
             accessibilityViewIsModal
             testID={testID}

@@ -38,7 +38,7 @@ import { markSameName } from '../state/addressParts';
 import { creditState } from '../state/credit';
 import { totalAttachmentBytes } from '../state/costModel';
 import { Avatar } from '../../../theme/Avatar';
-import { depth } from '../../../theme/depth';
+import { raised } from '../../../theme/depth';
 import { DashedOutline } from '../../../theme/DashedOutline';
 import { ProgressBar } from '../../../theme/ProgressBar';
 import {
@@ -1387,7 +1387,7 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
                   paddingTop={10}
                   paddingBottom={Math.max(20, insets.bottom + 8)}
                   maxHeight={sheetMaxHeight}
-                  style={{ boxShadow: depth.lg }}
+                  style={{ boxShadow: raised(theme.name, 'sheet') }}
                   testID="composeConfirm"
                 >
                   {/* Grab handle */}

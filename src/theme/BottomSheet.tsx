@@ -25,7 +25,7 @@ import { YStack } from './ui';
 import { useTheme } from './ThemeProvider';
 import { useScrim } from './useScrim';
 import { SheetDismissGesture } from './SheetDismissGesture';
-import { depth } from './depth';
+import { raised } from './depth';
 import { useSheetMaxHeight } from './useSheetMaxHeight';
 
 export function BottomSheet({
@@ -51,12 +51,9 @@ export function BottomSheet({
   const insets = useSafeAreaInsets();
   const maxHeight = useSheetMaxHeight();
   const reduceMotion = useReducedMotion();
-  // depth.lg carries an inset white top-highlight - a bevel on light surfaces, a harsh line along the
+  // `raised`: depth.lg carries an inset white top-highlight - a bevel on light surfaces, a harsh line along the
   // sheet's top edge against the dark scrim. Softened in dark mode, kept in light.
-  const sheetShadow =
-    theme.name === 'dark'
-      ? depth.sheetDark
-      : depth.lg;
+  const sheetShadow = raised(theme.name, 'sheet');
 
   const dragY = useSharedValue(0);
   const sheetStyle = useAnimatedStyle(() => ({

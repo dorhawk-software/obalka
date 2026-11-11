@@ -25,6 +25,13 @@ export const depth = {
   knob: '0px 1px 3px rgba(0,0,0,0.25)',
   /** A bottom sheet's edge in dark mode: `lg`'s white bevel is a harsh line against the dark scrim. */
   sheetDark: 'inset 0px 1px 1px rgba(255,255,255,0.06), 0px -2px 18px rgba(0,0,0,0.45)',
+  /**
+   * A floating card's edge in dark mode - a dialog, the rename box: one even hairline all round. `lg`'s
+   * top-only bevel, bent round the corners, read as a bright top edge fading out down the sides and gone
+   * at the bottom (owner, 2026-11-11, on the notification dialog: "the border looks weird, non uniform
+   * top and bottom").
+   */
+  floatDark: 'inset 0px 0px 0px 1px rgba(255,255,255,0.07), 0px 8px 24px rgba(0,0,0,0.5)',
   sm:
     'inset 0px 1px 2px rgba(255,255,255,0.18), ' +
     '0px 1px 2px rgba(0,0,0,0.18), 0px 2px 4px rgba(0,0,0,0.08)',
@@ -35,3 +42,17 @@ export const depth = {
     'inset 0px 1px 2px rgba(255,255,255,0.45), ' +
     '0px 4px 6px rgba(0,0,0,0.18), 0px 6px 10px rgba(0,0,0,0.08)',
 };
+
+/**
+ * The shadow of a surface that floats over the screen, for the theme it is drawn in: the full bevel in
+ * light mode, and in dark mode an edge that does not draw a bright line along the top. One function, so
+ * no surface can take `lg` in dark mode again by forgetting a branch - three did (2026-11-11).
+ *
+ * `sheet` rises from the bottom edge and only its top shows; `float` is a card with all four edges.
+ */
+export function raised(themeName: 'light' | 'dark', kind: 'float' | 'sheet'): string {
+  if (themeName === 'light') {
+    return depth.lg;
+  }
+  return kind === 'sheet' ? depth.sheetDark : depth.floatDark;
+}
