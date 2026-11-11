@@ -409,6 +409,31 @@ export function readPasswordExpiry(body: AnyNode): number | null {
   return Number.isNaN(ms) ? null : ms;
 }
 
+/**
+ * A GetPasswordInfo answer, telling "ISDS says there is no date" apart from "no answer worth trusting"
+ * (030, expiry kept in step on a refresh). `readPasswordExpiry` answers null for both, which is right at
+ * a sign-in, where a null date is simply not stored; a refresh would CLEAR a date on null.
+ *
+ * - `known` with a date: the password runs out then.
+ * - `known` with null: ISDS answered OK with no date - a password of unlimited validity ("Platnost hesla:
+ *   neomezená" on the portal; the element absent or nil, which the parser reads as empty).
+ * - `unknown`: not an OK answer, or a date that does not parse - keep what is stored.
+ */
+export function readPasswordInfo(
+  body: AnyNode,
+): { kind: 'known'; expiresAt: number | null } | { kind: 'unknown' } {
+  const resp = body.GetPasswordInfoResponse as AnyNode | undefined;
+  if (readStatusCode(resp) !== STATUS_OK) {
+    return { kind: 'unknown' };
+  }
+  const raw = resp?.pswExpDate;
+  if (raw == null || raw === '') {
+    return { kind: 'known', expiresAt: null };
+  }
+  const ms = Date.parse(String(raw));
+  return Number.isNaN(ms) ? { kind: 'unknown' } : { kind: 'known', expiresAt: ms };
+}
+
 /** Map an ISDS `dbOwnerInfo` node to the lean app `OwnerInfo`. */
 export function toOwnerInfo(
   dbOwnerInfo: AnyNode | undefined,

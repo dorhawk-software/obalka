@@ -13,6 +13,12 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+### Fixed
+
+- **A password validity changed on the portal reaches Obálka.** When a password starts or stops
+  expiring, the app learns it on a refresh, without signing in again, and warns or stops warning.
+- **Dialogs in dark mode have an even edge all round.** It used to light up only along the top.
+
 ## 1.1.0 (2026-11-11)
 
 ### New

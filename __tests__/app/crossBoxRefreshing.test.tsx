@@ -107,6 +107,7 @@ jest.mock('../../src/features/accounts/deps', () => ({
       );
     },
     recordCredit: async () => {},
+    recordPasswordExpiry: async () => {},
     recordSyncFailure: async (boxId: string, syncError: DataBoxAccount['syncError']) => {
       mockWorld.accounts = mockWorld.accounts.map(a =>
         a.boxId === boxId ? { ...a, syncError } : a,
@@ -124,6 +125,7 @@ jest.mock('../../src/features/accounts/deps', () => ({
       syncedAt: null,
     }),
     getCredit: async () => null,
+    getPasswordExpiry: async () => null,
   },
   // The shell listens for restores ending while a phone has no boxes (2026-09-24); none run here.
   backupController: { subscribe: () => () => {}, currentRun: () => null },

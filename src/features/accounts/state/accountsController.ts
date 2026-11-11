@@ -147,6 +147,15 @@ export class AccountsController {
     return this.deps.accounts.setCredit(boxId, pdzCreditCzk);
   }
 
+  /**
+   * Keep a box's password date in step with ISDS, from a refresh (030): a date, or null for a password
+   * with no expiry. Unlike a sign-in, null here CLEARS the date - it is ISDS's answer, not a lookup
+   * that failed (`getPasswordExpiry` answers nothing then, and nothing is recorded).
+   */
+  recordPasswordExpiry(boxId: string, passwordExpiresAt: number | null): Promise<void> {
+    return this.deps.accounts.setPasswordExpiresAt(boxId, passwordExpiresAt);
+  }
+
   /** Backfill a box's legal form (dbType) once captured on a refresh - for boxes added before it existed. */
   recordDbType(boxId: string, dbType: BoxType | null): Promise<void> {
     return this.deps.accounts.setDbType(boxId, dbType);

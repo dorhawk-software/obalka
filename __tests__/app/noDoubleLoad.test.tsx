@@ -50,6 +50,7 @@ jest.mock('../../src/features/accounts/deps', () => {
     },
     recordSync: async () => {},
     recordCredit: async () => {},
+    recordPasswordExpiry: async () => {},
     recordSyncFailure: async () => {},
   };
   return {
@@ -64,6 +65,7 @@ jest.mock('../../src/features/accounts/deps', () => {
       getCachedMessages: (...args: unknown[]) => (mockCalls.getCachedMessages as (...a: unknown[]) => unknown)(...args),
       getMergedMessages: (...args: unknown[]) => (mockCalls.getMergedMessages as (...a: unknown[]) => unknown)(...args),
       getCredit: (...args: unknown[]) => (mockCalls.getCredit as (...a: unknown[]) => unknown)(...args),
+      getPasswordExpiry: async () => null,
     },
     backupController: { subscribe: () => () => {}, currentRun: () => null },
     transferController: { available: () => false },

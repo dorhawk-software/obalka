@@ -53,6 +53,7 @@ function build() {
       downloadSignedMessage: fail,
       markMessageAsDownloaded: fail,
       getCreditInfo: fail,
+      getPasswordInfo: fail,
     },
     secureStore: {
       readPassword: async () => ({ status: 'found', value: 'pw' }),

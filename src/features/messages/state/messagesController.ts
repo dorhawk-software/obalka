@@ -11,6 +11,8 @@ import {
   MessageDetailResult,
   MessageListResult,
   MessageMarkResult,
+  PasswordInfoArgs,
+  PasswordInfoResult,
   SignedMessageResult,
   TransportNetworkError,
   TransportTimeoutError,
@@ -232,7 +234,11 @@ export interface MessagesTransport {
     args: DownloadMessageArgs,
   ): Promise<MessageMarkResult>;
   getCreditInfo(args: GetCreditInfoArgs): Promise<CreditInfoResult>;
+  getPasswordInfo(args: PasswordInfoArgs): Promise<PasswordInfoResult>;
 }
+
+/** How long a password date read on a refresh stands before the next refresh reads it again (030). */
+export const PASSWORD_INFO_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 export interface MessagesControllerDeps {
   transport: MessagesTransport;
@@ -279,6 +285,8 @@ export interface MessagesControllerDeps {
 export class MessagesController {
   private readonly host: Host;
   private readonly now: () => number;
+  /** When each box's password date was last read on a refresh (`getPasswordExpiry`). */
+  private readonly passwordInfoReadAt = new Map<string, number>();
   /** Listings under way, by box and folder - see {@link joinListing}. */
   private readonly listings = new Map<
     string,
@@ -1188,6 +1196,51 @@ export class MessagesController {
         // (`mapError`): a removal during a refresh was reported as the credit service failing.
         if (!s.aborted) {
           reportFailure('isds.credit', e, { stage: 'transport' });
+        }
+        return null;
+      }
+    });
+  }
+
+  /**
+   * The box's password expiry as ISDS states it now, for a refresh to keep the stored date in step
+   * (030): `{ expiresAt }` - null meaning the password has no expiry - or null when there is nothing to
+   * go on: a Mobile Key box (it signs in without the password), a read within the last day, no
+   * answer, or an answer not worth trusting. NEVER throws; a null leaves the stored date alone.
+   *
+   * Once a day per box, in memory: the validity changes rarely, and a refresh should not grow by a
+   * call for nothing. A launch reads it again on the first refresh.
+   */
+  async getPasswordExpiry(
+    account: DataBoxAccount,
+    signal: AbortSignal,
+  ): Promise<{ expiresAt: number | null } | null> {
+    if (account.authMethod === 'mobile_key') {
+      return null;
+    }
+    const last = this.passwordInfoReadAt.get(account.boxId);
+    if (last != null && this.now() - last < PASSWORD_INFO_INTERVAL_MS) {
+      return null;
+    }
+    return this.forBox(account.boxId, signal, async s => {
+      try {
+        const { password, sessionCookie } = await this.credentials(account, s);
+        const result = await this.deps.transport.getPasswordInfo({
+          host: account.host,
+          authMethod: account.authMethod,
+          sessionCookie,
+          loginName: account.loginName,
+          password,
+          signal: s,
+        });
+        if (result.type !== 'expiry') {
+          return null;
+        }
+        this.passwordInfoReadAt.set(account.boxId, this.now());
+        return { expiresAt: result.expiresAt };
+      } catch (e) {
+        if (!s.aborted) {
+          reportFailure('isds.passwordInfo', e, { stage: 'transport' });
         }
         return null;
       }

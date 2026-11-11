@@ -73,6 +73,8 @@ function world(over: Partial<RefreshAllDeps> = {}): RefreshAllDeps & { written: 
     recordSyncFailure: async (boxId, flag) => {
       written.flags.push([boxId, flag]);
     },
+    getPasswordExpiry: async () => null,
+    recordPasswordExpiry: async () => {},
     ...over,
   };
 }
@@ -271,6 +273,85 @@ describe('a box removed while it is being refreshed', () => {
     later.answer();
     await expect(refreshing).resolves.toEqual({});
     expect(deps.written.credit).toEqual(['b']);
+  });
+});
+
+// 030: a validity switched on the portal reaches the app on a refresh, not only at the next sign-in.
+describe('the password date, kept in step on a refresh', () => {
+  const recorded = (deps: RefreshAllDeps & { written: Written }) => {
+    const out: [string, number | null][] = [];
+    deps.recordPasswordExpiry = async (boxId, at) => {
+      out.push([boxId, at]);
+    };
+    return out;
+  };
+
+  it('stores a date that changed, and clears one ISDS no longer gives', async () => {
+    const until = Date.UTC(2027, 1, 9);
+    const deps = world({ getPasswordExpiry: async a => ({ expiresAt: a.boxId === 'a' ? until : null }) });
+    const out = recorded(deps);
+    await refreshBox(account('a'), undefined, deps, signal());
+    await refreshBox(account('b', { passwordExpiresAt: until }), undefined, deps, signal());
+    expect(out).toEqual([
+      ['a', until], // unlimited → ninety days: the warning and the notifications now have a date
+      ['b', null], // ninety days → unlimited: no "expired" over a password that works
+    ]);
+  });
+
+  it('writes nothing when the date is the same, or when there is nothing to go on', async () => {
+    const until = Date.UTC(2027, 1, 9);
+    const same = world({ getPasswordExpiry: async () => ({ expiresAt: until }) });
+    const none = world({ getPasswordExpiry: async () => null });
+    const outSame = recorded(same);
+    const outNone = recorded(none);
+    await refreshBox(account('a', { passwordExpiresAt: until }), undefined, same, signal());
+    await refreshBox(account('a', { passwordExpiresAt: until }), undefined, none, signal());
+    expect(outSame).toEqual([]);
+    expect(outNone).toEqual([]);
+  });
+
+  it('does not fail the refresh when the lookup throws', async () => {
+    const deps = world({
+      getPasswordExpiry: async () => {
+        throw new Error('db');
+      },
+    });
+    expect(await refreshBox(account('a'), undefined, deps, signal())).toBeNull();
+    expect(deps.written.sent).toEqual(['a']);
+  });
+});
+
+// Owner, 2026-11-11: "parallelize ... so loadings are not sequential". Once the received list is in,
+// the credit, the password date and the sent list need nothing from one another.
+describe('what follows the received list', () => {
+  it('starts the credit, the password date and the sent list together', async () => {
+    const started: string[] = [];
+    let release!: () => void;
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    const deps = world({
+      getCredit: async () => {
+        started.push('credit');
+        await gate;
+        return 1;
+      },
+      getPasswordExpiry: async () => {
+        started.push('password');
+        await gate;
+        return null;
+      },
+      listSent: async () => {
+        started.push('sent');
+        await gate;
+        return LOADED;
+      },
+    });
+    const done = refreshBox(account('a'), undefined, deps, signal());
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(started.sort()).toEqual(['credit', 'password', 'sent']); // none waited for another
+    release();
+    expect(await done).toBeNull();
   });
 });
 

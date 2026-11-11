@@ -20,6 +20,11 @@ Captured on the test environment on 2026-11-11 with the box `7bi62r`:
 - **The date comes from ISDS.** After the password was changed on the portal, the same call answered
   HTTP 200 with `<p:pswExpDate>2027-02-09T09:49:12.000+01:00</p:pswExpDate>` and `dbStatusCode 0000`:
   ninety days on, to the second. `readPasswordExpiry` reads it; the response is a test fixture now.
+- **A password can have no expiry at all.** The portal (Nastavení → Přihlašování) shows "Platnost hesla:
+  neomezená" for such an account - seen on the owner's production box on 2026-11-11 - and the app gets
+  no date: no strip, no notification and no permission dialog for that box, which is right, as there
+  is nothing to warn about. A box with no date and one whose date is months away look the same in the
+  app today.
 - **`ChangeISDSPassword` needs the current password to work.** It is an ordinary db_access call at
   `/DS/DsManage`, authenticated with HTTP Basic like every other call of a password box, carrying
   `dbOldPassword` and `dbNewPassword`. A password that has expired fails the Basic sign-in before the
@@ -113,6 +118,14 @@ Captured on the test environment on 2026-11-11 with the box `7bi62r`:
   box; the notification's tap.
 - **FR-006** `syncPasswordNudges` - the boxes and their dates in, the notifications scheduled, moved or
   cancelled; called whenever the shell reads the accounts.
+- **FR-008** (owner, 2026-11-11) The stored date follows ISDS, not only the last sign-in. A password box
+  sends its password with every call and may never sign in again, so a validity switched on the portal
+  (unlimited to ninety days, or back) used to reach the app only at the next refused sign-in: no warning
+  before the box stopped working, or notifications and an "expired" strip over a password that works.
+  Every refresh of all boxes (the one at launch included - a user's own command, 014) reads
+  `GetPasswordInfo` with the box's own credentials, at most once a day per box, and stores the date when
+  it differs - null, for a password with no expiry, clears it. A failed read changes nothing. Mobile Key
+  boxes are not asked. It runs beside the credit and the sent list, not after them.
 - **FR-007** 010 FR-010 amended: the notifier may schedule a second kind of local notification, tied to a
   date ISDS reported at a sign-in the person started. It still takes no account, no transport and no
   sync result, and nothing in it can reach the network.

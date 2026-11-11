@@ -143,6 +143,8 @@ const refreshDeps: RefreshAllDeps = {
   getCredit: (account, signal) => messagesController.getCredit(account, signal),
   recordSync: (boxId, messages) => accountsController.recordSync(boxId, messages),
   recordCredit: (boxId, credit) => accountsController.recordCredit(boxId, credit),
+  getPasswordExpiry: (account, signal) => messagesController.getPasswordExpiry(account, signal),
+  recordPasswordExpiry: (boxId, at) => accountsController.recordPasswordExpiry(boxId, at),
   recordSyncFailure: (boxId, state) => accountsController.recordSyncFailure(boxId, state),
   // Each box under a signal its removal aborts: the refresh's own is never aborted, and a box removed
   // while it was fetched must neither be written back nor flagged (`BoxWork`).

@@ -61,6 +61,7 @@ import {
   parseUploadAttachment,
   readDmStatusCode,
   readPasswordExpiry,
+  readPasswordInfo,
   readStatusCode,
   readStatusMessage,
   toOwnerInfo,
@@ -85,6 +86,8 @@ import {
   OtpBeginArgs,
   OtpSubmitArgs,
   PasswordChanger,
+  PasswordInfoArgs,
+  PasswordInfoResult,
   PasswordLoginArgs,
   SendMessageArgs,
   SendMessageResult,
@@ -997,6 +1000,44 @@ export class IsdsHttpTransport implements IsdsTransport, PasswordChanger {
       return { type: 'serverFault' };
     }
     return { type: 'credit', balanceCzk: parseDataBoxCreditInfo(body) };
+  }
+
+  // --- Password expiry on a refresh (030, GetPasswordInfo at db_access /DS/DsManage) ---------------
+  /**
+   * The date a sign-in stored goes stale without one: the validity can be switched on the portal -
+   * unlimited to ninety days, or back - and a password box may never sign in again, as it sends its
+   * password with every call. Read the way the credit is: this box's own credentials, its own session,
+   * the shared jar kept out (018).
+   */
+  async getPasswordInfo(args: PasswordInfoArgs): Promise<PasswordInfoResult> {
+    const usesBasic = args.authMethod === 'password';
+    if (this.missingSession(args)) {
+      return { type: 'authFault' };
+    }
+    const headers: Headers = { ...SOAP_HEADERS };
+    if (usesBasic && args.password != null) {
+      headers.Authorization = basicAuthHeader(args.loginName, args.password);
+    }
+    const res = await this.http.send({
+      url: usesBasic ? dsManageUrl(args.host) : appsDsManageUrl(args.host),
+      method: 'POST',
+      headers,
+      cookie: usesBasic ? undefined : args.sessionCookie ?? undefined,
+      useJar: false,
+      body: buildGetPasswordInfo(),
+      signal: args.signal,
+      timeoutMs: DEFAULT_TIMEOUT_MS,
+    });
+    if (this.sessionLost(usesBasic, res)) {
+      return { type: 'authFault' };
+    }
+    if (res.status !== 200) {
+      return { type: 'serverFault' };
+    }
+    const info = readPasswordInfo(parseSoapBody(res.text));
+    return info.kind === 'known'
+      ? { type: 'expiry', expiresAt: info.expiresAt }
+      : { type: 'serverFault' };
   }
 
   // --- Password change (030 FR-002, db_access /DS/DsManage) ------------------

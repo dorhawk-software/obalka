@@ -13,6 +13,12 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+### Opraveno
+
+- **Změna platnosti hesla v portálu se projeví i v Obálce.** Když heslo začne nebo přestane vypršet,
+  aplikace to zjistí při obnovení, bez nového přihlášení, a podle toho upozorní, nebo přestane.
+- **Okraj dialogů v tmavém režimu je stejný ze všech stran.** Dřív svítil jen nahoře.
+
 ## 1.1.0 (2026-11-11)
 
 ### Nové

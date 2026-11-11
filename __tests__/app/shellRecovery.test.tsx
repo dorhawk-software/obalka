@@ -64,6 +64,7 @@ jest.mock('../../src/features/accounts/deps', () => {
       mockWorld.synced.push(boxId);
     },
     recordCredit: async () => {},
+    recordPasswordExpiry: async () => {},
     recordSyncFailure: async () => {},
     setAlias: async (boxId: string, alias: string | null) => {
       mockWorld.aliasWrites.push(alias);
@@ -98,6 +99,7 @@ jest.mock('../../src/features/accounts/deps', () => {
       listSent: async () => ({ kind: 'loaded', messages: [], downloaded: [] }),
       getCachedMessages: async () => ({ envelopes: [], downloaded: [], syncedAt: null }),
       getCredit: async () => null,
+      getPasswordExpiry: async () => null,
     },
     // The shell listens for restores ending while a phone has no boxes (2026-09-24); none run here.
     backupController: { subscribe: () => () => {}, currentRun: () => null },

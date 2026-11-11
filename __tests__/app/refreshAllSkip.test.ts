@@ -54,6 +54,8 @@ function isds(): RefreshAllDeps & { listed: string[] } {
     recordSync: async () => {},
     recordCredit: async () => {},
     recordSyncFailure: async () => {},
+    getPasswordExpiry: async () => null,
+    recordPasswordExpiry: async () => {},
   };
 }
 

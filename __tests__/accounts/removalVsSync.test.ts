@@ -160,6 +160,7 @@ async function phone() {
         downloadSignedMessage: unexpected('downloadSignedMessage'),
         markMessageAsDownloaded: unexpected('markMessageAsDownloaded'),
         getCreditInfo: unexpected('getCreditInfo'),
+        getPasswordInfo: unexpected('getPasswordInfo'),
         ...transport,
       },
       secureStore,

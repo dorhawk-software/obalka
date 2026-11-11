@@ -90,6 +90,7 @@ jest.mock('../../src/features/accounts/deps', () => {
     },
     recordSync: async () => {},
     recordCredit: async () => {},
+    recordPasswordExpiry: async () => {},
     recordSyncFailure: async () => {},
     setAlias: async () => {},
     removeRow: async (boxId: string) => {
@@ -135,6 +136,7 @@ jest.mock('../../src/features/accounts/deps', () => {
       listSent: async () => ({ kind: 'loaded', messages: [], downloaded: [] }),
       getCachedMessages: async () => ({ envelopes: mockArchive(), downloaded: [], syncedAt: null }),
       getCredit: async () => null,
+      getPasswordExpiry: async () => null,
       clearBoxCache: async (boxId: string) => {
         await mockWorld.archiveHeld.get(boxId);
         if (mockWorld.archiveRefuses) {

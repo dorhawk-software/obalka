@@ -41,5 +41,7 @@ No plan.md: one transport call, one screen, one notification kind, all on existi
   - Build 1.1.0 (5), iPhone, 2026-11-11 (owner): the change screen "looks great"; a change on test box
     `8z7qbm` worked. Adding a box raised the bare iOS permission prompt with no word on what for -
     fixed by T012. Still to see: a notification itself.
+- [x] T013 The date kept in step with ISDS on a refresh (FR-008), in parallel with the credit and the
+  sent list.
 - [x] T012 The app's own dialog before the OS permission prompt (US3.4 as amended), nothing scheduled
   and nothing reported while notifications are off (US3.6; Sentry, build 5, `notify.schedule`).

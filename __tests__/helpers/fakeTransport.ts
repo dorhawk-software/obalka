@@ -44,6 +44,7 @@ export function makeTransport(
     sendMessage: impl.sendMessage ?? unconfigured('sendMessage'),
     sendBigMessage: impl.sendBigMessage ?? unconfigured('sendBigMessage'),
     getCreditInfo: impl.getCreditInfo ?? unconfigured('getCreditInfo'),
+    getPasswordInfo: impl.getPasswordInfo ?? unconfigured('getPasswordInfo'),
     getSentMessages: impl.getSentMessages ?? unconfigured('getSentMessages'),
   };
 }

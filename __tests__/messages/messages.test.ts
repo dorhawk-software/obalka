@@ -148,6 +148,7 @@ function makeController(
         transport.markMessageAsDownloaded ??
         notConfigured('markMessageAsDownloaded'),
       getCreditInfo: transport.getCreditInfo ?? notConfigured('getCreditInfo'),
+      getPasswordInfo: transport.getPasswordInfo ?? notConfigured('getPasswordInfo'),
     },
     secureStore: secrets,
     messagesStore,
@@ -705,6 +706,40 @@ describe('MessagesController - offline cache', () => {
     expect(await threw.getCredit(account(), signal())).toBeNull();
   });
 
+  it('getPasswordExpiry: ISDS\'s date with the box\'s own credentials - at most once a day', async () => {
+    const seen: (string | null)[] = [];
+    const c = makeController({
+      getPasswordInfo: async args => {
+        seen.push(args.password);
+        return { type: 'expiry', expiresAt: null };
+      },
+    });
+    expect(await c.getPasswordExpiry(account({ boxId: 'b7' }), signal())).toEqual({ expiresAt: null });
+    // The clock stands still in `makeController`: the same day, so no second call.
+    expect(await c.getPasswordExpiry(account({ boxId: 'b7' }), signal())).toBeNull();
+    expect(seen).toEqual(['pw']);
+    // Another box has a day of its own.
+    expect(await c.getPasswordExpiry(account({ boxId: 'b8' }), signal())).toEqual({ expiresAt: null });
+  });
+
+  it('getPasswordExpiry: nothing for a Mobile Key box, a fault or a throw - and a fault is tried again', async () => {
+    let calls = 0;
+    const c = makeController({
+      getPasswordInfo: async () => {
+        calls += 1;
+        if (calls === 2) {
+          throw new TransportNetworkError();
+        }
+        return calls === 1 ? { type: 'serverFault' } : { type: 'expiry', expiresAt: 5 };
+      },
+    });
+    expect(await c.getPasswordExpiry(account({ authMethod: 'mobile_key' }), signal())).toBeNull();
+    expect(calls).toBe(0);
+    expect(await c.getPasswordExpiry(account(), signal())).toBeNull();
+    expect(await c.getPasswordExpiry(account(), signal())).toBeNull();
+    expect(await c.getPasswordExpiry(account(), signal())).toEqual({ expiresAt: 5 });
+  });
+
   it('clearBoxCache drops a box archive', async () => {
     const store = new InMemoryMessagesStore();
     const c = makeController(
@@ -1091,6 +1126,7 @@ describe('getDetail: telling a deleted message from a download that failed', () 
         downloadSignedMessage: notConfigured('downloadSignedMessage'),
         markMessageAsDownloaded: notConfigured('markMessageAsDownloaded'),
         getCreditInfo: notConfigured('getCreditInfo'),
+        getPasswordInfo: notConfigured('getPasswordInfo'),
       },
       secureStore: passwordOnly(),
       messagesStore: store,
@@ -1215,6 +1251,7 @@ describe('getDetail: a large-volume message whose enclosures stopped arriving pa
         downloadSignedMessage: notConfigured('downloadSignedMessage'),
         markMessageAsDownloaded: notConfigured('markMessageAsDownloaded'),
         getCreditInfo: notConfigured('getCreditInfo'),
+        getPasswordInfo: notConfigured('getPasswordInfo'),
       },
       secureStore: passwordOnly(),
       messagesStore: store,

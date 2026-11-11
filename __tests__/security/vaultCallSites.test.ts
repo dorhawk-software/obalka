@@ -155,6 +155,10 @@ function messagesTransport() {
       record('mark', args);
       return { type: 'ok' };
     },
+    getPasswordInfo: async args => {
+      record('passwordInfo', args);
+      return { type: 'expiry', expiresAt: null };
+    },
     getCreditInfo: async args => {
       record('credit', args);
       return { type: 'credit', balanceCzk: 10 };

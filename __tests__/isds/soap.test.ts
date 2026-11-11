@@ -10,6 +10,7 @@ import {
   parseCreateBigMessage,
   parseSoapBody,
   readPasswordExpiry,
+  readPasswordInfo,
   readStatusMessage,
   buildChangeISDSPassword,
   readStatusCode,
@@ -174,6 +175,25 @@ describe('SOAP parse', () => {
       '</p:dbStatusCode><p:dbStatusMessage>Provedeno úspěšně.</p:dbStatusMessage></p:dbStatus>' +
       '</p:GetPasswordInfoResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>';
     expect(readPasswordExpiry(parseSoapBody(captured))).toBe(Date.UTC(2027, 1, 9, 8, 49, 12));
+  });
+
+  // 030, the date kept in step on a refresh: "no date" is ISDS's answer only when the call succeeded.
+  it('tells a password with no expiry apart from an answer not worth trusting', () => {
+    expect(readPasswordInfo(parseSoapBody(passwordInfoResponse('2027-02-09T09:49:12.000+01:00')))).toEqual({
+      kind: 'known',
+      expiresAt: Date.UTC(2027, 1, 9, 8, 49, 12),
+    });
+    // Unlimited validity ("Platnost hesla: neomezená"): OK, and no date.
+    expect(readPasswordInfo(parseSoapBody(passwordInfoResponse('')))).toEqual({ kind: 'known', expiresAt: null });
+    const nil = passwordInfoResponse('').replace(
+      '<p:GetPasswordInfoResponse>',
+      '<p:GetPasswordInfoResponse><p:pswExpDate xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>',
+    );
+    expect(readPasswordInfo(parseSoapBody(nil))).toEqual({ kind: 'known', expiresAt: null });
+    // Not OK, or a date that does not parse: keep what is stored.
+    const refused = passwordInfoResponse('').replace('0000', '1214');
+    expect(readPasswordInfo(parseSoapBody(refused))).toEqual({ kind: 'unknown' });
+    expect(readPasswordInfo(parseSoapBody(passwordInfoResponse('not a date')))).toEqual({ kind: 'unknown' });
   });
 
   it('builds ChangeISDSPassword with both passwords escaped', () => {

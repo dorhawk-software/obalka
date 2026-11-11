@@ -28,6 +28,12 @@ export interface RefreshAllDeps {
   getCredit(account: DataBoxAccount, signal: AbortSignal): Promise<number | null>;
   recordSync(boxId: string, messages: MessageEnvelope[]): Promise<void>;
   recordCredit(boxId: string, pdzCreditCzk: number | null): Promise<void>;
+  /** The box's password date as ISDS states it now, or null for nothing to go on (030). */
+  getPasswordExpiry(
+    account: DataBoxAccount,
+    signal: AbortSignal,
+  ): Promise<{ expiresAt: number | null } | null>;
+  recordPasswordExpiry(boxId: string, passwordExpiresAt: number | null): Promise<void>;
   recordSyncFailure(boxId: string, syncError: SyncFailure): Promise<void>;
   /**
    * Runs one box's refresh under a signal of its own, which that box's removal aborts as well
@@ -104,29 +110,16 @@ export async function refreshBox(
     await keepFlag(account.boxId, 'error', deps);
     return 'error';
   }
-  // Best-effort PDZ credit for the overview - never blocks or fails the refresh (020).
-  try {
-    const credit = await deps.getCredit(account, signal);
-    // A credit call the removal stopped answers null, which is not the box's balance.
-    if (!signal.aborted) {
-      await deps.recordCredit(account.boxId, credit);
-    }
-  } catch (e) {
-    reportFailure('db.write', e, { stage: 'persist' });
-  }
-  // The sent list too (owner, 2026-11-11). It was listed only when the box's own Odeslané opened, so a
-  // box whose Odeslané nobody opened had no sent messages in the archive, a backup, a transfer or a
-  // search - and ISDS deletes them 90 days after delivery, for good. A refresh is a user command (014
-  // FR-001), a sent list delivers nothing (17/3 is about received ones), and it brings the delivery
-  // outcomes of what the user sent with it (014 FR-009). After the received list, which is what the
-  // box's flag is about: a sent list that did not arrive changes nothing the refresh reports.
-  try {
-    await deps.listSent(account, signal);
-  } catch (e) {
-    if (!signal.aborted) {
-      reportFailure('isds.listSent', e, { stage: 'transport' });
-    }
-  }
+  // What follows the received list - the credit, the password's date and the sent list - needs nothing
+  // from one another, so they run together (owner, 2026-11-11: "parallelize ... so loadings are not
+  // sequential"). Each carries this box's own credentials, read per call, and none rides the shared
+  // cookie jar (018), so running them side by side cannot hand one box's authorization to another.
+  // Each is best-effort and settles on its own: none can fail the refresh or another.
+  await Promise.all([
+    refreshCredit(account, deps, signal),
+    refreshPasswordExpiry(account, deps, signal),
+    refreshSent(account, deps, signal),
+  ]);
   return null;
 }
 
@@ -240,3 +233,64 @@ export async function refreshSentBoxes(
   return failed;
 }
 
+/** Best-effort PDZ credit for the overview - never blocks or fails the refresh (020). */
+async function refreshCredit(
+  account: DataBoxAccount,
+  deps: RefreshAllDeps,
+  signal: AbortSignal,
+): Promise<void> {
+  try {
+    const credit = await deps.getCredit(account, signal);
+    // A credit call the removal stopped answers null, which is not the box's balance.
+    if (!signal.aborted) {
+      await deps.recordCredit(account.boxId, credit);
+    }
+  } catch (e) {
+    reportFailure('db.write', e, { stage: 'persist' });
+  }
+}
+
+/**
+ * The password's date, best-effort like the credit (030). A sign-in stored it, and a password box may
+ * never sign in again: a validity switched on the portal - unlimited to ninety days, or back - reached
+ * the app only at the next refused sign-in. Unlimited to ninety days meant no warning before the box
+ * stopped working; ninety days to unlimited meant notifications and an "expired" strip over a password
+ * that works. Stored only when ISDS's answer differs; the shell re-reads the accounts after a refresh,
+ * which moves the strip and the notifications.
+ */
+async function refreshPasswordExpiry(
+  account: DataBoxAccount,
+  deps: RefreshAllDeps,
+  signal: AbortSignal,
+): Promise<void> {
+  try {
+    const info = await deps.getPasswordExpiry(account, signal);
+    if (info && !signal.aborted && info.expiresAt !== (account.passwordExpiresAt ?? null)) {
+      await deps.recordPasswordExpiry(account.boxId, info.expiresAt);
+    }
+  } catch (e) {
+    reportFailure('db.write', e, { stage: 'persist' });
+  }
+}
+
+/**
+ * The sent list too (owner, 2026-11-11). It was listed only when the box's own Odeslané opened, so a
+ * box whose Odeslané nobody opened had no sent messages in the archive, a backup, a transfer or a
+ * search - and ISDS deletes them 90 days after delivery, for good. A refresh is a user command (014
+ * FR-001), a sent list delivers nothing (17/3 is about received ones), and it brings the delivery
+ * outcomes of what the user sent with it (014 FR-009). After the received list, which is what the
+ * box's flag is about: a sent list that did not arrive changes nothing the refresh reports.
+ */
+async function refreshSent(
+  account: DataBoxAccount,
+  deps: RefreshAllDeps,
+  signal: AbortSignal,
+): Promise<void> {
+  try {
+    await deps.listSent(account, signal);
+  } catch (e) {
+    if (!signal.aborted) {
+      reportFailure('isds.listSent', e, { stage: 'transport' });
+    }
+  }
+}

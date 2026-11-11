@@ -147,6 +147,7 @@ describe('a cookie session the portal turns away to its sign-in page', () => {
       (t, a) => t.sendBigMessage({ ...a, recipientBoxId: 'abc1234', subject: 's', files: [document] } as never),
     ],
     ['the credit balance', (t, a) => t.getCreditInfo({ ...a, boxId: 'b1' } as never)],
+    ['the password date', (t, a) => t.getPasswordInfo(a as never)],
   ];
 
   it.each(calls)('is an auth fault on %s', async (_call, call) => {

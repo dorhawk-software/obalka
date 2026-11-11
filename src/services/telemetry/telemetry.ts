@@ -81,6 +81,7 @@ export type Op =
   | 'isds.deliveryRecord'
   | 'isds.mobileKey'
   | 'isds.passwordChange'
+  | 'isds.passwordInfo'
   | 'isds.http'
   | 'isds.parse'
   // storage

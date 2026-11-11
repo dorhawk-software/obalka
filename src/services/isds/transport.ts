@@ -181,6 +181,15 @@ export interface GetCreditInfoArgs {
   signal: AbortSignal;
 }
 
+/** A box's password expiry, read on a refresh (030): the same credentials a credit lookup uses. */
+export type PasswordInfoArgs = Omit<GetCreditInfoArgs, 'boxId'>;
+
+/** `expiry` with null = ISDS says the password has no expiry date. */
+export type PasswordInfoResult =
+  | { type: 'expiry'; expiresAt: number | null }
+  | { type: 'authFault' }
+  | { type: 'serverFault' };
+
 /** Change a password box's password (030 FR-002). */
 export interface ChangePasswordArgs {
   host: Host;
@@ -311,6 +320,11 @@ export interface IsdsTransport {
   sendBigMessage(args: SendMessageArgs): Promise<SendMessageResult>;
   /** The sender box's PDZ credit balance in CZK (DataBoxCreditInfo at db_search `/DS/df`). */
   getCreditInfo(args: GetCreditInfoArgs): Promise<CreditInfoResult>;
+  /**
+   * The box's password expiry (GetPasswordInfo at db_access `/DS/DsManage`), read on a refresh so a
+   * validity changed on the portal reaches the app without a new sign-in (030).
+   */
+  getPasswordInfo(args: PasswordInfoArgs): Promise<PasswordInfoResult>;
   /** List SENT messages (GetListOfSentMessages at `/DS/dx`) - used to reconcile after a timeout. */
   getSentMessages(args: ListMessagesArgs): Promise<MessageListResult>;
 }
