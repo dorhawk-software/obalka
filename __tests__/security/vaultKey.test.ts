@@ -13,8 +13,14 @@ import {
   VaultUnavailableError,
   isBiometricPromptError,
   isPermanentKeyLoss,
+  isPhoneLocked,
   isPromptOutcome,
 } from '../../src/services/secureStore/vault';
+import { reportFailure } from '../../src/services/telemetry/telemetry';
+
+jest.mock('../../src/services/telemetry/telemetry', () => ({
+  reportFailure: jest.fn(),
+}));
 
 const PROMPT = 'Odemknout Obálku';
 
@@ -85,6 +91,30 @@ describe('with the lock off', () => {
     expect(storage.plain).toEqual(key(42));
     expect(generated()).toBe(0);
     expect(await vault.useKey()).toEqual(key(42));
+  });
+
+  it('does not report a read the locked phone refused - it is unavailable, and the next read works', async () => {
+    // iOS keeps the key "when unlocked": a refresh or a backup still running after the phone locked
+    // gets errSecInteractionNotAllowed. Nothing is wrong, so nothing goes to Sentry (2026-11-11).
+    const { vault, storage, generated } = setup();
+    storage.plain = key(42);
+    (reportFailure as jest.Mock).mockClear();
+    storage.plainReadError = new Error('User interaction is not allowed.');
+    await expect(vault.useKey()).rejects.toBeInstanceOf(VaultUnavailableError);
+    expect(reportFailure).not.toHaveBeenCalled();
+    expect(generated()).toBe(0);
+    expect(await vault.useKey()).toEqual(key(42));
+  });
+
+  it('still reports any other Keychain failure', async () => {
+    const { vault, storage } = setup();
+    storage.plain = key(42);
+    (reportFailure as jest.Mock).mockClear();
+    storage.plainReadError = new Error('keychain busy');
+    await expect(vault.useKey()).rejects.toBeInstanceOf(VaultUnavailableError);
+    expect(reportFailure).toHaveBeenCalledWith('keychain.read', expect.any(Error), {
+      stage: 'native',
+    });
   });
 
   it('treats an ungated key whose Keystore key Android lost as lost - a new key, not "unavailable" for ever', async () => {
@@ -609,6 +639,25 @@ describe('what counts as the prompt’s own answer rather than the Keychain fail
     ['Wrapped error: Key permanently invalidated', false],
   ])('%p → %p', (message, outcome) => {
     expect(isPromptOutcome(new Error(message))).toBe(outcome);
+  });
+});
+
+describe('what counts as the phone being locked rather than the Keychain failing', () => {
+  it.each([
+    ['User interaction is not allowed.', true],
+    ['The operation couldn’t be completed. (OSStatus error -25308.)', true],
+    ['errSecInteractionNotAllowed', true],
+    ['keychain busy', false],
+    ['Wrapped error: Keystore operation failed', false],
+    ['User canceled the operation.', false],
+  ])('%p → %p', (message, locked) => {
+    expect(isPhoneLocked(new Error(message))).toBe(locked);
+  });
+
+  it('reads a plain string and ignores anything else', () => {
+    expect(isPhoneLocked('User interaction is not allowed.')).toBe(true);
+    expect(isPhoneLocked({ message: 'User interaction is not allowed.' })).toBe(false);
+    expect(isPhoneLocked(undefined)).toBe(false);
   });
 });
 

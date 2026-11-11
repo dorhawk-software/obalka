@@ -109,6 +109,23 @@ export function isPermanentKeyLoss(error: unknown): boolean {
 }
 
 /**
+ * Whether a Keychain read failed only because the phone is locked: iOS's errSecInteractionNotAllowed
+ * (-25308, "User interaction is not allowed."). Every item the app keeps is readable only while the
+ * phone is unlocked (`WHEN_UNLOCKED_THIS_DEVICE_ONLY`), so a refresh or backup the person started and
+ * then pocketed the phone during meets it about ten seconds after the screen locks.
+ *
+ * Nothing is wrong: the read is "unavailable, try again" - never "absent", which would send the box to
+ * sign in again - and the next read once the phone is unlocked succeeds. So it is not reported as a
+ * failure either (Sentry, 2026-11-11: build 4, op `keychain.read`, stage `native`). Any other error
+ * still is.
+ */
+export function isPhoneLocked(error: unknown): boolean {
+  const message =
+    error instanceof Error ? error.message : typeof error === 'string' ? error : '';
+  return /User interaction is not allowed|-25308|errSecInteractionNotAllowed/i.test(message);
+}
+
+/**
  * Unlocks in a row that may fail on a Keychain error before the lock screen offers to set the lock up
  * again (`keyUnreadable`). More than one, because a Keychain can fail once and answer the next time;
  * few, because every try until then is a prompt that leads nowhere.
@@ -231,7 +248,9 @@ export class Vault implements AppLock {
         try {
           outcome = await this.exclusive(() => this.acquireWithoutPrompt());
         } catch (e) {
-          reportFailure('keychain.read', e, { stage: 'native' });
+          if (!isPhoneLocked(e)) {
+            reportFailure('keychain.read', e, { stage: 'native' });
+          }
           throw new VaultUnavailableError(`The vault key could not be read: ${String(e)}`);
         }
         if (outcome === 'ready') {

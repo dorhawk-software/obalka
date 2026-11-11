@@ -13,6 +13,7 @@
 
 import * as Keychain from 'react-native-keychain';
 import { reportFailure } from '../telemetry/telemetry';
+import { isPhoneLocked } from '../secureStore/vault';
 
 /** The copy behind the OS gate. Read only to SHOW the passphrase to a person (FR-013). */
 const SERVICE = 'cz.obalka.backupkey';
@@ -151,8 +152,11 @@ export const backupSecretStore: BackupSecretStore = {
       return found ? found.password : null;
     } catch (e) {
       // A null here sends the user to re-enter a passphrase they may not have written down. Worth
-      // separating "there is no key" from "the keychain would not answer".
-      reportFailure('keychain.read', e, { stage: 'native' });
+      // separating "there is no key" from "the keychain would not answer" - except a locked phone,
+      // which is no fault of the Keychain's (`isPhoneLocked`).
+      if (!isPhoneLocked(e)) {
+        reportFailure('keychain.read', e, { stage: 'native' });
+      }
       return null;
     }
   },

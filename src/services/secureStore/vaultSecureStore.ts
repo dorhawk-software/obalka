@@ -12,7 +12,7 @@
 
 import { reportFailure } from '../telemetry/telemetry';
 import { SealError, isSealed, openSecret, sealSecret, type SecretKind } from './seal';
-import { isPermanentKeyLoss } from './vault';
+import { isPermanentKeyLoss, isPhoneLocked } from './vault';
 import type { SecretRead, SecureStore } from './secureStore';
 
 /** One string per Keychain service. Every method may throw. */
@@ -257,7 +257,10 @@ export class VaultSecureStore implements SecureStore {
         reportFailure('keychain.read', e, { stage: 'crypto' });
         return LOST;
       }
-      reportFailure('keychain.read', e, { stage: 'native' });
+      // A locked phone is not a fault: the next read after an unlock succeeds (`isPhoneLocked`).
+      if (!isPhoneLocked(e)) {
+        reportFailure('keychain.read', e, { stage: 'native' });
+      }
       return UNAVAILABLE;
     } finally {
       key.fill(0);
