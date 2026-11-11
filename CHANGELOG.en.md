@@ -13,12 +13,6 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
-### Fixed
-
-- **A password validity changed on the portal reaches Obálka.** When a password starts or stops
-  expiring, the app learns it on a refresh, without signing in again, and warns or stops warning.
-- **Dialogs in dark mode have an even edge all round.** It used to light up only along the top.
-
 ## 1.1.0 (2026-11-11)
 
 ### New
@@ -34,6 +28,12 @@ What changed in each Obálka release, written for the people using it. The newes
   wrong one, so the app names both and offers the way to the ISDS portal.
 - **Obálka says what notifications are for before the phone asks.** After a box is added it first
   explains the password-expiry notice; the system prompt comes only if you want them.
+
+### Fixed
+
+- **A password validity changed on the portal reaches Obálka.** When a password starts or stops
+  expiring, the app learns it on a refresh, without signing in again, and warns or stops warning.
+- **Dialogs in dark mode have an even edge all round.** It used to light up only along the top.
 
 ## 1.0.0 (2026-11-11)
 

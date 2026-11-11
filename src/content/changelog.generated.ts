@@ -50,6 +50,16 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
             "lead": "Než telefon požádá o oznámení, Obálka řekne, k čemu jsou.",
             "body": "Po přidání schránky nejdřív vysvětlí upozornění na konec platnosti hesla; systémový dotaz přijde, jen když je chcete."
           }
+        ],
+        "fixed": [
+          {
+            "lead": "Změna platnosti hesla v portálu se projeví i v Obálce.",
+            "body": "Když heslo začne nebo přestane vypršet, aplikace to zjistí při obnovení, bez nového přihlášení, a podle toho upozorní, nebo přestane."
+          },
+          {
+            "lead": "Okraj dialogů v tmavém režimu je stejný ze všech stran.",
+            "body": "Dřív svítil jen nahoře."
+          }
         ]
       }
     },
@@ -127,6 +137,16 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
           {
             "lead": "Obálka says what notifications are for before the phone asks.",
             "body": "After a box is added it first explains the password-expiry notice; the system prompt comes only if you want them."
+          }
+        ],
+        "fixed": [
+          {
+            "lead": "A password validity changed on the portal reaches Obálka.",
+            "body": "When a password starts or stops expiring, the app learns it on a refresh, without signing in again, and warns or stops warning."
+          },
+          {
+            "lead": "Dialogs in dark mode have an even edge all round.",
+            "body": "It used to light up only along the top."
           }
         ]
       }
