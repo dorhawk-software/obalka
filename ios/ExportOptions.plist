@@ -9,6 +9,10 @@
   create or reuse the distribution certificate and profile itself. No teamID here: it comes from the
   archive, which took it from APPLE_TEAM_ID.
 
+  The signing certificate is the regular "Apple Distribution" one the workflow puts in a keychain of
+  its own, never Apple's cloud-managed one: with the diacritics in the account holder's name, the
+  cloud certificate's signature fails App Store Connect's check (docs/release-ci.md, 2026-11-11).
+
   The version and build number are set by the workflow from the git tag and the run, so App Store
   Connect is told not to change them.
 -->
@@ -20,6 +24,8 @@
 	<string>upload</string>
 	<key>signingStyle</key>
 	<string>automatic</string>
+	<key>signingCertificate</key>
+	<string>Apple Distribution</string>
 	<key>uploadSymbols</key>
 	<true/>
 	<key>manageAppVersionAndBuildNumber</key>

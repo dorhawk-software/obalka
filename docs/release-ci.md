@@ -133,6 +133,20 @@ Apple lists the app under the member's own name. It can be converted to an organ
    | secret | `ASC_KEY_ID` | the key's Key ID |
    | secret | `ASC_ISSUER_ID` | the Issuer ID shown above the keys |
    | secret | `ASC_KEY_P8` | the whole text of the `.p8` file |
+   | secret | `IOS_DISTRIBUTION_P12` | the Apple Distribution certificate and its private key, `.p12`, base64 |
+   | secret | `IOS_DISTRIBUTION_P12_PASSWORD` | the password the `.p12` was exported with |
+
+   **Why a certificate of its own (2026-11-11, the first release).** Automatic signing alone would let
+   Apple's cloud-managed distribution certificate sign the upload, and that cannot work for this
+   account: the holder's name has diacritics ("ONDŘEJ ŠIMON"), the export writes it into the app's
+   designated requirement decomposed while the certificate holds it composed, and App Store Connect
+   rejects every binary with "Invalid Signature. Code failed to satisfy specified code requirement(s)"
+   ([forum thread 848968](https://developer.apple.com/forums/thread/848968)). A regular Apple
+   Distribution certificate does not have the problem. Export it from the Mac that created it: Keychain
+   Access → login → My Certificates → "Apple Distribution: …" → Export, `.p12`, with a password; then
+   `base64 -i distribution.p12 | gh secret set IOS_DISTRIBUTION_P12`, `gh secret set
+   IOS_DISTRIBUTION_P12_PASSWORD`, and delete the `.p12`. It expires after a year (this one 2027-11-04);
+   renew it and replace both secrets before then.
 
 5. **Add testers**: App Store Connect → the app → TestFlight → Internal Testing. Internal testers (people on
    the team) need no review. External testers need Beta App Review and a privacy policy URL.
