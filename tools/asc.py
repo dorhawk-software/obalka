@@ -15,6 +15,10 @@ The private key never touches the disk or the repository: every run reads it fro
     uv run tools/asc.py age            # the age rating answers below, then the rating Apple computes
     uv run tools/asc.py version <x.y.z>  # names the version being prepared (SemVer, as the tag)
     uv run tools/asc.py build <number>  # attaches that processed build to the version being prepared
+    uv run tools/asc.py beta info [--dry]  # TestFlight Test Information: description, feedback, review notes
+    uv run tools/asc.py beta add <number> <group>  # puts a processed build in a TestFlight group
+    uv run tools/asc.py beta submit <number>  # sends a build to Beta App Review (external testers)
+    uv run tools/asc.py review demo <login>  # demo account for Beta App Review and App Review; password from ASC_DEMO_PASSWORD
     uv run tools/asc.py whatsnew <version> [--dry]  # App Store What's New + TestFlight What to Test, from the changelog
     uv run tools/asc.py screenshots <dir> cs|en-US [--dry]  # the framed iPhone 6.9" set, in file order
 """
@@ -393,6 +397,158 @@ def set_build(number: str):
     print(f"  build: {version} ({number}) attached")
 
 
+FEEDBACK_EMAIL = "ondrej@dorhawk.software"
+BETA_DESCRIPTION = {
+    "cs": (
+        "Obálka je aplikace pro datové schránky: všechny schránky v jednom seznamu, šifrovaný archiv "
+        "zpráv, příloh a podepsaných originálů v telefonu, který přetrvá i 90 dní, po kterých ISDS zprávy "
+        "maže, a běžící lhůty a doručení fikcí na očích.\n\n"
+        "Co vyzkoušet: přidání schránky, čtení a stažení zpráv a příloh, Odeslané, odeslání zprávy, "
+        "hledání, zálohu a přenos do jiného telefonu. Ke schránce se aplikace připojuje jen na váš "
+        "pokyn, nic se neděje na pozadí.\n\n"
+        "Chyby a připomínky posílejte z TestFlightu (snímek obrazovky) nebo e-mailem."
+    ),
+    "en-US": (
+        "Obálka is an app for Czech data boxes (ISDS): every box in one list, an encrypted archive of "
+        "messages, attachments and signed originals on your phone that outlives the 90 days ISDS keeps "
+        "them, and running deadlines and deemed delivery in plain sight.\n\n"
+        "What to try: adding a box, reading and downloading messages and attachments, Sent, sending a "
+        "message, search, backup and moving to another phone. The app contacts a box only when you ask "
+        "it to; nothing happens in the background.\n\n"
+        "Send bugs and ideas from TestFlight (a screenshot) or by e-mail."
+    ),
+}
+BETA_REVIEW_NOTES = (
+    "Obálka is a client for the Czech state's data box system (ISDS) and needs an ISDS login. The demo "
+    "account is a box on ISDS's public TEST environment. On the sign-in screen, open \"Pokročilé\" "
+    "(Advanced) and choose \"Testovací\" (Test) before signing in, with the method \"Jméno a heslo\" "
+    "(name and password); left on the default production environment, the login is refused. The app "
+    "starts in Czech; English is under Nastavení (Settings) > Jazyk (Language) > English."
+)
+
+
+def beta_info(dry: bool = False):
+    """TestFlight's Test Information, both languages, and the beta review contact and notes. The demo
+    account's name and password are NOT set here: there is no czebox password in this repository or
+    anywhere the script can read, so the owner types them into App Store Connect."""
+    aid = app_id()
+    existing = {
+        l["attributes"]["locale"]: (l["id"], l["attributes"])
+        for l in get(f"/v1/apps/{aid}/betaAppLocalizations")["data"]
+    }
+    for locale, description in BETA_DESCRIPTION.items():
+        want = {
+            "description": description,
+            "feedbackEmail": FEEDBACK_EMAIL,
+            "marketingUrl": REPO,
+            "privacyPolicyUrl": PRIVACY[locale],
+        }
+        diff = _upsert("betaAppLocalizations", "app", "apps", aid, existing, locale, want, dry)
+        print(f"  [{locale}] Test Information: {'already' if not diff else ('would set ' if dry else 'set ') + ', '.join(diff)}")
+    detail = get(f"/v1/apps/{aid}/betaAppReviewDetail")["data"]
+    want = {
+        "contactFirstName": "Ondřej",
+        "contactLastName": "Šimon",
+        "contactEmail": FEEDBACK_EMAIL,
+        "demoAccountRequired": True,
+        "notes": BETA_REVIEW_NOTES,
+    }
+    have = detail["attributes"]
+    diff = {k: v for k, v in want.items() if have.get(k) != v}
+    if diff and not dry:
+        api("PATCH", f"/v1/betaAppReviewDetails/{detail['id']}",
+            json={"data": {"type": "betaAppReviewDetails", "id": detail["id"], "attributes": diff}})
+    print(f"  beta review contact and notes: {'already' if not diff else ('would set ' if dry else 'set ') + ', '.join(diff)}")
+    missing = [k for k in ("contactPhone", "demoAccountName", "demoAccountPassword") if not have.get(k)]
+    if missing:
+        print(f"  still empty, for the owner to type in App Store Connect: {', '.join(missing)}")
+
+
+REVIEW_CONTACT = {"contactFirstName": "Ondřej", "contactLastName": "Šimon", "contactEmail": FEEDBACK_EMAIL}
+
+
+def review_demo(login: str):
+    """The demo account Apple signs in with, for Beta App Review AND App Review of the version being
+    prepared. The password comes from the environment (`ASC_DEMO_PASSWORD`) and is never written to the
+    repository. Apple refuses any change to these records without a contact phone: it is read from
+    `ASC_CONTACT_PHONE` when App Store Connect does not hold one yet."""
+    import os
+    password = os.environ.get("ASC_DEMO_PASSWORD")
+    assert password, "ASC_DEMO_PASSWORD is empty"
+    phone = os.environ.get("ASC_CONTACT_PHONE")
+    aid = app_id()
+
+    def merged(have: dict) -> dict:
+        want = {**REVIEW_CONTACT, "demoAccountName": login, "demoAccountPassword": password,
+                "demoAccountRequired": True}
+        if not have.get("contactPhone"):
+            assert phone, "App Store Connect has no contact phone yet: set ASC_CONTACT_PHONE (+420...)"
+            want["contactPhone"] = phone
+        return {k: v for k, v in want.items() if have.get(k) != v}
+
+    beta = get(f"/v1/apps/{aid}/betaAppReviewDetail")["data"]
+    diff = merged(beta["attributes"])
+    if diff:
+        api("PATCH", f"/v1/betaAppReviewDetails/{beta['id']}",
+            json={"data": {"type": "betaAppReviewDetails", "id": beta["id"], "attributes": diff}})
+    print(f"  Beta App Review: {'already' if not diff else 'set ' + ', '.join(diff)}")
+
+    v = _editable("appStoreVersions", "appStoreState", ("READY_FOR_SALE", "REPLACED_WITH_NEW_VERSION"))
+    found = get(f"/v1/appStoreVersions/{v['id']}/appStoreReviewDetail").get("data")
+    if found is None:
+        want = merged({})
+        want["notes"] = BETA_REVIEW_NOTES
+        api("POST", "/v1/appStoreReviewDetails",
+            json={"data": {"type": "appStoreReviewDetails", "attributes": want,
+                           "relationships": {"appStoreVersion": {"data": {"type": "appStoreVersions", "id": v["id"]}}}}})
+        print(f"  App Review ({v['attributes']['versionString']}): created with " + ", ".join(want))
+        return
+    diff = merged(found["attributes"])
+    if not found["attributes"].get("notes"):
+        diff["notes"] = BETA_REVIEW_NOTES
+    if diff:
+        api("PATCH", f"/v1/appStoreReviewDetails/{found['id']}",
+            json={"data": {"type": "appStoreReviewDetails", "id": found["id"], "attributes": diff}})
+    print(f"  App Review ({v['attributes']['versionString']}): {'already' if not diff else 'set ' + ', '.join(diff)}")
+
+
+def _build(number: str) -> dict:
+    found = get(f"/v1/builds?filter[app]={app_id()}&filter[version]={number}")["data"]
+    assert found, f"no build {number}"
+    state = found[0]["attributes"]["processingState"]
+    assert state == "VALID", f"build {number} is {state}, not VALID yet"
+    return found[0]
+
+
+def beta_add(number: str, group: str):
+    """Puts a processed build in a TestFlight group by the group's name. An external group's testers get
+    it once Beta App Review has passed it (`beta submit`)."""
+    build = _build(number)
+    groups = [g for g in get(f"/v1/apps/{app_id()}/betaGroups")["data"] if g["attributes"]["name"] == group]
+    assert groups, f"no TestFlight group named {group!r}"
+    gid = groups[0]["id"]
+    have = {b["id"] for b in get(f"/v1/betaGroups/{gid}/relationships/builds")["data"]}
+    if build["id"] in have:
+        print(f"  build {number}: already in {group}")
+        return
+    api("POST", f"/v1/betaGroups/{gid}/relationships/builds", json={"data": [{"type": "builds", "id": build["id"]}]})
+    print(f"  build {number}: added to {group}")
+
+
+def beta_submit(number: str):
+    """Sends a build to Beta App Review - what external testers wait on. Apple refuses it while the Test
+    Information or the review details are incomplete, and says which; that refusal is printed."""
+    build = _build(number)
+    state = get(f"/v1/builds/{build['id']}/buildBetaDetail")["data"]["attributes"].get("externalBuildState")
+    if state in ("WAITING_FOR_BETA_REVIEW", "IN_BETA_REVIEW", "BETA_APPROVED", "IN_BETA_TESTING"):
+        print(f"  build {number}: already {state}")
+        return
+    api("POST", "/v1/betaAppReviewSubmissions",
+        json={"data": {"type": "betaAppReviewSubmissions",
+                       "relationships": {"build": {"data": {"type": "builds", "id": build["id"]}}}}})
+    print(f"  build {number}: sent to Beta App Review")
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
@@ -407,6 +563,14 @@ def main():
         set_version(args[0])
     elif cmd == "build":
         set_build(args[0])
+    elif cmd == "beta" and args and args[0] == "info":
+        beta_info(dry="--dry" in args)
+    elif cmd == "beta" and args and args[0] == "add":
+        beta_add(args[1], args[2])
+    elif cmd == "beta" and args and args[0] == "submit":
+        beta_submit(args[1])
+    elif cmd == "review" and args and args[0] == "demo":
+        review_demo(args[1])
     elif cmd == "whatsnew":
         whatsnew(args[0], dry="--dry" in args)
     elif cmd == "screenshots":
