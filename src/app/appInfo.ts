@@ -2,7 +2,7 @@
 // (kept as a plain constant so we don't bundle the whole package.json into the app).
 import type { Locale } from '../i18n/strings';
 
-export const APP_VERSION = '0.0.1';
+export const APP_VERSION = '1.0.0';
 
 /** The public source repository (the app is MIT - see LICENSE). */
 export const REPOSITORY_URL = 'https://github.com/dorhawk-software/obalka';

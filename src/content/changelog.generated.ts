@@ -26,6 +26,32 @@ export const CHANGE_KINDS: readonly ChangeKind[] = ['new', 'better', 'changed', 
 
 /** Newest first, per language. */
 export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = {
-  "cs": [],
-  "en": []
+  "cs": [
+    {
+      "version": "1.0.0",
+      "date": "2026-11-11",
+      "changes": {
+        "new": [
+          {
+            "lead": "První vydání Obálky.",
+            "body": "Všechny datové schránky v jednom seznamu, šifrovaný archiv zpráv, příloh i podepsaných originálů v telefonu, který po 90 dnech nezmizí, běžící lhůty a doručení fikcí na očích, odesílání, hledání bez připojení, šifrovaná záloha a přenos do nového telefonu. Ke schránce se přihlašuje jen na váš pokyn, nic se neděje na pozadí."
+          }
+        ]
+      }
+    }
+  ],
+  "en": [
+    {
+      "version": "1.0.0",
+      "date": "2026-11-11",
+      "changes": {
+        "new": [
+          {
+            "lead": "Obálka's first release.",
+            "body": "Every data box in one list; an encrypted archive of messages, attachments and signed originals on your phone that outlives the 90 days ISDS keeps them; running deadlines and deemed delivery in plain sight; sending; offline search; an encrypted backup and a move to a new phone. It signs in to a box only when you ask: nothing happens in the background."
+          }
+        ]
+      }
+    }
+  ]
 };

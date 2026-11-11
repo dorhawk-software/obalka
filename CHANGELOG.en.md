@@ -13,6 +13,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+## 1.0.0 (2026-11-11)
+
 ### New
 
 - **Obálka's first release.** Every data box in one list; an encrypted archive of messages,

@@ -13,6 +13,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+## 1.0.0 (2026-11-11)
+
 ### Nové
 
 - **První vydání Obálky.** Všechny datové schránky v jednom seznamu, šifrovaný archiv zpráv, příloh
