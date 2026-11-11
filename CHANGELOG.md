@@ -29,8 +29,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Odeslané zprávy se archivují i bez otevírání Odeslaných.** Při otevření aplikace se načtou
   odeslané zprávy všech schránek, takže se dostanou do archivu, zálohy, přenosu i hledání dřív, než
   je ISDS po 90 dnech smaže.
-- **Počty nepřečtených platí hned po obnovení jedné schránky.** Dřív se aktualizovaly až
-  při obnovení všech schránek.
+- **Počty nepřečtených platí hned po obnovení jedné schránky.** Dřív se aktualizovaly až při
+  obnovení všech schránek.
 - **Odeslaná zpráva říká, ke kdy platí její stav.** Dokud se stav může změnit, ukáže u stavu
   doručení „Stav k …“, takže je poznat, jak je starý.
 
@@ -40,8 +40,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   schránky, jejíž Odeslané jste ještě neotevřeli zvlášť. Stažení dolů teď počká, až se schránky
   aktualizují, a hned ukáže nové zprávy.
 - **Řádek podepsaného originálu je stejně vysoký jako přílohy nad ním.**
-- **Stahování „jen nových zpráv“ vynechá staré odeslané zprávy.** Za nové se počítají
-  jen zprávy doručené po zapnutí.
+- **Stahování „jen nových zpráv“ vynechá staré odeslané zprávy.** Za nové se počítají jen zprávy
+  doručené po zapnutí.
 
 ### Pod kapotou
 
