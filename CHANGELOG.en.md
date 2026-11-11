@@ -13,11 +13,6 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
-### Better
-
-- **Obálka says what notifications are for before the phone asks.** After a box is added it first
-  explains the password-expiry notice; the system prompt comes only if you want them.
-
 ## 1.1.0 (2026-11-11)
 
 ### New
@@ -31,6 +26,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 - **A refused password says what it may mean.** ISDS refuses an expired password exactly like a
   wrong one, so the app names both and offers the way to the ISDS portal.
+- **Obálka says what notifications are for before the phone asks.** After a box is added it first
+  explains the password-expiry notice; the system prompt comes only if you want them.
 
 ## 1.0.0 (2026-11-11)
 

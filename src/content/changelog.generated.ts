@@ -45,6 +45,10 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
           {
             "lead": "Odmítnuté heslo říká, co může znamenat.",
             "body": "ISDS odmítá vypršelé heslo stejně jako špatné, takže aplikace řekne obojí a nabídne cestu do portálu ISDS."
+          },
+          {
+            "lead": "Než telefon požádá o oznámení, Obálka řekne, k čemu jsou.",
+            "body": "Po přidání schránky nejdřív vysvětlí upozornění na konec platnosti hesla; systémový dotaz přijde, jen když je chcete."
           }
         ]
       }
@@ -119,6 +123,10 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
           {
             "lead": "A refused password says what it may mean.",
             "body": "ISDS refuses an expired password exactly like a wrong one, so the app names both and offers the way to the ISDS portal."
+          },
+          {
+            "lead": "Obálka says what notifications are for before the phone asks.",
+            "body": "After a box is added it first explains the password-expiry notice; the system prompt comes only if you want them."
           }
         ]
       }

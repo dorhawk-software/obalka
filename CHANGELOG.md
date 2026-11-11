@@ -13,17 +13,12 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
-### Lepší
-
-- **Než telefon požádá o oznámení, Obálka řekne, k čemu jsou.** Po přidání schránky nejdřív vysvětlí
-  upozornění na konec platnosti hesla; systémový dotaz přijde, jen když je chcete.
-
 ## 1.1.0 (2026-11-11)
 
 ### Nové
 
-- **Změna hesla v aplikaci.** Schránce, která se přihlašuje jménem a heslem, změníte heslo přímo
-  v Obálce, dokud to současné platí: zadáte současné a dvakrát nové.
+- **Změna hesla v aplikaci.** Schránce, která se přihlašuje jménem a heslem, změníte heslo přímo v
+  Obálce, dokud to současné platí: zadáte současné a dvakrát nové.
 - **Upozornění, že heslo brzy vyprší.** Týden a den předem oznámení připomene, že je potřeba heslo
   změnit, jinak se do schránky nedostanete.
 
@@ -31,6 +26,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 - **Odmítnuté heslo říká, co může znamenat.** ISDS odmítá vypršelé heslo stejně jako špatné, takže
   aplikace řekne obojí a nabídne cestu do portálu ISDS.
+- **Než telefon požádá o oznámení, Obálka řekne, k čemu jsou.** Po přidání schránky nejdřív vysvětlí
+  upozornění na konec platnosti hesla; systémový dotaz přijde, jen když je chcete.
 
 ## 1.0.0 (2026-11-11)
 
