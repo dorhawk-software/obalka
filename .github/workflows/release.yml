@@ -265,6 +265,29 @@ jobs:
           rm -f "$RUNNER_TEMP/AuthKey.p8" "$RUNNER_TEMP/distribution.p12" ios/sentry.properties
           security delete-keychain "$RUNNER_TEMP/signing.keychain-db" 2> /dev/null || true
 
+  # A release warrants a beta version (owner, 2026-11-11): once Apple has processed the upload, the build
+  # gets its What to Test from the changelog, joins the external "Beta" group - the public TestFlight
+  # link's - and goes to Beta App Review, so testers who joined by the link get it without anyone running
+  # a command. Apple reviews one build of a version at a time; a build that has to wait for an earlier
+  # one is left in the group with a warning saying how to send it (`tools/asc.py beta release`). Not a
+  # need of the GitHub release: the upload is what ships, this is what hands it to testers.
+  testflight:
+    needs: [verify, ios]
+    if: needs.ios.outputs.shipped == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v6
+      - name: Hand the build to external testers
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          BUILD: ${{ needs.verify.outputs.build_ios }}
+        # Processing usually takes under half an hour; an hour before giving up.
+        run: uv run tools/asc.py beta release "$BUILD" --wait 60
+
   android:
     needs: verify
     runs-on: ubuntu-latest

@@ -6,7 +6,7 @@
 
 The private key never touches the disk or the repository: every run reads it from 1Password
 ("Obálka - Apple Auth Key for GitHub CI", the same key the release workflow uploads with) through the
-`op` CLI. The app is found by its bundle ID, so the script works before and after the record exists.
+`op` CLI - or, in the release workflow, from its secrets ASC_KEY_P8 / ASC_KEY_ID / ASC_ISSUER_ID. The app is found by its bundle ID, so the script works before and after the record exists.
 
     uv run tools/asc.py check          # what App Store Connect holds for Obálka
     uv run tools/asc.py get /v1/apps   # any GET, prints JSON
@@ -18,11 +18,15 @@ The private key never touches the disk or the repository: every run reads it fro
     uv run tools/asc.py beta info [--dry]  # TestFlight Test Information: description, feedback, review notes
     uv run tools/asc.py beta add <number> <group>  # puts a processed build in a TestFlight group
     uv run tools/asc.py beta submit <number>  # sends a build to Beta App Review (external testers)
+    uv run tools/asc.py beta release <number> [--wait <min>]  # what CI runs after an upload: waits for
+                                       # processing, then What to Test, the Beta group, Beta App Review
+    uv run tools/asc.py review submit   # sends the version being prepared, with its build, to App Review
     uv run tools/asc.py review demo <login>  # demo account for Beta App Review and App Review; password from ASC_DEMO_PASSWORD
     uv run tools/asc.py whatsnew <version> [--dry]  # App Store What's New + TestFlight What to Test, from the changelog
     uv run tools/asc.py screenshots <dir> cs|en-US [--dry]  # the framed iPhone 6.9" set, in file order
 """
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -32,8 +36,8 @@ import time
 import jwt
 import requests
 
-ISSUER_ID = "ab8b7775-8639-4b68-a888-fee4683d0da5"
-KEY_ID = "57CKX9BHC6"
+ISSUER_ID = os.environ.get("ASC_ISSUER_ID") or "ab8b7775-8639-4b68-a888-fee4683d0da5"
+KEY_ID = os.environ.get("ASC_KEY_ID") or "57CKX9BHC6"
 OP_ITEM = "Obálka - Apple Auth Key for GitHub CI"
 BUNDLE_ID = "software.dorhawk.obalka"
 BASE = "https://api.appstoreconnect.apple.com"
@@ -45,6 +49,8 @@ PRIVACY = {"cs": f"{REPO}/blob/main/PRIVACY.md", "en-US": f"{REPO}/blob/main/PRI
 
 
 def private_key() -> str:
+    if os.environ.get("ASC_KEY_P8"):  # the release workflow's secret; 1Password everywhere else
+        return os.environ["ASC_KEY_P8"]
     item = json.loads(subprocess.run(["op", "item", "get", OP_ITEM, "--format", "json"],
                                      check=True, capture_output=True, text=True).stdout)
     for field in item.get("fields", []):
@@ -549,6 +555,86 @@ def beta_submit(number: str):
     print(f"  build {number}: sent to Beta App Review")
 
 
+def review_submit():
+    """Sends the version being prepared to App Review: a review submission for the app, the version as
+    its one item, then submitted. Refuses without a VALID build attached. Apple names whatever else is
+    missing (screenshots, privacy answers, review details) in its refusal, which is printed. An open
+    submission left by an earlier attempt is reused rather than duplicated."""
+    v = _editable("appStoreVersions", "appStoreState", ("READY_FOR_SALE", "REPLACED_WITH_NEW_VERSION"))
+    version, state = v["attributes"]["versionString"], v["attributes"]["appStoreState"]
+    if state != "PREPARE_FOR_SUBMISSION":
+        print(f"  {version}: already {state}")
+        return
+    build = get(f"/v1/appStoreVersions/{v['id']}/build")["data"]
+    assert build, f"no build attached to {version} - run `build <number>` first"
+    assert build["attributes"]["processingState"] == "VALID", build["attributes"]["processingState"]
+    aid = app_id()
+    open_subs = [r for r in get(f"/v1/reviewSubmissions?filter[app]={aid}&filter[platform]=IOS")["data"]
+                 if r["attributes"].get("state") == "READY_FOR_REVIEW"]
+    if open_subs:
+        sub_id = open_subs[0]["id"]
+    else:
+        sub_id = api("POST", "/v1/reviewSubmissions", json={"data": {
+            "type": "reviewSubmissions", "attributes": {"platform": "IOS"},
+            "relationships": {"app": {"data": {"type": "apps", "id": aid}}}}})["data"]["id"]
+    items = get(f"/v1/reviewSubmissions/{sub_id}/items")["data"]
+    if not items:
+        api("POST", "/v1/reviewSubmissionItems", json={"data": {
+            "type": "reviewSubmissionItems",
+            "relationships": {"reviewSubmission": {"data": {"type": "reviewSubmissions", "id": sub_id}},
+                              "appStoreVersion": {"data": {"type": "appStoreVersions", "id": v["id"]}}}}})
+    api("PATCH", f"/v1/reviewSubmissions/{sub_id}", json={"data": {
+        "type": "reviewSubmissions", "id": sub_id, "attributes": {"submitted": True}}})
+    print(f"  {version} ({build['attributes']['version']}): submitted to App Review")
+
+
+BETA_GROUP = "Beta"
+
+
+def beta_release(number: str, wait_minutes: int = 0):
+    """What the release workflow runs once a build is uploaded (owner, 2026-11-11: "a release warrants a
+    beta version"): wait for Apple to process build `number`, set its What to Test from the changelog,
+    put it in the external Beta group - the public link's - and send it to Beta App Review.
+
+    Apple reviews one build of a version at a time: while an earlier build waits, it refuses the next
+    with ANOTHER_BUILD_IN_REVIEW. That is reported as a warning, not a failure - the build is in the
+    group and goes to testers once it is sent (`beta submit <number>`) after the earlier one clears."""
+    deadline = time.time() + wait_minutes * 60
+    while True:
+        found = get(f"/v1/builds?filter[app]={app_id()}&filter[version]={number}&include=preReleaseVersion")
+        state = found["data"][0]["attributes"]["processingState"] if found["data"] else "NOT_UPLOADED_YET"
+        if state == "VALID":
+            break
+        if state in ("FAILED", "INVALID") or time.time() > deadline:
+            sys.exit(f"build {number}: {state}")
+        print(f"  build {number}: {state}, waiting", flush=True)
+        time.sleep(60)
+    build = found["data"][0]
+    version = next(i["attributes"]["version"] for i in found.get("included", [])
+                   if i["type"] == "preReleaseVersions")
+    have = {l["attributes"]["locale"]: (l["id"], l["attributes"])
+            for l in get(f"/v1/builds/{build['id']}/betaBuildLocalizations")["data"]}
+    for lang, locale in STORE_LOCALES.items():
+        _upsert("betaBuildLocalizations", "build", "builds", build["id"], have, locale,
+                {"whatsNew": changelog_text(version, lang)}, False)
+    print(f"  build {number} ({version}): What to Test set")
+    beta_add(number, BETA_GROUP)
+    detail = get(f"/v1/builds/{build['id']}/buildBetaDetail")["data"]["attributes"].get("externalBuildState")
+    if detail in ("WAITING_FOR_BETA_REVIEW", "IN_BETA_REVIEW", "BETA_APPROVED", "IN_BETA_TESTING"):
+        print(f"  build {number}: already {detail}")
+        return
+    r = requests.post(f"{BASE}/v1/betaAppReviewSubmissions", headers={"Authorization": f"Bearer {token()}"},
+                      timeout=60, json={"data": {"type": "betaAppReviewSubmissions", "relationships": {
+                          "build": {"data": {"type": "builds", "id": build["id"]}}}}})
+    if r.status_code == 422 and "ANOTHER_BUILD_IN_REVIEW" in r.text:
+        print(f"::warning::Build {number} is in the {BETA_GROUP} group but not in Beta App Review: an earlier "
+              f"build of {version} is still waiting there. Once it clears: uv run tools/asc.py beta submit {number}")
+        return
+    if r.status_code >= 400:
+        sys.exit(f"POST /v1/betaAppReviewSubmissions -> {r.status_code}\n{r.text[:2000]}")
+    print(f"  build {number}: sent to Beta App Review")
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
@@ -567,8 +653,13 @@ def main():
         beta_info(dry="--dry" in args)
     elif cmd == "beta" and args and args[0] == "add":
         beta_add(args[1], args[2])
+    elif cmd == "beta" and args and args[0] == "release":
+        wait = int(args[args.index("--wait") + 1]) if "--wait" in args else 0
+        beta_release(args[1], wait)
     elif cmd == "beta" and args and args[0] == "submit":
         beta_submit(args[1])
+    elif cmd == "review" and args and args[0] == "submit":
+        review_submit()
     elif cmd == "review" and args and args[0] == "demo":
         review_demo(args[1])
     elif cmd == "whatsnew":

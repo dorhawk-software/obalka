@@ -24,6 +24,14 @@ one adjustment there.
      version's section in both languages, then the full `npm run verify`.
    - **ios** (macOS, Xcode 26.3) - a signed archive, uploaded to App Store Connect; it appears in
      TestFlight once Apple has processed it, usually within half an hour.
+   - **testflight** - every release is a beta version too (owner, 2026-11-11): once the upload is
+     processed, `uv run tools/asc.py beta release <build>` sets its What to Test from the changelog, puts
+     it in the external **Beta** group - the one behind the public TestFlight link - and sends it to Beta
+     App Review, so the link's testers get it with no command run by hand. Apple reviews one build of a
+     version at a time; a build that has to wait for an earlier one stays in the group and the job ends
+     with a warning naming the command that sends it (`beta submit <build>`) once the earlier one clears.
+     Same secrets as **ios**. The App Store version is left alone: attaching a build to it and App Review
+     stay commands of their own (`build <number>`, `review submit`).
    - **android** - a signed app bundle for every device ABI, kept as a workflow artifact and uploaded to
      Google Play's internal testing track once that is switched on (below).
    - **github-release** - a GitHub release for the tag, marked pre-release while the major number is 0,
