@@ -13,15 +13,15 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
-### Pod kapotou
-
-- **Aktualizovaná knihovna, která čte odpovědi datových schránek** (fast-xml-parser 5.12.0).
-
 ## 1.0.0 (2026-11-11)
 
 ### Nové
 
 - **První vydání Obálky.** Všechny datové schránky v jednom seznamu, šifrovaný archiv zpráv, příloh
-  i podepsaných originálů v telefonu, který po 90 dnech nezmizí, běžící lhůty a doručení fikcí na očích,
-  odesílání, hledání bez připojení, šifrovaná záloha a přenos do nového telefonu. Ke schránce se
-  přihlašuje jen na váš pokyn, nic se neděje na pozadí.
+  i podepsaných originálů v telefonu, který po 90 dnech nezmizí, běžící lhůty a doručení fikcí na
+  očích, odesílání, hledání bez připojení, šifrovaná záloha a přenos do nového telefonu. Ke schránce
+  se přihlašuje jen na váš pokyn, nic se neděje na pozadí.
+
+### Pod kapotou
+
+- **Aktualizovaná knihovna, která čte odpovědi datových schránek** (fast-xml-parser 5.12.0).

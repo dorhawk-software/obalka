@@ -36,6 +36,12 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
             "lead": "První vydání Obálky.",
             "body": "Všechny datové schránky v jednom seznamu, šifrovaný archiv zpráv, příloh i podepsaných originálů v telefonu, který po 90 dnech nezmizí, běžící lhůty a doručení fikcí na očích, odesílání, hledání bez připojení, šifrovaná záloha a přenos do nového telefonu. Ke schránce se přihlašuje jen na váš pokyn, nic se neděje na pozadí."
           }
+        ],
+        "underneath": [
+          {
+            "lead": "Aktualizovaná knihovna, která čte odpovědi datových schránek",
+            "body": "(fast-xml-parser 5.12.0)."
+          }
         ]
       }
     }
@@ -49,6 +55,12 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
           {
             "lead": "Obálka's first release.",
             "body": "Every data box in one list; an encrypted archive of messages, attachments and signed originals on your phone that outlives the 90 days ISDS keeps them; running deadlines and deemed delivery in plain sight; sending; offline search; an encrypted backup and a move to a new phone. It signs in to a box only when you ask: nothing happens in the background."
+          }
+        ],
+        "underneath": [
+          {
+            "lead": "The library that reads the data box replies brought up to date",
+            "body": "(fast-xml-parser 5.12.0)."
           }
         ]
       }

@@ -13,15 +13,15 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
-### Underneath
-
-- **The library that reads the data box replies brought up to date** (fast-xml-parser 5.12.0).
-
 ## 1.0.0 (2026-11-11)
 
 ### New
 
 - **Obálka's first release.** Every data box in one list; an encrypted archive of messages,
   attachments and signed originals on your phone that outlives the 90 days ISDS keeps them; running
-  deadlines and deemed delivery in plain sight; sending; offline search; an encrypted backup and a move
-  to a new phone. It signs in to a box only when you ask: nothing happens in the background.
+  deadlines and deemed delivery in plain sight; sending; offline search; an encrypted backup and a
+  move to a new phone. It signs in to a box only when you ask: nothing happens in the background.
+
+### Underneath
+
+- **The library that reads the data box replies brought up to date** (fast-xml-parser 5.12.0).
