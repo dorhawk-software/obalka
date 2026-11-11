@@ -13,16 +13,22 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+## 1.0.0 (2026-11-11)
+
 ### New
 
-- **A dot on Sent.** When a message you sent is delivered, served by fiction or found undeliverable, a
-  dot on Sent says so until you open it.
+- **Obálka's first release.** Every data box in one list; an encrypted archive of messages,
+  attachments and signed originals on your phone that outlives the 90 days ISDS keeps them; running
+  deadlines and deemed delivery in plain sight; sending; offline search; an encrypted backup and a
+  move to a new phone. It signs in to a box only when you ask: nothing happens in the background.
+- **A dot on Sent.** When a message you sent is delivered, served by fiction or found undeliverable,
+  a dot on Sent says so until you open it.
 
 ### Better
 
 - **Sent messages are archived without opening Sent.** Opening the app lists every box's sent
-  messages, so they reach the archive, a backup, a transfer and search before ISDS deletes them after
-  90 days.
+  messages, so they reach the archive, a backup, a transfer and search before ISDS deletes them
+  after 90 days.
 - **A box's unread count is right as soon as you refresh just that box.** It used to wait for a
   refresh of every box.
 - **A sent message says when its state was last checked.** While the state can still change, the
@@ -36,15 +42,6 @@ What changed in each Obálka release, written for the people using it. The newes
 - **The signed original's row is as tall as the attachments above it.**
 - **Downloading "new messages only" no longer fetches old sent messages.** Only messages delivered
   after it was turned on count as new.
-
-## 1.0.0 (2026-11-11)
-
-### New
-
-- **Obálka's first release.** Every data box in one list; an encrypted archive of messages,
-  attachments and signed originals on your phone that outlives the 90 days ISDS keeps them; running
-  deadlines and deemed delivery in plain sight; sending; offline search; an encrypted backup and a
-  move to a new phone. It signs in to a box only when you ask: nothing happens in the background.
 
 ### Underneath
 

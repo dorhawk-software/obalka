@@ -13,20 +13,26 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+## 1.0.0 (2026-11-11)
+
 ### Nové
 
-- **Tečka u Odeslaných.** Když se odeslaná zpráva doručí, doručí fikcí nebo ji nejde doručit, ukáže to
-  tečka u Odeslaných, dokud je neotevřete.
+- **První vydání Obálky.** Všechny datové schránky v jednom seznamu, šifrovaný archiv zpráv, příloh
+  i podepsaných originálů v telefonu, který po 90 dnech nezmizí, běžící lhůty a doručení fikcí na
+  očích, odesílání, hledání bez připojení, šifrovaná záloha a přenos do nového telefonu. Ke schránce
+  se přihlašuje jen na váš pokyn, nic se neděje na pozadí.
+- **Tečka u Odeslaných.** Když se odeslaná zpráva doručí, doručí fikcí nebo ji nejde doručit, ukáže
+  to tečka u Odeslaných, dokud je neotevřete.
 
 ### Lepší
 
-- **Odeslané zprávy se archivují i bez otevírání Odeslaných.** Při otevření aplikace se načtou odeslané
-  zprávy všech schránek, takže se dostanou do archivu, zálohy, přenosu i hledání dřív, než je ISDS po
-  90 dnech smaže.
+- **Odeslané zprávy se archivují i bez otevírání Odeslaných.** Při otevření aplikace se načtou
+  odeslané zprávy všech schránek, takže se dostanou do archivu, zálohy, přenosu i hledání dřív, než
+  je ISDS po 90 dnech smaže.
 - **Počty nepřečtených u schránky platí hned po obnovení jen té schránky.** Dřív se aktualizovaly až
   při obnovení všech schránek.
-- **Odeslaná zpráva říká, ke kdy platí její stav.** Dokud se stav může změnit, ukáže u stavu doručení
-  „Stav k …“, takže je poznat, jak je starý.
+- **Odeslaná zpráva říká, ke kdy platí její stav.** Dokud se stav může změnit, ukáže u stavu
+  doručení „Stav k …“, takže je poznat, jak je starý.
 
 ### Opraveno
 
@@ -36,15 +42,6 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Řádek podepsaného originálu je stejně vysoký jako přílohy nad ním.**
 - **Automatické stahování „jen nových zpráv“ nestahuje staré odeslané zprávy.** Za nové se počítají
   jen zprávy doručené po zapnutí.
-
-## 1.0.0 (2026-11-11)
-
-### Nové
-
-- **První vydání Obálky.** Všechny datové schránky v jednom seznamu, šifrovaný archiv zpráv, příloh
-  i podepsaných originálů v telefonu, který po 90 dnech nezmizí, běžící lhůty a doručení fikcí na
-  očích, odesílání, hledání bez připojení, šifrovaná záloha a přenos do nového telefonu. Ke schránce
-  se přihlašuje jen na váš pokyn, nic se neděje na pozadí.
 
 ### Pod kapotou
 

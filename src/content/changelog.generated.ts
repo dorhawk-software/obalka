@@ -35,6 +35,38 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
           {
             "lead": "První vydání Obálky.",
             "body": "Všechny datové schránky v jednom seznamu, šifrovaný archiv zpráv, příloh i podepsaných originálů v telefonu, který po 90 dnech nezmizí, běžící lhůty a doručení fikcí na očích, odesílání, hledání bez připojení, šifrovaná záloha a přenos do nového telefonu. Ke schránce se přihlašuje jen na váš pokyn, nic se neděje na pozadí."
+          },
+          {
+            "lead": "Tečka u Odeslaných.",
+            "body": "Když se odeslaná zpráva doručí, doručí fikcí nebo ji nejde doručit, ukáže to tečka u Odeslaných, dokud je neotevřete."
+          }
+        ],
+        "better": [
+          {
+            "lead": "Odeslané zprávy se archivují i bez otevírání Odeslaných.",
+            "body": "Při otevření aplikace se načtou odeslané zprávy všech schránek, takže se dostanou do archivu, zálohy, přenosu i hledání dřív, než je ISDS po 90 dnech smaže."
+          },
+          {
+            "lead": "Počty nepřečtených u schránky platí hned po obnovení jen té schránky.",
+            "body": "Dřív se aktualizovaly až při obnovení všech schránek."
+          },
+          {
+            "lead": "Odeslaná zpráva říká, ke kdy platí její stav.",
+            "body": "Dokud se stav může změnit, ukáže u stavu doručení „Stav k …“, takže je poznat, jak je starý."
+          }
+        ],
+        "fixed": [
+          {
+            "lead": "Odeslané ve všech schránkách najednou ukazují zprávy ze všech schránek.",
+            "body": "Dřív chyběly zprávy schránky, jejíž Odeslané jste ještě neotevřeli zvlášť. Stažení dolů teď počká, až se schránky aktualizují, a hned ukáže nové zprávy."
+          },
+          {
+            "lead": "Řádek podepsaného originálu je stejně vysoký jako přílohy nad ním.",
+            "body": ""
+          },
+          {
+            "lead": "Automatické stahování „jen nových zpráv“ nestahuje staré odeslané zprávy.",
+            "body": "Za nové se počítají jen zprávy doručené po zapnutí."
           }
         ],
         "underneath": [
@@ -55,6 +87,38 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
           {
             "lead": "Obálka's first release.",
             "body": "Every data box in one list; an encrypted archive of messages, attachments and signed originals on your phone that outlives the 90 days ISDS keeps them; running deadlines and deemed delivery in plain sight; sending; offline search; an encrypted backup and a move to a new phone. It signs in to a box only when you ask: nothing happens in the background."
+          },
+          {
+            "lead": "A dot on Sent.",
+            "body": "When a message you sent is delivered, served by fiction or found undeliverable, a dot on Sent says so until you open it."
+          }
+        ],
+        "better": [
+          {
+            "lead": "Sent messages are archived without opening Sent.",
+            "body": "Opening the app lists every box's sent messages, so they reach the archive, a backup, a transfer and search before ISDS deletes them after 90 days."
+          },
+          {
+            "lead": "A box's unread count is right as soon as you refresh just that box.",
+            "body": "It used to wait for a refresh of every box."
+          },
+          {
+            "lead": "A sent message says when its state was last checked.",
+            "body": "While the state can still change, the delivery status shows \"State as of …\", so you can tell how old it is."
+          }
+        ],
+        "fixed": [
+          {
+            "lead": "Sent in all boxes at once shows the messages of every box.",
+            "body": "A box whose own Sent you had not opened yet was missing. Pulling down now waits for the boxes to refresh and shows the new messages straight away."
+          },
+          {
+            "lead": "The signed original's row is as tall as the attachments above it.",
+            "body": ""
+          },
+          {
+            "lead": "Downloading \"new messages only\" no longer fetches old sent messages.",
+            "body": "Only messages delivered after it was turned on count as new."
           }
         ],
         "underneath": [
