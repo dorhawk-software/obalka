@@ -13,6 +13,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+## 1.1.0 (2026-11-11)
+
 ### Nové
 
 - **Změna hesla v aplikaci.** Schránce, která se přihlašuje jménem a heslem, změníte heslo přímo

@@ -13,6 +13,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+## 1.1.0 (2026-11-11)
+
 ### New
 
 - **Change the password in the app.** A box that signs in with a name and password changes it right

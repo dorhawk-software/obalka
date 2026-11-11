@@ -28,6 +28,28 @@ export const CHANGE_KINDS: readonly ChangeKind[] = ['new', 'better', 'changed', 
 export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = {
   "cs": [
     {
+      "version": "1.1.0",
+      "date": "2026-11-11",
+      "changes": {
+        "new": [
+          {
+            "lead": "Změna hesla v aplikaci.",
+            "body": "Schránce, která se přihlašuje jménem a heslem, změníte heslo přímo v Obálce, dokud to současné platí: zadáte současné a dvakrát nové."
+          },
+          {
+            "lead": "Upozornění, že heslo brzy vyprší.",
+            "body": "Týden a den předem oznámení připomene, že je potřeba heslo změnit, jinak se do schránky nedostanete."
+          }
+        ],
+        "better": [
+          {
+            "lead": "Odmítnuté heslo říká, co může znamenat.",
+            "body": "ISDS odmítá vypršelé heslo stejně jako špatné, takže aplikace řekne obojí a nabídne cestu do portálu ISDS."
+          }
+        ]
+      }
+    },
+    {
       "version": "1.0.0",
       "date": "2026-11-11",
       "changes": {
@@ -79,6 +101,28 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
     }
   ],
   "en": [
+    {
+      "version": "1.1.0",
+      "date": "2026-11-11",
+      "changes": {
+        "new": [
+          {
+            "lead": "Change the password in the app.",
+            "body": "A box that signs in with a name and password changes it right in Obálka while the current one still works: type the current one and the new one twice."
+          },
+          {
+            "lead": "A notice before the password runs out.",
+            "body": "A week and a day before, a notification reminds you to change it, or the box stops letting you in."
+          }
+        ],
+        "better": [
+          {
+            "lead": "A refused password says what it may mean.",
+            "body": "ISDS refuses an expired password exactly like a wrong one, so the app names both and offers the way to the ISDS portal."
+          }
+        ]
+      }
+    },
     {
       "version": "1.0.0",
       "date": "2026-11-11",
