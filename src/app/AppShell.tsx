@@ -4,7 +4,7 @@
 // message-list feature; this keeps the login → home milestone working with minimal surface.
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { AccessibilityInfo } from 'react-native';
+import { AccessibilityInfo, Linking } from 'react-native';
 import {
   reportFailure,
   setRedactionIdentifiers,
@@ -21,13 +21,17 @@ import { YStack } from '../theme/ui';
 import { useTheme } from '../theme/ThemeProvider';
 import { LaunchScreen } from './LaunchScreen';
 import { LoginFlow } from '../features/accounts/screens/LoginFlow';
+import { ChangePasswordForm } from '../features/accounts/screens/ChangePasswordForm';
+import { changeBoxPassword } from '../features/accounts/state/changePassword';
+import { passwordNudges } from '../features/accounts/state/passwordNudge';
+import { portalUrl } from '../services/isds/endpoints';
 import { Welcome } from '../features/accounts/screens/Welcome';
 import { useSettings } from './settings/SettingsProvider';
 import { FaqScreen } from './settings/FaqScreen';
 import { DEMO_DATA } from '../dev/demoData';
 import type { FaqId } from '../content/faq';
 import { TelemetryConsent } from './settings/TelemetryConsent';
-import { WHATS_NEW_SEEN_KEY } from './settings/settingsKeys';
+import { NUDGE_PERMISSION_ASKED_KEY, WHATS_NEW_SEEN_KEY } from './settings/settingsKeys';
 import { APP_VERSION } from './appInfo';
 import { CHANGELOG } from '../content/changelog.generated';
 import { decideWhatsNew, releasesSince } from './whatsNew/whatsNew';
@@ -56,6 +60,8 @@ import {
   scanController,
   createLoginDeps,
   messagesController,
+  notifier,
+  passwordChanger,
   settingsStore,
   transferController,
 } from '../features/accounts/deps';
@@ -109,6 +115,7 @@ type Route =
   | 'home'
   | 'addBox'
   | 'reauth'
+  | 'changePassword'
   | 'restore'
   | 'restoreTransfer';
 
@@ -190,6 +197,13 @@ export function AppShell() {
   const [reauthAccount, setReauthAccount] = useState<DataBoxAccount | null>(
     null,
   );
+  /** The box whose password is being changed (030 US2). */
+  const [passwordAccount, setPasswordAccount] = useState<DataBoxAccount | null>(null);
+  /**
+   * A sign-in the person started has just finished (030 US3.4): the one moment the app may ask for
+   * notification permission for the password nudge - never at launch.
+   */
+  const askNudgePermission = useRef(false);
   /** When ISDS refused the box being re-authenticated, if the screen was opened from that refusal. */
   const [reauthRefusedAt, setReauthRefusedAt] = useState<number | undefined>(undefined);
   /**
@@ -439,6 +453,7 @@ export function AppShell() {
     // The new box becomes the active (and last-used) one → its inbox shows (FR-006).
     setActive(newest ? newest.boxId : null);
     setRoute('home');
+    askNudgePermission.current = true;
     // Auto-sync once after adding a box, so its messages/counts appear without a manual refresh.
     void refreshAll();
   }, [refresh, refreshAll, setActive, failLoad]);
@@ -934,10 +949,9 @@ export function AppShell() {
   // re-auth may have changed - so the order stands.
   //
   // So: clear the flag, re-read the table, and only THEN tell the inbox to sync.
-  const handleReauthDone = useCallback(() => {
-    const boxId = reauthAccount?.boxId;
-    setReauthAccount(null);
+  const credentialsRenewed = useCallback((boxId: string | undefined) => {
     setRoute('home');
+    askNudgePermission.current = true;
     if (boxId) {
       const cleared = { ...syncStatesRef.current };
       delete cleared[boxId];
@@ -957,7 +971,53 @@ export function AppShell() {
       setResyncNonce(n => n + 1); // tell the inbox its session is good again (it drops its strip)
       await refreshAll();
     })();
-  }, [reauthAccount, refresh, refreshAll]);
+  }, [refresh, refreshAll]);
+  const handleReauthDone = useCallback(() => {
+    const boxId = reauthAccount?.boxId;
+    setReauthAccount(null);
+    credentialsRenewed(boxId);
+  }, [reauthAccount, credentialsRenewed]);
+
+  // 030 US2: the change screen, for a box that signs in with name and password. Any other box has no
+  // password the app could change, and is left on its inbox, whose strip links to the portal.
+  const openChangePassword = useCallback((boxId: string) => {
+    const account = accountsRef.current.find(a => a.boxId === boxId);
+    if (account?.authMethod === 'password') {
+      setPasswordAccount(account);
+      setRoute('changePassword');
+    }
+  }, []);
+  // Changed: the box now signs in with the new password and has a new date - the same path a re-auth
+  // takes, which also clears a refusal the box had been flagged with.
+  const handlePasswordChanged = useCallback(() => {
+    const boxId = passwordAccount?.boxId;
+    setPasswordAccount(null);
+    credentialsRenewed(boxId);
+  }, [passwordAccount, credentialsRenewed]);
+
+  // 030 US3: the password-expiry notifications follow the dates on the accounts - a sign-in, a re-auth
+  // or a change moves them, a removal cancels them. The OS holds the timers; nothing here talks to
+  // ISDS. Permission is asked once, and only right after a sign-in the person started.
+  useEffect(() => {
+    if (route === 'loading') {
+      return;
+    }
+    const nudges = passwordNudges(accounts, Date.now());
+    void (async () => {
+      if (nudges.length > 0 && askNudgePermission.current) {
+        askNudgePermission.current = false;
+        try {
+          if ((await settingsStore.getSetting(NUDGE_PERMISSION_ASKED_KEY)) == null) {
+            await settingsStore.setSetting(NUDGE_PERMISSION_ASKED_KEY, '1');
+            await notifier.requestPermission();
+          }
+        } catch (e) {
+          reportFailure('notify.permission', e, { stage: 'persist' });
+        }
+      }
+      await notifier.syncPasswordNudges(nudges);
+    })();
+  }, [accounts, route]);
 
   // Reminder deep-link (010 FR-005): resolve a tapped reminder → switch the OWNING box active (set +
   // persist) and open the message; degrade safely (missing box → active inbox; missing message →
@@ -988,6 +1048,10 @@ export function AppShell() {
       }
       setActive(target.boxId); // switch + persist → the root inbox swaps to the owning box in place
       resetToInbox();
+      if (target.kind === 'password') {
+        openChangePassword(target.boxId); // 030 US3.2 - a non-password box stays on its inbox
+        return;
+      }
       if (target.kind === 'message') {
         navigate('MessageDetail', {
           boxId: target.boxId,
@@ -996,7 +1060,7 @@ export function AppShell() {
         });
       }
     },
-    [setActive],
+    [setActive, openChangePassword],
   );
 
   // Wire the notification taps: the foreground handler + a cold-start initial-notification pickup are
@@ -1266,6 +1330,35 @@ export function AppShell() {
     );
   }
 
+  if (route === 'changePassword' && passwordAccount) {
+    const back = () => {
+      setPasswordAccount(null);
+      setRoute('home');
+    };
+    return (
+      <EdgeSwipeBack key="changePassword" onBack={back}>
+        <ChangePasswordForm
+          key={passwordAccount.boxId}
+          account={passwordAccount}
+          onSubmit={(current, next) =>
+            changeBoxPassword(
+              { changer: passwordChanger, accounts: accountsController },
+              passwordAccount,
+              current,
+              next,
+              new AbortController().signal,
+            )
+          }
+          onBack={back}
+          onDone={handlePasswordChanged}
+          onOpenPortal={() => {
+            void Linking.openURL(portalUrl(passwordAccount.host)).catch(() => {});
+          }}
+        />
+      </EdgeSwipeBack>
+    );
+  }
+
   if (route === 'reauth' && reauthAccount) {
     const back = () => {
       setReauthAccount(null);
@@ -1295,6 +1388,7 @@ export function AppShell() {
         removeBox={handleRemove}
         setAlias={handleSetAlias}
         onReauth={handleReauth}
+        onChangePassword={openChangePassword}
         resyncNonce={resyncNonce}
         reloadAccounts={reloadAccounts}
         crossBox={crossBox}

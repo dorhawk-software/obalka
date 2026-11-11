@@ -56,6 +56,7 @@ export function BoxRow({
   onPress,
   onRename,
   onRemove,
+  onChangePassword,
 }: {
   readonly account: DataBoxAccount;
   /** The current box → shows a ✓ and is non-switching (tap just closes the sheet). */
@@ -63,6 +64,8 @@ export function BoxRow({
   readonly onPress: () => void;
   readonly onRename: () => void;
   readonly onRemove: () => void;
+  /** Present for a box that signs in with name and password (030 US2). */
+  readonly onChangePassword?: () => void;
 }) {
   const creditLine = (() => {
     const c = creditState(account.pdzCreditCzk, null);
@@ -237,7 +240,12 @@ export function BoxRow({
         </YStack>
         {active ? <CheckIcon size={20} color={theme.gold} /> : null}
       </XStack>
-      <BoxOverflowMenu account={account} onRename={onRename} onRemove={onRemove} />
+      <BoxOverflowMenu
+        account={account}
+        onRename={onRename}
+        onRemove={onRemove}
+        onChangePassword={onChangePassword}
+      />
     </XStack>
   );
 }

@@ -21,11 +21,15 @@
 export interface NotificationPayload {
   boxId?: string;
   messageId?: string;
+  /** `password`: a box's password is running out (030 US3) - go where it is changed. */
+  action?: string;
 }
 
 export type DeepLinkTarget =
   | { kind: 'message'; boxId: string; messageId: string }
   | { kind: 'inbox'; boxId: string }
+  /** The password-expiry nudge: the box's change screen, or its inbox where the box cannot change it. */
+  | { kind: 'password'; boxId: string }
   | { kind: 'none' };
 
 export function resolveDeepLink(
@@ -36,6 +40,9 @@ export function resolveDeepLink(
   const boxId = payload?.boxId;
   if (!boxId || !boxIds.includes(boxId)) {
     return { kind: 'none' };
+  }
+  if (payload?.action === 'password') {
+    return { kind: 'password', boxId };
   }
   const messageId = payload?.messageId;
   if (messageId && messageExists) {

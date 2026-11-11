@@ -137,7 +137,10 @@ export function ReauthForm({
                 under it, before the form - not only on the error screen after a refused attempt. A
                 hand-off to the browser, so a text link rather than a second button beside the
                 footer's sign-in. */}
-            {passwordExpired ? (
+            {/* 030 US1: a refusal before the date may be an expiry too (ISDS answers both alike), and
+                the intro says so - the same link, under its own testID, since `reauthPortal` is the
+                expired verdict the switcher row and the inbox strip are checked against. */}
+            {hasNoSession(account) ? (
               <XStack
                 alignSelf="flex-start"
                 hitSlop={textSlop('bodyStrong')}
@@ -145,7 +148,7 @@ export function ReauthForm({
                 onPress={onOpenPortal}
                 accessibilityRole="link"
                 accessibilityLabel={t('pwd.action')}
-                testID="reauthPortal"
+                testID={passwordExpired ? 'reauthPortal' : 'reauthPortalCredentials'}
               >
                 <BodyStrong color={info.accent}>{t('pwd.action')} →</BodyStrong>
               </XStack>

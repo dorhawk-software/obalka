@@ -36,6 +36,7 @@ import {
   STATUS_OK,
   STATUS_WRONG_SERVICE_FOR_TYPE,
   buildCreateBigMessage,
+  buildChangeISDSPassword,
   buildCreateMessage,
   buildDataBoxCreditInfo,
   buildDummyOperation,
@@ -61,9 +62,12 @@ import {
   readDmStatusCode,
   readPasswordExpiry,
   readStatusCode,
+  readStatusMessage,
   toOwnerInfo,
 } from './soap';
 import {
+  ChangePasswordArgs,
+  ChangePasswordResult,
   CreditInfoResult,
   DownloadMessageArgs,
   FindRecipientsArgs,
@@ -80,6 +84,7 @@ import {
   MobileKeyPollResult,
   OtpBeginArgs,
   OtpSubmitArgs,
+  PasswordChanger,
   PasswordLoginArgs,
   SendMessageArgs,
   SendMessageResult,
@@ -112,7 +117,7 @@ export interface HandshakeMark {
   close(): Promise<void>;
 }
 
-export class IsdsHttpTransport implements IsdsTransport {
+export class IsdsHttpTransport implements IsdsTransport, PasswordChanger {
   /**
    * `jar` is the shared native cookie store, and it is used around logins only: emptied when one
    * starts so no login inherits another box's session, read straight after one to capture the
@@ -994,6 +999,66 @@ export class IsdsHttpTransport implements IsdsTransport {
     return { type: 'credit', balanceCzk: parseDataBoxCreditInfo(body) };
   }
 
+  // --- Password change (030 FR-002, db_access /DS/DsManage) ------------------
+  /**
+   * `ChangeISDSPassword`, signed in with the current password the person just TYPED - so changing it
+   * proves they know it - and then `GetPasswordInfo` with the new one, for the date it now runs to.
+   *
+   * Password boxes only: HTTP Basic, no cookie, and the shared jar kept out of it (018). A 401 is the
+   * typed password refused: wrong, or already expired - ISDS answers both the same (captured on the
+   * test environment 2026-11-11), and an expired password cannot be changed here at all, only on the
+   * portal. Any other status code is ISDS refusing the NEW password (used before, or a rule the app
+   * does not check), and its own message is what the person reads.
+   */
+  async changePassword(args: ChangePasswordArgs): Promise<ChangePasswordResult> {
+    const url = dsManageUrl(args.host);
+    const res = await this.http.send({
+      url,
+      method: 'POST',
+      headers: {
+        ...SOAP_HEADERS,
+        Authorization: basicAuthHeader(args.loginName, args.oldPassword),
+      },
+      useJar: false,
+      body: buildChangeISDSPassword(args.oldPassword, args.newPassword),
+      signal: args.signal,
+      timeoutMs: DEFAULT_TIMEOUT_MS,
+    });
+    if (res.status === 401 || res.status === 403) {
+      return { type: 'wrongPassword' };
+    }
+    if (res.status !== 200) {
+      return { type: 'serverFault' };
+    }
+    let resp: AnyNode | undefined;
+    try {
+      resp = parseSoapBody(res.text).ChangeISDSPasswordResponse as AnyNode | undefined;
+    } catch (e) {
+      reportFailure('isds.parse', e, { stage: 'parse', endpoint: '/DS/DsManage' });
+      return { type: 'serverFault' };
+    }
+    const code = readStatusCode(resp);
+    if (code === undefined) {
+      return { type: 'serverFault' };
+    }
+    if (code !== STATUS_OK) {
+      return { type: 'refused', code, message: readStatusMessage(resp) };
+    }
+    // Changed. The date is a bonus: the password IS changed whatever this lookup does, so a failure
+    // here is a null date, never a failed change.
+    let passwordExpiresAt: number | null = null;
+    try {
+      passwordExpiresAt = await this.tryPasswordExpiry(
+        url,
+        { ...SOAP_HEADERS, Authorization: basicAuthHeader(args.loginName, args.newPassword) },
+        args.signal,
+      );
+    } catch {
+      passwordExpiresAt = null;
+    }
+    return { type: 'changed', passwordExpiresAt };
+  }
+
   // --- shared helpers ------------------------------------------------------
   private async fetchOwnerInfo(
     wsUrl: string,
@@ -1029,17 +1094,16 @@ export class IsdsHttpTransport implements IsdsTransport {
     if (code !== STATUS_OK) {
       // TODO(czebox): map specific dbStatusCode values precisely - once one has been captured.
       //
-      // A forced password change is deliberately NOT mapped here. No response carrying one has been
-      // captured: the czebox research recorded a WRONG password as HTTP 401 (research.md), which
-      // never reaches this line, but not what ISDS sends for an EXPIRED one, and the test
-      // credentials needed to find out are not available. Mapping a guessed code would put a "change
-      // your password" screen on a status nobody has observed, so a non-OK status stays what it
-      // demonstrably is - a server fault.
+      // A forced password change is deliberately NOT mapped here: ISDS never sends one. A WRONG
+      // password is HTTP 401 (czebox research, research.md), and so is an EXPIRED one - captured on
+      // the test environment 2026-11-11 with a password past its date: the same 401, the same
+      // `WWW-Authenticate: Basic realm="ISDS - DS"` and the same Apache "Authentication required!"
+      // page. Neither reaches this line, so a non-OK status stays what it demonstrably is - a server
+      // fault.
       //
       // The app tells an expired password from a wrong one without it: after an auth fault it reads
       // the expiry date `GetPasswordInfo` stored at the last sign-in (`mustChangePassword` in
-      // `passwordExpiry.ts`, 001 FR-009). If ISDS turns out to answer an expired password HERE, with
-      // a status code instead of a 401, that inference cannot see it until the code is mapped.
+      // `passwordExpiry.ts`, 001 FR-009).
       return { type: 'serverFault' };
     }
     return {

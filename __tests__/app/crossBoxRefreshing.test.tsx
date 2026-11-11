@@ -47,6 +47,9 @@ const mockWorld = {
   failingWrites: new Set<string>(),
   /** Every box a listing was recorded for, refused or not. */
   writesAttempted: [] as string[],
+  /** What the shell last handed the notifier's password nudge, and whether it asked for permission. */
+  nudges: null as null | { boxId: string }[],
+  permissionAsked: 0,
 };
 
 function mockArchive(boxId: string): MessageEnvelope[] {
@@ -125,6 +128,17 @@ jest.mock('../../src/features/accounts/deps', () => ({
   // The shell listens for restores ending while a phone has no boxes (2026-09-24); none run here.
   backupController: { subscribe: () => () => {}, currentRun: () => null },
   transferController: { available: () => false },
+  // 030: the password-expiry nudge and the in-app change.
+  notifier: {
+    requestPermission: async () => {
+      mockWorld.permissionAsked += 1;
+      return true;
+    },
+    syncPasswordNudges: async (nudges: { boxId: string }[]) => {
+      mockWorld.nudges = nudges;
+    },
+  },
+  passwordChanger: { changePassword: async () => ({ type: 'serverFault' }) },
   remindersController: { listForBox: async () => [] },
   scanController: { clearBox: async () => {} },
   draftsStore: { list: async () => [] },
@@ -213,6 +227,23 @@ beforeEach(() => {
   mockWorld.readsWaiting = 0;
   mockWorld.failingWrites = new Set();
   mockWorld.writesAttempted = [];
+  mockWorld.nudges = null;
+  mockWorld.permissionAsked = 0;
+});
+
+// 030 US3: the nudges follow the dates on the accounts from launch - and launch asks for nothing.
+describe('the password-expiry nudge', () => {
+  it('is scheduled for every box with a date ahead, without asking for permission at launch', async () => {
+    mockWorld.accounts = [
+      account('open', { passwordExpiresAt: Date.now() + 20 * 86_400_000 }),
+      account('mk', { authMethod: 'mobile_key', passwordExpiresAt: Date.now() + 20 * 86_400_000 }),
+      account('none'),
+    ];
+    mockWorld.listings = new Map();
+    await renderShell();
+    await waitFor(() => expect(mockWorld.nudges?.map(n => n.boxId)).toEqual(['open']));
+    expect(mockWorld.permissionAsked).toBe(0);
+  });
 });
 
 describe('the shell tells the Jinde line which boxes are being refreshed', () => {

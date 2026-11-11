@@ -234,6 +234,12 @@ and that with the toggle off no scan runs.
   leaving the permissions that genuinely mattered untouched. Measuring the delta caught four of those
   (`SCHEDULE_EXACT_ALARM` among them) and they were stripped — see research.md D3/T027.
 
+  *Amended 2026-11-11 (030 FR-007, owner).* The library may also schedule the password-expiry nudge: a
+  notification a week and a day before the date ISDS reported at the person's own last sign-in. Not a
+  date the user chose, but the same kind of thing as a reminder - a date already on the phone and a
+  timer the OS holds, with no ISDS call and no background task. It runs on a channel of its own
+  (`password`) and no new permission.
+
 **Cycle 2 — on-device scanning** *(implemented 2026-08-19)*
 
 - **FR-011**: The system MUST provide a Settings toggle gating the on-device scan; with it off, **no

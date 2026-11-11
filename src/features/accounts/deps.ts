@@ -8,6 +8,7 @@
 import { FetchHttpClient } from '../../services/isds/httpClient';
 import { NativeCookieJar } from '../../services/isds/cookieJar';
 import { IsdsHttpTransport } from '../../services/isds/isdsTransport';
+import type { PasswordChanger } from '../../services/isds/transport';
 import { AccountsStore } from '../../services/db/accountsStore';
 import { SqliteAccountsStore } from '../../services/db/sqliteAccountsStore';
 import { SqliteMessagesStore } from '../../services/db/messagesStore';
@@ -148,6 +149,9 @@ export async function endSignInsLeftOver(): Promise<void> {
     await transport.abandonLogin();
   }
 }
+
+/** Changes a password box's password (030 US2) - the same transport, its one non-mail call. */
+export const passwordChanger: PasswordChanger = transport;
 
 export const accountsController = new AccountsController({
   accounts: accountsStore,
@@ -378,9 +382,11 @@ const DOCUMENT_CHUNK = 1024 * 1024;
 /** Compose drafts (feature 005) - saved-but-unsent messages, persisted in the encrypted DB. */
 export const draftsStore = new SqliteDraftsStore();
 export const remindersStore = new SqliteRemindersStore();
+/** The one notifier: reminders, and the password-expiry nudge (030 US3). */
+export const notifier = new NotifeeNotifier();
 export const remindersController = new RemindersController({
   store: remindersStore,
-  notifier: new NotifeeNotifier(),
+  notifier,
 });
 
 const backupStores: BackupStores = {

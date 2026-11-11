@@ -61,6 +61,17 @@ export const buildGetOwnerInfoFromLogin = (): string =>
   buildEnvelope('GetOwnerInfoFromLogin', '<p:dbDummy></p:dbDummy>');
 export const buildGetPasswordInfo = (): string =>
   buildEnvelope('GetPasswordInfo', '<p:dbDummy></p:dbDummy>');
+/**
+ * Change a password box's password (030 FR-002). Both passwords are the person's own typing and may hold
+ * any of ISDS's allowed special characters, `&` among them, so both are escaped.
+ */
+export function buildChangeISDSPassword(oldPassword: string, newPassword: string): string {
+  return buildEnvelope(
+    'ChangeISDSPassword',
+    `<p:dbOldPassword>${escapeXml(oldPassword)}</p:dbOldPassword>` +
+      `<p:dbNewPassword>${escapeXml(newPassword)}</p:dbNewPassword>`,
+  );
+}
 // The OTP login (as/processLogin) is driven by a SOAP DummyOperation request (per libdatovka).
 export const buildDummyOperation = (): string =>
   buildEnvelope('DummyOperation');
@@ -375,6 +386,13 @@ export function readStatusCode(
   const status = responseNode?.dbStatus as AnyNode | undefined;
   const code = status?.dbStatusCode;
   return code == null ? undefined : String(code);
+}
+
+/** Read the `dbStatus/dbStatusMessage` - ISDS's own sentence for a refusal - or null if absent. */
+export function readStatusMessage(responseNode: AnyNode | undefined): string | null {
+  const status = responseNode?.dbStatus as AnyNode | undefined;
+  const message = status?.dbStatusMessage;
+  return message == null || String(message).trim() === '' ? null : String(message).trim();
 }
 
 /**

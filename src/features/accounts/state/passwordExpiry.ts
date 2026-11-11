@@ -38,6 +38,16 @@ function startOfDay(epochMs: number): number {
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
+ * The day a password runs out, with its year - "9. 2. 2027" - for the change screen's confirmation and
+ * the expiry notification (030). The year, unlike the strip's "9. 2.", because both can be read three
+ * months ahead, across a new year.
+ */
+export function formatExpiryDate(epochMs: number): string {
+  const d = new Date(epochMs);
+  return `${d.getDate()}.\u00A0${d.getMonth() + 1}.\u00A0${d.getFullYear()}`;
+}
+
+/**
  * What to say about this box's password, if anything.
  *
  * `now` is passed rather than read so this is testable without a clock. A null date means ISDS never
@@ -69,9 +79,9 @@ export function passwordExpiry(
  * Was this box most likely refused because its password EXPIRED, rather than because it is wrong?
  * (001 FR-009)
  *
- * ISDS has never been seen telling the app. No response to an expired password has been captured, so
- * the app assumes it is refused with the same auth fault as a wrong one, and maps no status code for
- * it (`interpretOwnerInfo` in `isdsTransport.ts` says why). What the app does have is the date: `GetPasswordInfo` reports it at every sign-in and it is stored
+ * ISDS does not tell the app. Captured on the test environment (2026-11-11): an expired password is
+ * refused with the same bare HTTP 401 and Apache "Authentication required!" page as a wrong one, so
+ * there is no status code to map (`interpretOwnerInfo` in `isdsTransport.ts`). What the app does have is the date: `GetPasswordInfo` reports it at every sign-in and it is stored
  * on the account row. A refusal after that date is an expired password, and telling that user "wrong
  * credentials" sends them to retype a password that cannot work until it is changed on the portal.
  *

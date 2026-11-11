@@ -287,8 +287,8 @@ export class LoginController {
   /**
    * A password refused on a box whose stored password has expired says so (001 FR-009).
    *
-   * An expired password is assumed to be refused with the same auth fault as a wrong one - no other
-   * answer has been captured - so this reads the date `GetPasswordInfo` stored at the box's last
+   * An expired password is refused with the same auth fault as a wrong one (a bare HTTP 401, captured
+   * on the test environment 2026-11-11), so this reads the date `GetPasswordInfo` stored at the box's last
    * sign-in instead (`mustChangePassword`). Only for
    * a PASSWORD attempt on a box already stored under this login and environment - a re-auth, or
    * re-adding a box that is still there. A brand-new box has no stored date, and a one-time-code or

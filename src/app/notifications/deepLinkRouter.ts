@@ -46,6 +46,7 @@ export function handleNotificationPayload(
   const payload: NotificationPayload = {
     boxId: String(data.boxId),
     ...(data.messageId ? { messageId: String(data.messageId) } : {}),
+    ...(data.action ? { action: String(data.action) } : {}),
   };
   if (resolver) {
     void runResolver(resolver, payload);

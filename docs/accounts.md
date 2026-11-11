@@ -46,15 +46,22 @@ Three, and which ones a box supports is ISDS's decision, not ours:
    přihlášení vypršela" strip. Reading it as a server error is what once made the app claim to be
    *offline* on a working connection.
 2. **The password expires.** ISDS terms run about 90 days. `GetPasswordInfo` returns the date at
-   sign-in; it is stored on the account row and refreshed by every re-auth, because a re-auth is
-   usually what follows a password change. A fortnight out, the inbox says so and hands off to the
-   portal - the app has no `ChangeISDSPassword` call and does not pretend otherwise.
+   sign-in (`pswExpDate`, captured live 2026-11-11: `2027-02-09T09:49:12.000+01:00`, ninety days to
+   the second after a change); it is stored on the account row and refreshed by every re-auth and
+   every change in the app. A fortnight out, the inbox says so. Since 030, a box that signs in with
+   name and password changes it there (`ChangeISDSPassword`, `ChangePasswordForm`): the person types
+   the current password again, which is what ISDS signs the call in with, and the new one twice
+   against ISDS's rules (`passwordRules.ts`). Only while it still works: an expired password fails
+   the sign-in the change needs, so that one is changed on the portal. SMS-code and Mobile Key boxes
+   keep the portal link. A week and a day before the date, a local notification says so
+   (`passwordNudge.ts`, `Notifier.syncPasswordNudges`) - the OS holds the timer, nothing talks to
+   ISDS.
 
    **When ISDS refuses a password box after that date** (001 FR-009, since 2026-09-14), the app says
-   the password expired and must be changed on the portal, not that it is wrong. ISDS has never been
-   seen telling the two apart: no response to an expired password has been captured, so
-   `interpretOwnerInfo` maps no forced-change status code, and the app assumes the refusal is the same
-   auth fault a wrong password gets. The verdict comes from the stored date instead, read at the
+   the password expired and must be changed on the portal, not that it is wrong. ISDS does not tell the
+   two apart. Captured on the test environment (2026-11-11): an expired password gets the same bare
+   HTTP 401 (`WWW-Authenticate: Basic realm="ISDS - DS"`, Apache "Authentication required!" page) as a
+   wrong one, so `interpretOwnerInfo` has no forced-change status code to map. The verdict comes from the stored date instead, read at the
    moment of the refusal: `mustChangePassword` in `passwordExpiry.ts`. From there:
    - a refresh records `passwordExpired` (`classifyFailure`), which refresh-all skips like `reauth`
      (and does not mark as loading - `boxesToFetch`) and the switcher row labels "Heslo vypršelo";
@@ -75,9 +82,8 @@ Three, and which ones a box supports is ISDS's decision, not ours:
 
    The portal is always the box's own environment (`portalUrl` in `endpoints.ts`). OTP and Mobile
    Key boxes are unaffected. It is an inference, and the copy is worded for its misses: a password
-   changed on the portal and then mistyped still reads as expired until a sign-in succeeds, and if
-   ISDS ever answers an expired password with a status code instead of an auth fault, it surfaces as
-   a server error.
+   changed on the portal and then mistyped still reads as expired until a sign-in succeeds, and a box
+   with no stored date (a new one, or one whose `GetPasswordInfo` failed) reads as a wrong password.
 
 Re-authentication is scoped to **one box**. The others keep working, and the method can differ from
 last time (a box that gains SMS OTP does not need removing and re-adding).

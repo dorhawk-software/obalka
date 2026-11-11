@@ -67,6 +67,9 @@ jest.mock('../../src/features/accounts/deps', () => {
     },
     backupController: { subscribe: () => () => {}, currentRun: () => null },
     transferController: { available: () => false },
+    // 030: the password-expiry nudge and the in-app change.
+    notifier: { requestPermission: async () => true, syncPasswordNudges: async () => {} },
+    passwordChanger: { changePassword: async () => ({ type: 'serverFault' }) },
     remindersController: { listForBox: (...args: unknown[]) => (mockCalls.listForBox as (...a: unknown[]) => unknown)(...args) },
     scanController: { clearBox: async () => {} },
     appLock: { forget: async () => {} },

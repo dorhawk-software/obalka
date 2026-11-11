@@ -1,4 +1,4 @@
-// Local notifications boundary (feature 010 US2). Reminder scheduling ONLY.
+// Local notifications boundary (feature 010 US2). Reminders, and since 030 the password-expiry nudge.
 //
 // This file existed before, with three methods, and 014 deleted it. Read that spec before adding
 // anything here, because the deletion was not a cleanup - it was the conclusion of a compliance
@@ -18,6 +18,11 @@
 //
 // If a change seems to need one of those, it is not a notification change - it is a background-sync
 // change, and `specs/014-no-background-sync/spec.md` is the document to argue with first.
+//
+// ONE AMENDMENT (030 FR-007, owner 2026-11-11): `syncPasswordNudges`. Its date was not chosen by the
+// user - ISDS reported it at a sign-in the user started - but it is the same kind of thing: a date
+// already on the phone, a timer the OS holds, and nothing that talks to ISDS. It takes plain data, not
+// an account, and what it is handed is all it can know.
 
 /** What a scheduled reminder needs in order to be shown and cancelled. */
 export interface ScheduleReminderInput {
@@ -48,6 +53,17 @@ export interface ScheduleReminderInput {
  */
 export type NotificationAccess = 'on' | 'unasked' | 'off';
 
+/** One box's password-expiry notifications (030 US3) - `passwordNudges` builds them. */
+export interface PasswordNudge {
+  boxId: string;
+  /** The box as the person named it - shown in the notification body. */
+  boxName: string;
+  /** When the password runs out, epoch ms - shown as a date. */
+  expiresAt: number;
+  /** Epoch ms for each notification, or null when that moment has passed. */
+  timers: { weekBefore: number | null; dayBefore: number | null };
+}
+
 export interface Notifier {
   /**
    * Ask for OS notification permission. Call it when the user sets their FIRST reminder - not on
@@ -76,11 +92,19 @@ export interface Notifier {
   scheduleReminder(input: ScheduleReminderInput): Promise<void>;
   /** Cancel both timers. Idempotent - safe for a reminder that was never scheduled. */
   cancelReminder(boxId: string, messageId: string): Promise<void>;
+  /**
+   * Make the scheduled password-expiry notifications exactly `nudges` (030 US3): schedule or move
+   * each, cancel any other box's. Best-effort like `scheduleReminder` - never rejects.
+   */
+  syncPasswordNudges(nudges: PasswordNudge[]): Promise<void>;
 }
 
 /** Records calls instead of scheduling anything - for tests and previews. */
 export class InMemoryNotifier implements Notifier {
   scheduled: ScheduleReminderInput[] = [];
+  /** What the last `syncPasswordNudges` was handed. */
+  nudges: PasswordNudge[] = [];
+  nudgeSyncs = 0;
   cancelled: { boxId: string; messageId: string }[] = [];
   permission = true;
   /** What `notificationAccess` reports. Answering the dialog moves `unasked` on, as the OS does. */
@@ -108,5 +132,10 @@ export class InMemoryNotifier implements Notifier {
 
   async cancelReminder(boxId: string, messageId: string): Promise<void> {
     this.cancelled.push({ boxId, messageId });
+  }
+
+  async syncPasswordNudges(nudges: PasswordNudge[]): Promise<void> {
+    this.nudges = nudges;
+    this.nudgeSyncs += 1;
   }
 }

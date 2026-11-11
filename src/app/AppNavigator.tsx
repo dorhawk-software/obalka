@@ -87,6 +87,8 @@ export interface AppData {
   setAlias: (boxId: string, alias: string | null, color?: string) => void;
   /** Re-authenticate a box; `refusedAt` is when ISDS refused it, when the inbox strip knows. */
   onReauth: (boxId: string, refusedAt?: number) => void;
+  /** Open the change-password screen for a box that signs in with name and password (030 US2). */
+  onChangePassword?: (boxId: string) => void;
   /** Incremented when a re-auth succeeds - the inbox re-syncs and drops its expired-session strip. */
   resyncNonce?: number;
   /** Cheap DB-only re-read of accounts (no network) - keeps unread badges / counts fresh on focus. */
@@ -140,6 +142,7 @@ function MessagesScreen({
     removeBox,
     setAlias,
     onReauth,
+    onChangePassword,
     crossBox,
     unified,
     onOpenUnified,
@@ -215,6 +218,7 @@ function MessagesScreen({
         onOpenMessage={openMessage}
         onCompose={compose}
         onReauth={reauth}
+        onChangePassword={onChangePassword ? () => onChangePassword(account.boxId) : undefined}
         onReceivedListed={onReceivedListed}
         onOpenFaq={openFaq}
         resyncNonce={resyncNonce}
@@ -245,6 +249,14 @@ function MessagesScreen({
           onOpenSettings={() => navigation.navigate('Settings')}
           onSetAlias={setAlias}
           onRemove={removeBox}
+          onChangePassword={
+            onChangePassword
+              ? boxId => {
+                  setSwitcherOpen(false);
+                  onChangePassword(boxId);
+                }
+              : undefined
+          }
         />
       ) : null}
     </>
@@ -625,15 +637,18 @@ export function AppNavigator(props: Readonly<AppData>) {
   const {
     accounts, activeBoxId, setActive, addBox, removeBox, setAlias, onReauth, resyncNonce,
     reloadAccounts, crossBox, unified, onOpenUnified, onRefreshAll, onRefreshSent, onReceivedListed,
+    onChangePassword,
   } = props;
   const data = useMemo<AppData>(
     () => ({
       accounts, activeBoxId, setActive, addBox, removeBox, setAlias, onReauth, resyncNonce,
       reloadAccounts, crossBox, unified, onOpenUnified, onRefreshAll, onRefreshSent, onReceivedListed,
+      onChangePassword,
     }),
     [
       accounts, activeBoxId, setActive, addBox, removeBox, setAlias, onReauth, resyncNonce,
       reloadAccounts, crossBox, unified, onOpenUnified, onRefreshAll, onRefreshSent, onReceivedListed,
+      onChangePassword,
     ],
   );
   return (

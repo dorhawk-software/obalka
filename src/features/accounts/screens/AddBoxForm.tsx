@@ -51,6 +51,7 @@ export function AddBoxForm({
   suggestOtp = false,
   onUseSms,
   onOpenFaq,
+  onOpenPortal,
 }: {
   readonly onSubmit: (creds: Credentials) => void;
   readonly onBack?: () => void;
@@ -66,6 +67,8 @@ export function AddBoxForm({
   readonly suggestOtp?: boolean;
   /** Retry with the SMS-code method, reusing the credentials already typed in. */
   readonly onUseSms?: () => void;
+  /** The ISDS portal of an environment - where an expired password is changed (030 US1). */
+  readonly onOpenPortal?: (host: Host) => void;
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -458,6 +461,22 @@ export function AddBoxForm({
                       {t('login.otpSuggest.btn')} →
                     </Label>
                   </XStack>
+                  {onOpenPortal ? (
+                    <XStack
+                      alignSelf="flex-start"
+                      marginTop={8}
+                      hitSlop={textSlop('bodyStrong', { fontSize: 13 })}
+                      pressStyle={{ opacity: 0.6 }}
+                      onPress={() => onOpenPortal(host)}
+                      accessibilityRole="link"
+                      accessibilityLabel={t('pwd.action')}
+                      testID="refusedPortal"
+                    >
+                      <Label fontWeight="700" color={info.accent}>
+                        {t('pwd.action')} →
+                      </Label>
+                    </XStack>
+                  ) : null}
                 </YStack>
               </XStack>
             ) : null}

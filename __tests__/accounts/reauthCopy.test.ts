@@ -63,12 +63,15 @@ describe('which sign-in-again wording a box gets', () => {
     }
   });
 
-  it('does not say "session" or "expired" in the credential wording', () => {
-    // The whole point: a different fact, in different words. If these ever converge, the branch is
-    // pointless and someone should notice.
+  it('does not say "session" in the credential wording, and names a change as well as an expiry', () => {
+    // A different fact, in different words: if these ever converge, the branch is pointless and someone
+    // should notice. Since 030 the credential wording may say "expired" - ISDS refuses an expired
+    // password exactly like a wrong one (captured 2026-11-11), so a refusal the stored date cannot
+    // explain is either - but never as the only reason, which is the expired wording's job.
     for (const [session, credentials] of PAIRS) {
-      expect(t(credentials)).not.toMatch(/vypršel|expired/i);
       expect(t(credentials)).not.toBe(t(session));
+      expect(t(credentials)).not.toMatch(/přihlášení vypršela|sign-in has expired|session/i);
+      expect(t(credentials)).toMatch(/změnil|changed/i);
     }
   });
 });

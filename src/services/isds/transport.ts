@@ -181,6 +181,35 @@ export interface GetCreditInfoArgs {
   signal: AbortSignal;
 }
 
+/** Change a password box's password (030 FR-002). */
+export interface ChangePasswordArgs {
+  host: Host;
+  loginName: string;
+  /** The current password AS TYPED on the change screen - never the stored one (030 US2.3). */
+  oldPassword: string;
+  newPassword: string;
+  signal: AbortSignal;
+}
+
+/** Typed outcome of a ChangeISDSPassword call. */
+export type ChangePasswordResult =
+  /** Changed. The new expiry date, read with the new password; null when that lookup failed. */
+  | { type: 'changed'; passwordExpiresAt: number | null }
+  /** ISDS refused the sign-in: the current password typed is wrong - or has already expired. */
+  | { type: 'wrongPassword' }
+  /** ISDS read the call and refused the new password; `message` is its own sentence. */
+  | { type: 'refused'; code: string | null; message: string | null }
+  | { type: 'serverFault' };
+
+/**
+ * The one call that changes something about a box's sign-in rather than its mail. Its own interface,
+ * beside `IsdsTransport` rather than in it: only the change screen needs it, and every test double of
+ * the transport would otherwise have to grow a method it never calls.
+ */
+export interface PasswordChanger {
+  changePassword(args: ChangePasswordArgs): Promise<ChangePasswordResult>;
+}
+
 export interface PasswordLoginArgs {
   loginName: string;
   password: string;

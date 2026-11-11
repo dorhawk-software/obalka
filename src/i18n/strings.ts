@@ -110,9 +110,12 @@ const cs: Record<string, string> = {
   'login.otp.submit': 'Potvrdit kód',
   'login.otp.resend': 'Poslat SMS znovu',
   'login.retry': 'Zkusit znovu',
-  'login.otpSuggest.title': 'Máte SMS kód?',
+  // 030 US1: what a refused password may mean. ISDS answers a wrong password and an expired one the
+  // same way (captured 2026-11-11), so the card names both, and the third reason - a box that also
+  // wants an SMS code - with the way out of each.
+  'login.otpSuggest.title': 'ISDS přihlášení odmítlo',
   'login.otpSuggest.sub':
-    'Pokud vaše schránka vyžaduje i jednorázový kód z SMS, přihlaste se přes SMS kód.',
+    'Zkontrolujte jméno a heslo. Pokud heslu vypršela platnost, změňte ho v portálu ISDS. Pokud schránka vyžaduje i kód z SMS, přihlaste se přes SMS kód. Po opakovaných pokusech může ISDS přístup zablokovat.',
   'login.otpSuggest.btn': 'Přihlásit přes SMS kód',
   'login.loginName.placeholder': 'Uživatelské jméno',
   'login.creds.title': 'Přihlášení',
@@ -120,7 +123,8 @@ const cs: Record<string, string> = {
   'login.method.label.otp_totp': 'Přihlášení přes SMS kód',
   'login.method.label.mobile_key': 'Přihlášení Mobilním klíčem',
   'login.otpSuggested.hint':
-    'Přihlášení jménem a heslem se nezdařilo. Pokud máte u této schránky zapnuté přihlašování ' +
+    'ISDS přihlášení jménem a heslem odmítlo. Heslo se mohlo změnit nebo mu vypršela platnost - ' +
+    'vypršelé heslo změňte v portálu ISDS. Pokud máte u této schránky zapnuté přihlašování ' +
     'jednorázovým kódem z SMS, přihlaste se pomocí SMS kódu.',
   'login.otpSuggested.useSms': 'Přihlásit pomocí SMS kódu',
   'login.otpSuggested.checkPassword': 'Upravit jméno nebo heslo',
@@ -146,6 +150,7 @@ const cs: Record<string, string> = {
   'box.remove': 'Odebrat',
   'box.menu': 'Možnosti schránky',
   'box.rename': 'Upravit schránku',
+  'box.changePassword': 'Změnit heslo',
   'box.removeTitle': 'Odebrat schránku?',
   // Names what actually goes. The old wording listed the box and the credentials and then reassured
   // about the ISDS mailbox - literally true, and read by a hurrying user as "my messages are safe".
@@ -199,8 +204,52 @@ const cs: Record<string, string> = {
   // here rendered "Platnost hesla končí 11. 9.." on the expiry strip.
   'pwd.soon': 'Platnost hesla končí {d}',
   'pwd.action': 'Změnit v portálu',
+  // 030 US2: a password box changes it here, while it still works.
+  'pwd.change': 'Změnit heslo',
+  'pwdChange.title': 'Změnit heslo',
+  'pwdChange.intro':
+    'Nové heslo bude heslem schránky všude - v portálu ISDS i v dalších aplikacích. Změnit ho jde, jen dokud to současné platí.',
+  'pwdChange.current': 'Současné heslo',
+  'pwdChange.new': 'Nové heslo',
+  'pwdChange.repeat': 'Nové heslo znovu',
+  'pwdChange.rules': 'Nové heslo musí',
+  'pwdChange.rule.length': 'mít 8 až 64 znaků',
+  'pwdChange.rule.upper': 'obsahovat velké písmeno',
+  'pwdChange.rule.lower': 'obsahovat malé písmeno',
+  'pwdChange.rule.digit': 'obsahovat číslici',
+  'pwdChange.rule.allowed':
+    'mít jen písmena bez diakritiky, číslice, mezeru a znaky ! # $ % & ( ) * + , - . : = ? @ [ ] _ { | } ~',
+  'pwdChange.rule.noLogin': 'neobsahovat přihlašovací jméno',
+  'pwdChange.rule.noTriple': 'nemít žádný znak třikrát za sebou',
+  'pwdChange.rule.noWeakStart': 'nezačínat 12345, qwert ani asdfg',
+  'pwdChange.rule.differs': 'lišit se od současného',
+  'pwdChange.rule.match': 'být v obou polích stejné',
+  'pwdChange.rule.history': 'Heslo, které už jste někdy použili, ISDS odmítne.',
+  'pwdChange.rule.met': 'splněno',
+  'pwdChange.rule.unmet': 'nesplněno',
+  'pwdChange.need.current': 'Zadejte současné heslo',
+  'pwdChange.need.rules': 'Nové heslo ještě nesplňuje všechna pravidla',
+  'pwdChange.need.match': 'Nová hesla se neshodují',
+  'pwdChange.submit': 'Změnit heslo',
+  'pwdChange.busy': 'Heslo se mění…',
+  'pwdChange.error.wrongPassword':
+    'ISDS současné heslo odmítlo. Zkontrolujte ho - po opakovaných pokusech může ISDS přístup zablokovat. Pokud mu už vypršela platnost, změňte ho v portálu ISDS.',
+  'pwdChange.error.refused': 'ISDS nové heslo nepřijalo: {m}',
+  'pwdChange.error.refusedPlain':
+    'ISDS nové heslo nepřijalo. Zvolte jiné - heslo, které už jste někdy použili, znovu použít nejde.',
+  'pwdChange.error.timeout':
+    'Spojení vypršelo a není jisté, jestli ISDS heslo změnilo. Zkuste to znovu. Pokud současné heslo přestane fungovat, přihlaste se novým.',
+  'pwdChange.error.notSaved':
+    'Heslo je v ISDS změněné, ale aplikace ho nedokázala uložit. Až vás schránka požádá o přihlášení, použijte nové heslo.',
+  'pwdChange.done.title': 'Heslo je změněné',
+  'pwdChange.done.until': 'Nové heslo platí do {date}.',
+  'pwdChange.done.noDate':
+    'Do kdy platí, se nepodařilo zjistit - aplikace to načte při příštím přihlášení.',
+  'pwdChange.done.everywhere':
+    'Používejte ho i v portálu ISDS a v dalších aplikacích, kde se k této schránce přihlašujete.',
+  'pwdChange.done.close': 'Hotovo',
   'box.reauth.session': 'Platnost přihlášení vypršela.',
-  'box.reauth.credentials': 'Přihlašovací údaje již nejsou platné.',
+  'box.reauth.credentials': 'ISDS heslo odmítlo - změnilo se, nebo vypršelo.',
   // 001 FR-009: a password box refused AFTER its stored expiry date. Not "wrong credentials": that
   // password cannot work again, so retyping it is not the fix - a new one has to be set on the
   // portal first. Rendered through `reauthKey` (`features/accounts/state/reauthCopy.ts`), never
@@ -273,8 +322,10 @@ const cs: Record<string, string> = {
   'reauth.title': 'Přihlásit znovu',
   'reauth.intro':
     'Platnost přihlášení k této schránce vypršela. Přihlaste se prosím znovu.',
+  // 030 US1: refused before the stored expiry date - most often changed elsewhere, possibly expired
+  // early (a date never stored, or changed on the portal and expired since). Both fixes, in order.
   'reauth.intro.credentials':
-    'Přihlašovací údaje k této schránce už nejsou platné. Zadejte je prosím znovu. Heslo do ISDS se mění každých 90 dnů.',
+    'ISDS heslo k této schránce odmítlo. Pokud jste ho změnili jinde, zadejte sem to nové. Pokud mu vypršela platnost, nejdřív ho změňte v portálu ISDS.',
   // 001 FR-009. Says what to do BEFORE this form can work - the app cannot change an ISDS password.
   // And says how the app knows: ISDS gives it no "expired" answer, so the expiry comes from the date
   // stored at the last sign-in, and the sentence claims no more than that.
@@ -327,7 +378,7 @@ const cs: Record<string, string> = {
   'messages.reauth': 'Platnost přihlášení vypršela. Přihlaste se prosím znovu.',
   // Password boxes have no session to expire - see `features/accounts/state/reauthCopy.ts`.
   'messages.reauth.credentials':
-    'Přihlašovací údaje již nejsou platné. Přihlaste se prosím znovu.',
+    'ISDS heslo odmítlo - změnilo se, nebo vypršelo. Přihlaste se prosím znovu.',
   'messages.reauth.passwordExpired':
     'Platnost hesla vypršela. Změňte ho v portálu ISDS a přihlaste se novým heslem.',
   'messages.error.load': 'Zprávy se nepodařilo načíst. Zkuste to znovu.',
@@ -452,6 +503,13 @@ const cs: Record<string, string> = {
   'notif.reminder.tomorrow': 'Připomínka na zítra',
   'notif.reminder.today': 'Připomínka na dnes',
   'notif.hiddenBody': 'Podrobnosti se zobrazí po odemčení',
+  // 030 US3. The title is generic - a lock screen may show it; the box and the date are in the body.
+  // `{date}`, not `{d}`: it is `formatExpiryDate`, which ends in the year, so the sentence's own period
+  // follows it (the `{d}` guard in datePunctuation.test.ts is for the period-ending "9. 2.").
+  'notif.channel.password': 'Platnost hesla',
+  'notif.password.title': 'Heslo ke schránce brzy vyprší',
+  'notif.password.body':
+    '{box}: platnost hesla končí {date}. Změňte ho, ať se do schránky dostanete i dál.',
   // The reminder picker (010 US2), named "Termín" until 2026-10-03: the owner found it unclear, and
   // what the user sets here IS a reminder. "Vaše připomínka" and "nastavujete si ji sami" are
   // load-bearing: the app does not compute legal deadlines and this must not be read as if it did
@@ -1221,7 +1279,7 @@ const cs: Record<string, string> = {
   'send.buyCredit': 'Koupit kredit',
   'send.reauth': 'Platnost přihlášení vypršela. Přihlaste se prosím znovu.',
   'send.reauth.credentials':
-    'Přihlašovací údaje již nejsou platné. Přihlaste se prosím znovu.',
+    'ISDS heslo odmítlo - změnilo se, nebo vypršelo. Přihlaste se prosím znovu.',
   'send.reauth.passwordExpired':
     'Platnost hesla vypršela. Změňte ho v portálu ISDS a přihlaste se novým heslem.',
   'send.error.attach': 'Přílohu se nepodařilo načíst.',
@@ -1338,9 +1396,9 @@ const en: Record<string, string> = {
   'login.otp.submit': 'Confirm code',
   'login.otp.resend': 'Resend SMS',
   'login.retry': 'Try again',
-  'login.otpSuggest.title': 'Have an SMS code?',
+  'login.otpSuggest.title': 'ISDS refused the sign-in',
   'login.otpSuggest.sub':
-    'If your box also requires a one-time SMS code, sign in with the SMS code.',
+    'Check the name and password. If the password has expired, change it in the ISDS portal. If the box also requires an SMS code, sign in with the SMS code. Repeated attempts can get the access blocked.',
   'login.otpSuggest.btn': 'Sign in with SMS code',
   'login.loginName.placeholder': 'Username',
   'login.creds.title': 'Sign in',
@@ -1348,7 +1406,8 @@ const en: Record<string, string> = {
   'login.method.label.otp_totp': 'Sign in with SMS code',
   'login.method.label.mobile_key': 'Sign in with Mobile Key',
   'login.otpSuggested.hint':
-    'Signing in with your name and password failed. If this box has SMS one-time-code sign-in ' +
+    'ISDS refused the name and password. The password may have been changed or has expired - ' +
+    'change an expired one in the ISDS portal. If this box has SMS one-time-code sign-in ' +
     'enabled, sign in using an SMS code.',
   'login.otpSuggested.useSms': 'Sign in with an SMS code',
   'login.otpSuggested.checkPassword': 'Edit name or password',
@@ -1372,6 +1431,7 @@ const en: Record<string, string> = {
   'box.remove': 'Remove',
   'box.menu': 'Box options',
   'box.rename': 'Edit box',
+  'box.changePassword': 'Change password',
   'box.removeTitle': 'Remove box?',
   'box.removeMessage':
     'This removes the box, its saved credentials and its local archive (downloaded messages, ' +
@@ -1410,8 +1470,51 @@ const en: Record<string, string> = {
   'pwd.today': 'Your password expires today.',
   'pwd.soon': 'Your password expires on {d}',
   'pwd.action': 'Change it in the portal',
+  'pwd.change': 'Change password',
+  'pwdChange.title': 'Change password',
+  'pwdChange.intro':
+    'The new password becomes the box’s password everywhere - in the ISDS portal and in other apps too. It can be changed only while the current one still works.',
+  'pwdChange.current': 'Current password',
+  'pwdChange.new': 'New password',
+  'pwdChange.repeat': 'New password again',
+  'pwdChange.rules': 'The new password must',
+  'pwdChange.rule.length': 'be 8 to 64 characters long',
+  'pwdChange.rule.upper': 'contain a capital letter',
+  'pwdChange.rule.lower': 'contain a small letter',
+  'pwdChange.rule.digit': 'contain a digit',
+  'pwdChange.rule.allowed':
+    'use only letters without accents, digits, space and ! # $ % & ( ) * + , - . : = ? @ [ ] _ { | } ~',
+  'pwdChange.rule.noLogin': 'not contain the login name',
+  'pwdChange.rule.noTriple': 'not repeat a character three times in a row',
+  'pwdChange.rule.noWeakStart': 'not start with 12345, qwert or asdfg',
+  'pwdChange.rule.differs': 'differ from the current one',
+  'pwdChange.rule.match': 'be the same in both fields',
+  'pwdChange.rule.history': 'ISDS refuses a password you have used before.',
+  'pwdChange.rule.met': 'met',
+  'pwdChange.rule.unmet': 'not met',
+  'pwdChange.need.current': 'Enter the current password',
+  'pwdChange.need.rules': 'The new password does not meet every rule yet',
+  'pwdChange.need.match': 'The new passwords do not match',
+  'pwdChange.submit': 'Change password',
+  'pwdChange.busy': 'Changing the password…',
+  'pwdChange.error.wrongPassword':
+    'ISDS refused the current password. Check it - repeated attempts can get the access blocked. If it has already expired, change it in the ISDS portal.',
+  'pwdChange.error.refused': 'ISDS did not accept the new password: {m}',
+  'pwdChange.error.refusedPlain':
+    'ISDS did not accept the new password. Choose another - a password you have used before cannot be used again.',
+  'pwdChange.error.timeout':
+    'The connection timed out and it is not certain whether ISDS changed the password. Try again. If the current password stops working, sign in with the new one.',
+  'pwdChange.error.notSaved':
+    'The password is changed in ISDS, but the app could not save it. When the box asks you to sign in, use the new password.',
+  'pwdChange.done.title': 'Password changed',
+  'pwdChange.done.until': 'The new password is valid until {date}.',
+  'pwdChange.done.noDate':
+    'Its expiry date could not be read - the app reads it at the next sign-in.',
+  'pwdChange.done.everywhere':
+    'Use it in the ISDS portal too, and in any other app you sign in to this box with.',
+  'pwdChange.done.close': 'Done',
   'box.reauth.session': 'Your sign-in has expired.',
-  'box.reauth.credentials': 'The sign-in credentials are no longer valid.',
+  'box.reauth.credentials': 'ISDS refused the password - it was changed or has expired.',
   // See the Czech block.
   'box.reauth.passwordExpired':
     'Your password has expired. Change it in the ISDS portal, then sign in with the new one.',
@@ -1453,7 +1556,7 @@ const en: Record<string, string> = {
   'reauth.title': 'Sign in again',
   'reauth.intro': 'Your sign-in to this box has expired. Please sign in again.',
   'reauth.intro.credentials':
-    'Your sign-in details for this box are no longer valid. Please enter them again. The ISDS password changes every 90 days.',
+    'ISDS refused the password for this box. If you changed it elsewhere, enter the new one here. If it has expired, change it in the ISDS portal first.',
   'reauth.intro.passwordExpired':
     'ISDS is refusing the password for this box, and by the date it gave at the last sign-in, that password has expired. Change it in the ISDS portal first, then enter the new password here.',
   'reauth.error': 'Sign-in failed. Check your details and try again.',
@@ -1497,7 +1600,7 @@ const en: Record<string, string> = {
   'messages.retry': 'Try again',
   'messages.reauth': 'Your sign-in has expired. Please sign in again.',
   'messages.reauth.credentials':
-    'Your sign-in details are no longer valid. Please sign in again.',
+    'ISDS refused the password - it was changed or has expired. Please sign in again.',
   'messages.reauth.passwordExpired':
     'Your password has expired. Change it in the ISDS portal, then sign in with the new one.',
   'messages.error.load': 'Messages could not be loaded. Please try again.',
@@ -1596,6 +1699,10 @@ const en: Record<string, string> = {
   'notif.reminder.tomorrow': 'Reminder for tomorrow',
   'notif.reminder.today': 'Reminder for today',
   'notif.hiddenBody': 'Details appear once you unlock',
+  'notif.channel.password': 'Password expiry',
+  'notif.password.title': 'A box password expires soon',
+  'notif.password.body':
+    '{box}: the password expires on {date}. Change it to keep access to the box.',
   'term.action': 'Reminder',
   'term.title': 'Your reminder',
   'term.sub': 'You set it yourself. We will tell you the day before and on the day.',
@@ -2176,7 +2283,7 @@ const en: Record<string, string> = {
   'send.buyCredit': 'Buy credit',
   'send.reauth': 'Your sign-in has expired. Please sign in again.',
   'send.reauth.credentials':
-    'Your sign-in details are no longer valid. Please sign in again.',
+    'ISDS refused the password - it was changed or has expired. Please sign in again.',
   'send.reauth.passwordExpired':
     'Your password has expired. Change it in the ISDS portal, then sign in with the new one.',
   'send.error.attach': 'The attachment could not be loaded.',

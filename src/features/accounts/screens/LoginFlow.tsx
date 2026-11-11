@@ -236,6 +236,7 @@ function LoginFlowSteps({
         return reauth ? (
           <OtpSuggestion
             onUseSms={() => retryWithOtpMethod('otp_totp')}
+            onOpenPortal={() => openPortal(reauth.host)}
             onEdit={retry}
           />
         ) : (
@@ -245,6 +246,7 @@ function LoginFlowSteps({
             loading={busy}
             suggestOtp
             onUseSms={() => retryWithOtpMethod('otp_totp')}
+            onOpenPortal={openPortal}
             onOpenFaq={onOpenFaq}
           />
         );
@@ -481,9 +483,12 @@ function ErrorView({
  */
 function OtpSuggestion({
   onUseSms,
+  onOpenPortal,
   onEdit,
 }: {
   readonly onUseSms: () => void;
+  /** Where an expired password is changed - the refusal may be one (030 US1). */
+  readonly onOpenPortal: () => void;
   readonly onEdit: () => void;
 }) {
   const theme = useTheme();
@@ -514,6 +519,16 @@ function OtpSuggestion({
               <BodyStrong color={info.accent}>
                 {t('login.otpSuggested.useSms')} →
               </BodyStrong>
+            </XStack>
+            <XStack
+              alignSelf="flex-start"
+              hitSlop={textSlop('bodyStrong')}
+              pressStyle={{ opacity: 0.6 }}
+              onPress={onOpenPortal}
+              accessibilityRole="link"
+              accessibilityLabel={t('pwd.action')}
+              testID="refusedPortal">
+              <BodyStrong color={info.accent}>{t('pwd.action')} →</BodyStrong>
             </XStack>
           </YStack>
         </XStack>

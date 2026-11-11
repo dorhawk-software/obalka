@@ -13,7 +13,7 @@ import { Body, Caption } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useScrim } from '../../../theme/useScrim';
 import { SheetDismissGesture } from '../../../theme/SheetDismissGesture';
-import { EditIcon, MoreIcon, TrashIcon } from '../../../theme/icons';
+import { EditIcon, LockIcon, MoreIcon, TrashIcon } from '../../../theme/icons';
 import { haptics } from '../../../services/haptics';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 import { touchSlop } from '../../../theme/touchTarget';
@@ -34,10 +34,13 @@ export function BoxOverflowMenu({
   account,
   onRename,
   onRemove,
+  onChangePassword,
 }: {
   readonly account: DataBoxAccount;
   readonly onRename: () => void;
   readonly onRemove: () => void;
+  /** Present for a box that signs in with name and password (030 US2). */
+  readonly onChangePassword?: () => void;
 }) {
   const theme = useTheme();
   const scrim = useScrim(0.4);
@@ -160,6 +163,17 @@ export function BoxOverflowMenu({
                       }}
                       testID={`boxRename-${account.boxId}`}
                     />
+                    {onChangePassword ? (
+                      <SheetRow
+                        icon={<LockIcon size={20} color={theme.text} />}
+                        label={t('box.changePassword')}
+                        onPress={() => {
+                          close();
+                          onChangePassword();
+                        }}
+                        testID={`boxChangePassword-${account.boxId}`}
+                      />
+                    ) : null}
                     <SheetRow
                       icon={<TrashIcon size={20} color={theme.danger} />}
                       label={t('box.remove')}

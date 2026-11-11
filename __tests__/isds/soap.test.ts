@@ -10,6 +10,8 @@ import {
   parseCreateBigMessage,
   parseSoapBody,
   readPasswordExpiry,
+  readStatusMessage,
+  buildChangeISDSPassword,
   readStatusCode,
   toOwnerInfo,
 } from '../../src/services/isds/soap';
@@ -159,6 +161,34 @@ describe('SOAP parse', () => {
     expect(
       readPasswordExpiry(parseSoapBody(passwordInfoResponse(''))),
     ).toBeNull();
+  });
+
+  // 030 T001: the answer ISDS gave on the test environment on 2026-11-11, right after the password of
+  // the test box was changed on the portal - ninety days on, to the second.
+  it('reads the GetPasswordInfo answer captured from ISDS', () => {
+    const captured =
+      "<?xml version='1.0' encoding='utf-8'?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+      'xmlns:xsd="http://www.w3.org/2001/XMLSchema"><SOAP-ENV:Body><p:GetPasswordInfoResponse ' +
+      'xmlns:p="http://isds.czechpoint.cz/v20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
+      '<p:pswExpDate>2027-02-09T09:49:12.000+01:00</p:pswExpDate><p:dbStatus><p:dbStatusCode>0000' +
+      '</p:dbStatusCode><p:dbStatusMessage>Provedeno úspěšně.</p:dbStatusMessage></p:dbStatus>' +
+      '</p:GetPasswordInfoResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>';
+    expect(readPasswordExpiry(parseSoapBody(captured))).toBe(Date.UTC(2027, 1, 9, 8, 49, 12));
+  });
+
+  it('builds ChangeISDSPassword with both passwords escaped', () => {
+    const xml = buildChangeISDSPassword('a&b', '<c>"d\'');
+    expect(xml).toContain('<p:ChangeISDSPassword>');
+    expect(xml).toContain('<p:dbOldPassword>a&amp;b</p:dbOldPassword>');
+    expect(xml).toContain('<p:dbNewPassword>&lt;c&gt;&quot;d&apos;</p:dbNewPassword>');
+  });
+
+  it('reads ISDS’s own sentence from a status, or null', () => {
+    expect(readStatusMessage({ dbStatus: { dbStatusCode: '1066', dbStatusMessage: ' Heslo již bylo použito. ' } })).toBe(
+      'Heslo již bylo použito.',
+    );
+    expect(readStatusMessage({ dbStatus: { dbStatusCode: '1066' } })).toBeNull();
+    expect(readStatusMessage(undefined)).toBeNull();
   });
 
   // Mirrors the real czebox response: SOAP-ENV prefix, xsi:nil empty firmName, ISO+TZ pswExpDate.

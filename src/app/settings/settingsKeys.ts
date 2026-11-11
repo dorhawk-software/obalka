@@ -74,6 +74,12 @@ export const AUTO_DOWNLOAD_WIFI_KEY = 'attachments.autoDownloadWifiOnly';
 export const WHATS_NEW_SEEN_KEY = 'whatsNew.seen';
 
 /**
+ * Whether THIS phone has asked for notification permission for the password-expiry nudge (030 US3.4):
+ * once, after a sign-in the person started. Device-local: the permission belongs to this phone's OS.
+ */
+export const NUDGE_PERMISSION_ASKED_KEY = 'notify.passwordNudgeAsked';
+
+/**
  * Settings that describe THIS install, and are therefore never carried to another one: a backup leaves
  * them out and a restore or a phone transfer skips them, also when an older backup still has them.
  *
@@ -96,6 +102,7 @@ export const WHATS_NEW_SEEN_KEY = 'whatsNew.seen';
  *   them could not bring every document back. Carried in a backup, restoring it wrote the holds of the
  *   day that backup was made over today's, and a restore of a backup made with nothing held let go of
  *   the one backup still holding a document.
+ * - `notify.passwordNudgeAsked` - whether THIS phone's OS was asked for notification permission.
  * - `isds.handshakeOpen` - whether THIS phone's cookie jar holds a half-finished sign-in. Carried, it
  *   would empty a jar on another phone for nothing, or leave one unemptied.
  * - the three `attachments.autoDownload…` keys (026 FR-005) - whether THIS phone spends its storage and
@@ -106,6 +113,7 @@ export const WHATS_NEW_SEEN_KEY = 'whatsNew.seen';
 export const DEVICE_LOCAL_SETTINGS: readonly string[] = [
   ACTIVE_BOX_KEY,
   WHATS_NEW_SEEN_KEY,
+  NUDGE_PERMISSION_ASKED_KEY,
   UNIFIED_INBOX_KEY,
   APP_LOCK_KEY,
   UNFINISHED_REMOVALS_KEY,

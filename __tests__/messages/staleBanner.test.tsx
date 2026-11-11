@@ -73,9 +73,10 @@ const account: DataBoxAccount = {
   updatedAt: 0,
 };
 
-const inboxFor = (acc: DataBoxAccount) => render(inboxTree(acc));
+const inboxFor = (acc: DataBoxAccount, onChangePassword?: () => void) =>
+  render(inboxTree(acc, onChangePassword));
 
-function inboxTree(acc: DataBoxAccount) {
+function inboxTree(acc: DataBoxAccount, onChangePassword?: () => void) {
   return (
     <SafeAreaProvider
       initialMetrics={{
@@ -92,6 +93,7 @@ function inboxTree(acc: DataBoxAccount) {
             onOpenMessage={() => {}}
             onCompose={() => {}}
             onReauth={() => {}}
+            onChangePassword={onChangePassword}
         onOpenFaq={() => {}}
           />
         </NavigationContainer>
@@ -261,6 +263,34 @@ describe('a password box refused after its password expired', () => {
     await waitFor(() => expect(view.getByTestId('passwordExpiryAction')).toBeTruthy());
     fireEvent.press(view.getByTestId('passwordExpiryAction'));
     expect(open).toHaveBeenCalledWith('https://www.datovka-test.gov.cz');
+  });
+
+  // 030 US2: while it still works, a name-and-password box changes it in the app.
+  it('changes a password box’s password in the app while it still works', async () => {
+    const open = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
+    open.mockClear();
+    const change = jest.fn();
+    mockOutcome.value = { kind: 'loaded', messages: mockCached, downloaded: [] };
+    const view = await inboxFor(passwordBox('czebox', Date.now() + 3 * DAY), change);
+    await waitFor(() => expect(view.getByTestId('message-m1')).toBeTruthy());
+    await waitFor(() => expect(view.getByTestId('passwordExpiryAction')).toBeTruthy());
+    expect(view.getByText(t('pwd.change'))).toBeTruthy();
+    fireEvent.press(view.getByTestId('passwordExpiryAction'));
+    expect(change).toHaveBeenCalled();
+    expect(open).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['an SMS-code box', () => ({ ...account, passwordExpiresAt: Date.now() + 3 * DAY })],
+    ['an expired password', () => passwordBox('czebox', Date.now() - DAY)],
+  ])('sends %s to the portal', async (_, box) => {
+    const change = jest.fn();
+    mockOutcome.value = { kind: 'loaded', messages: mockCached, downloaded: [] };
+    const view = await inboxFor(box(), change);
+    await waitFor(() => expect(view.getByTestId('message-m1')).toBeTruthy());
+    await waitFor(() => expect(view.getByTestId('passwordExpiryAction')).toBeTruthy());
+    expect(view.getByText(t('pwd.action'))).toBeTruthy();
+    expect(change).not.toHaveBeenCalled();
   });
 
   it('keeps the verdict of the refusal while the clock passes the expiry date', async () => {

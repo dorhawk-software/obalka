@@ -46,6 +46,7 @@ export function BoxSwitcherSheet({
   onOpenSettings,
   onSetAlias,
   onRemove,
+  onChangePassword,
 }: {
   readonly onClose: () => void;
   readonly accounts: DataBoxAccount[];
@@ -64,6 +65,8 @@ export function BoxSwitcherSheet({
    * actually did, and says so when it did not finish - which may be after this sheet has closed.
    */
   readonly onRemove: (boxId: string) => Promise<void>;
+  /** Change a password box's password (030 US2) - offered in the box's menu. */
+  readonly onChangePassword?: (boxId: string) => void;
 }) {
   const theme = useTheme();
   const scrim = useScrim(0.4);
@@ -197,6 +200,11 @@ export function BoxSwitcherSheet({
                       }}
                       onRename={() => setEditing(account)}
                       onRemove={() => setRemoving(account)}
+                      onChangePassword={
+                        onChangePassword && account.authMethod === 'password'
+                          ? () => onChangePassword(account.boxId)
+                          : undefined
+                      }
                     />
                   ))}
                 </ScrollView>

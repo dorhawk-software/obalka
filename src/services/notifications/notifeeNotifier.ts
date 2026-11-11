@@ -25,14 +25,25 @@ import { Linking, Platform } from 'react-native';
 import { reportFailure } from '../telemetry/telemetry';
 import { t } from '../../i18n/strings';
 import { reminderNotificationIds } from '../../features/messages/state/reminders';
+import {
+  PASSWORD_NUDGE_PREFIX,
+  passwordNudgeIds,
+} from '../../features/accounts/state/passwordNudge';
+import { formatExpiryDate } from '../../features/accounts/state/passwordExpiry';
 import type {
   NotificationAccess,
   Notifier,
+  PasswordNudge,
   ScheduleReminderInput,
 } from './notifications';
 
-/** One channel. There is nothing else the app can legitimately notify about. */
+/** The reminders the person set. */
 const CHANNEL_REMINDERS = 'reminders';
+/**
+ * A box's password running out (030 US3). A channel of its own, so the person can switch these off in
+ * the system settings without losing the reminders they set themselves, or the other way round.
+ */
+const CHANNEL_PASSWORD = 'password';
 /** iOS: shapes the hidden-preview form (title kept, body replaced). */
 const CATEGORY_REDACTED = 'redacted';
 /** Brand blue - a date the user set. */
@@ -58,6 +69,11 @@ async function ensurePlatform(): Promise<void> {
     name: t('notif.channel.reminders'),
     // DEFAULT, not HIGH: a reminder is something the user asked for on a day they chose. It should
     // appear, not interrupt.
+    importance: AndroidImportance.DEFAULT,
+  });
+  await notifee.createChannel({
+    id: CHANNEL_PASSWORD,
+    name: t('notif.channel.password'),
     importance: AndroidImportance.DEFAULT,
   });
   for (const id of RETIRED_CHANNELS) {
@@ -155,6 +171,77 @@ export class NotifeeNotifier implements Notifier {
       // different: the user turned a reminder off and it will still go off.
       reportFailure('notify.cancel', e, { stage: 'native' });
     }
+  }
+
+  async syncPasswordNudges(nudges: PasswordNudge[]): Promise<void> {
+    try {
+      await ensurePlatform();
+      const wanted = new Set<string>();
+      for (const nudge of nudges) {
+        const ids = passwordNudgeIds(nudge.boxId);
+        if (nudge.timers.weekBefore != null) {
+          wanted.add(ids.weekBefore);
+        }
+        if (nudge.timers.dayBefore != null) {
+          wanted.add(ids.dayBefore);
+        }
+      }
+      // A removed box, a box whose date moved past a moment, or a password changed: whatever was
+      // scheduled and is no longer wanted goes first.
+      const scheduled = await notifee.getTriggerNotificationIds();
+      for (const id of scheduled) {
+        if (id.startsWith(PASSWORD_NUDGE_PREFIX) && !wanted.has(id)) {
+          await notifee.cancelTriggerNotification(id).catch(() => {});
+        }
+      }
+      for (const nudge of nudges) {
+        const ids = passwordNudgeIds(nudge.boxId);
+        await this.createNudge(ids.weekBefore, nudge, nudge.timers.weekBefore);
+        await this.createNudge(ids.dayBefore, nudge, nudge.timers.dayBefore);
+      }
+    } catch (e) {
+      // The only warning that reaches someone who does not open the app in the fortnight the strip
+      // shows; a failure is silent, which is why it is reported.
+      reportFailure('notify.schedule', e, { stage: 'native' });
+    }
+  }
+
+  private async createNudge(
+    id: string,
+    nudge: PasswordNudge,
+    timestamp: number | null,
+  ): Promise<void> {
+    if (timestamp == null) {
+      return;
+    }
+    // Creating with an existing id replaces it, so a moved date moves the notification.
+    await notifee.createTriggerNotification(
+      {
+        id,
+        // Generic - this is what a lock screen may show.
+        title: t('notif.password.title'),
+        // Identifying - the part an OS set to hide previews leaves out.
+        body: t('notif.password.body', {
+          box: nudge.boxName,
+          date: formatExpiryDate(nudge.expiresAt),
+        }),
+        // `action` tells the tap where to go: the change screen, not a message (030 US3.2).
+        data: { boxId: nudge.boxId, action: 'password' },
+        android: {
+          channelId: CHANNEL_PASSWORD,
+          smallIcon: 'ic_notification',
+          color: ACCENT,
+          visibility: AndroidVisibility.PRIVATE,
+          pressAction: { id: 'default', launchActivity: 'default' },
+        },
+        ios: { categoryId: CATEGORY_REDACTED },
+      },
+      {
+        type: TriggerType.TIMESTAMP,
+        timestamp,
+        // NO `alarmManager` - see the header.
+      },
+    );
   }
 
   private async create(

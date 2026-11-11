@@ -13,6 +13,18 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+### New
+
+- **Change the password in the app.** A box that signs in with a name and password changes it right
+  in Obálka while the current one still works: type the current one and the new one twice.
+- **A notice before the password runs out.** A week and a day before, a notification reminds you to
+  change it, or the box stops letting you in.
+
+### Better
+
+- **A refused password says what it may mean.** ISDS refuses an expired password exactly like a
+  wrong one, so the app names both and offers the way to the ISDS portal.
+
 ## 1.0.0 (2026-11-11)
 
 ### New

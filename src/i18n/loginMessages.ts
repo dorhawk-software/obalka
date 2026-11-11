@@ -10,12 +10,16 @@ export function messageKeyForError(code: LoginErrorCode): string {
 
 /** Czech (primary) copy for every login error key. Every LoginErrorCode MUST have an entry. */
 export const cs: Record<string, string> = {
-  'login.error.invalidCredentials': 'Nesprávné přihlašovací jméno nebo heslo.',
+  // 030 US1: ISDS refuses an expired password exactly like a wrong one (captured 2026-11-11), so a
+  // refusal with no stored date to tell them apart names both.
+  'login.error.invalidCredentials':
+    'ISDS přihlášení odmítlo: jméno nebo heslo je špatně, nebo heslu vypršela platnost - pak ho změňte v portálu ISDS. Po opakovaných pokusech může ISDS přístup zablokovat.',
   'login.error.invalidOrExpiredOtp':
     'Neplatný nebo vypršelý jednorázový kód. Zkuste to znovu.',
   'login.error.smsNotDelivered':
     'SMS s kódem se nepodařilo odeslat. Vyžádejte si nový kód.',
-  // Says WHERE, because the app cannot do it: there is no ChangeISDSPassword call here (001 FR-009).
+  // Says WHERE, because the app cannot do it: an EXPIRED password cannot be changed through ISDS's
+  // web services, only on the portal (001 FR-009, 030).
   // Reached when a password is refused after the expiry date stored at the last sign-in. That is an
   // inference, so the sentence also serves someone who has already changed it and mistyped the new one.
   'login.error.passwordChangeRequired':
@@ -35,7 +39,8 @@ export const cs: Record<string, string> = {
 
 /** English fallback copy. */
 export const en: Record<string, string> = {
-  'login.error.invalidCredentials': 'Incorrect login name or password.',
+  'login.error.invalidCredentials':
+    'ISDS refused the sign-in: the name or password is wrong, or the password has expired - then change it in the ISDS portal. Repeated attempts can get the access blocked.',
   'login.error.invalidOrExpiredOtp':
     'Invalid or expired one-time code. Please try again.',
   'login.error.smsNotDelivered':

@@ -34,6 +34,16 @@ describe('resolveDeepLink', () => {
     });
   });
 
+  it('a password-expiry nudge → the box’s password (030 US3.2), whatever it carries', () => {
+    expect(resolveDeepLink({ boxId: 'b1', action: 'password' }, boxes, false)).toEqual({
+      kind: 'password',
+      boxId: 'b1',
+    });
+    expect(resolveDeepLink({ boxId: 'gone', action: 'password' }, boxes, false)).toEqual({
+      kind: 'none',
+    });
+  });
+
   it('owning box gone/unknown → none (caller stays on the active inbox)', () => {
     expect(resolveDeepLink({ boxId: 'gone', messageId: 'm9' }, boxes, true)).toEqual({
       kind: 'none',
@@ -62,6 +72,13 @@ describe('deep-link router bus', () => {
     const resolver = jest.fn();
     setDeepLinkResolver(resolver); // navigator + accounts now ready
     expect(resolver).toHaveBeenCalledWith({ boxId: 'b7' });
+  });
+
+  it('keeps a nudge’s action on the way to the resolver', () => {
+    const resolver = jest.fn();
+    setDeepLinkResolver(resolver);
+    handleNotificationPayload({ boxId: 'b1', action: 'password' });
+    expect(resolver).toHaveBeenCalledWith({ boxId: 'b1', action: 'password' });
   });
 
   it('ignores a payload with no box (e.g. a re-auth alert)', () => {

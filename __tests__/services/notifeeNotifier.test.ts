@@ -10,7 +10,11 @@ import notifee from '@notifee/react-native';
 import { Linking, Platform } from 'react-native';
 import { NotifeeNotifier } from '../../src/services/notifications/notifeeNotifier';
 import { reminderNotificationIds } from '../../src/features/messages/state/reminders';
-import type { ScheduleReminderInput } from '../../src/services/notifications/notifications';
+import type {
+  PasswordNudge,
+  ScheduleReminderInput,
+} from '../../src/services/notifications/notifications';
+import { passwordNudgeIds } from '../../src/features/accounts/state/passwordNudge';
 
 const create = notifee.createTriggerNotification as jest.Mock;
 const cancel = notifee.cancelTriggerNotification as jest.Mock;
@@ -119,9 +123,10 @@ describe('NotifeeNotifier - reminders', () => {
     ).resolves.toBeUndefined();
   });
 
-  it('creates one channel and deletes the retired ones', async () => {
+  it('creates its two channels and deletes the retired ones', async () => {
     await new NotifeeNotifier().scheduleReminder(input());
-    expect(createChannel.mock.calls.map(([c]) => c.id)).toEqual(['reminders']);
+    // Reminders the person set, and the password-expiry nudge (030) - switchable apart in the OS.
+    expect(createChannel.mock.calls.map(([c]) => c.id)).toEqual(['reminders', 'password']);
     // An orphan channel keeps offering a switch in OS settings that nothing can send to.
     expect(deleteChannel.mock.calls.map(([id]) => id)).toEqual([
       'sync',
@@ -210,5 +215,64 @@ describe('NotifeeNotifier - notification state', () => {
   it('does not throw when the settings cannot be opened', async () => {
     openNotificationSettings.mockRejectedValueOnce(new Error('no activity'));
     await expect(new NotifeeNotifier().openSettings()).resolves.toBeUndefined();
+  });
+});
+
+// 030 US3: the password-expiry nudge.
+describe('NotifeeNotifier - password nudges', () => {
+  const getIds = notifee.getTriggerNotificationIds as jest.Mock;
+  const nudge = (over: Partial<PasswordNudge> = {}): PasswordNudge => ({
+    boxId: 'b1',
+    boxName: 'Živnost',
+    expiresAt: new Date(2027, 1, 9, 9, 49).getTime(),
+    timers: { weekBefore: NOW + DAY, dayBefore: NOW + 7 * DAY },
+    ...over,
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    Platform.OS = 'android';
+    getIds.mockResolvedValue([]);
+  });
+
+  it('schedules both moments on the password channel, with the box and the date in the body', async () => {
+    await new NotifeeNotifier().syncPasswordNudges([nudge()]);
+    expect(create).toHaveBeenCalledTimes(2);
+    const ids = passwordNudgeIds('b1');
+    expect(create.mock.calls.map(([n]) => n.id)).toEqual([ids.weekBefore, ids.dayBefore]);
+    for (const [n, trigger] of create.mock.calls) {
+      expect(n.android.channelId).toBe('password');
+      expect(n.android.pressAction).toEqual({ id: 'default', launchActivity: 'default' });
+      expect(n.data).toEqual({ boxId: 'b1', action: 'password' });
+      expect(n.title).not.toContain('Živnost'); // the lock screen may show the title
+      expect(n.body).toContain('Živnost');
+      expect(n.body).toContain('9.\u00A02.\u00A02027');
+      expect(trigger).not.toHaveProperty('alarmManager');
+    }
+  });
+
+  it('skips a moment that has passed', async () => {
+    await new NotifeeNotifier().syncPasswordNudges([
+      nudge({ timers: { weekBefore: null, dayBefore: NOW + DAY } }),
+    ]);
+    expect(create.mock.calls.map(([n]) => n.id)).toEqual([passwordNudgeIds('b1').dayBefore]);
+  });
+
+  it('cancels the nudges of a box that is gone or no longer due, and leaves reminders alone', async () => {
+    const gone = passwordNudgeIds('b2');
+    const kept = passwordNudgeIds('b1');
+    const reminder = reminderNotificationIds('b2', 'm1').onDay;
+    getIds.mockResolvedValue([gone.weekBefore, gone.dayBefore, kept.weekBefore, reminder]);
+    await new NotifeeNotifier().syncPasswordNudges([
+      nudge({ timers: { weekBefore: null, dayBefore: NOW + DAY } }),
+    ]);
+    expect(cancel.mock.calls.map(([id]) => id).sort()).toEqual(
+      [gone.weekBefore, gone.dayBefore, kept.weekBefore].sort(),
+    );
+  });
+
+  it('never rejects', async () => {
+    getIds.mockRejectedValueOnce(new Error('native'));
+    await expect(new NotifeeNotifier().syncPasswordNudges([nudge()])).resolves.toBeUndefined();
   });
 });

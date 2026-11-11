@@ -146,6 +146,9 @@ jest.mock('../../src/features/accounts/deps', () => {
     // The shell listens for restores ending while a phone has no boxes (2026-09-24); none run here.
     backupController: { subscribe: () => () => {}, currentRun: () => null },
     transferController: { available: () => false },
+    // 030: the password-expiry nudge and the in-app change.
+    notifier: { requestPermission: async () => true, syncPasswordNudges: async () => {} },
+    passwordChanger: { changePassword: async () => ({ type: 'serverFault' }) },
     remindersController: {
       listForBox: async () => [],
       clearBox: async (boxId: string) => {

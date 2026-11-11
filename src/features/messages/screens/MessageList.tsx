@@ -377,6 +377,11 @@ export interface MessageListProps {
    */
   readonly onReauth: (refusedAt: number) => void;
   /**
+   * Open the change-password screen for this box (030 US2). The expiry strip offers it, instead of the
+   * portal, to a box that signs in with name and password while its password still works.
+   */
+  readonly onChangePassword?: () => void;
+  /**
    * A box's received list arrived from opening or pulling this box (2026-11-11). The shell records it
    * as the all-box refresh records one - counts, sync time, the box's failure flag cleared - so the
    * switcher badges and the Jinde line stop reporting the state from before it.
@@ -424,9 +429,9 @@ export interface MessageListProps {
 /**
  * Hands the Data Boxes portal for this box's environment to the OS browser.
  *
- * A hand-off, not a fetch - and the only thing the app can honestly offer here, since changing an
- * ISDS password is not something it can do (there is no ChangeISDSPassword call in this app). A
- * failure is inert: the strip simply does nothing rather than raising an error nobody can act on.
+ * A hand-off, not a fetch: where an EXPIRED password is changed (ISDS refuses the sign-in an in-app
+ * change would need), and where a box that does not sign in with name and password changes it (030).
+ * A failure is inert: the strip simply does nothing rather than raising an error nobody can act on.
  *
  * Per environment since 2026-09-14. It opened the PRODUCTION portal for every box, so a test box's
  * "Změnit v portálu" landed on a portal where that test login does not exist.
@@ -443,6 +448,7 @@ export function MessageList({
   onOpenMessage,
   onCompose,
   onReauth,
+  onChangePassword,
   onReceivedListed,
   resyncNonce = 0,
   crossBox = [],
@@ -1092,6 +1098,9 @@ export function MessageList({
   // 001 T041. `now` is already what the deadline chips are computed from, so the strip crosses from
   // "in 1 day" to "today" on the same re-render they do.
   const pwd = passwordExpiry(account.passwordExpiresAt, now);
+  // 030 US2: changed here while it still works, by a box that signs in with name and password.
+  const changeInApp =
+    onChangePassword != null && account.authMethod === 'password' && pwd.kind !== 'expired';
   // 001 FR-009: a password box refused after its stored expiry date. Read at the moment of the
   // refusal (`refusedAt`, above), the same one the strip's own copy uses (`storedReauthKey` below), so
   // its words and its portal action cannot disagree. A verdict already stored for the box wins over
@@ -1541,8 +1550,9 @@ export function MessageList({
       {/* The box's PASSWORD is running out - a different thing from the session above, and a quieter
           one: the box still works today. Shown only when re-auth is NOT being asked for, because a
           box you cannot use has one problem, not two, and stacking strips buries the actionable one.
-          The app cannot change an ISDS password, so the action hands off to the portal rather than
-          promising something it cannot do (Principle VI). */}
+          While the password still works, a box that signs in with name and password changes it here
+          (030 US2); an expired one, or any other box, is handed to the portal - an in-app change of an
+          expired password is a sign-in ISDS refuses (Principle VI). */}
       {!unified && !needsReauth && pwd.kind !== 'none' ? (
         <XStack
           // See the reauth strip above - the same shape, and it had the same defect.
@@ -1568,16 +1578,16 @@ export function MessageList({
           <XStack
             flexShrink={0}
             pressStyle={{ opacity: 0.6 }}
-            onPress={() => openPortal(account.host)}
-            accessibilityRole="link"
-            accessibilityLabel={t('pwd.action')}
+            onPress={changeInApp ? onChangePassword : () => openPortal(account.host)}
+            accessibilityRole={changeInApp ? 'button' : 'link'}
+            accessibilityLabel={t(changeInApp ? 'pwd.change' : 'pwd.action')}
             hitSlop={touchSlop({ height: 16 })}
             testID="passwordExpiryAction"
           >
             <Badge fontWeight="800"
               color={pwdTone.fg}
             >
-              {t('pwd.action')}
+              {t(changeInApp ? 'pwd.change' : 'pwd.action')}
             </Badge>
           </XStack>
         </XStack>
