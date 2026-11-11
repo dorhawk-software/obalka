@@ -13,6 +13,7 @@ The private key never touches the disk or the repository: every run reads it fro
     uv run tools/asc.py builds         # the latest uploaded builds and their processing state
     uv run tools/asc.py listing [--dry]  # cs and en-US listing, links, categories and copyright, from docs/store/listing.md
     uv run tools/asc.py age            # the age rating answers below, then the rating Apple computes
+    uv run tools/asc.py version <x.y.z>  # names the version being prepared (SemVer, as the tag)
     uv run tools/asc.py whatsnew <version> [--dry]  # App Store What's New + TestFlight What to Test, from the changelog
     uv run tools/asc.py screenshots <dir> cs|en-US [--dry]  # the framed iPhone 6.9" set, in file order
 """
@@ -357,6 +358,20 @@ def whatsnew(version: str, dry: bool = False):
               + ("set" + note if diff else "already"))
 
 
+def set_version(version: str):
+    """Names the version being prepared: a full x.y.z (SemVer, as the tags and the builds carry it), so a
+    build of `version` can be submitted under it. Nothing is sent when it already reads so."""
+    assert re.fullmatch(r"\d+\.\d+\.\d+", version), f"{version} is not x.y.z"
+    v = _editable("appStoreVersions", "appStoreState", ("READY_FOR_SALE", "REPLACED_WITH_NEW_VERSION"))
+    have = v["attributes"]["versionString"]
+    if have == version:
+        print(f"  version: already {version}")
+        return
+    api("PATCH", f"/v1/appStoreVersions/{v['id']}", json={"data": {"type": "appStoreVersions", "id": v["id"],
+                                                                   "attributes": {"versionString": version}}})
+    print(f"  version: {have} -> {version}")
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
@@ -367,6 +382,8 @@ def main():
         listing(dry="--dry" in args)
     elif cmd == "age":
         age()
+    elif cmd == "version":
+        set_version(args[0])
     elif cmd == "whatsnew":
         whatsnew(args[0], dry="--dry" in args)
     elif cmd == "screenshots":

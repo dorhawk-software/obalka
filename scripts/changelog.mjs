@@ -187,6 +187,54 @@ export function dated(text, version, date) {
   return text.replace(heading, `${heading}\n## ${version} (${date})\n`);
 }
 
+/** One entry as the files write it: the point in bold, wrapped at 100 columns, continuations indented. */
+export function entryLines(entry) {
+  const words = `- **${entry.lead}**${entry.body ? ` ${entry.body}` : ''}`.split(' ');
+  const lines = [];
+  for (const word of words) {
+    const last = lines.length - 1;
+    if (last >= 0 && `${lines[last]} ${word}`.length <= 100) {
+      lines[last] = `${lines[last]} ${word}`;
+    } else {
+      lines.push(last < 0 ? word : `  ${word}`);
+    }
+  }
+  return lines;
+}
+
+/** A release's body as the files write it: each kind's heading, then its entries. */
+export function releaseBody(release, lang) {
+  return KINDS.filter(k => release.changes[k.key]?.length)
+    .map(k => [`### ${k[lang]}`, '', ...release.changes[k.key].flatMap(entryLines)].join('\n'))
+    .join('\n\n');
+}
+
+/**
+ * Another build of the version already released (`npm run release` with the same version): what
+ * "Unreleased" holds joins that version's section, kind by kind, and the section takes today's date - the
+ * build going out is what the version now means. Unreleased is left empty. The newest release must be
+ * `version`; anything else is a mistake to stop at, not to guess about.
+ */
+export function folded(text, lang, version, date) {
+  const releases = parse(text, lang);
+  const [unreleased, latest] = releases;
+  if (latest?.version !== version) {
+    throw new Error(`${FILES[lang]}: the newest release is ${latest?.version ?? 'none'}, not ${version}`);
+  }
+  const changes = {};
+  for (const k of KINDS) {
+    const list = [...(latest.changes[k.key] ?? []), ...(unreleased.changes[k.key] ?? [])];
+    if (list.length > 0) {
+      changes[k.key] = list;
+    }
+  }
+  const start = text.indexOf(`## ${UNRELEASED}\n`);
+  const after = text.indexOf('\n## ', text.indexOf(`\n## ${version} (`) + 1);
+  const rest = after < 0 ? '' : text.slice(after + 1);
+  const section = `## ${version} (${date})\n\n${releaseBody({ changes }, lang)}\n`;
+  return `${text.slice(0, start)}## ${UNRELEASED}\n\n${section}${rest ? `\n${rest}` : ''}`;
+}
+
 /** A release in Markdown, its kinds as headings at `level`. */
 export function markdown(release, lang, level = '###') {
   return KINDS.filter(k => release.changes[k.key])

@@ -29,6 +29,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       build: ${{ steps.version.outputs.build }}
+      build_ios: ${{ steps.version.outputs.build_ios }}
       prerelease: ${{ steps.version.outputs.prerelease }}
     steps:
       - uses: actions/checkout@v7
@@ -39,7 +40,10 @@ jobs:
       - name: The tag, package.json and the app agree on the version
         id: version
         run: |
+          # v1.0.0 is a version's first build, v1.0.0+2 its second (`npm run release` with the same
+          # version again; SemVer build metadata). The version is the part before the +.
           tag="${GITHUB_REF_NAME#v}"
+          tag="${tag%%+*}"
           pkg=$(node -p "require('./package.json').version")
           app=$(sed -n "s/^export const APP_VERSION = '\(.*\)';/\1/p" src/app/appInfo.ts)
           if [ "$tag" != "$pkg" ] || [ "$tag" != "$app" ]; then
@@ -50,7 +54,15 @@ jobs:
           # Both stores reject a build number that does not go up. The run number always does, and the
           # attempt keeps a re-run of a half-finished release (one store uploaded, the other failed) from
           # reusing the number the first attempt already spent.
+          # iOS reads like Shrike's TestFlight (owner, 2026-11-11): 1.0.0 (1), 1.0.0 (2), ... - the run
+          # number, and "3.2" for a re-run's second attempt (Apple takes dot-separated integers).
+          # Android's versionCode must be one integer, so it keeps run x 100 + attempt.
           echo "build=$(( GITHUB_RUN_NUMBER * 100 + GITHUB_RUN_ATTEMPT ))" >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_RUN_ATTEMPT" = 1 ]; then
+            echo "build_ios=$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"
+          else
+            echo "build_ios=$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+          fi
           case "$tag" in
             0.*) echo "prerelease=true" >> "$GITHUB_OUTPUT" ;;
             *) echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
@@ -158,7 +170,7 @@ jobs:
           ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           VERSION: ${{ needs.verify.outputs.version }}
-          BUILD: ${{ needs.verify.outputs.build }}
+          BUILD: ${{ needs.verify.outputs.build_ios }}
         run: |
           set -o pipefail
           printf '%s' "$ASC_KEY_P8" > "$RUNNER_TEMP/AuthKey.p8"
@@ -368,6 +380,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ needs.verify.outputs.version }}
+          BUILD: ${{ needs.verify.outputs.build_ios }}
           PRERELEASE: ${{ needs.verify.outputs.prerelease }}
           IOS: ${{ needs.ios.outputs.shipped == 'true' && 'TestFlight' || 'not shipped' }}
           ANDROID: ${{ needs.android.outputs.shipped == 'true' && 'built for Google Play' || 'not shipped' }}
@@ -377,4 +390,4 @@ jobs:
           node scripts/changelog.mjs --notes "$VERSION" > "$RUNNER_TEMP/notes.md"
           printf '\n---\n\niOS: %s · Android: %s\n' "$IOS" "$ANDROID" >> "$RUNNER_TEMP/notes.md"
           gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
-            --title "Obálka $VERSION" --notes-file "$RUNNER_TEMP/notes.md" $flag
+            --title "Obálka $VERSION ($BUILD)" --notes-file "$RUNNER_TEMP/notes.md" $flag

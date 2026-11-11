@@ -218,15 +218,13 @@ This is a client for your mail from the state. It is built accordingly.
 npm ci
 npm start                 # Metro
 
-npm run android           # Android (JDK 17)
+npm run android           # Android (JDK 17), the connected device's architecture only
 npm run ios               # iOS (macOS + Xcode)
 ```
 
-For an emulator it is worth building a single architecture:
-
-```bash
-cd android && ./gradlew assembleDebug -PreactNativeArchitectures=x86_64
-```
+`npm run android` builds native code only for the connected phone's or emulator's architecture
+(`--active-arch-only`), about a quarter of the work. Releases build all four in
+`android/gradle.properties`, which is why that file stays as it is.
 
 The checks CI runs, in one command (CI also runs a secret scan, `npm run audit:secrets`, which needs
 Trivy installed):

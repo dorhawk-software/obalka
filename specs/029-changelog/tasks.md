@@ -23,6 +23,9 @@ No plan.md: the rules are Crake's (owner, 2026-10-13), the presentation the owne
 - [x] T007 `tools/asc.py whatsnew <version>`: App Store "What's New" and TestFlight "What to Test", both
   languages, only differences sent, the first version's refusal reported.
 - [x] T008 `docs/release-ci.md` › The changelog.
+- [x] T015 Another build of the same version (owner, 2026-11-11): `npm run release` with the current,
+  released version tags `v1.0.0+2`, `+3`, folds "Unreleased" into the version's section and re-dates it;
+  iOS build numbers run 1, 2, 3 like Shrike's TestFlight. Tests in both script test files.
 
 ## Phase 3: In the app
 

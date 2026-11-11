@@ -13,6 +13,7 @@ import {
   PLAY_LIMIT,
   count,
   dated,
+  folded,
   generated,
   mismatches,
   notes,
@@ -146,6 +147,30 @@ describe('releasing', () => {
     ]);
     expect(count(after[0])).toBe(0);
     expect(after[1].changes.fixed?.[0].lead).toBe('Hledání najde i přílohy.');
+  });
+});
+
+describe('another build of the same version', () => {
+  it('folds Unreleased into the version, kind by kind, and gives it the new date', () => {
+    const text = CS.replace('## Unreleased\n\n### Opraveno', '## Unreleased\n\n### Nové\n\n- **Šablony.**\n\n### Opraveno');
+    const after = parse(folded(text, 'cs', '0.2.0', '2026-11-25'), 'cs');
+    expect(after.map(r => [r.version, r.date, count(r)])).toEqual([
+      ['Unreleased', null, 0],
+      ['0.2.0', '2026-11-25', 5],
+      ['0.1.0', '2026-11-12', 1],
+    ]);
+    expect(after[1].changes.new?.map((e: { lead: string }) => e.lead)).toEqual(['Připomínka lhůty.', 'Tmavý vzhled.', 'Šablony.']);
+    expect(after[1].changes.fixed?.[0].body).toBe('Dřív hledalo jen v předmětech.');
+  });
+
+  it('changes only the date when nothing is unreleased', () => {
+    const empty = CS.replace(/## Unreleased\n[\s\S]*?(?=## 0\.2\.0)/, '## Unreleased\n\n');
+    const after = parse(folded(empty, 'cs', '0.2.0', '2026-11-25'), 'cs');
+    expect(after[1]).toEqual({ ...parse(CS, 'cs')[1], date: '2026-11-25' });
+  });
+
+  it('refuses a version that is not the newest release', () => {
+    expect(() => folded(CS, 'cs', '0.1.0', '2026-11-25')).toThrow(/newest release is 0.2.0/);
   });
 });
 

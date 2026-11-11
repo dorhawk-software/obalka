@@ -7,6 +7,7 @@
 
 import {
   isNewer,
+  nextTag,
   parseVersion,
   releaseProblems,
   withAppVersion,
@@ -69,7 +70,7 @@ describe('before anything is written', () => {
   it('names every problem at once, not just the first', () => {
     const problems = releaseProblems({
       version: '0.0.1',
-      current: '0.0.1',
+      current: '0.0.2',
       branch: 'feature',
       dirty: true,
       behind: 2,
@@ -105,5 +106,30 @@ describe('the changelog (spec 029)', () => {
 
   it('goes when both languages describe the release', () => {
     expect(releaseProblems({ ...ready, unreleased: { cs: 1, en: 1 } })).toEqual([]);
+  });
+});
+
+describe('another build of the same version (2026-11-11)', () => {
+  it('tags the first build v1.0.0 and the next ones v1.0.0+2, +3, after the highest there is', () => {
+    expect(nextTag('1.0.0', ['v0.9.0'])).toBe('v1.0.0');
+    expect(nextTag('1.0.0', ['v1.0.0'])).toBe('v1.0.0+2');
+    expect(nextTag('1.0.0', ['v1.0.0', 'v1.0.0+2', 'v1.0.0+3'])).toBe('v1.0.0+4');
+    expect(nextTag('1.0.0', ['v1.0.0', 'v1.0.0+5', 'v1.0.10'])).toBe('v1.0.0+6');
+  });
+
+  it('builds the released current version again, with nothing new in the changelog', () => {
+    expect(
+      releaseProblems({ ...ready, version: '1.0.0', current: '1.0.0', rebuild: true, unreleased: { cs: 0, en: 0 } }),
+    ).toEqual([]);
+  });
+
+  it('refuses the current version when it was never released', () => {
+    const problems = releaseProblems({ ...ready, version: '1.0.0', current: '1.0.0', rebuild: false });
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toMatch(/never released/);
+  });
+
+  it('still refuses an older version', () => {
+    expect(releaseProblems({ ...ready, version: '0.9.0', current: '1.0.0', rebuild: false })).toHaveLength(1);
   });
 });

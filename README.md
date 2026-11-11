@@ -217,15 +217,13 @@ Tohle je klient vaší pošty od státu. Podle toho je postavený.
 npm ci
 npm start                 # Metro
 
-npm run android           # Android (JDK 17)
+npm run android           # Android (JDK 17), jen architektura připojeného zařízení
 npm run ios               # iOS (macOS + Xcode)
 ```
 
-Pro emulátor se hodí sestavit jen jednu architekturu:
-
-```bash
-cd android && ./gradlew assembleDebug -PreactNativeArchitectures=x86_64
-```
+`npm run android` sestaví nativní kód jen pro architekturu připojeného telefonu nebo emulátoru
+(`--active-arch-only`), tedy zhruba čtvrtinu práce. Vydání staví všechny čtyři z
+`android/gradle.properties`, které se proto nemění.
 
 Testy a kontroly, které pouští i CI:
 

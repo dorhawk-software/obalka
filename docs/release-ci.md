@@ -11,6 +11,14 @@ one adjustment there.
    runs `npm run verify`, sets the version in `package.json` and `src/app/appInfo.ts`, dates the
    changelog's "Unreleased" as `## 0.1.0 (<today>)` and regenerates the app's copy of it, commits
    `Release v0.1.0`, tags `v0.1.0`, and pushes the commit and the tag together.
+
+   **Another build of the same version** (a fix before 1.0.0 goes out of TestFlight, owner 2026-11-11):
+   run `npm run release -- 1.0.0` again. The version stays; the tag becomes `v1.0.0+2`, then `+3`
+   (SemVer build metadata, one more than the highest there is), and TestFlight lists the builds as
+   1.0.0 (1), 1.0.0 (2). Whatever is under "Unreleased" by then joins the version's section, kind by
+   kind, and the section takes the new date; an empty Unreleased is fine here. The version must be the
+   current one and already have its `v1.0.0` tag - a version that was never released is released, not
+   rebuilt. `uv run tools/asc.py version 1.0.0` names the App Store version if it reads otherwise.
 2. The tag starts **`.github/workflows/release.yml`**:
    - **verify** - the tag, `package.json` and `APP_VERSION` must agree, the changelog must have the
      version's section in both languages, then the full `npm run verify`.
@@ -93,9 +101,12 @@ The unsigned **`ios-sideload.yml`** workflow stays for quick sideloaded builds w
 - **The version** (what people see) comes from the tag. `npm run release` keeps `package.json` and
   `APP_VERSION` in step, the workflow refuses a tag they disagree with, and
   `__tests__/app/appVersion.test.ts` catches a hand edit in between. The READMEs do not state it.
-- **The build number** (what the stores order builds by) is the run number times a hundred plus the
-  attempt. It only ever goes up, and re-running a half-finished release (one store uploaded, the other
-  failed) cannot reuse a number one store already has.
+- **The build number** (what the stores order builds by) comes from the release workflow's run number,
+  so it only ever goes up, across versions too: 1.0.0 (1), 1.0.0 (2), 1.0.1 (3).
+  - **iOS** takes the run number itself; a re-run of a half-finished release (one store uploaded, the
+    other failed) takes `<run>.<attempt>`, such as 3.2, so it cannot reuse a number Apple already has.
+  - **Android**'s versionCode must be one integer: the run number times a hundred plus the attempt.
+  - The GitHub release is titled with the iOS build: "Obálka 1.0.0 (2)".
 - **The native files are not edited.** iOS gets both numbers from `xcodebuild` build settings, Android
   from `-PobalkaVersionName` / `-PobalkaVersionCode`; a local Android build shows package.json's version
   with build number 1.
