@@ -13,6 +13,10 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+### Underneath
+
+- **The library that reads the data box replies brought up to date** (fast-xml-parser 5.12.0).
+
 ## 1.0.0 (2026-11-11)
 
 ### New

@@ -13,6 +13,10 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+### Pod kapotou
+
+- **Aktualizovaná knihovna, která čte odpovědi datových schránek** (fast-xml-parser 5.12.0).
+
 ## 1.0.0 (2026-11-11)
 
 ### Nové
