@@ -147,5 +147,10 @@ them, downloading what is missing. Cancel leaves the switch off.
 ## Out of scope
 
 - Downloading on a timer, at launch without a refresh, or in the background (014).
+- Starting the download the moment the switch is turned on, even with "I zprávy, které už v telefonu
+  jsou". **Owner decision, 2026-11-11**, after expecting exactly that on an iPhone: it stays tied to the
+  next refresh the user starts, because the Provozní řád ISDS lets a phone app contact a box only "pomocí
+  manuálního příkazu uživatele" - and the dialog now says so, so nobody waits for a download that is not
+  coming.
 - Automatic download on opening a message (002's third mode): opening already offers the download.
 - A per-box setting.

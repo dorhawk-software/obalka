@@ -530,7 +530,7 @@ const cs: Record<string, string> = {
   'settings.autoDownload.ask.all': 'I zprávy, které už v telefonu jsou',
   'settings.autoDownload.ask.all.desc': 'Chybějící přílohy se doplní při příští aktualizaci',
   'settings.autoDownload.ask.body':
-    'Při aktualizaci schránky se stáhnou přílohy přijatých i odeslaných zpráv, které v telefonu chybí. Zprávu to nedoručí ani neoznačí jako přečtenou: doručená je už tím, že se objevila v seznamu. Přílohy zabírají místo v telefonu a každá se stahuje jen jednou.',
+    'Přílohy přijatých i odeslaných zpráv, které v telefonu chybí, se stáhnou při příští aktualizaci schránky, kterou spustíte, ne hned po zapnutí: Provozní řád ISDS dovoluje aplikaci v telefonu připojit se ke schránce jen na váš pokyn. Zprávu to nedoručí ani neoznačí jako přečtenou: doručená je už tím, že se objevila v seznamu. Přílohy zabírají místo v telefonu a každá se stahuje jen jednou.',
   'settings.autoDownload.ask.confirm': 'Zapnout',
   // 006 - backup. Two things this copy has to carry and keep carrying: what the backup does NOT
   // contain (FR-008), and that the password is the only way in. Both are stated plainly rather than
@@ -1648,7 +1648,7 @@ const en: Record<string, string> = {
   'settings.autoDownload.ask.all': 'Also messages already on the phone',
   'settings.autoDownload.ask.all.desc': 'Missing documents are fetched on the next refresh',
   'settings.autoDownload.ask.body':
-    'When you refresh the box, the documents of received and sent messages that are not on the phone are downloaded. This does not deliver a message or mark it read: listing it already delivered it. Documents take up space on the phone, and each is downloaded only once.',
+    'The documents of received and sent messages that are not on the phone are downloaded at the next box refresh you start, not as soon as this is on: the ISDS Operating Rules let an app on a phone contact a box only when you ask it to. This does not deliver a message or mark it read: listing it already delivered it. Documents take up space on the phone, and each is downloaded only once.',
   'settings.autoDownload.ask.confirm': 'Turn on',
   'backup': 'Archive backup',
   'backup.on': 'On',
