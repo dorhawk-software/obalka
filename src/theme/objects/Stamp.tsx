@@ -9,7 +9,7 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
 import { useTheme } from '../ThemeProvider';
 import { objectFilter } from '../depth';
-import { perforation } from '../print';
+import { cancellation, perforation } from '../print';
 import { paperPath, stampHoles, useLayoutSize } from './perforation';
 
 export type StampKind = 'stamp' | 'stampSmall' | 'fab';
@@ -19,19 +19,22 @@ export type StampKind = 'stamp' | 'stampSmall' | 'fab';
  *
  * - `kind`: the perforation (`print.ts` › `perforation`);
  * - `paper`: `stamp` paper (light in both themes, `stampFrame` rule) or the `flap`'s gold (`flapFrame`);
- * - `shadow`: the drop shadow of a stamp lying on its own, or the compose button's gold glow. A stamp
- *   stuck on an envelope casts none of its own.
+ * - `shadow`: the drop shadow of a stamp lying on its own, the tighter one of a stamp stuck on an
+ *   envelope (board Sent), or the compose button's gold glow;
+ * - `cancelled`: a used stamp, the postmark's waves across it in `cancelInk` (board Sent).
  */
 export function Stamp({
   kind,
   paper = 'stamp',
   shadow,
+  cancelled = false,
   children,
   style,
 }: {
   readonly kind: StampKind;
   readonly paper?: 'stamp' | 'flap';
-  readonly shadow?: 'stamp' | 'stampFab';
+  readonly shadow?: 'stamp' | 'stampFab' | 'stampOnEnvelope';
+  readonly cancelled?: boolean;
   readonly children: ReactNode;
   readonly style?: StyleProp<ViewStyle>;
 }) {
@@ -89,6 +92,25 @@ export function Stamp({
       ) : null}
       {/* The frame's width, kept so the children sit inside it as they did inside the border. */}
       <View style={{ padding: 1 }}>{children}</View>
+      {cancelled ? (
+        <Svg
+          width={cancellation.width}
+          height={cancellation.height}
+          viewBox={`0 0 ${cancellation.width} ${cancellation.height}`}
+          style={{ position: 'absolute', left: cancellation.x, top: cancellation.y }}
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
+          <Path
+            d={cancellation.d}
+            fill="none"
+            stroke={theme.cancelInk}
+            strokeOpacity={cancellation.opacity}
+            strokeWidth={cancellation.stroke}
+          />
+        </Svg>
+      ) : null}
     </View>
   );
 }

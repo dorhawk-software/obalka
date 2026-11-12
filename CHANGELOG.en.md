@@ -44,6 +44,9 @@ What changed in each Obálka release, written for the people using it. The newes
   the right.
 - **Attachments are sheets of paper with the file type.** Each says it is in the archive; the signed
   original sits in the same list.
+- **A sent message is an envelope with a cancelled stamp.** The stamp shows what sending cost, the
+  postmark carries the time ISDS accepted the message, and below the envelope is the delivery record,
+  which fills in once the recipient opens it.
 
 ### Fixed
 

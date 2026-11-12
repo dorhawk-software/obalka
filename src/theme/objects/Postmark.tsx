@@ -1,5 +1,7 @@
 // The postmark (031): a date ISDS certifies. Two rings, the words round them, the date and time in the
-// middle and three waves - one drawing (board Detail), scaled and turned where it lands. It lands when
+// middle and three waves - one drawing (board Detail), scaled and turned where it lands. Struck on a
+// stamp (board Sent), its waves are the stamp's cancellation instead (`Stamp cancelled`): drawn in the
+// postmark's ink they would not show on the stamp's paper. It lands when
 // ISDS accepts a send (board Motion); it is never decoration on something ISDS did not stamp.
 //
 // Hidden from assistive technology: the screen states the same date in words.
@@ -16,6 +18,7 @@ export function Postmark({
   size = 104,
   rotate = -5,
   color,
+  waves = true,
 }: {
   /** The words round the ring, e.g. "DODÁNO · DATOVÁ SCHRÁNKA ·" (translated by the caller). */
   readonly ring: string;
@@ -28,6 +31,8 @@ export function Postmark({
   readonly rotate?: number;
   /** The ink; `envelopeInkSoft` on the envelope. */
   readonly color?: string;
+  /** False where the waves cross a stamp, which draws them as its cancellation. */
+  readonly waves?: boolean;
 }) {
   const theme = useTheme();
   const p = postmarkPrint;
@@ -49,7 +54,7 @@ export function Postmark({
         {p.rings.map(radius => (
           <Circle key={radius} cx={p.cx} cy={p.cy} r={radius} />
         ))}
-        <Path d={p.waves} />
+        {waves ? <Path d={p.waves} /> : null}
       </G>
       <Text fill={ink} fontFamily={fonts.bodyBold} fontSize={p.ringText.size} letterSpacing={p.ringText.spacing}>
         <TextPath href="#ring">{ring}</TextPath>

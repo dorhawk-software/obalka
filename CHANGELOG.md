@@ -38,6 +38,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   plné kolečko za doručení přihlášením - krátkou poznámku a vpravo datum nad časem.
 - **Přílohy jsou listy papíru s typem souboru.** U každé stojí, že je v archivu; podepsaný originál
   je v řadě s nimi.
+- **Odeslaná zpráva je obálka s orazítkovanou známkou.** Na známce je, kolik odeslání stálo, razítko
+  nese čas, kdy zprávu přijalo ISDS, a pod obálkou je doručenka, která se doplní, až ji adresát otevře.
 
 ### Opraveno
 

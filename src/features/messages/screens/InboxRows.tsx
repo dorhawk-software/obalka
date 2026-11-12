@@ -236,6 +236,11 @@ export const AttentionSheet = memo(function AttentionSheetView({
 /** The hours Czech says with "ve": dvě, tři, čtyři, dvanáct, třináct, čtrnáct, dvacet and on. */
 const VE_HOURS = new Set([2, 3, 4, 12, 13, 14, 20, 21, 22, 23]);
 
+/** Whether Czech puts "ve" rather than "v" before this hour ("ve 14:02", "v 9:05"). */
+export function takesVe(hour: number): boolean {
+  return VE_HOURS.has(hour);
+}
+
 /**
  * When the app last looked at the box (board Empty, I26): "Naposledy dnes ve 14:02", or "před 5
  * minutami", or a date. The empty inbox says it under its envelope, and a list says it at its end.

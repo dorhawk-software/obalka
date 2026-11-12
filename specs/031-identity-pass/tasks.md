@@ -374,9 +374,9 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     keeps only the last of a chain (so `objectFilter('dark', 'slip')` is now none);
   - the avatar tile is one drawing at 42 scaled to 40 ("one object, one drawing"); the board's 40 pt box
     tile drew its fold separately, up to 1.2 pt away;
-  - the postmark is the Detail board's drawing. **Open for T033:** the Sent board draws its postmark
-    another way (larger rings, no waves; the cancellation waves cross the stamp instead) - one object,
-    two drawings, to settle when the sent result is built;
+  - the postmark is the Detail board's drawing. The Sent board's postmark (larger, no waves, the
+    cancellation across the stamp) is that drawing at 1.13x with its waves off, the waves drawn on the
+    stamp in `cancel-ink` (settled in T033);
   - the envelope's flap poses (the inbox header's front, Welcome, Lock, the open envelope with its
     lining) come with their screens (T030, T031, T034, R1).
   New tokens: `envelopeFold`, `flapFrame`, `windowGlint` (DESIGN.md › The printed objects). No screen
@@ -436,7 +436,18 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   - "Stáhnout" saves a copy through the system's save sheet, the way the signed original already left
     the phone where no app opens a .zfo; tapping the row still opens the file;
   - the term card (I34) and the other attachment states (I35) are R7's, unchanged.
-- [ ] T033 Sent result (I39).
+- [x] T033 Sent result (I39). Checked on Obalka_Demo in both themes, free and paid, against the board.
+  Where the build differs from the board, and why:
+  - the stamp's face is 76 wide, not 64 (the stamp 96, not 84): Android draws "ZDARMA" 51 and "PLACENÁ"
+    56 wide, and the board's face leaves them 48, so "ZDARMA" broke as "ZDARM / A". The cancellation
+    has one more 12 wide wave so it still crosses the stamp; the postmark stays where the board puts it,
+    its edge under the stamp's;
+  - rounded to the scale: the window's padding 9 to 10, gaps 1 to 2, the stamp's padding 7 to 8, the
+    slip's margin 22 to 24; the stamp's value is Title (21; board 22), the sender's name Subheading,
+    the buttons BodyStrong (15; board 16);
+  - the steps after "Odesláno" are filled in from the sent list's answer when it comes (delivered,
+    accepted, or accepted by fiction with the gold clock); until then they are dashed rings, "zatím ne";
+  - the screen has no header: "Hotovo" is the way back, as on the board.
 - [ ] T034 Lock (I50).
 - [ ] T035 Motion: I67-I70, each with its Reduce Motion form.
 - [ ] T036 Capture each built screen in demo mode, both themes, and compare with its board.

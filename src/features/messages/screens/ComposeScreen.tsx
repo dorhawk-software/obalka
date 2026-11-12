@@ -20,14 +20,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
-import { MIN_TARGET, textSlop, touchSlop } from '../../../theme/touchTarget';
+import { textSlop, touchSlop } from '../../../theme/touchTarget';
 import { Button, Input, Spinner, XStack, YStack } from '../../../theme/ui';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
 import { PressScale } from '../../../theme/PressScale';
-import { Badge, BodyStrong, Caption, Label, Meta, Small, SmallStrong, Tag, Title, Value } from '../../../theme/Typography';
+import { Badge, BodyStrong, Caption, Label, Meta, Small, SmallStrong, Tag, Value } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { chipTone } from '../../../theme/chipTone';
-import { EmblemIcon } from '../../../theme/iconTiers';
 import { AddressLines } from './AddressLines';
 import { markSameName } from '../state/addressParts';
 import { creditState } from '../state/credit';
@@ -36,7 +35,6 @@ import { Avatar } from '../../../theme/Avatar';
 import { DashedOutline } from '../../../theme/DashedOutline';
 import { ProgressBar } from '../../../theme/ProgressBar';
 import {
-  ArrowRightIcon,
   CheckIcon,
   CloseIcon,
   CreditCardIcon,
@@ -45,7 +43,6 @@ import {
   PlusIcon,
   SearchIcon,
   TrashIcon,
-  SendGlyph,
 } from '../../../theme/icons';
 import { SwipeableRow } from '../../../theme/SwipeableRow';
 // gesture-handler Pressable for the inline trash so it coordinates with the row's swipe/tap gestures.
@@ -63,6 +60,7 @@ import type {
   RecipientDbType,
 } from '../../../services/isds/types';
 import type { DraftRecord } from '../../../services/db/draftsStore';
+import { SentResult } from './SentResult';
 import type { SentStatus } from '../state/sendController';
 import {
   sendController,
@@ -112,18 +110,6 @@ function formatBytes(n: number): string {
     return `${Math.round(n / 1024)} kB`;
   }
   return `${n} B`;
-}
-
-/** "dd.mm.yyyy hh:mm" for the post-send delivery confirmation, or '' for a missing time. */
-function formatDateTime(epochMs: number | null): string {
-  if (epochMs == null) {
-    return '';
-  }
-  const d = new Date(epochMs);
-  const p = (n: number) => String(n).padStart(2, '0');
-  return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(
-    d.getHours(),
-  )}:${p(d.getMinutes())}`;
 }
 
 export interface ComposeScreenProps {
@@ -198,6 +184,9 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
     const [sentId, setSentId] = useState<string | null>(null);
     const [sentReconciled, setSentReconciled] = useState(false);
     const [sentStatus, setSentStatus] = useState<SentStatus | null>(null);
+    /** When ISDS answered with the ID, and what the send cost (null: free) - the sent result's facts. */
+    const [sentAt, setSentAt] = useState(0);
+    const [sentCzk, setSentCzk] = useState<number | null>(null);
     /** The archive write for the message just sent; awaited before opening it. */
     const recorded = useRef<Promise<void> | null>(null);
     const [opening, setOpening] = useState(false);
@@ -490,6 +479,11 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
               haptics.success(); // the message went out - a confident success tap
               reconcilePending.current = false;
               setSentReconciled(out.reconciled === true);
+              setSentAt(Date.now());
+              {
+                const cost = sendController.estimate(recipient, files);
+                setSentCzk(cost.paid ? cost.approxCzk : null);
+              }
               setSentId(out.messageId);
               // Cache what we just sent as this message's offline detail, so opening it shows the
               // attachments immediately - we already hold the files, re-downloading them is absurd.
@@ -609,124 +603,33 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
       <YStack flex={1} backgroundColor={theme.bg}>
         {/* No test-env banner: you reach compose FROM the list, which already carries the
             "Testovací" pill. */}
-        <ScreenHeader
-          title={t('send.title')}
-          onBack={onBack}
-          testID="composeBack"
-        />
-
-        {sentId ? (
-          /* Sent-success - a full-screen confirmation. The EMBLEM tier (016): the one non-empty screen
-             that earns a big glyph, because the app knows the message went and the headline says so. */
-          <YStack
-            flex={1}
-            alignItems="center"
-            justifyContent="center"
-            paddingHorizontal={28}
-            paddingVertical={36}
-            testID="composeSent"
-          >
-            <EmblemIcon glyph={SendGlyph} />
-            <Title fontWeight="700"
-              color={theme.text}
-              textAlign="center"
-              marginTop={24}
-            >
-              {t('send.sent')}
-            </Title>
-            {sentReconciled ? (
-              <Caption
-                color={theme.textMuted}
-                textAlign="center"
-                marginTop={8}
-                maxWidth={300}
-              >
-                {t('send.sent.reconciled')}
-              </Caption>
-            ) : null}
-            <Value fontWeight="500"
-              color={theme.textMuted}
-              textAlign="center"
-              marginTop={8}
-            >
-              {t('send.sent.id', { id: sentId })}
-            </Value>
-            {/* Single post-send delivery/acceptance confirmation (best-effort; T035). */}
-            {sentStatus?.acceptanceTime != null ? (
-              <Caption color={theme.success} textAlign="center" marginTop={4}>
-                {t('send.sent.accepted', {
-                  when: formatDateTime(sentStatus.acceptanceTime),
-                })}
-              </Caption>
-            ) : sentStatus?.deliveryTime != null ? (
-              <Caption color={theme.textMuted} textAlign="center" marginTop={4}>
-                {t('send.sent.delivered', {
-                  when: formatDateTime(sentStatus.deliveryTime),
-                })}
-              </Caption>
-            ) : null}
-            <PressScale
-              fullWidth
-              onPress={onBack}
-              accessibilityLabel={t('send.done')}
-              testID="composeDone"
-              style={{ maxWidth: 280, marginTop: 28 }}
-            >
-              <XStack
-                width="100%"
-                minHeight={52}
-                borderRadius={14}
-                backgroundColor={theme.text}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <BodyStrong color={theme.surfaceAlt}>
-                  {t('send.done')}
-                </BodyStrong>
-              </XStack>
-            </PressScale>
-            {/* 005 T018's other half. The message was folded into the archive the moment it went
-                out; until now the only way to it was to leave, find the sent folder and look. It is
-                chromeless blue rather than a second filled button because the ui-guide reserves the
-                dark fill for the ONE primary action, and after a send that action is "done". */}
-            <PressScale
-              onPress={() => {
-                if (!sentId) {
-                  return;
-                }
-                const id = sentId;
-                void openOnce(async () => {
-                  setOpening(true);
-                  await recorded.current;
-                  onOpenSent(id);
-                });
-              }}
-              accessibilityLabel={t('send.sent.open')}
-              testID="composeOpenSent"
-              style={{ marginTop: 16 }}
-            >
-              <XStack
-                alignItems="center"
-                justifyContent="center"
-                gap={6}
-                // The floor a finger needs, drawn rather than slopped: `hitSlop` belongs on the view
-                // that handles the press, and here that is PressScale's own - which does not take
-                // one. A 48-tall centred row clears both platforms without the indirection.
-                minHeight={MIN_TARGET}
-                paddingHorizontal={12}
-                opacity={opening ? 0.5 : 1}
-              >
-                <Small fontWeight="600" color={theme.blue}>
-                  {t('send.sent.open')}
-                </Small>
-                <ArrowRightIcon size={16} color={theme.blue} />
-              </XStack>
-            </PressScale>
-          </YStack>
+        {sentId && recipient ? (
+          /* 031 (board Sent): the envelope that went, cancelled; no header - "Hotovo" is the way back. */
+          <SentResult
+            account={account}
+            recipient={recipient}
+            messageId={sentId}
+            sentAt={sentAt}
+            paidCzk={sentCzk}
+            reconciled={sentReconciled}
+            status={sentStatus}
+            opening={opening}
+            onDone={onBack}
+            onOpenSent={() => {
+              const id = sentId;
+              void openOnce(async () => {
+                setOpening(true);
+                await recorded.current;
+                onOpenSent(id);
+              });
+            }}
+          />
         ) : (
           /* KeyboardAvoidingView lifts the pinned send footer above the keyboard - on Android 15+
              (edge-to-edge) the window no longer resizes for adjustResize, so a sibling footer would
              otherwise sit behind the IME. */
+          <>
+          <ScreenHeader title={t('send.title')} onBack={onBack} testID="composeBack" />
           <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -1337,6 +1240,7 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
               </YStack>
             ) : null}
           </KeyboardAvoidingView>
+          </>
         )}
 
         {pendingConfirm ? (

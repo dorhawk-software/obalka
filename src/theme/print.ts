@@ -194,3 +194,20 @@ export const docSheet = {
   stroke: 1.2,
   label: { y: 35, size: 11, maxLetters: 4 },
 } as const;
+
+/**
+ * The cancellation (board Sent): where a postmark lands on a stamp, its waves run across the stamp in
+ * `cancelInk`, the postmark's white would not show on the stamp's paper. Two waves on a 108 x 18
+ * drawing, `x`/`y` from the stamp's top left (it starts 14 to the left of the stamp). The board's
+ * drawing is 96 wide on an 84 wide stamp; the stamp here is 96 (its labels did not fit on Android,
+ * see `SentResult`), so the waves are one 12 wide period longer and still cross it.
+ */
+export const cancellation = {
+  width: 108,
+  height: 18,
+  x: -14,
+  y: 34,
+  d: 'M0 5q6-4 12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0M0 13q6-4 12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0',
+  stroke: 1.5,
+  opacity: 0.7,
+} as const;

@@ -5,6 +5,7 @@
 import { cs as errorCs, en as errorEn } from './loginMessages';
 import { cs as messagesCs, en as messagesEn } from './messageListStrings';
 import { cs as detailCs, en as detailEn } from './messageDetailStrings';
+import { cs as sentCs, en as sentEn } from './sentResultStrings';
 import type { Locale } from '../app/settings/languages';
 
 // The language list is `app/settings/languages.tsx`, and `Locale` is derived from it. Re-exported here
@@ -13,6 +14,7 @@ export type { Locale };
 
 const cs: Record<string, string> = {
   ...detailCs,
+  ...sentCs,
   ...errorCs,
   'app.name': 'Obálka',
   // The launch screen when the accounts table will not read (constitution II). It used to keep its
@@ -1101,14 +1103,6 @@ const cs: Record<string, string> = {
     'S tímto výběrem by zpráva měla {size}, datová zpráva ale smí mít nejvýš {limit}. Nic jsme nepřidali, vyberte prosím menší soubory.',
   'send.send': 'Odeslat',
   'send.sending': 'Odesílání…',
-  'send.sent': 'Zpráva odeslána',
-  'send.sent.reconciled':
-    'Tato zpráva už byla odeslána při předchozím pokusu. Znovu jsme ji neodesílali ani neúčtovali.',
-  'send.sent.id': 'ID zprávy: {id}',
-  'send.sent.delivered': 'Dodáno do schránky příjemce · {when}',
-  'send.sent.accepted': 'Doručeno · {when}',
-  'send.sent.open': 'Zobrazit zprávu v archivu',
-  'send.done': 'Hotovo',
   'send.confirm.title': 'Odeslat placenou zprávu?',
   'send.confirm.body':
     'Jde o poštovní datovou zprávu (PDZ). Z kreditu schránky se strhne přibližně {czk} Kč.',
@@ -1156,6 +1150,7 @@ const cs: Record<string, string> = {
 
 const en: Record<string, string> = {
   ...detailEn,
+  ...sentEn,
   ...errorEn,
   'app.name': 'Obálka',
   'app.loadFailed': 'The saved boxes could not be loaded.',
@@ -1975,14 +1970,6 @@ const en: Record<string, string> = {
     'With this selection the message would be {size}, but a data message can be at most {limit}. Nothing was added; please choose smaller files.',
   'send.send': 'Send',
   'send.sending': 'Sending…',
-  'send.sent': 'Message sent',
-  'send.sent.reconciled':
-    'This message was already sent on a previous attempt. We did not re-send or charge again.',
-  'send.sent.id': 'Message ID: {id}',
-  'send.sent.delivered': 'Delivered to the recipient’s box · {when}',
-  'send.sent.accepted': 'Accepted · {when}',
-  'send.sent.open': 'Open the message in the archive',
-  'send.done': 'Done',
   'send.confirm.title': 'Send a paid message?',
   'send.confirm.body':
     'This is a Postal Data Message (PDZ). About {czk} CZK will be deducted from the box credit.',

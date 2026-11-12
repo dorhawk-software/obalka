@@ -33,10 +33,14 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
   or 12 % (dark), behind the lock and the slips. The lining of an open envelope is the finer `lining`
   print (`#9EC0EA`).
 - **Postmark**: a date ISDS certifies - two rings, the waves, the word and the date in
-  `envelope-ink-soft`. It lands when ISDS accepts a send (board Motion).
+  `envelope-ink-soft`. It lands when ISDS accepts a send (board Motion). One drawing: the sent result
+  strikes it 1.13x the message's (108 for 96) with its waves left off, because there the waves fall on
+  the stamp - the `cancellation`, two waves in `cancel-ink` at 0.7 across the stamp, since the
+  postmark's white would not show on stamp paper.
 - **Stamp**: what a send costs - `stamp-paper`, a `stamp-frame` rule, `stamp-ink` for the value, the
   muted `stamp-label` for the small print, perforated (4 every 12; the small stamp 3.5 every 10). Light
   in both appearances: it is paper stuck on the envelope. A used stamp is cancelled in `cancel-ink`.
+  Stuck on an envelope (the sent result) its shadow is `stampOnEnvelope`, darker for the blue under it.
 - **Slip**: a record you keep - the delivery record, the recovery key, the transfer code. A sheet with
   a perforated top (5 every 14) and a faint `slip-mark` ring. On the delivery record each step is
   struck as a ring (`RecordRing`, `recordRing`: two rings on a 34 grid) - a check for the arrival in
