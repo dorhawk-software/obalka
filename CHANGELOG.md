@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Zprávy, které na vás čekají, leží jako listy papíru, ostatní jsou v knize zpráv po dnech.** Obálka
   odesílatele je zalepená zlatou chlopní, dokud zprávu nepřečtete, a pod zprávou doručenou fikcí je
   vidět okraj druhé obálky. Den a den v týdnu stojí jednou u první zprávy dne.
+- **Řádek o ostatních schránkách je obyčejná věta.** "V ostatních schránkách **2 nepřečtené**" bez
+  barevných teček a čar; na úzkém displeji se zkrátí úvod na "Jinde:", ne zpráva sama.
 
 ### Opraveno
 

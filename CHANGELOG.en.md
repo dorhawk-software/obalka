@@ -22,6 +22,9 @@ What changed in each Obálka release, written for the people using it. The newes
   envelope stays sealed with the gold flap until you read the message, and the edge of a second
   envelope shows under a message delivered by fiction. The day and weekday appear once, beside the
   day's first message.
+- **The line about your other boxes is a plain sentence.** "In your other boxes **2 unread**",
+  without the coloured dots and rules; on a narrow screen the opening shortens to "Elsewhere:", never
+  the news itself.
 
 ### Fixed
 

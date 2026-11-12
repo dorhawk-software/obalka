@@ -140,7 +140,7 @@ describe('the line in the inbox', () => {
       }),
     ]);
     expect(await view.findByTestId('message-served')).toBeTruthy();
-    expect(view.getByTestId('crossBoxSummary')).toHaveTextContent('Jinde: připomínka za 2 dny');
+    expect(view.getByTestId('crossBoxSummary')).toHaveTextContent('V ostatních schránkách připomínka za 2 dny');
   });
 
   it('is not inserted when the other boxes have nothing to say', async () => {

@@ -12,13 +12,15 @@
 //
 // And about a narrow screen (2026-09-15), which used to cut the sentence mid-clause. jest has no
 // layout engine, so those tests hand the line what native layout would report through `onLayout`:
-// the room beside the dots and the chevron, and the width of each text it measures.
+// the room beside the glyph and the chevron, and the width of each text it measures.
 
 import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 import { fireEvent, render, waitFor, within } from '@testing-library/react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
+import { lightTheme } from '../../src/theme/theme';
+import { fonts } from '../../src/theme/typeScale';
 import { setActiveLocale, t } from '../../src/i18n/strings';
 import {
   CrossBoxLine,
@@ -31,6 +33,12 @@ import {
 } from '../../src/features/messages/state/crossBox';
 import type { DataBoxAccount, MessageEnvelope } from '../../src/services/isds/types';
 import type { Reminder } from '../../src/features/messages/state/reminders';
+
+/** The words a Text draws, its nested runs included (the news is a bold run inside the sentence). */
+type TextNode = { readonly children: readonly (TextNode | string)[] };
+function textOf(node: TextNode): string {
+  return node.children.map(c => (typeof c === 'string' ? c : textOf(c))).join('');
+}
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -296,7 +304,7 @@ describe('the line', () => {
     const { view } = await mount([dueIn(4)]);
     await waitFor(() => view.getByTestId('crossBoxLine'));
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'Jinde: připomínka za 4 dny',
+      'V ostatních schránkách připomínka za 4 dny',
     );
   });
 
@@ -313,37 +321,35 @@ describe('the line', () => {
     const boxes = [dueIn(1)];
     const view = await render(tree(boxes, onPress, NOW));
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'Jinde: připomínka zítra',
+      'V ostatních schránkách připomínka zítra',
     );
     await view.rerender(tree(boxes, onPress, on(1)));
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'Jinde: připomínka dnes',
+      'V ostatních schránkách připomínka dnes',
     );
   });
 
   it('keeps its one line while a refresh starts and settles', async () => {
     // Constitution V. The refresh note is the last clause of a line that stays one line however much
-    // of it fits ('fitting the line', below), so it can change the words and never the height or the
-    // dots.
+    // of it fits ('fitting the line', below), so it can change the words and never the height.
     const onPress = jest.fn();
     const { view } = await mount([box({ unread: 2 })], onPress);
     await waitFor(() => view.getByTestId('crossBoxLine'));
     const shape = () => ({
       lines: view.getByTestId('crossBoxSummary').props.numberOfLines,
-      dots: view.getByTestId('crossBoxDots').children.length,
     });
     const before = shape();
-    expect(before).toEqual({ lines: 1, dots: 1 });
+    expect(before).toEqual({ lines: 1 });
 
     await view.rerender(tree([box({ unread: 2, refreshing: true })], onPress));
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'Jinde: 2 nepřečtené · načítá se…',
+      'V ostatních schránkách 2 nepřečtené · načítá se…',
     );
     expect(shape()).toEqual(before);
 
     await view.rerender(tree([box({ unread: 2 })], onPress));
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'Jinde: 2 nepřečtené',
+      'V ostatních schránkách 2 nepřečtené',
     );
     expect(shape()).toEqual(before);
   });
@@ -374,15 +380,15 @@ describe('fitting the line (2026-09-15)', () => {
     const count = view.getAllByTestId('crossBoxMeasured', HIDDEN).length;
     for (let i = 0; i < count; i += 1) {
       const text = view.getAllByTestId('crossBoxMeasured', HIDDEN)[i];
-      await fireEvent(text, 'layout', layout(font(String(text.props.children))));
+      await fireEvent(text, 'layout', layout(font(textOf(text))));
     }
   };
 
   /** The line as a sighted reader sees it: the sentence, then the count of what it left out. */
-  const drawn = (view: Mounted) =>
-    `${view.getByTestId('crossBoxSummary').props.children}${
-      view.queryByTestId('crossBoxNotShown')?.props.children ?? ''
-    }`;
+  const drawn = (view: Mounted) => {
+    const notShown = view.queryByTestId('crossBoxNotShown');
+    return `${textOf(view.getByTestId('crossBoxSummary'))}${notShown ? textOf(notShown) : ''}`;
+  };
 
   const label = (view: Mounted) =>
     view.getByTestId('crossBoxLine').props.accessibilityLabel as string;
@@ -392,7 +398,12 @@ describe('fitting the line (2026-09-15)', () => {
     const words = within(view.getByTestId('crossBoxSlot')).getAllByText(/./);
     expect(words.length).toBeGreaterThan(0);
     for (const text of words) {
-      expect(text.props.numberOfLines).toBe(1);
+      // A run nested in a sentence (the bold news) is held by the sentence it is part of.
+      let line: typeof text | null = text;
+      while (line && line.props.numberOfLines == null) {
+        line = line.parent;
+      }
+      expect(line?.props.numberOfLines).toBe(1);
     }
   };
 
@@ -402,7 +413,7 @@ describe('fitting the line (2026-09-15)', () => {
     unreachable({ boxId: 'b', unread: 2 }),
     unreachable({ boxId: 'c', unread: 1 }),
   ];
-  const WHOLE = 'Jinde: 1 doručeno fikcí · naposledy 3 nepřečtené · 2 nenačtené';
+  const WHOLE = 'V ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · 2 nenačtené';
 
   it('shows every clause when all of them fit', async () => {
     const { view } = await mount(reported());
@@ -415,7 +426,7 @@ describe('fitting the line (2026-09-15)', () => {
   });
 
   it('shows the first two whole and counts the one left out', async () => {
-    const two = 'Jinde: 1 doručeno fikcí · naposledy 3 nepřečtené · +1';
+    const two = 'V ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · +1';
     // Room for the two and their count, and not for all three.
     const { view } = await mount(reported());
     await lay(view, { room: sixWide(two) + 2 });
@@ -426,7 +437,7 @@ describe('fitting the line (2026-09-15)', () => {
   });
 
   it('shows only the first when that is all that fits, and counts the rest', async () => {
-    const first = 'Jinde: 1 doručeno fikcí · +2';
+    const first = 'V ostatních schránkách 1 doručeno fikcí · +2';
     const { view } = await mount(reported());
     await lay(view, { room: sixWide(first) + 2 });
     expect(drawn(view)).toBe(first);
@@ -439,15 +450,35 @@ describe('fitting the line (2026-09-15)', () => {
       box({ boxId: 'b', unread: 3, fiction: 1, refreshing: true }),
       unreachable({ boxId: 'c', unread: 1 }),
     ]);
-    const onlyOverdue = 'Jinde: 1 prošlá připomínka · +6';
+    const onlyOverdue = 'V ostatních schránkách 1 prošlá připomínka · +6';
     await lay(everything.view, { room: sixWide(onlyOverdue) + 2 });
     expect(drawn(everything.view)).toBe(onlyOverdue);
+  });
+
+  it('shortens its prefix before it cuts the news (031)', async () => {
+    // Seen on a 411 dp phone: the board's "V ostatních schránkách" left "naposledy 2 nepřečt…".
+    const long = 'V ostatních schránkách 1 doručeno fikcí · +2';
+    const { view } = await mount(reported());
+    await lay(view, { room: sixWide(long) + 2 });
+    expect(drawn(view)).toBe(long);
+    // One point less and the board's prefix leaves no whole clause: the short one takes its place.
+    await lay(view, { room: sixWide(long) - 1 });
+    expect(drawn(view)).toBe('Jinde: 1 doručeno fikcí · +2');
+    // The board's words win whenever a whole clause fits after them, even where the short prefix
+    // would make room for one more: the count after it still says there is more.
+    const two = 'Jinde: 1 doručeno fikcí · naposledy 3 nepřečtené · +1';
+    await lay(view, { room: sixWide(two) + 2 });
+    expect(drawn(view)).toBe(long);
+    // The prefix stays the muted half however it is said, and a screen reader hears the board's.
+    expect(within(view.getByTestId('crossBoxSummary')).getByText('1 doručeno fikcí')).toBeTruthy();
+    expect(label(view)).toBe(`${WHOLE}. Schránky`);
+    expectOneLine(view);
   });
 
   it('counts what it left out in English at parity', async () => {
     setActiveLocale('en');
     try {
-      const first = 'Elsewhere: 1 served by fiction · +2';
+      const first = 'In your other boxes 1 served by fiction · +2';
       const { view } = await mount(reported());
       await lay(view, { room: sixWide(first) + 2 });
       expect(drawn(view)).toBe(first);
@@ -475,7 +506,7 @@ describe('fitting the line (2026-09-15)', () => {
     const { view } = await mount(reported());
     await lay(view, { room: sixWide(WHOLE) });
     expect(drawn(view)).toBe(
-      'Jinde: 1 doručeno fikcí · naposledy 3 nepřečtené · +1',
+      'V ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · +1',
     );
     await lay(view, { room: sixWide(WHOLE) + 1.5 });
     expect(drawn(view)).toBe(WHOLE);
@@ -491,7 +522,7 @@ describe('fitting the line (2026-09-15)', () => {
     expectOneLine(view);
 
     // The room alone decides nothing: the words have to be measured too.
-    const two = 'Jinde: 1 doručeno fikcí · naposledy 3 nepřečtené · +1';
+    const two = 'V ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · +1';
     await fireEvent(view.getByTestId('crossBoxSlot'), 'layout', layout(sixWide(two) + 2));
     expect(summary()).toHaveStyle({ opacity: 0 });
 
@@ -504,13 +535,13 @@ describe('fitting the line (2026-09-15)', () => {
   it('follows the widths when the text size, the screen or the sentence changes', async () => {
     const onPress = jest.fn();
     const view = await render(tree(reported(), onPress));
-    await lay(view, { room: 400 });
+    await lay(view, { room: 500 });
     expect(drawn(view)).toBe(WHOLE);
 
     // A larger text size: native lays the same words out wider, and fewer of them fit.
     const eightWide = (text: string) => text.length * 8;
     await lay(view, { font: eightWide });
-    expect(drawn(view)).toBe('Jinde: 1 doručeno fikcí · +2');
+    expect(drawn(view)).toBe('V ostatních schránkách 1 doručeno fikcí · +2');
 
     // Turned to landscape: more room, and all of it fits again.
     await lay(view, { room: 800, font: eightWide });
@@ -530,11 +561,11 @@ describe('fitting the line (2026-09-15)', () => {
 
   it('keeps its measuring words from screen readers on both platforms, and measures in the type it draws', async () => {
     const { view } = await mount(reported());
-    await lay(view, { room: 400 });
+    await lay(view, { room: 500 });
     // What assistive technology can reach does not include the column at all...
     expect(view.queryByTestId('crossBoxMeasure')).toBeNull();
-    expect(view.queryAllByText('Jinde: 1 doručeno fikcí')).toHaveLength(0);
-    expect(view.getAllByText('Jinde: 1 doručeno fikcí', HIDDEN)).toHaveLength(1);
+    expect(view.queryAllByText('V ostatních schránkách 1 doručeno fikcí')).toHaveLength(0);
+    expect(view.getAllByText('V ostatních schránkách 1 doručeno fikcí', HIDDEN)).toHaveLength(1);
     const column = view.getByTestId('crossBoxMeasure', HIDDEN);
     expect(column.props.accessibilityElementsHidden).toBe(true); // iOS
     expect(column.props.importantForAccessibility).toBe('no-hide-descendants'); // Android
@@ -552,46 +583,42 @@ describe('fitting the line (2026-09-15)', () => {
       };
     };
     const drawnType = typeOf(view.getByTestId('crossBoxSummary').props.style);
-    expect(drawnType.fontSize).toBe(12);
+    expect(drawnType.fontSize).toBe(14);
     for (const text of view.getAllByTestId('crossBoxMeasured', HIDDEN)) {
       expect(typeOf(text.props.style)).toEqual(drawnType);
     }
   });
 });
 
-describe('the dots', () => {
-  it('are the boxes being REPORTED, one each while they fit', async () => {
-    const { view } = await mount([
-      box({ boxId: 'a', unread: 1 }),
-      box({ boxId: 'b', unread: 1 }),
-    ]);
-    await waitFor(() => view.getByTestId('crossBoxLine'));
-    expect(view.getByTestId('crossBoxDots').children).toHaveLength(2);
-    expect(view.queryByTestId('crossBoxMore')).toBeNull();
-  });
-
-  it('stop at three and count the rest, so fifteen boxes cannot overflow the row', async () => {
+describe('fifteen boxes (031: words on the paper, no dots)', () => {
+  it('take no more room than one: the line names no box, and states the real total', async () => {
     const many = Array.from({ length: 15 }, (_, i) =>
       box({ boxId: `box${i}`, unread: 2 }),
     );
     const { view } = await mount(many);
     await waitFor(() => view.getByTestId('crossBoxLine'));
-    // three dots plus the "+12" - a fixed width whatever the box count is
-    expect(view.getByTestId('crossBoxMore')).toHaveTextContent('+12');
-    // and nothing is lost: the sentence still states the real total
+    expect(view.queryByTestId('crossBoxDots')).toBeNull();
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      new RegExp(t('attn.unread.many', { n: 30 })),
+      'V ostatních schránkách 30 nepřečtených',
     );
   });
+});
 
-  it('show exactly three with no count at the boundary', async () => {
-    const { view } = await mount([
-      box({ boxId: 'a', unread: 1 }),
-      box({ boxId: 'b', unread: 1 }),
-      box({ boxId: 'c', unread: 1 }),
-    ]);
+describe('on the paper (031, board InboxA)', () => {
+  it('prints the news in the ink\'s bold after the muted prefix, with no hairlines', async () => {
+    const { view } = await mount([box({ unread: 2 })]);
     await waitFor(() => view.getByTestId('crossBoxLine'));
-    expect(view.queryByTestId('crossBoxMore')).toBeNull();
+    const summary = view.getByTestId('crossBoxSummary');
+    expect(StyleSheet.flatten(summary.props.style).color).toBe(lightTheme.textMuted);
+    const news = within(summary).getByText('2 nepřečtené');
+    expect(StyleSheet.flatten(news.props.style)).toMatchObject({
+      color: lightTheme.text,
+      fontFamily: fonts.bodyBold,
+    });
+    const line = StyleSheet.flatten(view.getByTestId('crossBoxLine').props.style);
+    expect(line.borderTopWidth ?? 0).toBe(0);
+    expect(line.borderBottomWidth ?? 0).toBe(0);
+    expect(line.minHeight).toBe(44);
   });
 });
 
@@ -609,11 +636,10 @@ it('opens the switcher, where each box already shows its own state', async () =>
 });
 
 it('tells a screen reader the sentence and where the tap goes', async () => {
-  // The dots say nothing assistive technology can use.
   const { view } = await mount([box({ unread: 2, syncError: 'reauth' })]);
   await waitFor(() => view.getByTestId('crossBoxLine'));
   const label = view.getByTestId('crossBoxLine').props.accessibilityLabel as string;
-  expect(label).toContain(t('crossBox.prefix'));
+  expect(label).toContain(t('crossBox.title'));
   expect(label).toContain(t('attn.unread.few', { n: 2 }));
   expect(label).toContain(t('home.title'));
 });
@@ -622,5 +648,5 @@ it('reads the nearest deadline to a screen reader too', async () => {
   const { view } = await mount([dueIn(1)]);
   await waitFor(() => view.getByTestId('crossBoxLine'));
   const label = view.getByTestId('crossBoxLine').props.accessibilityLabel as string;
-  expect(label).toContain('Jinde: připomínka zítra');
+  expect(label).toContain('V ostatních schránkách připomínka zítra');
 });

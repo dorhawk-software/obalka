@@ -210,7 +210,7 @@ const settle = () =>
   });
 
 const LAUNCHING =
-  'Jinde: 2 nepřečtené · naposledy 1 nepřečtená · 1 nenačtená · načítá se…';
+  'V ostatních schránkách 2 nepřečtené · naposledy 1 nepřečtená · 1 nenačtená · načítá se…';
 
 let slow: Held<MessagesOutcome>;
 
@@ -274,7 +274,7 @@ describe('the shell tells the Jinde line which boxes are being refreshed', () =>
     });
     await waitFor(() =>
       expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-        'Jinde: 3 nepřečtené · naposledy 1 nepřečtená · 1 nenačtená',
+        'V ostatních schránkách 3 nepřečtené · naposledy 1 nepřečtená · 1 nenačtená',
       ),
     );
   });
@@ -290,7 +290,7 @@ describe('the shell tells the Jinde line which boxes are being refreshed', () =>
     // Both counts are memories now, and both boxes are "nenačtené" - no longer "still refreshing".
     await waitFor(() =>
       expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-        'Jinde: naposledy 3 nepřečtené · 2 nenačtené',
+        'V ostatních schránkách naposledy 3 nepřečtené · 2 nenačtené',
       ),
     );
   });
@@ -327,7 +327,7 @@ describe('the shell tells the Jinde line which boxes are being refreshed', () =>
     // between depends on whether the inbox's own focus re-read has seen its flag yet; that is not
     // what is being asked here.)
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      /^Jinde: 2 nepřečtené · .*načítá se…$/,
+      /^V ostatních schránkách 2 nepřečtené · .*načítá se…$/,
     );
 
     await act(async () => {
@@ -337,7 +337,7 @@ describe('the shell tells the Jinde line which boxes are being refreshed', () =>
     // as a box that did not refresh, its unread count kept as the last one known.
     await waitFor(() =>
       expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-        'Jinde: 3 nepřečtené · naposledy 1 nepřečtená · 1 nenačtená',
+        'V ostatních schránkách 3 nepřečtené · naposledy 1 nepřečtená · 1 nenačtená',
       ),
     );
   });

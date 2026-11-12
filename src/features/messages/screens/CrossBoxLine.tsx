@@ -1,4 +1,4 @@
-// "Jinde: termín zítra · 2 nepřečtené · 1 nenačtená" - one line, under the box's own attention block.
+// "V ostatních schránkách **2 nepřečtené**" - one line, under the box's own attention block.
 //
 // It replaces a bordered card with a header and a row per box. That card was reported twice: once
 // for clashing with everything around it (an inset, rounded, uppercase-labelled card between two
@@ -10,27 +10,24 @@
 // and being a section header rather than a floating card it inherits the list's own geometry, so
 // the clash disappears rather than being tuned away.
 //
-// THE DOTS ARE THE BOXES BEING REPORTED, not every box the user owns. That distinction is what
-// makes this survive fifteen boxes: the line says what is happening elsewhere, so a quiet box
-// contributes nothing to it, exactly as it contributes nothing to the sentence. Past three they
-// stack and stop, with the remainder as a count - the width is then fixed by construction and the
-// sentence always gets the rest of the line.
-//
-// Which three: whatever `crossBoxAttention` ordered first, which is closest-to-hurting-you first.
-// So the colours shown are the three boxes worth opening, not the first three alphabetically.
+// 031 (board InboxA) drew it as words on the paper: the boxes glyph, "V ostatních schránkách" and
+// the news in the ink's bold, a chevron. The coloured dots and the hairlines above and below are gone:
+// the dots named boxes by a colour nobody had learnt, and the hairlines boxed in a line that is
+// already no more than a sentence.
 //
 // THE SENTENCE SHOWS WHOLE CLAUSES (2026-09-15). It used to be one caption cut off at its end, and a
 // phone drew "Jinde: 1 doručeno fikcí · naposledy 3 nepřečtené · 2 nen…". Half a clause says nothing,
 // and nothing on the line said that more had been cut. It now measures what fits in the room left
-// beside the dots and the chevron, shows that many clauses from the front, and counts the rest
+// beside the glyph and the chevron, shows that many clauses from the front, and counts the rest
 // ("· +2"). It stays one line either way: it appears and changes after a refresh, above the
 // list, and a second line would push every row down (constitution V).
 
 import { useState } from 'react';
 import { PixelRatio, type LayoutChangeEvent } from 'react-native';
 import { XStack, YStack } from '../../../theme/ui';
-import { Caption, Tag } from '../../../theme/Typography';
+import { Small } from '../../../theme/Typography';
 import { ChevronRightIcon } from '../../../theme/icons';
+import { OffsetIcon } from '../../../theme/offsetIcons';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { touchSlop } from '../../../theme/touchTarget';
 import { plural, t } from '../../../i18n/strings';
@@ -38,17 +35,8 @@ import { haptics } from '../../../services/haptics';
 import type { BoxAttention } from '../state/crossBox';
 import { attentionDaysRemaining } from '../state/attention';
 
-/** Past this many, the dots become a mark rather than an inventory. */
-const MAX_DOTS = 3;
-
 /** Between two clauses, and between the last clause shown and the count of the rest. */
 const SEPARATOR = ' · ';
-
-/**
- * One size for the words drawn and the words measured. Measured in any other size, the widths would
- * describe some other line.
- */
-const SENTENCE_TYPE = { fontSize: 12, lineHeight: 16 } as const;
 
 /**
  * The hidden measuring column's width: wider than any sentence this line can build at any text size,
@@ -185,9 +173,43 @@ export function crossBoxSummary(
   return crossBoxClauses(boxes, now).join(SEPARATOR);
 }
 
-/** "Jinde: 1 po termínu · termín zítra" - the prefix and the first `count` clauses. */
-function sentenceOf(clauses: readonly string[], count: number): string {
-  return `${t('crossBox.prefix')}: ${clauses.slice(0, count).join(SEPARATOR)}`;
+/**
+ * The words before the news: "V ostatních schránkách " as the board prints it, or, when not even the
+ * most urgent clause fits whole after that, "Jinde: ". The prefix gives way before the news does.
+ */
+function prefixOf(short: boolean): string {
+  return short ? `${t('crossBox.prefix')}: ` : `${t('crossBox.title')} `;
+}
+
+/** "V ostatních schránkách 1 prošlá připomínka · připomínka zítra" - the first `count` clauses. */
+function sentenceOf(clauses: readonly string[], count: number, short = false): string {
+  return `${prefixOf(short)}${clauses.slice(0, count).join(SEPARATOR)}`;
+}
+
+/**
+ * A sentence as the line draws it: the prefix in the muted ink, the news after it in the ink's bold.
+ * The words drawn and the words measured are both this, so a width measured is the width drawn.
+ */
+function Sentence({
+  text,
+  prefix,
+  muted,
+  ink,
+  ...rest
+}: {
+  readonly text: string;
+  readonly prefix: string;
+  readonly muted: string;
+  readonly ink: string;
+} & Omit<Parameters<typeof Small>[0], 'children'>) {
+  return (
+    <Small color={muted} numberOfLines={1} {...rest}>
+      {prefix}
+      <Small fontWeight="700" color={ink}>
+        {text.slice(prefix.length)}
+      </Small>
+    </Small>
+  );
 }
 
 /** " · +2" - what follows the sentence when `rest` clauses did not fit. */
@@ -196,10 +218,8 @@ function notShownOf(rest: number): string {
 }
 
 /**
- * How many clauses the line shows: the most, from the front, whose sentence and count were both
- * measured and fit in `room`. Never fewer than one. The most urgent clause is the reason the line
- * exists, so when even it does not fit it is shown anyway and truncates - the last resort, and the
- * count after it still says how much is not shown.
+ * How many clauses fit after the given prefix: the most, from the front, whose sentence and count
+ * were both measured and fit in `room`; zero when not even the first does.
  *
  * A width not measured yet counts as not fitting. A clause that arrives with new data is left to the
  * count until its own width is known, never drawn on a guess and cut in half.
@@ -208,12 +228,13 @@ function clausesThatFit(
   clauses: readonly string[],
   room: number,
   widths: ReadonlyMap<string, number>,
+  short: boolean,
 ): number {
   const spare = ROUNDING_PIXELS / PixelRatio.get();
-  let fitting = 1;
-  for (let count = 2; count <= clauses.length; count += 1) {
+  let fitting = 0;
+  for (let count = 1; count <= clauses.length; count += 1) {
     const rest = clauses.length - count;
-    const sentence = widths.get(sentenceOf(clauses, count));
+    const sentence = widths.get(sentenceOf(clauses, count, short));
     const after = rest > 0 ? widths.get(notShownOf(rest)) : 0;
     if (
       sentence !== undefined &&
@@ -224,6 +245,24 @@ function clausesThatFit(
     }
   }
   return fitting;
+}
+
+/**
+ * What the line shows: the board's prefix with as many whole clauses as fit after it; when not even
+ * one does, the short prefix with as many as fit after that. Never fewer than one clause - the most
+ * urgent is the reason the line exists, so when even it does not fit after "Jinde: " it is shown
+ * anyway and truncates, the last resort, and the count after it still says how much is not shown.
+ */
+function lineThatFits(
+  clauses: readonly string[],
+  room: number,
+  widths: ReadonlyMap<string, number>,
+): { short: boolean; fitting: number } {
+  const long = clausesThatFit(clauses, room, widths, false);
+  if (long > 0) {
+    return { short: false, fitting: long };
+  }
+  return { short: true, fitting: Math.max(1, clausesThatFit(clauses, room, widths, true)) };
 }
 
 function sameWidths(
@@ -266,11 +305,11 @@ export function CrossBoxLine({
   if (boxes.length === 0 || clauses.length === 0) {
     return null;
   }
-  const summary = clauses.join(SEPARATOR);
   // Every sentence the line could show, and a count for every number of clauses it could leave out,
   // plus one: when a refresh adds a clause, the count it may need was measured a render earlier.
   const measuring = [
     ...clauses.map((_, i) => sentenceOf(clauses, i + 1)),
+    ...clauses.map((_, i) => sentenceOf(clauses, i + 1, true)),
     ...clauses.map((_, i) => notShownOf(i + 1)),
   ];
   const onMeasured = (text: string) => (e: LayoutChangeEvent) => {
@@ -292,60 +331,31 @@ export function CrossBoxLine({
   // transparent in it. The first words anyone sees are the ones that fit, not a sentence cut
   // mid-word that then rearranges itself.
   const measured = room !== null && widths.size > 0;
-  const fitting = measured
-    ? clausesThatFit(clauses, room, widths)
-    : clauses.length;
+  const { short, fitting } = measured
+    ? lineThatFits(clauses, room, widths)
+    : { short: false, fitting: clauses.length };
   const notShown = clauses.length - fitting;
-  const shown = boxes.slice(0, MAX_DOTS);
-  const rest = boxes.length - shown.length;
   return (
     <XStack
       alignItems="center"
-      gap={10}
-      paddingHorizontal={18}
-      paddingVertical={10}
-      backgroundColor={theme.bg}
-      borderTopWidth={1}
-      borderBottomWidth={1}
-      borderColor={theme.border}
+      gap={8}
+      minHeight={44}
+      paddingHorizontal={16}
+      paddingTop={4}
       pressStyle={{ backgroundColor: theme.surfaceAlt }}
       onPress={() => {
         haptics.selection();
         onPress();
       }}
       accessibilityRole="button"
-      // The dots say nothing a screen reader can use, so the label carries the whole sentence plus
-      // where the tap goes - "elsewhere: two unread" is useless without "opens your boxes". Whole
-      // whatever fits on the screen: a clause left out for width is still news.
-      accessibilityLabel={`${t('crossBox.prefix')}: ${summary}. ${t('home.title')}`}
-      hitSlop={touchSlop({ height: 18 })}
+      // The label carries the whole sentence plus where the tap goes - "two unread in your other
+      // boxes" is useless without "opens your boxes". Whole, whatever fits on the screen: a clause
+      // left out for width is still news.
+      accessibilityLabel={`${sentenceOf(clauses, clauses.length)}. ${t('home.title')}`}
+      hitSlop={touchSlop({ height: 44 })}
       testID="crossBoxLine"
     >
-      <XStack alignItems="center" flexShrink={0} testID="crossBoxDots">
-        {shown.map((box, i) => (
-          <YStack
-            key={box.boxId}
-            width={11}
-            height={11}
-            borderRadius={999}
-            backgroundColor={box.color}
-            // A ring in the row's OWN ground, which is what makes overlapping dots read as a stack
-            // instead of a smear. RN borders draw inside the box, so 11 with 1.5 leaves an 8px fill.
-            borderWidth={1.5}
-            borderColor={theme.bg}
-            marginLeft={i === 0 ? 0 : -3}
-          />
-        ))}
-        {rest > 0 ? (
-          <Tag fontWeight="500"
-            color={theme.textFaint}
-            marginLeft={6}
-            testID="crossBoxMore"
-          >
-            {`+${rest}`}
-          </Tag>
-        ) : null}
-      </XStack>
+      <OffsetIcon name="boxes" size={16} color={theme.textMuted} />
       <XStack
         flex={1}
         minWidth={0}
@@ -356,20 +366,18 @@ export function CrossBoxLine({
         onLayout={(e: LayoutChangeEvent) => setRoom(e.nativeEvent.layout.width)}
         testID="crossBoxSlot"
       >
-        <Caption
-          {...SENTENCE_TYPE}
+        <Sentence
+          text={sentenceOf(clauses, fitting, short)}
+          prefix={prefixOf(short)}
+          muted={theme.textMuted}
+          ink={theme.text}
           flexShrink={1}
           minWidth={0}
-          color={theme.textMuted}
-          numberOfLines={1}
           opacity={measured ? 1 : 0}
           testID="crossBoxSummary"
-        >
-          {sentenceOf(clauses, fitting)}
-        </Caption>
+        />
         {notShown > 0 ? (
-          <Caption
-            {...SENTENCE_TYPE}
+          <Small
             // Never the part that gives way: when the first clause has to truncate, the count still
             // says there is more.
             flexShrink={0}
@@ -378,7 +386,7 @@ export function CrossBoxLine({
             testID="crossBoxNotShown"
           >
             {notShownOf(notShown)}
-          </Caption>
+          </Small>
         ) : null}
         <YStack
           position="absolute"
@@ -394,23 +402,35 @@ export function CrossBoxLine({
           aria-hidden
           testID="crossBoxMeasure"
         >
-          {measuring.map(text => (
-            <Caption
-              // Keyed by the words, so changed words mount a new element that reports its width even
-              // when it equals the old one: `onLayout` fires when a size changes, not the text.
-              key={text}
-              {...SENTENCE_TYPE}
-              alignSelf="flex-start"
-              numberOfLines={1}
-              onLayout={onMeasured(text)}
-              testID="crossBoxMeasured"
-            >
-              {text}
-            </Caption>
-          ))}
+          {measuring.map(text =>
+            !text.startsWith(SEPARATOR) ? (
+              <Sentence
+                // Keyed by the words, so changed words mount a new element that reports its width
+                // even when it equals the old one: `onLayout` fires when a size changes, not the text.
+                key={text}
+                text={text}
+                prefix={prefixOf(!text.startsWith(prefixOf(false)))}
+                muted={theme.textMuted}
+                ink={theme.text}
+                alignSelf="flex-start"
+                onLayout={onMeasured(text)}
+                testID="crossBoxMeasured"
+              />
+            ) : (
+              <Small
+                key={text}
+                alignSelf="flex-start"
+                numberOfLines={1}
+                onLayout={onMeasured(text)}
+                testID="crossBoxMeasured"
+              >
+                {text}
+              </Small>
+            ),
+          )}
         </YStack>
       </XStack>
-      <ChevronRightIcon size={16} color={theme.textFaint} />
+      <ChevronRightIcon size={16} color={theme.textMuted} />
     </XStack>
   );
 }
