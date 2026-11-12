@@ -462,6 +462,9 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   - rounded to the scale: the gap under the envelope 40 to 36 (`hero`); the button's label BodyStrong
     (15; board 16);
   - not on a board: the dark shadow, black where the light one is blue;
+  - the button's glyph is what the phone itself unlocks with: the board's face on iOS, a fingerprint on
+    Android (owner, 2026-11-12), drawn here in the face's viewfinder at its 1.8 line - two ridges, all
+    a 20 pt glyph keeps apart at that weight. For the canvas: the board shows only the iOS face;
   - the brand lock tile (`BrandLockIcon`, `ICON_TIER.lock`) is gone, replaced by the sealed envelope;
   - not yet seen on iOS: the seal's face is React Native's own radial gradient, seen on Android; under
     it is `seal-shade`, should a platform not draw the gradient.

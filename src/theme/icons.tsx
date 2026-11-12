@@ -7,6 +7,7 @@
 //
 // Callers always pass an explicit themed `color`; the '#000' default is only a fallback.
 
+import { Platform } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import {
   Archive,
@@ -103,15 +104,35 @@ export function LockIcon({ size = 22, color = '#000' }: IconProps) {
   return <Lock size={size} color={color} strokeWidth={2} />;
 }
 
+/** The viewfinder's four corners, shared by both unlock glyphs. */
+const UNLOCK_FRAME = 'M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2';
+
 /**
- * Unlock - a face in the viewfinder's corners, the lock screen's button (board "Lock - sealed"); the
- * board draws it itself, at a 1.8 line.
+ * Unlock - the lock screen's button (board "Lock - sealed"): what the phone itself shows for unlocking,
+ * in the viewfinder's corners. On iOS the board's face (Face ID); on Android a fingerprint, the way most
+ * Android phones unlock (owner, 2026-11-12). Both drawn here at the board's 1.8 line - the fingerprint is
+ * two ridges, which is all a 20 pt glyph keeps apart at that weight. `os` is the platform's unless a
+ * test names one.
  */
-export function UnlockIcon({ size = 20, color = '#000' }: IconProps) {
+export function UnlockIcon({
+  size = 20,
+  color = '#000',
+  os = Platform.OS,
+}: IconProps & { readonly os?: typeof Platform.OS }) {
+  const d =
+    os === 'android'
+      ? 'M7 14.5V12a5 5 0 0 1 8.6-3.5M17 12v1.5c0 1.2-.1 2.3-.4 3.3M9.6 16.8c.3-1.1.4-2.4.4-3.8V12a2 2 0 0 1 4 0v1.3c0 1.5-.1 2.7-.4 3.7'
+      : 'M9 9.5v1M15 9.5v1M12 9.5v3.5h-1M9.5 15.5a3.5 3.5 0 0 0 5 0';
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      testID={os === 'android' ? 'unlockFingerprint' : 'unlockFace'}
+    >
       <Path
-        d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M9 9.5v1M15 9.5v1M12 9.5v3.5h-1M9.5 15.5a3.5 3.5 0 0 0 5 0"
+        d={UNLOCK_FRAME + d}
         stroke={color}
         strokeWidth={1.8}
         strokeLinecap="round"

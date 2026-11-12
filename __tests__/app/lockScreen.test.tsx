@@ -13,6 +13,7 @@ import { objectShadow } from '../../src/theme/depth';
 import { sealedEnvelope, securityTint } from '../../src/theme/print';
 import { Text } from '../../src/theme/ui';
 import { LockGate } from '../../src/app/lock/LockGate';
+import { UnlockIcon } from '../../src/theme/icons';
 import { InMemoryVaultKeyStorage, Vault } from '../../src/services/secureStore/vault';
 import { setActiveLocale } from '../../src/i18n/strings';
 
@@ -117,4 +118,21 @@ it('lays out the failure line before any attempt fails, so a failure moves nothi
   // Invisible, but in the layout: hidden by opacity, never by `display: none`.
   expect(styles.some(st => st.display === 'none')).toBe(false);
   expect(styles.some(st => st.opacity === 0)).toBe(true);
+});
+
+it('shows what the phone itself unlocks with: the face on iOS, a fingerprint on Android', async () => {
+  const view = await mount(); // Jest runs as iOS
+  expect(view.getByTestId('unlockFace', { includeHiddenElements: true })).toBeTruthy();
+  await view.unmount();
+  const glyph = (os: 'ios' | 'android') =>
+    render(<UnlockIcon os={os} />).then(v => {
+      const d = String(nodes(v.toJSON()).find(n => n.props.d != null)?.props.d);
+      return v.unmount().then(() => d);
+    });
+  const face = await glyph('ios');
+  const finger = await glyph('android');
+  // The same viewfinder, a different thing in it, at the same line.
+  expect(face.slice(0, 40)).toBe(finger.slice(0, 40));
+  expect(face).not.toBe(finger);
+  expect(finger).toContain('a5 5 0 0 1');
 });
