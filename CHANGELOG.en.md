@@ -47,6 +47,9 @@ What changed in each Obálka release, written for the people using it. The newes
 - **A sent message is an envelope with a cancelled stamp.** The stamp shows what sending cost, the
   postmark carries the time ISDS accepted the message, and below the envelope is the delivery record,
   which fills in once the recipient opens it.
+- **When ISDS accepts a message, the postmark lands on its stamp.** The phone gives one firm tap,
+  like a rubber stamp on a desk, and the envelope then rises into its place; with Reduce Motion it
+  all simply crossfades.
 - **A locked Obálka is an envelope sealed with wax.** The lock says your messages and sign-ins are
   under lock, and the Unlock button sits at the bottom, within reach of your thumb.
 

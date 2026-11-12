@@ -40,6 +40,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   je v řadě s nimi.
 - **Odeslaná zpráva je obálka s orazítkovanou známkou.** Na známce je, kolik odeslání stálo, razítko
   nese čas, kdy zprávu přijalo ISDS, a pod obálkou je doručenka, která se doplní, až ji adresát otevře.
+- **Když ISDS zprávu přijme, dopadne na známku razítko.** Telefon jednou pevně ťukne jako razítko
+  o stůl a obálka pak vyjede na své místo; se sníženým pohybem se vše jen prolne.
 - **Zamčená Obálka je obálka zapečetěná voskovou pečetí.** Zámek říká, že zprávy i přihlášení jsou pod
   zámkem, a tlačítko Odemknout je dole, kam dosáhne palec.
 

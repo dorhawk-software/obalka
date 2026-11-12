@@ -9,13 +9,14 @@
 
 import { NativeModules, TurboModuleRegistry } from 'react-native';
 
-type Kind = 'selection' | 'light' | 'medium' | 'success' | 'warning' | 'error';
+type Kind = 'selection' | 'light' | 'medium' | 'stamp' | 'success' | 'warning' | 'error';
 
 /** Our semantic kinds → the library's feedback types. */
 const TYPE: Record<Kind, string> = {
   selection: 'selection', // a tab/segment switch - the lightest tick
   light: 'impactLight', // a light confirmation (pull-to-refresh, sheet open)
   medium: 'impactMedium', // a committed action with weight (swipe-to-delete)
+  stamp: 'impactHeavy', // the postmark landing on a sent message - the thump of a rubber stamp
   success: 'notificationSuccess', // an action succeeded (message sent)
   warning: 'notificationWarning', // a caution/gate (a paid-send confirm appears)
   error: 'notificationError', // an action failed
@@ -75,7 +76,9 @@ export const haptics = {
   light: () => fire('light'),
   /** A committed action that carries weight - a swipe-to-delete commit. */
   medium: () => fire('medium'),
-  /** An action succeeded - a message was sent. */
+  /** The postmark lands on a message ISDS accepted: one firm impact (031, board Motion). */
+  stamp: () => fire('stamp'),
+  /** An action succeeded - a transfer finished. */
   success: () => fire('success'),
   /** A caution / decision gate - a paid-send confirmation appeared. */
   warning: () => fire('warning'),

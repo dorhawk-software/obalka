@@ -3,7 +3,16 @@
 // odeslána", when ISDS took it, and the delivery record still to fill in. "Hotovo" is the one primary
 // action; "Ukázat v Odeslaných" opens the message in the sent folder.
 
-import { ScrollView, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ScrollView, useWindowDimensions, View, type LayoutChangeEvent } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { XStack, YStack } from '../../../theme/ui';
 import { Body, BodyStrong, Caption, Hero, Label, Meta, Overline, Subheading, Tag, Title } from '../../../theme/Typography';
@@ -18,6 +27,7 @@ import { Slip } from '../../../theme/objects/Slip';
 import { Window } from '../../../theme/objects/Window';
 import { RecordRing, type RecordRingKind } from '../../../theme/objects/RecordRing';
 import { t } from '../../../i18n/strings';
+import { haptics } from '../../../services/haptics';
 import type { DataBoxAccount, Recipient } from '../../../services/isds/types';
 import type { SentStatus } from '../state/sendController';
 import { MESSAGE_STATE } from '../state/messageState';
@@ -30,6 +40,37 @@ const RING = 30;
 
 /** The stamp's printed face: the longest label (Czech "PLACENÁ", 56 on Android) and its 8 margins. */
 const STAMP_FACE = 76;
+
+/**
+ * The sending moment (031, board Motion 2): the stamp is seen uncancelled for `beatMs`; then the postmark
+ * lands at `landScale` and settles to 1 in `landMs` - one firm haptic, the thump of a rubber stamp - its
+ * waves cancelling the stamp; then the envelope rises from the middle of the screen into its place in
+ * `riseMs` while the words and the record come in under it. Ease-out, no overshoot. With Reduce Motion
+ * nothing moves: the postmark and the rest crossfade in, and the haptic stays.
+ */
+export function sendMoment(reduceMotion: boolean) {
+  return {
+    beatMs: 120,
+    landMs: 140,
+    landScale: reduceMotion ? 1 : 1.06,
+    /** The postmark fades in instead of appearing at once. */
+    landFades: reduceMotion,
+    riseMs: reduceMotion ? 0 : 320,
+    /** When the words and the record start coming in, from the landing. */
+    restDelayMs: reduceMotion ? 0 : 140,
+    restMs: reduceMotion ? 140 : 320,
+  } as const;
+}
+
+/** When the sending moment is over, from the landing: the screen then holds its end state plainly. */
+export function sendMomentEnd(m: ReturnType<typeof sendMoment>): number {
+  return Math.max(m.landMs, m.landMs + m.riseMs, m.restDelayMs + m.restMs);
+}
+
+/** The moment's end, as plain values (`settled` in `SentResult`). */
+const SETTLED_ENVELOPE = { opacity: 1, top: 0 } as const;
+const SETTLED_POSTMARK = { opacity: 1, transform: [{ scale: 1 }] };
+const SETTLED_REST = { opacity: 1 } as const;
 
 /** "ISDS ji přijalo 11.11.2026 ve 14:02. …", with the preposition Czech gives that hour. */
 export function sentBody(sentAt: number): string {
@@ -87,11 +128,16 @@ function SentEnvelope({
   recipient,
   sentAt,
   paidCzk,
+  landed,
+  postmarkStyle,
 }: {
   readonly account: DataBoxAccount;
   readonly recipient: Recipient;
   readonly sentAt: number;
   readonly paidCzk: number | null;
+  /** The postmark has landed: it is struck, and the stamp cancelled. */
+  readonly landed: boolean;
+  readonly postmarkStyle: ReturnType<typeof useAnimatedStyle> | typeof SETTLED_POSTMARK;
 }) {
   const theme = useTheme();
   const time = dateAndTime(sentAt)[1];
@@ -109,20 +155,22 @@ function SentEnvelope({
       }}
     >
       {/* The postmark ISDS struck when it took the message; its waves cancel the stamp beside it. */}
-      <View style={{ position: 'absolute', right: 102, top: 20 }} testID="sentPostmark">
-        <Postmark
-          ring={t('send.sent.postmark.ring')}
-          line1={dayMonth(sentAt)}
-          line2={time}
-          size={108}
-          rotate={-6}
-          waves={false}
-        />
-      </View>
+      {landed ? (
+        <Animated.View style={[{ position: 'absolute', right: 102, top: 20 }, postmarkStyle]} testID="sentPostmark">
+          <Postmark
+            ring={t('send.sent.postmark.ring')}
+            line1={dayMonth(sentAt)}
+            line2={time}
+            size={108}
+            rotate={-6}
+            waves={false}
+          />
+        </Animated.View>
+      ) : null}
       {/* What the send cost, stuck in the corner and cancelled. The face is 76 wide where the board's is
           64: Android draws "ZDARMA" 51 and "PLACENÁ" 56 wide, the board's face leaves them 48. */}
       <View style={{ position: 'absolute', right: 14, top: 14, transform: [{ rotate: '2deg' }] }} testID="sentStamp">
-        <Stamp kind="stampSmall" shadow="stampOnEnvelope" cancelled>
+        <Stamp kind="stampSmall" shadow="stampOnEnvelope" cancelled={landed}>
           <YStack width={STAMP_FACE} height={70} paddingVertical={8} paddingHorizontal={8} justifyContent="space-between">
             <Tag color={theme.stampLabel}>
               {(paidCzk != null ? t('send.cost.paid.badge') : t('send.cost.free')).toLocaleUpperCase('cs')}
@@ -254,6 +302,72 @@ export function SentResult({
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { height: screenHeight } = useWindowDimensions();
+  const reduceMotion = useReducedMotion();
+  const [landed, setLanded] = useState(false);
+  /**
+   * The moment is over. Its end is then rendered with plain values: on Android, Reanimated moves
+   * `transform` and `opacity` outside React and dropped the last frames, leaving the envelope 34-48
+   * short of its place (2026-11-12, Obalka_Demo); what React commits itself always lands.
+   */
+  const [settled, setSettled] = useState(false);
+  const land = useSharedValue(0);
+  /** How far below its place the envelope still is; it starts in the middle of the screen. */
+  const rise = useSharedValue(0);
+  /** The envelope is hidden until its first layout says where the middle of the screen is from it. */
+  const placed = useSharedValue(reduceMotion ? 1 : 0);
+  const rest = useSharedValue(0);
+  const started = useRef(false);
+
+  const onEnvelopeLayout = (e: LayoutChangeEvent) => {
+    if (placed.value === 1) {
+      return;
+    }
+    const { y, height } = e.nativeEvent.layout;
+    rise.value = started.current ? 0 : Math.max(0, screenHeight / 2 - (y + height / 2));
+    placed.value = 1;
+  };
+
+  // The moment plays once, when ISDS has accepted the message and this screen appears.
+  useEffect(() => {
+    if (started.current) {
+      return;
+    }
+    const m = sendMoment(reduceMotion);
+    const timer = setTimeout(() => {
+      started.current = true;
+      setLanded(true);
+      haptics.stamp();
+      land.value = withTiming(1, { duration: m.landMs, easing: Easing.out(Easing.cubic) });
+      rise.value = withDelay(m.landMs, withTiming(0, { duration: m.riseMs, easing: Easing.out(Easing.cubic) }));
+      rest.value = withDelay(m.restDelayMs, withTiming(1, { duration: m.restMs, easing: Easing.out(Easing.cubic) }));
+    }, m.beatMs);
+    return () => clearTimeout(timer);
+  }, [reduceMotion, land, rise, rest]);
+
+  // Its own effect, keyed on the landing alone, so nothing else re-running can cancel the end.
+  useEffect(() => {
+    if (!landed) {
+      return;
+    }
+    const end = setTimeout(() => setSettled(true), sendMomentEnd(sendMoment(reduceMotion)));
+    return () => clearTimeout(end);
+  }, [landed, reduceMotion]);
+
+  // Plain numbers for the worklet: it runs on the UI thread, where `sendMoment` does not exist (a call to
+  // it from there crashed the screen on Android, 2026-11-12).
+  const { landFades, landScale } = sendMoment(reduceMotion);
+  const postmarkStyle = useAnimatedStyle(() => ({
+    opacity: landFades ? land.value : 1,
+    transform: [{ scale: landScale + (1 - landScale) * land.value }],
+  }));
+  const envelopeStyle = useAnimatedStyle(() => ({
+    opacity: placed.value,
+    // `top`, not a translate: it goes through layout, so its last frame is never dropped (above).
+    top: rise.value,
+  }));
+  const restStyle = useAnimatedStyle(() => ({ opacity: rest.value }));
+
   return (
     <ScrollView
       contentContainerStyle={{
@@ -265,45 +379,62 @@ export function SentResult({
       }}
       testID="composeSent"
     >
-      <SentEnvelope account={account} recipient={recipient} sentAt={sentAt} paidCzk={paidCzk} />
-      {/* The words stretch to the column and centre themselves: a centred box measured to its own
-          words loses the last one on Android (practices, mobile/lifecycle.md). */}
-      <Hero alignSelf="stretch" textAlign="center" marginTop={28} accessibilityRole="header">
-        {t('send.sent')}
-      </Hero>
-      <YStack width="100%" maxWidth={300} marginTop={8}>
-        <Body alignSelf="stretch" textAlign="center" color={theme.bodyText} textBreakStrategy="balanced">
-          {sentBody(sentAt)}
-        </Body>
-        {reconciled ? (
-          <Caption alignSelf="stretch" textAlign="center" color={theme.textMuted} marginTop={8}>
-            {t('send.sent.reconciled')}
-          </Caption>
-        ) : null}
-      </YStack>
-      <YStack width="100%" marginTop={24}>
-        <SentRecord messageId={messageId} sentAt={sentAt} status={status} />
-      </YStack>
-      <YStack width="100%" marginTop="auto" paddingTop={24} gap={8}>
-        <PressScale fullWidth onPress={onDone} accessibilityLabel={t('send.done')} testID="composeDone">
-          <XStack
-            width="100%"
-            minHeight={54}
-            borderRadius={16}
-            backgroundColor={theme.text}
-            alignItems="center"
-            justifyContent="center"
-            style={{ boxShadow: depth.primaryButton }}
-          >
-            <BodyStrong color={theme.surfaceAlt}>{t('send.done')}</BodyStrong>
-          </XStack>
-        </PressScale>
-        <PressScale fullWidth onPress={onOpenSent} accessibilityLabel={t('send.sent.open')} testID="composeOpenSent">
-          <XStack width="100%" minHeight={50} alignItems="center" justifyContent="center" opacity={opening ? 0.5 : 1}>
-            <BodyStrong color={theme.text}>{t('send.sent.open')}</BodyStrong>
-          </XStack>
-        </PressScale>
-      </YStack>
+      {/* Above the words: it rises over them into its place. */}
+      {/* Measured by a plain view: the animated one only moves. */}
+      <View style={{ zIndex: 1 }} onLayout={onEnvelopeLayout}>
+        <Animated.View style={settled ? SETTLED_ENVELOPE : envelopeStyle}>
+          <SentEnvelope
+            account={account}
+            recipient={recipient}
+            sentAt={sentAt}
+            paidCzk={paidCzk}
+            landed={landed}
+            postmarkStyle={settled ? SETTLED_POSTMARK : postmarkStyle}
+          />
+        </Animated.View>
+      </View>
+      <Animated.View
+        style={[{ flexGrow: 1, alignSelf: 'stretch', alignItems: 'center' }, settled ? SETTLED_REST : restStyle]}
+      >
+        {/* The words stretch to the column and centre themselves: a centred box measured to its own
+            words loses the last one on Android (practices, mobile/lifecycle.md). */}
+        <Hero alignSelf="stretch" textAlign="center" marginTop={28} accessibilityRole="header">
+          {t('send.sent')}
+        </Hero>
+        <YStack width="100%" maxWidth={300} marginTop={8}>
+          <Body alignSelf="stretch" textAlign="center" color={theme.bodyText} textBreakStrategy="balanced">
+            {sentBody(sentAt)}
+          </Body>
+          {reconciled ? (
+            <Caption alignSelf="stretch" textAlign="center" color={theme.textMuted} marginTop={8}>
+              {t('send.sent.reconciled')}
+            </Caption>
+          ) : null}
+        </YStack>
+        <YStack width="100%" marginTop={24}>
+          <SentRecord messageId={messageId} sentAt={sentAt} status={status} />
+        </YStack>
+        <YStack width="100%" marginTop="auto" paddingTop={24} gap={8}>
+          <PressScale fullWidth onPress={onDone} accessibilityLabel={t('send.done')} testID="composeDone">
+            <XStack
+              width="100%"
+              minHeight={54}
+              borderRadius={16}
+              backgroundColor={theme.text}
+              alignItems="center"
+              justifyContent="center"
+              style={{ boxShadow: depth.primaryButton }}
+            >
+              <BodyStrong color={theme.surfaceAlt}>{t('send.done')}</BodyStrong>
+            </XStack>
+          </PressScale>
+          <PressScale fullWidth onPress={onOpenSent} accessibilityLabel={t('send.sent.open')} testID="composeOpenSent">
+            <XStack width="100%" minHeight={50} alignItems="center" justifyContent="center" opacity={opening ? 0.5 : 1}>
+              <BodyStrong color={theme.text}>{t('send.sent.open')}</BodyStrong>
+            </XStack>
+          </PressScale>
+        </YStack>
+      </Animated.View>
     </ScrollView>
   );
 }

@@ -469,6 +469,16 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   - not yet seen on iOS: the seal's face is React Native's own radial gradient, seen on Android; under
     it is `seal-shade`, should a platform not draw the gradient.
 - [ ] T035 Motion: I67-I70, each with its Reduce Motion form.
+  - I68 sending, done 2026-11-12: the stamp uncancelled for a 120 ms beat (the board names none; without
+    it the stamp is never seen whole), the postmark landing at 1.06 to 1 in 140 ms with one firm haptic
+    (`haptics.stamp`, impactHeavy - it replaces the success tap the send made before), its waves
+    cancelling the stamp, then the envelope rising from the middle of the screen into its place in
+    320 ms while the words and the record fade in. The board says the envelope "rises and fades"; the
+    Sent board keeps it, so it rises and stays. Reduce Motion: the postmark and the rest crossfade,
+    the haptic stays. Walked on Obalka_Demo, both ways. On Android Reanimated dropped the last frames
+    of a `transform`, leaving the envelope 34-48 short of its place, so the rise animates `top` and the
+    end is rendered as plain values; and a worklet that called an app function crashed the screen,
+    which `__tests__/lint/worklets.test.ts` now refuses everywhere.
 - [ ] T036 Capture each built screen in demo mode, both themes, and compare with its board.
 
 ## Phase 5: Round 2 on the canvas

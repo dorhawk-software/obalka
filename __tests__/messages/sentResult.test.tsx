@@ -3,7 +3,9 @@
 // delivery record still to fill in. These hold each fact on its object, the Czech preposition, that
 // nothing is drawn as done that ISDS has not reported, and the two ways on.
 
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import RNHaptic from 'react-native-haptic-feedback';
+import { useReducedMotion } from 'react-native-reanimated';
 import { processColor } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { TamaguiProvider } from 'tamagui';
@@ -12,7 +14,7 @@ import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import { darkTheme, lightTheme } from '../../src/theme/theme';
 import { cancellation, postmarkPrint, recordRing } from '../../src/theme/print';
 import { setActiveLocale } from '../../src/i18n/strings';
-import { SentResult, sentBody, sentSteps } from '../../src/features/messages/screens/SentResult';
+import { SentResult, sendMoment, sendMomentEnd, sentBody, sentSteps } from '../../src/features/messages/screens/SentResult';
 import type { DataBoxAccount, Recipient } from '../../src/services/isds/types';
 import type { SentStatus } from '../../src/features/messages/state/sendController';
 
@@ -102,6 +104,7 @@ describe.each([
 
   it('strikes the postmark with the minute ISDS took it, its waves cancelling the stamp in the cancel ink', async () => {
     const view = await mount({}, isDark);
+    await waitFor(() => expect(view.getByTestId('sentPostmark', { includeHiddenElements: true })).toBeTruthy());
     await layOut(view);
     const json = JSON.stringify(view.toJSON());
     expect(json).toContain('ODESLÁNO · DATOVÁ SCHRÁNKA ·');
@@ -175,4 +178,46 @@ it('goes back on "Hotovo" and opens the message on "Ukázat v Odeslaných"', asy
   expect(onDone).toHaveBeenCalledTimes(1);
   await fireEvent.press(view.getByLabelText('Ukázat v Odeslaných'));
   expect(onOpenSent).toHaveBeenCalledTimes(1);
+});
+
+describe('the sending moment (board Motion 2)', () => {
+  const trigger = RNHaptic.trigger as unknown as jest.Mock;
+  beforeEach(() => trigger.mockReset());
+  afterEach(() => (useReducedMotion as jest.Mock).mockReturnValue(false));
+
+  it('shows the stamp uncancelled first, then lands the postmark with one firm thump', async () => {
+    const view = await mount();
+    await layOut(view);
+    const cancelled = () => nodes(view.toJSON()).some(n => n.props.d === cancellation.d);
+    expect(view.queryByTestId('sentPostmark', { includeHiddenElements: true })).toBeNull();
+    expect(cancelled()).toBe(false);
+    expect(trigger).not.toHaveBeenCalled();
+    await waitFor(() => expect(view.getByTestId('sentPostmark', { includeHiddenElements: true })).toBeTruthy());
+    expect(cancelled()).toBe(true);
+    expect(trigger.mock.calls.map(c => c[0])).toEqual(['impactHeavy']);
+  });
+
+  it('keeps the thump under Reduce Motion', async () => {
+    (useReducedMotion as jest.Mock).mockReturnValue(true);
+    const view = await mount();
+    await waitFor(() => expect(view.getByTestId('sentPostmark', { includeHiddenElements: true })).toBeTruthy());
+    expect(trigger.mock.calls.map(c => c[0])).toEqual(['impactHeavy']);
+  });
+
+  it('ends in plain values React commits itself: everything in place, whole and at full strength', async () => {
+    expect(sendMomentEnd(sendMoment(false))).toBe(460);
+    const view = await mount();
+    const flat = (st: unknown): Record<string, unknown> =>
+      Array.isArray(st) ? Object.assign({}, ...st.map(flat)) : ((st ?? {}) as Record<string, unknown>);
+    await waitFor(
+      () => expect(flat(view.getByTestId('sentPostmark', { includeHiddenElements: true }).props.style).transform).toEqual([{ scale: 1 }]),
+      { timeout: 2000 },
+    );
+    expect(flat(view.getByText('Zpráva odeslána').parent?.parent?.props.style).opacity ?? 1).toBe(1);
+  });
+
+  it('lands at 1.06 in 140 ms and rises in 320, ease-out; with Reduce Motion only crossfades', () => {
+    expect(sendMoment(false)).toMatchObject({ landMs: 140, landScale: 1.06, landFades: false, riseMs: 320 });
+    expect(sendMoment(true)).toMatchObject({ landScale: 1, landFades: true, riseMs: 0, restDelayMs: 0 });
+  });
 });

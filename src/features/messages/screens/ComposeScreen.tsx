@@ -476,7 +476,7 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
           setBusy(false);
           switch (out.kind) {
             case 'sent':
-              haptics.success(); // the message went out - a confident success tap
+              // No haptic here: the sent result thumps when its postmark lands (031, board Motion).
               reconcilePending.current = false;
               setSentReconciled(out.reconciled === true);
               setSentAt(Date.now());
