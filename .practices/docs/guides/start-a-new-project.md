@@ -99,8 +99,8 @@ git clone https://github.com/dorhawk-software/practices ~/src/practices
   the message (`check-commit-msg`;
   [common/commits.md](../common/commits.md)).
 - Neither runs a compiler or needs more than git and bash. When Rust files
-  are committed, pre-commit also runs the Rust gate; other languages have
-  no gate in the kit yet (step 7).
+  are committed, pre-commit also runs the Rust gate; when JavaScript or
+  TypeScript files are, the JS/TS gate and the tests (step 7).
 - Commit `.practices/` whole, with `.claude/skills/` and
   `.github/workflows/practices.yml`; `install-hooks` runs once per clone
   ([how it works](how-it-works.md)).
@@ -159,7 +159,7 @@ next to the code, in the same commit ([common/not-now.md](../common/not-now.md))
 | Language | Its page | What it adds |
 | --- | --- | --- |
 | Rust | [Start a Rust project](start-a-rust-project.md) | workspace, lints as errors, cargo deny, pinned toolchain, coverage floors, file size and unsafe checks, the CI workflows, the Claude Code hook |
-| TypeScript / React Native | not yet | comes from Obálka; see [ROADMAP.md](../ROADMAP.md), phase 7 |
+| TypeScript / React Native | [typescript/lints.md](../typescript/lints.md#how-practicesbinlint-runs-it), then [mobile/](../mobile/ci.md) for an app | `tsc --noEmit` and the npm scripts in `NPM_CHECKS` as the gate, the tests on commit, file sizes; no setup page or CI workflow yet ([ROADMAP.md](../ROADMAP.md), phase 7) |
 | Websites | not yet | comes from the dorhawk.software site; see [ROADMAP.md](../ROADMAP.md), phase 7 |
 
 For a language with no page yet, steps 1 to 6 still apply whole. Its own

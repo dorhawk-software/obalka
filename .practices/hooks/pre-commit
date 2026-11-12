@@ -20,7 +20,10 @@ if [ -f package.json ] && printf '%s\n' "$staged" | grep -qE '(\.(ts|tsx|js|jsx|
     NPM_TEST='test'
     # shellcheck source=/dev/null
     [ -f .practices/config ] && . .practices/config
-    if [ -n "$NPM_TEST" ]; then
-        nice -n 19 npm run --silent "$NPM_TEST" || exit 1
+    # Quiet when the tests pass, like the gate: Obálka's 3,078 Jest tests
+    # printed 268 KB into a commit that went through.
+    if [ -n "$NPM_TEST" ] && ! out=$(nice -n 19 npm run --silent "$NPM_TEST" 2>&1); then
+        printf 'npm run %s failed:\n%s\n' "$NPM_TEST" "$out"
+        exit 1
     fi
 fi

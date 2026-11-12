@@ -1,6 +1,6 @@
 ---
 name: adopt-practices
-description: Bring the dorhawk-software/practices kit into a Rust project, or update it - install .practices (lint gate, size, privacy, unsafe, coverage checks, git hooks), copy the starting templates, measure today's coverage and big files so the limits apply from now on, and wire CI to the reusable workflow. Use when the person asks to adopt, set up, install or update "the practices" in a project, or starts a new Rust project.
+description: Bring the dorhawk-software/practices kit into a Rust, TypeScript or JavaScript project, or update it - install .practices (lint gate, size, privacy, unsafe, coverage checks, git hooks), copy the starting templates, measure today's coverage and big files so the limits apply from now on, and wire CI to the reusable workflow. Use when the person asks to adopt, set up, install or update "the practices" in a project, or starts a new project.
 ---
 
 # Adopt the practices in a project
@@ -9,9 +9,13 @@ The full guide, with what you'll see at each step:
 https://github.com/dorhawk-software/practices/blob/main/guides/adopt-in-a-rust-project.md
 (a new project: guides/start-a-new-project.md for any language, then
 guides/start-a-rust-project.md). Follow it; this is the order and the
-rules that matter most. A project in another language gets only the
-language-neutral part, the git hooks (privacy and commit messages):
-start-a-new-project.md step 4.
+rules that matter most. A project with a package.json gets the JS/TS
+gate instead of the Rust one: set `NPM_CHECKS`, `NPM_TEST` and
+`SIZE_EXCLUDE` in `.practices/config` (typescript/lints.md, "How
+`.practices/bin/lint` runs it"); the Rust-only steps below (Cargo.toml
+lints, deny.toml, clippy, coverage floors) don't apply. A project in
+another language gets only the language-neutral part, the git hooks
+(privacy and commit messages): start-a-new-project.md step 4.
 
 ## 1. Get the kit
 

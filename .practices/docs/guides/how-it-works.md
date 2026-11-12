@@ -41,8 +41,12 @@ Every project gets the language-neutral part: `check-private`,
 `check-commit-msg` and the git hooks that run them, with nothing to build
 and no compiler called. A project with a `Cargo.toml` also gets the Rust
 part: the coverage floors file, the templates, and the Rust checks the
-pre-commit hook runs when Rust files are committed. Other languages have
-no checks in the kit yet ([ROADMAP.md](../ROADMAP.md), phase 7).
+pre-commit hook runs when Rust files are committed. A project with a
+`package.json` gets the JavaScript and TypeScript part: `tsc --noEmit`,
+the npm scripts in `NPM_CHECKS` and the tests in `NPM_TEST`, run when JS
+or TS files are committed ([typescript/lints.md](../typescript/lints.md)).
+Other languages have no checks in the kit yet ([ROADMAP.md](../ROADMAP.md),
+phase 7).
 
 The same scripts run in four places: by hand, in the git hooks, in the
 Claude Code hook, and in CI. A check that passes on your machine passes in

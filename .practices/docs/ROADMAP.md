@@ -112,6 +112,9 @@ is the source of everything Rust here; its commit links are in each doc.
     [gates](common/gates.md), [crash reports](common/crash-reports.md),
     and new sections in testing, commits, CLAUDE.md and design before
     build.
+  - [x] The kit's gate in a project with a package.json: tsc, the npm
+    scripts in `NPM_CHECKS`, the tests on commit, file sizes (1.3.0).
+  - [ ] A "start a TypeScript project" guide, like the Rust one.
   - [ ] Actions `ts-setup`, `ts-lint` and a reusable `ts-ci.yml`.
   - [ ] The changelog check (two languages, store limits, checked after
     folding) as a shared tool, filling phase 2's changelog check.

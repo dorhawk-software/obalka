@@ -9,11 +9,18 @@ newest first, in the kinds common/changelog.md describes.
 
 ### New
 
+- **A quiet pre-commit.** It prints the tests' output only when they fail.
+- **The plugin's version is the practices' version.** It said 1.1.0
+  through 1.2.0 and 1.3.0; it now says 1.3.0, and `tests/versions` fails
+  when plugin.json or marketplace.json disagrees with the newest release.
+- **README stays the map.** `tests/readme` fails when "What's in the
+  repository" misses a top-level folder or file, or when a practice, guide
+  or script isn't listed. The tree had gone a release without
+  `typescript/`, `mobile/` and `templates/`.
 - **This repository has a local gate.** `tests/check` runs shellcheck on
   every script, the links and `tests/run`; `.githooks/pre-commit` runs it
   and CI's static job calls it. A shellcheck failure in `tests/run` had
   reached main because the checks ran only in CI.
-
 - **JavaScript and TypeScript projects get the gate.** In a project with a
   package.json, `.practices/bin/lint` runs `tsc --noEmit` (with a
   tsconfig.json) and the npm scripts in `NPM_CHECKS` (default `lint`);
@@ -39,6 +46,8 @@ newest first, in the kinds common/changelog.md describes.
 - **No example headings in `rules.md`.** The digest listed a heading from
   a code example ("Unreleased" in common/changelog.md) as a rule; it
   reads headings outside code blocks only.
+- **The guides and the adopt skill know JS and TS projects.** They still
+  said the kit had no checks for TypeScript.
 
 ## 1.2.0 (2026-11-12)
 

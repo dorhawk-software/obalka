@@ -66,6 +66,7 @@ as a pull request the project's own workflow opens.
 | --- | --- |
 | [Design before build](ui/design-before-build.md) | Proposals with options first; build what was chosen, one to one. |
 | [Window buttons](ui/window-buttons.md) | macOS draws its own on the left and the header makes room; the app's own on the right elsewhere. |
+| [Keyboard shortcuts](ui/keyboard-shortcuts.md) | Bind the system's main modifier (⌘ on a Mac), and show shortcuts the way the system writes them. |
 | [An identity pass](ui/identity-pass.md) | Research the identity first (audience, job, inspiration, market, facts); then three agreed iterations: the identity, a few parts, the whole app re-audited. |
 | [Visual craft](ui/visual-craft.md) | Tone, not outlines; matching stroke ends; one drawing per object; compact; an 11 px floor. |
 
@@ -103,14 +104,23 @@ Coming: `web/` (from the dorhawk.software website). The roadmap lists it.
 common/            practices for any project
 ui/                UI design practices, for any toolkit
 rust/              Rust practices, and templates/ to copy into a project
+typescript/        TypeScript and JavaScript practices
+mobile/            iOS and Android app practices
 guides/            how to use all of it, step by step
 examples/          a project that uses everything (CI runs the kit on it)
 scripts/, hooks/   the kit: synced into a project's .practices/
 bin/install        puts the kit into a project, or updates it
+templates/         files install copies into any project (update workflow, settings)
 actions/           composite GitHub Actions (rust-setup, rust-lint, ...)
-.github/workflows/ reusable workflows (rust-ci, rust-advisories, ...)
+.github/workflows/ reusable workflows (rust-ci, practices-update, ...)
 plugin/            the Claude Code plugin (skills)
-tests/             the kit's own tests (CI runs them on Linux and macOS)
+.claude-plugin/    the plugin's marketplace entry
+tests/             the kit's own tests and this repository's gate
+.githooks/         runs tests/check before each commit
+CHANGELOG.md       what changed, per release
+ROADMAP.md         what's planned and what's missing
+FROM-*.md          what each project brought in, and what's left
+CLAUDE.md          how agents work on this repository
 ```
 
 ## The kit, in a project
@@ -127,14 +137,14 @@ own extra checks in `.practices/lint.d/`.
 
 | Script | Checks |
 | --- | --- |
-| `lint` | rustfmt, clippy (all lints errors), cargo deny, cargo machete, then the checks below and `lint.d/` |
+| `lint` | Rust: rustfmt, clippy (all lints errors), cargo deny, cargo machete; JS/TS: `tsc --noEmit` and the npm scripts in `NPM_CHECKS`; then the checks below and `lint.d/` |
 | `check-private` | no client names, hosts or addresses in files or messages (fails closed) |
-| `check-size` | 700 lines per file, 1000 per integration test, a shrinking allowlist |
+| `check-size` | 700 lines per Rust, TS or JS file, 1000 per test file, a shrinking allowlist |
 | `check-unsafe` | `unsafe` only where the project allows it |
 | `check-coverage` | tests, measured, against per-crate per-OS floors; never lowered |
 | `check-commit-msg` | no session IDs or session links in commit messages |
-| `disk-guard` | the build disk keeps a free-space floor |
-| `claude-hook` | Claude Code's PostToolUse hook: disk-guard, then the gate after cargo builds |
+| `disk-guard` | cargo's build disk keeps a free-space floor |
+| `claude-hook` | Claude Code's PostToolUse hook: disk-guard, then the gate after cargo builds and tests, and after npm or npx tests, tsc and ESLint |
 | `install-hooks` | points git at `.practices/hooks` (pre-commit, commit-msg) |
 | `prune-caches`, `sweep-target` | keep GitHub's 10 GB cache budget for what jobs restore |
 
