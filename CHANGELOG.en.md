@@ -13,6 +13,12 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+### Changed
+
+- **The top of the inbox is the front of an envelope.** The box's name is in the envelope's window
+  under the gold flap; tap the window to switch boxes, with search beside it and Received and Sent
+  below.
+
 ### Fixed
 
 - **An open question no longer shows over the lock screen.** When the app went to the background

@@ -7,7 +7,7 @@
 // and ellipsizes while the ID run is pinned (flexShrink 0).
 
 import { XStack } from '../../../theme/ui';
-import { Meta } from '../../../theme/Typography';
+import { Caption, Meta } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { boxTypeLabel } from '../state/boxType';
 import type { DataBoxAccount } from '../../../services/isds/types';
@@ -15,34 +15,29 @@ import type { DataBoxAccount } from '../../../services/isds/types';
 export function BoxIdentityLine({
   account,
   fontWeight,
+  inWindow = false,
 }: {
   readonly account: Pick<DataBoxAccount, 'dbType' | 'boxId'>;
   readonly fontWeight?: '400' | '500' | '600' | '700';
+  /** In the envelope's window (the inbox header, board InboxA): a size up, in the muted ink. */
+  readonly inWindow?: boolean;
 }) {
   const theme = useTheme();
+  const Line = inWindow ? Caption : Meta;
+  const color = inWindow ? theme.textMuted : theme.textFaint;
+  const weight = inWindow ? fontWeight ?? '400' : fontWeight;
   const type = boxTypeLabel(account.dbType);
   const id = `ID ${account.boxId}`;
   return (
     <XStack alignItems="center" minWidth={0}>
       {type ? (
-        <Meta
-          fontWeight={fontWeight}
-          color={theme.textFaint}
-          numberOfLines={1}
-          flexShrink={1}
-          minWidth={0}
-        >
+        <Line fontWeight={weight} color={color} numberOfLines={1} flexShrink={1} minWidth={0}>
           {type}
-        </Meta>
+        </Line>
       ) : null}
-      <Meta
-        fontWeight={fontWeight}
-        color={theme.textFaint}
-        numberOfLines={1}
-        flexShrink={0}
-      >
+      <Line fontWeight={weight} color={color} numberOfLines={1} flexShrink={0}>
         {type ? ` · ${id}` : id}
-      </Meta>
+      </Line>
     </XStack>
   );
 }

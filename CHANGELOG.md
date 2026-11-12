@@ -13,6 +13,11 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+### Změněno
+
+- **Horní část schránky je přední strana obálky.** Jméno schránky je v okénku obálky pod zlatou
+  chlopní; klepnutím na okénko přepnete schránku, vedle je hledání a pod ním Přijaté a Odeslané.
+
 ### Opraveno
 
 - **Otevřený dotaz nezůstane nad zamčenou aplikací.** Když aplikace odešla do pozadí s otevřeným

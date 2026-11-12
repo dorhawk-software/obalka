@@ -276,12 +276,26 @@ describe('the printed objects', () => {
     expect(contrast(darkTheme.window, darkTheme.envelope)).toBeCloseTo(2.47, 2);
   });
 
+  // The inbox header prints its controls on the envelope: an unselected segment's words lie on the
+  // well, which lies on the blue; the search glyph's white ink on the round button's paper.
+  it.each(THEMES)('%s: words and glyphs printed on the envelope reach AA there', (_name, t) => {
+    const well = over(t.envelopeWell, t.envelope);
+    expect(contrast(over(t.envelopeInkFaint, well), well)).toBeGreaterThanOrEqual(AA);
+    const button = over(t.envelopeButton, t.envelope);
+    expect(contrast(t.onSolid, button)).toBeGreaterThanOrEqual(NON_TEXT);
+  });
+
+  it.each(THEMES)('%s: the news dot on Odeslané is told from the well it sits in', (_name, t) => {
+    expect(contrast(t.flap, over(t.envelopeWell, t.envelope))).toBeGreaterThanOrEqual(NON_TEXT);
+  });
+
   it.each(THEMES)('%s: the flap is told from the envelope under it', (_name, t) => {
     expect(contrast(t.flap, t.envelope)).toBeGreaterThanOrEqual(NON_TEXT);
   });
 
   it('keeps the envelope, its flap, the stamp and the seal the same in both themes', () => {
-    const fixed = ['envelope', 'envelopeInkSoft', 'envelopeFold', 'flap', 'flapFrame', 'lining', 'stampPaper',
+    const fixed = ['envelope', 'envelopeInkSoft', 'envelopeFold', 'envelopeWell', 'envelopeButton',
+      'envelopeInkFaint', 'envelopePlane', 'printShade', 'flap', 'flapFrame', 'lining', 'stampPaper',
       'stampFrame', 'stampInk', 'stampLabel', 'cancelInk', 'slipMark', 'sealLight', 'sealShade'] as const;
     for (const key of fixed) {
       expect([key, darkTheme[key]]).toEqual([key, lightTheme[key]]);

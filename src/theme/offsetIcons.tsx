@@ -258,8 +258,8 @@ function shape(s: Shape, key: number) {
 }
 
 /**
- * An offset glyph. `color` is the ink (a theme token at the call site); `plane` picks the blue plane
- * or, under a glyph that sits on gold, the gold one.
+ * An offset glyph. `color` is the ink (a theme token at the call site); `plane` picks the blue plane,
+ * the gold one under a glyph that sits on gold, or the envelope's under one printed on the envelope.
  */
 export function OffsetIcon({
   name,
@@ -270,7 +270,7 @@ export function OffsetIcon({
   readonly name: OffsetGlyphName;
   readonly size?: number;
   readonly color: string;
-  readonly plane?: 'blue' | 'gold';
+  readonly plane?: 'blue' | 'gold' | 'envelope';
 }) {
   const theme = useTheme();
   const glyph: Glyph = OFFSET_GLYPHS[name];
@@ -284,7 +284,9 @@ export function OffsetIcon({
       importantForAccessibility="no-hide-descendants"
     >
       <G
-        fill={plane === 'gold' ? theme.iconPlaneGold : theme.iconPlane}
+        fill={
+          plane === 'gold' ? theme.iconPlaneGold : plane === 'envelope' ? theme.envelopePlane : theme.iconPlane
+        }
         transform={`translate(${off} ${off})`}
       >
         {glyph.plane.map(shape)}

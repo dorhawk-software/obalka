@@ -21,6 +21,8 @@ export const depth = {
   fab: '0px 8px 20px rgba(184,128,0,0.4)',
   /** The selected segment in a segmented control. */
   segment: '0px 1px 2px rgba(33,27,18,0.12)',
+  /** The same, printed on the envelope (the inbox header): its shade is the envelope's ink. */
+  segmentOnEnvelope: '0px 1px 2px rgba(9,30,64,0.25)',
   /** A switch's knob. */
   knob: '0px 1px 3px rgba(0,0,0,0.25)',
   /** A bottom sheet's edge in dark mode: `lg`'s white bevel is a harsh line against the dark scrim. */

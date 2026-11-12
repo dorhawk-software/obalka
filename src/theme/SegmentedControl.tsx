@@ -28,6 +28,8 @@ const PAD = 3; // track padding
 const GAP = isAndroid ? 3 : 2; // gap between segments
 const SEG_H = 34; // segment height
 const RADIUS = 8; // segment / indicator radius
+// Printed on the envelope (the inbox header, board InboxA): a deeper well with larger segments.
+const ON_ENVELOPE = { segH: 38, radius: 9, track: 13, fontSize: 14 } as const;
 const DOT = 7; // the unseen-news dot after a label - the unread dot's size
 
 
@@ -48,13 +50,19 @@ export function SegmentedControl<K extends string>({
   value,
   onChange,
   testID = 'segmented',
+  tone = 'paper',
 }: {
   readonly segments: ReadonlyArray<Segment<K>>;
   readonly value: K;
   readonly onChange: (key: K) => void;
   readonly testID?: string;
+  /** `envelope`: printed on the envelope's blue (the inbox header) rather than on the paper. */
+  readonly tone?: 'paper' | 'envelope';
 }) {
   const theme = useTheme();
+  const onEnvelope = tone === 'envelope';
+  const segH = onEnvelope ? ON_ENVELOPE.segH : SEG_H;
+  const segRadius = onEnvelope ? ON_ENVELOPE.radius : RADIUS;
   const ripple = { color: withAlpha(theme.blue, 0.16), borderless: false, foreground: true };
   const n = segments.length;
   const selectedIndex = Math.max(
@@ -89,8 +97,8 @@ export function SegmentedControl<K extends string>({
 
   return (
     <XStack
-      backgroundColor={theme.surfaceSunken}
-      borderRadius={11}
+      backgroundColor={onEnvelope ? theme.envelopeWell : theme.surfaceSunken}
+      borderRadius={onEnvelope ? ON_ENVELOPE.track : 11}
       padding={PAD}
       gap={GAP}
       testID={testID}
@@ -107,14 +115,14 @@ export function SegmentedControl<K extends string>({
             position: 'absolute',
             left: PAD,
             top: PAD,
-            height: SEG_H,
+            height: segH,
             width: segW,
-            borderRadius: RADIUS,
+            borderRadius: segRadius,
             transform: [{ translateX: x }],
             // Design: the selected segment is a raised `card` pill with a soft warm shadow - identical
             // on both platforms (segRecvBg = c.card, shadow 0 1px 2px rgba(33,27,18,.12)). No blue fill.
             backgroundColor: theme.surface,
-            boxShadow: depth.segment,
+            boxShadow: onEnvelope ? depth.segmentOnEnvelope : depth.segment,
           }}
         />
       ) : null}
@@ -131,11 +139,11 @@ export function SegmentedControl<K extends string>({
             }}
             android_ripple={ripple}
             // A segment fills its share of the track, so only its 34pt height is short of the target.
-            hitSlop={touchSlop({ height: SEG_H })}
+            hitSlop={touchSlop({ height: segH })}
             style={({ pressed }) => ({
               flex: 1,
-              height: SEG_H,
-              borderRadius: RADIUS,
+              height: segH,
+              borderRadius: segRadius,
               alignItems: 'center',
               justifyContent: 'center',
               overflow: 'hidden', // clip the Android ripple to the rounded segment
@@ -149,9 +157,9 @@ export function SegmentedControl<K extends string>({
           >
             <XStack>
               <Text
-                fontSize={13}
+                fontSize={onEnvelope ? ON_ENVELOPE.fontSize : 13}
                 fontWeight="700"
-                color={selected ? theme.text : theme.textMuted}
+                color={selected ? theme.text : onEnvelope ? theme.envelopeInkFaint : theme.textMuted}
               >
                 {s.label}
               </Text>
@@ -165,7 +173,8 @@ export function SegmentedControl<K extends string>({
                   width={DOT}
                   height={DOT}
                   borderRadius={999}
-                  backgroundColor={theme.blue}
+                  // On the envelope a blue dot would vanish into it; the flap's gold is the news there.
+                  backgroundColor={onEnvelope ? theme.flap : theme.blue}
                   testID={`${testID}-${s.key}-dot`}
                 />
               ) : null}

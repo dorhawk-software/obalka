@@ -158,6 +158,15 @@ export interface Theme {
   envelopeInkSoft: string;
   /** The fold line drawn across an envelope-shaped avatar tile (a read sender, a box). */
   envelopeFold: string;
+  /** Controls printed on the envelope (the inbox header): the segmented track's well, a round
+   * button's paper, an unselected segment's words, and the plane under an offset glyph there. */
+  envelopeWell: string;
+  envelopeButton: string;
+  envelopeInkFaint: string;
+  envelopePlane: string;
+  /** The black of a shade printed over an object (the flap's lower half). Opaque; the drawing sets
+   * how much of it (`print.ts`). */
+  printShade: string;
   /** The flap, and the stamp-shaped compose button: the envelope's gold, fixed in both appearances. */
   flap: string;
   /** The frame printed inside the gold stamp of the compose button. */
@@ -238,6 +247,11 @@ export const lightTheme: Theme = {
   envelopeCrease: 'rgba(9,30,64,0.22)',
   envelopeInkSoft: 'rgba(255,255,255,0.92)',
   envelopeFold: 'rgba(255,255,255,0.55)',
+  envelopeWell: 'rgba(9,30,64,0.3)',
+  envelopeButton: 'rgba(255,255,255,0.14)',
+  envelopeInkFaint: 'rgba(255,255,255,0.82)',
+  envelopePlane: 'rgba(255,255,255,0.2)',
+  printShade: '#000000',
   flap: '#FFC305',
   flapFrame: 'rgba(33,27,18,0.28)',
   lining: '#9EC0EA',
@@ -314,6 +328,11 @@ export const darkTheme: Theme = {
   envelopeCrease: 'rgba(9,30,64,0.22)',
   envelopeInkSoft: 'rgba(255,255,255,0.92)',
   envelopeFold: 'rgba(255,255,255,0.55)',
+  envelopeWell: 'rgba(9,30,64,0.3)',
+  envelopeButton: 'rgba(255,255,255,0.14)',
+  envelopeInkFaint: 'rgba(255,255,255,0.82)',
+  envelopePlane: 'rgba(255,255,255,0.2)',
+  printShade: '#000000',
   flap: '#FFC305',
   flapFrame: 'rgba(33,27,18,0.28)',
   lining: '#9EC0EA',

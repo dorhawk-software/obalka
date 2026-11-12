@@ -108,6 +108,14 @@ export const postmarkPrint = {
 export const envelopeShape = {
   radius: 20,
   windowRadius: 14,
+  /** The inbox header's lower corners: the envelope front the list hangs from (InboxA). */
+  headerRadius: 22,
+  /**
+   * The inbox header's flap, across the top down to the window: the sides end `side` above the
+   * window, the point `point` above it, `half` either side of the middle (InboxA: 390 x 70). Lit from
+   * the top: `printSheen` white at the top to `printShade` black at the bottom, at these opacities.
+   */
+  headerFlap: { side: 20, point: 3, shoulder: 7, half: 16, sheen: 0.12, shade: 0.07 },
   /** The two folds, on the message envelope's 358 x 150 sheet stretched over the envelope (Detail). */
   creases: { width: 358, height: 150, d: 'M0 150 L150 90 M358 150 L208 90', stroke: 1.5 },
 } as const;

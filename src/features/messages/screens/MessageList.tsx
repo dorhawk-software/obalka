@@ -25,29 +25,23 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Button, XStack, YStack } from '../../../theme/ui';
-import { Badge, Body, BodyStrong, Heading, Label, Meta, Numeral, Small, SmallStrong, Subheading, Tag, Value } from '../../../theme/Typography';
+import { Badge, Body, Heading, Label, Meta, Numeral, Small, SmallStrong, Subheading, Tag, Value } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   AlertIcon,
   ArrowRightIcon,
-  ChevronDownIcon,
   ChevronRightIcon,
   CloudOffGlyph,
   ContentErasedIcon,
   EditIcon,
   HelpIcon,
-  LayersIcon,
   MailGlyph,
-  SearchIcon,
   SendGlyph,
   StatusAcceptedIcon,
   TimerIcon,
   VaultIcon,
   WifiOffIcon,
 } from '../../../theme/icons';
-import { TestTag } from '../../accounts/screens/BoxRow';
-import { BoxIdentityLine } from '../../accounts/screens/BoxIdentityLine';
-import { SegmentedControl } from '../../../theme/SegmentedControl';
 import { Fab, useFabClearance } from '../../../theme/Fab';
 import { EmptyState } from '../../../theme/EmptyState';
 import { Skeleton } from '../../../theme/Skeleton';
@@ -87,7 +81,6 @@ import {
 import { DeliveryStateIcon } from './DeliveryStateIcon';
 import { haptics } from '../../../services/haptics';
 import { reportFailure } from '../../../services/telemetry/telemetry';
-import { useHeaderTop } from '../../../theme/useHeaderTop';
 import { touchSlop } from '../../../theme/touchTarget';
 import { t, plural } from '../../../i18n/strings';
 import { FAQ_LEGEND_ID, type FaqId } from '../../../content/faq';
@@ -112,8 +105,8 @@ import {
 import type { BoxAttention } from '../state/crossBox';
 import { CrossBoxLine, crossBoxSummary } from './CrossBoxLine';
 import { BoxPill } from './BoxPill';
+import { InboxHeader } from './InboxHeader';
 import { draftsBus } from '../state/draftsBus';
-import { boxColor } from '../../../theme/boxColor';
 
 /**
  * The reminder feed is empty until US2 stores any. Module-level so the identity is stable - a fresh
@@ -459,7 +452,6 @@ export function MessageList({
   // switcher). No test-env banner here: it would just say the same thing twice. The banner is now
   // reserved for the message detail, the one place with no other environment cue.
   const isTestBox = account.host === 'czebox';
-  const headerTop = useHeaderTop();
   // How far the scroll has to end above the screen's bottom edge to clear the compose FAB - asked of
   // the FAB rather than guessed, so the two cannot drift apart.
   const fabClearance = useFabClearance();
@@ -891,144 +883,19 @@ export function MessageList({
 
   const header = (
     <YStack>
-      {/* Design: ONE unified sunken bar - box selector | 1px divider | search - under a surfaceAlt
-          header with a hairline. The design dropped the wordmark row from the inbox entirely. */}
-      <YStack
-        backgroundColor={theme.surfaceAlt}
-        borderBottomWidth={1}
-        borderColor={theme.border}
-        paddingTop={headerTop}
-        paddingHorizontal={12}
-        paddingBottom={10}
-      >
-        <XStack
-          alignItems="stretch"
-          backgroundColor={theme.surfaceSunken}
-          borderRadius={14}
-          overflow="hidden"
-        >
-          <XStack
-            flex={1}
-            minWidth={0}
-            alignItems="center"
-            gap={12}
-            paddingVertical={10}
-            paddingHorizontal={12}
-            pressStyle={{ opacity: 0.65 }}
-            onPress={onOpenSwitcher}
-            accessibilityRole="button"
-            accessibilityLabel={account.alias ?? account.label}
-            testID="boxSwitcher"
-          >
-            {unified ? (
-              // An OUTLINED tile with a glyph, never an avatar: the switcher makes the same
-              // distinction, and a merged view is not an identity. See `UnifiedRow`.
-              <YStack
-                width={36}
-                height={36}
-                borderRadius={11}
-                borderWidth={1}
-                borderColor={theme.borderStrong}
-                backgroundColor={theme.surface}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <LayersIcon size={18} color={theme.textMuted} />
-              </YStack>
-            ) : (
-              <Avatar
-                name={account.alias ?? account.label}
-                color={boxColor(account)}
-                size={36}
-              />
-            )}
-            <YStack flex={1} minWidth={0}>
-              <XStack alignItems="center" gap={6}>
-                <BodyStrong
-                  color={theme.text}
-                  numberOfLines={1}
-                  flexShrink={1}
-                  // `flexShrink` alone will not take a flex child below its content width, so at a
-                  // large text size the name overran the "Testovací" chip and its own ellipsis was
-                  // sliced down the middle by the chip's edge. The zero floor is what lets it
-                  // actually shrink, and the chip must refuse to.
-                  minWidth={0}
-                  // …and 2dp of padding, because the box then clips its own ellipsis: RN measures
-                  // the shrunk Text a hair narrower than the glyph it draws, so the third dot of
-                  // "Ondřej Ši…" was sliced vertically at the box edge. `TestTag` in this same
-                  // file hit the identical clipping on "Testovac[í]" and notes it there.
-                  paddingRight={2}
-                >
-                  {unified ? t('unified.title') : account.alias ?? account.label}
-                </BodyStrong>
-                {!unified && isTestBox ? <TestTag /> : null}
-              </XStack>
-              {unified ? (
-                // A box says "{legal form} · ID {boxId}". The merged view says what it merges and
-                // how much of it wants reading - a sentence no single box can produce about itself.
-                <Meta color={theme.textFaint} numberOfLines={1}>
-                  {[
-                    t(`unified.subtitle.${plural(unified.accounts.length)}`, {
-                      n: unified.accounts.length,
-                    }),
-                    unreadShown > 0
-                      ? t(`attn.unread.${plural(unreadShown)}`, { n: unreadShown })
-                      : null,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
-                </Meta>
-              ) : (
-                <BoxIdentityLine account={account} />
-              )}
-            </YStack>
-            <ChevronDownIcon size={18} color={theme.textFaint} />
-          </XStack>
-          {/* Hairline splitting the selector from search, inset 9px top/bottom (design). */}
-          <YStack
-            width={1}
-            marginVertical={10}
-            backgroundColor={theme.borderStrong}
-          />
-          <XStack
-            width={56}
-            alignItems="center"
-            justifyContent="center"
-            pressStyle={{ opacity: 0.6 }}
-            onPress={onSearch}
-            accessibilityRole="button"
-            accessibilityLabel={t('search.title')}
-            testID="openSearch"
-          >
-            <SearchIcon size={21} color={theme.textMuted} />
-          </XStack>
-        </XStack>
-        {/* Přijaté | Odeslané - switch the box's folder (008). */}
-        <YStack marginTop={10}>
-          <SegmentedControl
-            segments={[
-              { key: 'received' as const, label: t('messages.segment.received') },
-              {
-                key: 'sent' as const,
-                label: t('messages.segment.sent'),
-                // 014 FR-009: a sent message delivered, served by fiction or found undeliverable since
-                // this Odeslané was last looked at. Never on the tab being looked at.
-                dot: sentNews > 0 && folder !== 'sent',
-                accessibilityLabel:
-                  sentNews > 0 && folder !== 'sent'
-                    ? t(`messages.segment.sent.news.${plural(sentNews)}`, { n: sentNews })
-                    : undefined,
-              },
-            ]}
-            value={folder}
-            onChange={setFolder}
-            testID="messagesFolder"
-          />
-        </YStack>
-      </YStack>
+      <InboxHeader
+        account={account}
+        unifiedCount={unified ? unified.accounts.length : null}
+        unreadShown={unreadShown}
+        isTestBox={isTestBox}
+        folder={folder}
+        onFolder={setFolder}
+        sentNews={sentNews}
+        onOpenSwitcher={onOpenSwitcher}
+        onSearch={onSearch}
+      />
       {/* Slim sync bar: a RESERVED 3px strip that only animates while syncing (no layout jump). */}
       <SyncProgressBar active={syncing} />
-
     </YStack>
   );
 

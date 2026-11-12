@@ -282,7 +282,9 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
   (`rgba(9,30,64,.22)`). Words on it are `on-solid`; its secondary words and the postmark are
   `envelope-ink-soft` (`rgba(255,255,255,.92)`, 5.51:1 composited). As an avatar tile (a box, a
   sender) it is a small envelope: a sealed gold flap while unread, else an `envelope-fold` line
-  (`rgba(255,255,255,.55)`).
+  (`rgba(255,255,255,.55)`). The inbox header is its front (lower corners 22, the flap shaded by
+  `print-shade`); controls printed on it take `envelope-well`, `envelope-button`, `envelope-ink-faint`
+  and `envelope-plane`.
 - **Flap** (`#FFC305`, fixed): the envelope's gold, and the stamp-shaped compose button. Words on it
   are `on-gold`; the compose stamp's frame is `flap-frame` (`rgba(33,27,18,.28)`).
 - **Window** (`#FFFDF8` / `#2A251E`): who it is addressed to - the box switcher, the recipient in
