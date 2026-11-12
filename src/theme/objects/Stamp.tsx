@@ -1,6 +1,8 @@
 // The stamp (031): what a send costs - and, in the flap's gold, the compose button. Paper with a
 // printed frame, its margin perforated as the canvas cuts it (`stampHoles`). The shadow is a filter,
-// so it follows the holes.
+// so it follows the holes. The frame is printed in the same drawing as a 1-wide stroke: as a View
+// border in its translucent ink, Android drew it 6 px wide on a 2.625x screen where an opaque one
+// drew 3 (seen on the emulator, 2026-11-12).
 
 import type { ReactNode } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
@@ -73,12 +75,20 @@ export function Stamp({
               height={size.height - 2 * geometry.inset}
               fill={fill}
             />
+            {/* The printed frame: the canvas's 1px border just inside the content box. */}
+            <Rect
+              transform={[{ translateX: geometry.inset + 0.5 }, { translateY: geometry.inset + 0.5 }]}
+              width={size.width - 2 * geometry.inset - 1}
+              height={size.height - 2 * geometry.inset - 1}
+              fill="none"
+              stroke={paper === 'flap' ? theme.flapFrame : theme.stampFrame}
+              strokeWidth={1}
+            />
           </G>
         </Svg>
       ) : null}
-      <View style={{ borderWidth: 1, borderColor: paper === 'flap' ? theme.flapFrame : theme.stampFrame }}>
-        {children}
-      </View>
+      {/* The frame's width, kept so the children sit inside it as they did inside the border. */}
+      <View style={{ padding: 1 }}>{children}</View>
     </View>
   );
 }

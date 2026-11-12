@@ -6,6 +6,8 @@
 /** The offset glyphs: a 1.75 ink stroke on a 24 grid, the plane printed 1.3 off register. */
 export const offsetPrint = {
   stroke: 1.75,
+  /** The compose stamp's glyph, a touch heavier on the gold (board InboxA). */
+  strokeOnFlap: 1.9,
   planeOffset: 1.3,
 } as const;
 

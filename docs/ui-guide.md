@@ -65,8 +65,8 @@ shadow.** Don't give the same component pattern different elevation on different
 - Group label→field tight (8), separate groups loose (20–24).
 - **Radius scale** (keep to these - don't invent in-between values; *amended 2026-09-14* to the
   shipped steps): `8` chips · `11` row tiles, avatars, segmented track · `12` search field · `13`
-  in-content buttons · `14` cards, form inputs, buttons · `16` FAB (and the Welcome and Lock primary
-  buttons) · `20` dialog · `24` sheet top · `999` pills, dots and circular icon buttons. Circles use
+  in-content buttons · `14` cards, form inputs, buttons · `16` the Welcome and Lock primary
+  buttons (the compose button is a stamp since 031, with no radius) · `20` dialog · `24` sheet top · `999` pills, dots and circular icon buttons. Circles use
   `999` (or width/2).
 - **Border width:** resting surfaces (cards, dialogs, inputs, inset panels) are a **hairline `1`**;
   reserve `1.5`+ for a **selected/emphasis** state (and keep it constant across select/unselect so the

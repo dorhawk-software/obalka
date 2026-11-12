@@ -17,8 +17,6 @@ export const depth = {
   primaryButton: '0px 6px 16px rgba(33,27,18,0.25)',
   /** The snackbar, floating over content. */
   snackbar: '0px 8px 24px rgba(33,27,18,0.32)',
-  /** The compose FAB, a gold glow. */
-  fab: '0px 8px 20px rgba(184,128,0,0.4)',
   /** The selected segment in a segmented control. */
   segment: '0px 1px 2px rgba(33,27,18,0.12)',
   /** The same, printed on the envelope (the inbox header): its shade is the envelope's ink. */

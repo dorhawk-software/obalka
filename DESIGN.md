@@ -137,7 +137,7 @@ rounded:
   field: "12px"
   button: "13px"
   card: "14px"
-  fab: "16px"
+  primary: "16px"
   sheet: "24px"
   pill: "999px"
 spacing:
@@ -172,11 +172,10 @@ components:
     rounded: "{rounded.card}"
     height: "48px"
   fab:
-    backgroundColor: "{colors.gold}"
+    backgroundColor: "{colors.flap}"
     textColor: "{colors.on-gold}"
-    rounded: "{rounded.fab}"
-    height: "54px"
-    padding: "0 20px"
+    height: "60px"
+    padding: "7px"
   card:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
@@ -255,12 +254,12 @@ A warm paper ramp with two accents - a brand blue that acts, and a gold that not
   marks. It does not follow the theme, which is precisely why the glyph on it uses `on-solid`.
 
 ### Secondary
-- **Gold** (`#E8A100`, both appearances): the compose FAB, the unread dot and count badge, the active
+- **Gold** (`#E8A100`, both appearances): the unread dot and count badge, the active
   box's check mark, and the accent of the fiction and paid-send chips. Its scarcity is the point -
   see The One Job Rule.
 - **Gold Ink** (`#A87400` light / `#E8A100` dark): gold at a strength that can be *seen*. Plain gold
   is 2.17:1 on `surface` in light mode, so anything gold that carries meaning rather than decoration
-  - the unread dot's ring, the attention numeral, the FAB's own edge - takes this instead.
+  - the unread dot's ring, the attention numeral - takes this instead.
 - **Violet** (`#5A4CA8` / `#B0A4EE`): the draft marker, and one of the six avatar hues.
 
 ### Neutral
@@ -290,8 +289,9 @@ edge) follows the appearance. `contrast.test.ts` holds both halves of that sente
 
 ### Named Rules
 
-**The One Job Rule.** Solid gold marks unread (the dot and the count badge), the active box's check
-mark and the compose FAB; `gold-ink` draws the attention numeral. The gold chip tones
+**The One Job Rule.** Solid gold marks unread (the dot and the count badge) and the active box's check
+mark; `gold-ink` draws the attention numeral. The compose button is a stamp in the flap's gold, an
+object rather than a mark (docs/printed-objects.md). The gold chip tones
 (`statusFiction`, `fikceAmber`, `costPaid`) mean delivery by fiction or a paid send, which is why a
 decorative glyph is never gold (016). Soft gold carries the test banner and pill, the paid-cost card
 and the paid-send confirmation, the missing-attachments notice, and the pressed add-box row in the
@@ -494,8 +494,6 @@ Shadow is reserved for objects that float, plus a few brand moments:
   ambient one - which is why it reads in both appearances: the dark shadows carry in light mode, the
   top highlight carries in dark. Bottom sheets in dark mode swap it for a faint highlight and a soft
   ambient lift.
-- **FAB** (`0 8px 20px rgba(184,128,0,.4)`): a gold-tinted lift, atmosphere rather than boundary.
-  The FAB's actual edge is a 1px `gold-ink` outline, because a shadow is not a boundary.
 - **Snackbar** (`0 8px 24px rgba(33,27,18,.32)`): the toast that floats above the content.
 - **Emblem** (`0 14px 34px rgba(33,50,90,.32)`): the 96dp brand tile on a success screen and the
   104dp tile on the lock screen.
@@ -536,7 +534,7 @@ corners; they get 11 and 14, because those are the steps.
 13  in-content buttons (download or re-download attachments, add an attachment, the list's retry),
     attachment and draft rows, the recipient card
 14  cards, form inputs, dialog and form buttons, the 52dp detail avatar  ← most-used radius in the app
-16  the FAB, the Welcome and Lock primary buttons
+16  the Welcome and Lock primary buttons
 20  dialog container
 24  bottom sheets (top corners only)
 999 fully round - switch track, unread dot, icon buttons, radio marks
@@ -552,7 +550,7 @@ is its own object and keeps its step from the list above.
 Borders are 1px hairlines almost everywhere; 1.5px on a focused input; 2px on a radio ring and on the
 badge cut-out that separates an unread count from the surface behind it.
 
-The recurring silhouette is the **rounded square** - the FAB, the avatar, the brand tile and the icon
+The recurring silhouette is the **rounded square** - the avatar, the brand tile and the icon
 wells are all the same family of shape at different sizes. Circles are reserved for controls that are
 genuinely round in the platform sense: switch tracks, radio marks, icon buttons.
 

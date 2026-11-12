@@ -22,6 +22,7 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   vidět okraj druhé obálky. Den a den v týdnu stojí jednou u první zprávy dne.
 - **Řádek o ostatních schránkách je obyčejná věta.** "V ostatních schránkách **2 nepřečtené**" bez
   barevných teček a čar; na úzkém displeji se zkrátí úvod na "Jinde:", ne zpráva sama.
+- **Tlačítko Napsat je zlatá poštovní známka.** Má perforovaný okraj a natištěný rámeček.
 
 ### Opraveno
 

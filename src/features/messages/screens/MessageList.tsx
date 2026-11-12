@@ -1447,13 +1447,7 @@ export function MessageList({
       {/* Compose in the merged view too since 027 (US2). Every send belongs to a legal identity, so
           from here compose asks which box first - `SenderGate` - rather than guessing one. */}
       <Fab
-        icon={<EditIcon size={21} color={theme.onGold} />}
         label={t('messages.compose')}
-        labelColor={theme.onGold}
-        tone={theme.gold}
-        // Gold on the paper is 1.91:1, so the button's own edge is the thing 1.4.11 cannot find. The
-        // shadow is atmosphere, not a boundary. (Draws nothing in dark mode.)
-        toneBorder={theme.goldInk}
         onPress={onCompose}
         accessibilityLabel={t('send.title')}
         testID="compose"

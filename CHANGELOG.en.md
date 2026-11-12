@@ -25,6 +25,7 @@ What changed in each Obálka release, written for the people using it. The newes
 - **The line about your other boxes is a plain sentence.** "In your other boxes **2 unread**",
   without the coloured dots and rules; on a narrow screen the opening shortens to "Elsewhere:", never
   the news itself.
+- **The Compose button is a gold postage stamp.** It has a perforated edge and a printed frame.
 
 ### Fixed
 

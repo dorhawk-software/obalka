@@ -18,7 +18,9 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
   `print-shade`); controls printed on it take `envelope-well`, `envelope-button`, `envelope-ink-faint`
   and `envelope-plane`.
 - **Flap** (`#FFC305`, fixed): the envelope's gold, and the stamp-shaped compose button. Words on it
-  are `on-gold`; the compose stamp's frame is `flap-frame` (`rgba(33,27,18,.28)`).
+  are `on-gold`; the compose stamp's frame is `flap-frame` (`rgba(33,27,18,.28)`), printed in the
+  stamp's drawing (a translucent View border drew twice as wide on Android), and its glyph sits on a
+  `flap-plane` (`rgba(255,255,255,.55)`) with a 1.9 line.
 - **Window** (`#FFFDF8` / `#2A251E`): who it is addressed to - the box switcher, the recipient in
   compose (also its search field), the login name while signing in. Its edge is an inset shade (the
   envelope's paper over it) and a film that catches the light, over a `window-glint` cast

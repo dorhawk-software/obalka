@@ -270,7 +270,7 @@ export function OffsetIcon({
   readonly name: OffsetGlyphName;
   readonly size?: number;
   readonly color: string;
-  readonly plane?: 'blue' | 'gold' | 'envelope';
+  readonly plane?: 'blue' | 'gold' | 'envelope' | 'flap';
 }) {
   const theme = useTheme();
   const glyph: Glyph = OFFSET_GLYPHS[name];
@@ -285,7 +285,13 @@ export function OffsetIcon({
     >
       <G
         fill={
-          plane === 'gold' ? theme.iconPlaneGold : plane === 'envelope' ? theme.envelopePlane : theme.iconPlane
+          plane === 'gold'
+            ? theme.iconPlaneGold
+            : plane === 'envelope'
+              ? theme.envelopePlane
+              : plane === 'flap'
+                ? theme.flapPlane
+                : theme.iconPlane
         }
         transform={`translate(${off} ${off})`}
       >
@@ -294,7 +300,7 @@ export function OffsetIcon({
       <G
         fill="none"
         stroke={color}
-        strokeWidth={offsetPrint.stroke}
+        strokeWidth={plane === 'flap' ? offsetPrint.strokeOnFlap : offsetPrint.stroke}
         strokeLinecap="round"
         strokeLinejoin="round"
       >

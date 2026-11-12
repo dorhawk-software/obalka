@@ -384,7 +384,23 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 
 ## Phase 4: Build the agreed boards, one to one
 
-- [ ] T030 Inbox (I14, I17, I18, I25, I28).
+- [x] T030 Inbox (I14, I17, I18, I25, I28). Done 2026-11-12 in four commits: the header (the envelope's
+  front, the box in its window), the rows (`InboxRows.tsx`: the attention block's sheets and the register
+  by day, new `Day` role), the line about the other boxes, and the compose stamp (`Fab.tsx`). Checked on
+  the `Obalka_Demo` emulator in both themes against board InboxA, rendered at 3x. Where the build differs
+  from the board, and why:
+  - the second envelope's edge is drawn under a sheet only when the message was delivered by fiction:
+    every board draws it there and nowhere else;
+  - the fiction chip keeps its "?" (it opens the answer in the FAQ) and the code's words, "lhůta už
+    běží"; the month is the Title role (21), the board's 20 is not a step of the type scale;
+  - the register shows a clip, not the board's clip and count: ISDS lists only the attachments' total
+    size until a message is downloaded;
+  - the line about the other boxes says "Jinde:" instead of "V ostatních schránkách" when not even one
+    whole clause fits after the longer words (on the 411 dp emulator it cut "naposledy 2 nepřečt…");
+  - the stamp's frame is a stroke in its drawing, not a View border: Android drew the translucent border
+    twice as wide;
+  - the compose stamp keeps the app's safe-area rule (22 above the safe area) rather than the board's
+    30 from the screen's edge.
 - [ ] T031 Empty inbox (I22, I26).
 - [ ] T032 Message, light and dark (I29, I32, I33, I35 saved row, I36).
 - [ ] T033 Sent result (I39).

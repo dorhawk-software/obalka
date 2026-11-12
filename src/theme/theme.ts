@@ -171,6 +171,8 @@ export interface Theme {
   flap: string;
   /** The frame printed inside the gold stamp of the compose button. */
   flapFrame: string;
+  /** The plane under the offset glyph printed on the gold stamp. */
+  flapPlane: string;
   /** The lining's print inside an open envelope (the empty inbox). */
   lining: string;
   /** The window: who it is addressed to. Paper in light, a raised sheet in dark. */
@@ -254,6 +256,7 @@ export const lightTheme: Theme = {
   printShade: '#000000',
   flap: '#FFC305',
   flapFrame: 'rgba(33,27,18,0.28)',
+  flapPlane: 'rgba(255,255,255,0.55)',
   lining: '#9EC0EA',
   window: '#FFFDF8',
   windowShade: 'rgba(9,30,64,0.28)',
@@ -335,6 +338,7 @@ export const darkTheme: Theme = {
   printShade: '#000000',
   flap: '#FFC305',
   flapFrame: 'rgba(33,27,18,0.28)',
+  flapPlane: 'rgba(255,255,255,0.55)',
   lining: '#9EC0EA',
   window: '#2A251E',
   windowShade: 'rgba(0,0,0,0.55)',

@@ -122,7 +122,9 @@ describe.each([
       const paper = filled(all(), theme.stampPaper);
       expect(paper.length).toBe(2);
       expect(paper[0].props.fillRule).toBe(0); // evenodd
-      expect(all().some(n => style(n).borderColor === theme.stampFrame)).toBe(true);
+      const frame = stroked(all(), theme.stampFrame);
+      expect(frame).toHaveLength(1);
+      expect(frame[0].props.strokeWidth).toBe(1);
     });
 
     it('in the flap\'s gold is the compose button: a flap-frame rule, the gold glow', async () => {
@@ -135,7 +137,9 @@ describe.each([
       );
       expect(style(all()[0]).filter).toBe(objectFilter(theme.name, 'stampFab'));
       expect(filled(all(), theme.flap).length).toBe(2);
-      expect(all().some(n => style(n).borderColor === theme.flapFrame)).toBe(true);
+      const frame = stroked(all(), theme.flapFrame);
+      expect(frame).toHaveLength(1);
+      expect(frame[0].props.strokeWidth).toBe(1);
     });
 
     it('stuck on an envelope casts no shadow of its own', async () => {
