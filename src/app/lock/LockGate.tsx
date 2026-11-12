@@ -17,21 +17,21 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
-import { Animated, AppState } from 'react-native';
+import { Animated, AppState, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import { XStack, YStack } from '../../theme/ui';
 import { PressScale } from '../../theme/PressScale';
-import { BodyStrong, Caption, Meta, Small, Title } from '../../theme/Typography';
+import { Body, BodyStrong, Caption, Display, Meta } from '../../theme/Typography';
 import { useTheme } from '../../theme/ThemeProvider';
-import { BrandLockIcon } from '../../theme/artwork';
-import { LockIcon } from '../../theme/icons';
+import { UnlockIcon } from '../../theme/icons';
+import { SealedEnvelope } from '../../theme/objects/SealedEnvelope';
+import { SecurityTint } from '../../theme/objects/SecurityTint';
 import { Dialog } from '../../theme/Dialog';
 import { textSlop } from '../../theme/touchTarget';
 import { t } from '../../i18n/strings';
 import type { AppLock, UnlockResult } from '../../services/appLock/appLock';
 import { useCloseOnBackground } from '../useCloseOnBackground';
 import { depth } from '../../theme/depth';
-import { ICON_TIER } from '../../theme/iconTiers';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { space } from '../../theme/spacing';
 
@@ -49,6 +49,8 @@ const ENTER_FADE_MS = 250; // the design's `rfade .25s ease` entry (the panel, n
 // prompt. No return means the user really left, and the key the prompt opened is dropped rather than
 // held behind the lock screen until somebody opens the app.
 const UNLOCK_RETURN_MS = 1500;
+/** Where the sealed envelope's drawing starts, as a share of the screen (board: 168 of 844). */
+const SEALED_TOP = 168 / 844;
 
 /** Whether the lock screen covers the app right now. False outside a `LockGate`. */
 const LockCoverContext = createContext(false);
@@ -365,65 +367,52 @@ function LockScreen({
   // A lock screen that goes away with an unlock still out must not leave the gate holding its lock.
   useEffect(() => () => onUnlocking(false), [onUnlocking]);
   const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
 
   // Animated.View (not a Tamagui YStack) so the whole opaque cover can cross-fade out on unlock.
   return (
-    <Animated.View
-      style={{
-        flex: 1,
-        backgroundColor: theme.bg,
-        alignItems: 'center',
-        justifyContent: 'center',
-        // The cover is full-screen, under the status bar and down to the home indicator: the hero
-        // padding starts past each (2026-10-04), so a large text size cannot push it under either.
-        paddingHorizontal: space.hero,
-        paddingTop: insets.top + space.hero,
-        paddingBottom: insets.bottom + space.hero,
-        opacity: coverOpacity,
-      }}
-    >
-      <Animated.View style={{ opacity: panelOpacity }}>
-        <YStack alignItems="center">
+    <Animated.View style={{ flex: 1, backgroundColor: theme.bg, opacity: coverOpacity }}>
+      <SecurityTint vignette />
+      <Animated.View style={{ flex: 1, opacity: panelOpacity }}>
+        {/* The cover is full-screen, under the status bar and down to the home indicator. It scrolls
+            only when the largest text sizes need it; otherwise the button sits at the bottom. */}
+        <ScrollView
+          bounces={false}
+          contentContainerStyle={{
+            flexGrow: 1,
+            alignItems: 'center',
+            paddingTop: Math.max(insets.top + space.section, Math.round(height * SEALED_TOP)),
+            paddingHorizontal: space.section,
+            paddingBottom: insets.bottom + space.base,
+          }}
+        >
+          {/* The board's drawing is 168, the tile inset 4 in it. */}
+          <View style={{ padding: space.xs }}>
+            <SealedEnvelope />
+          </View>
+          {/* Stretched to the column and centred: a centred text measured to its own words loses the
+              last one on Android (practices, mobile/lifecycle.md). */}
+          <Display alignSelf="stretch" textAlign="center" marginTop={space.hero} accessibilityRole="header">
+            {t('lock.title')}
+          </Display>
+          <Body alignSelf="stretch" textAlign="center" color={theme.textMuted} marginTop={space.base}>
+            {t('lock.subtitle')}
+          </Body>
+          {/* Not on the board, but real states: why the last attempt did not unlock, and the way out of
+              a key that keeps failing to read. Below everything the board places, so appearing moves
+              nothing; the failure's line is laid out always, the link only when it applies. */}
           <YStack
-            width={ICON_TIER.lock.box}
-            height={ICON_TIER.lock.box}
-            borderRadius={ICON_TIER.lock.radius}
-            backgroundColor={theme.brandTile}
-            alignItems="center"
-            justifyContent="center"
-            style={{ boxShadow: depth.heroTile }}
-          >
-            {/* The brand lock: pale-blue padlock + a GOLD keyhole (not the plain lucide glyph). Its
-                colours are fixed like the tile it sits on, so they live in theme/artwork. */}
-            <BrandLockIcon size={46} />
-          </YStack>
-          <YStack alignItems="center" gap={8} marginTop={28}>
-            <Title color={theme.text}>
-              {t('lock.title')}
-            </Title>
-            <Small fontWeight="500"
-              color={theme.textMuted}
-              textAlign="center"
-              maxWidth={250}
-            >
-              {t('lock.subtitle')}
-            </Small>
-          </YStack>
-          {/* The failure message has NO slot in the design, but it is real app state - so it gets a
-              fixed-height slot that is always laid out and only fades in: nothing below it may move
-              (constitution V, no layout jumps). */}
-          <YStack
+            alignSelf="stretch"
             minHeight={17}
-            marginTop={24}
-            justifyContent="center"
+            marginTop={space.inset}
             opacity={failed ? 1 : 0}
             accessibilityElementsHidden={!failed}
             importantForAccessibility={failed ? 'auto' : 'no-hide-descendants'}
           >
-            <Caption color={theme.danger} textAlign="center" numberOfLines={1}>
+            <Caption color={theme.danger} textAlign="center">
               {/* A phone without a screen lock cannot hold the gated key at all, so "try again" would
                   be a loop; it is told what to set instead. A key that keeps failing to read says so,
-                  and the hint's slot below offers the way out. Same one-line slot, so nothing moves. */}
+                  and the link below offers the way out. */}
               {t(
                 failure === 'noScreenLock'
                   ? 'lock.noScreenLock'
@@ -433,71 +422,51 @@ function LockScreen({
               )}
             </Caption>
           </YStack>
-          <PressScale
-            busy={busy}
-            onPress={attempt}
-            accessibilityLabel={t('lock.unlock')}
-            testID="unlock"
-            style={{ marginTop: 36 }}
-          >
-            {/* One solid state (design): ink fill, no dimmed/disabled variant. A leading 18px lock
-                glyph sits 10px before the Public Sans 16/700 label. */}
+          {unreadable ? (
             <XStack
-              // minHeight + real vertical padding: the label scales with the system font size and a
-              // fixed 54 cropped it. At the default size the button is still exactly 54 tall.
-              minHeight={54}
-              borderRadius={16}
-              paddingHorizontal={36}
-              paddingVertical={10}
-              alignItems="center"
+              alignSelf="stretch"
               justifyContent="center"
-              gap={10}
-              backgroundColor={theme.text}
-              style={{ boxShadow: depth.primaryButton }}
+              marginTop={space.base}
+              hitSlop={textSlop('caption', { fontSize: 12 })}
+              onPress={() => setConfirmingReset(true)}
+              pressStyle={{ opacity: 0.5 }}
+              accessibilityRole="button"
+              accessibilityLabel={t('lock.reset.link')}
+              testID="lock-reset"
             >
-              <LockIcon size={18} color={theme.surfaceAlt} />
-              <BodyStrong color={theme.surfaceAlt}>
-                {t('lock.unlock')}
-              </BodyStrong>
+              {/* Brand Blue, as every link is (DESIGN.md). */}
+              <Meta fontWeight="600" color={theme.blue} textAlign="center">
+                {t('lock.reset.link')}
+              </Meta>
             </XStack>
-          </PressScale>
-          {/* The hint's slot, which also holds the way out of a key that keeps failing to read. The
-              hint stays laid out underneath, only invisible, and the link is drawn over it in the
-              same type, so the link appearing moves nothing (constitution V). Brand Blue, as every
-              link is (DESIGN.md). */}
-          <YStack marginTop={14}>
-            <Meta fontWeight="600"
-              color={theme.textFaint}
-              opacity={unreadable ? 0 : 1}
-              accessibilityElementsHidden={unreadable}
-              importantForAccessibility={unreadable ? 'no-hide-descendants' : 'auto'}
+          ) : null}
+          <YStack width="100%" marginTop="auto" paddingTop={space.section}>
+            <PressScale
+              fullWidth
+              busy={busy}
+              onPress={attempt}
+              accessibilityLabel={t('lock.unlock')}
+              testID="unlock"
             >
-              {t('lock.hint')}
-            </Meta>
-            {unreadable ? (
+              {/* One solid state (design): ink fill, no dimmed/disabled variant. minHeight and real
+                  padding, so the label can grow with the system font size; at the default it is 54. */}
               <XStack
-                position="absolute"
-                top={0}
-                left={0}
-                right={0}
+                width="100%"
+                minHeight={54}
+                borderRadius={16}
+                paddingVertical={space.md}
+                alignItems="center"
                 justifyContent="center"
-                hitSlop={textSlop('caption', { fontSize: 12 })}
-                onPress={() => setConfirmingReset(true)}
-                pressStyle={{ opacity: 0.5 }}
-                accessibilityRole="button"
-                accessibilityLabel={t('lock.reset.link')}
-                testID="lock-reset"
+                gap={space.md}
+                backgroundColor={theme.text}
+                style={{ boxShadow: depth.primaryButton }}
               >
-                <Meta fontWeight="600"
-                  color={theme.blue}
-                  numberOfLines={1}
-                >
-                  {t('lock.reset.link')}
-                </Meta>
+                <UnlockIcon size={20} color={theme.surfaceAlt} />
+                <BodyStrong color={theme.surfaceAlt}>{t('lock.unlock')}</BodyStrong>
               </XStack>
-            ) : null}
+            </PressScale>
           </YStack>
-        </YStack>
+        </ScrollView>
       </Animated.View>
       {confirmingReset ? (
         <Dialog

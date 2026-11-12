@@ -13,7 +13,7 @@ src/features/messages/screens/MessageDetail.tsx 1298
 src/features/messages/screens/MessageList.tsx 1642
 src/features/messages/state/messagesController.ts 1351
 src/features/transfer/state/transferController.ts 961
-src/i18n/strings.ts 2081
+src/i18n/strings.ts 2079
 src/services/db/messagesStore.ts 766
 src/services/isds/isdsTransport.ts 1201
 src/services/isds/soap.ts 717

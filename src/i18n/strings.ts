@@ -1004,7 +1004,7 @@ const cs: Record<string, string> = {
   'licences.fullText': 'Úplné znění licence',
   'settings.version': 'Verze',
   'lock.prompt': 'Odemknout Obálku',
-  'lock.subtitle': 'Aplikace je uzamčena. Pro pokračování ji odemkněte.',
+  'lock.subtitle': 'Zprávy i přihlášení jsou pod zámkem.',
   'lock.unlock': 'Odemknout',
   'lock.failed': 'Ověření se nezdařilo. Zkuste to znovu.',
   // The phone has no screen lock, so the key protecting saved passwords cannot sit behind one (001
@@ -1019,8 +1019,7 @@ const cs: Record<string, string> = {
   'lock.reset.body':
     'Telefon opakovaně odmítl vydat klíč, kterým Obálka chrání uložená hesla a přihlášení. Když zámek nastavíte znovu, vznikne nový klíč a ke každé schránce se znovu přihlásíte. Archiv zpráv zůstane beze změny.',
   'lock.reset.confirm': 'Nastavit znovu',
-  'lock.title': 'Odemknout Obálku',
-  'lock.hint': 'Otisk prstu · obličej · kód zařízení',
+  'lock.title': 'Obálka je zapečetěná',
   'lock.unavailable.title': 'Biometrika není k dispozici',
   'lock.unavailable.body':
     'Na tomto zařízení není nastaven otisk prstu, obličej ani kód zařízení. Nastavte je v systému a zkuste to znovu.',
@@ -1886,7 +1885,7 @@ const en: Record<string, string> = {
   'licences.fullText': 'Full licence text',
   'settings.version': 'Version',
   'lock.prompt': 'Unlock Obálka',
-  'lock.subtitle': 'The app is locked. Unlock it to continue.',
+  'lock.subtitle': 'Your messages and sign-ins are under lock.',
   'lock.unlock': 'Unlock',
   'lock.failed': 'Authentication failed. Try again.',
   // See the Czech block.
@@ -1898,8 +1897,7 @@ const en: Record<string, string> = {
   'lock.reset.body':
     'Your phone keeps refusing the key Obálka uses to protect saved passwords and sign-ins. If you set up the lock again, a new key is made and you sign in to each box again. Your message archive stays as it is.',
   'lock.reset.confirm': 'Set up again',
-  'lock.title': 'Unlock Obálka',
-  'lock.hint': 'Fingerprint · face · device code',
+  'lock.title': 'Obálka is sealed',
   'lock.unavailable.title': 'Biometrics unavailable',
   'lock.unavailable.body':
     'This device has no fingerprint, face, or device code set up. Set one up in your system settings and try again.',

@@ -38,9 +38,9 @@ export const ICON_TIER = {
   feature: { glyph: 44, box: 72, radius: 22, stroke: 1.9 },
   emblem: { glyph: 44, box: 96, radius: 28, stroke: 1.9 },
   // The brand's own tiles, at the same corner-to-size proportion as the two above (spec 028): the
-  // sign-in progress tile, the lock screen's, and the Welcome app mark.
+  // sign-in progress tile and the Welcome app mark. (The lock screen's tile became the sealed envelope,
+  // 031 T034.)
   brand: { box: 84, radius: 24 },
-  lock: { box: 104, radius: 30 },
   mark: { box: 120, radius: 26 },
   hero: { size: 132, stroke: 1.25 },
 } as const;

@@ -211,3 +211,33 @@ export const cancellation = {
   stroke: 1.5,
   opacity: 0.7,
 } as const;
+
+/**
+ * The sealed envelope of the lock (board "Lock - sealed"), on its 160 tile: `radius` corners, the gold
+ * flap folded down and lit from the top (`printSheen` at `sheen` to `printShade` at `shade`), and the
+ * wax seal where the flap's point meets the envelope. The seal's face is lit from `light` (the share
+ * of its width and height), `sealLight` fading to `sealShade` at `fade` of the way to its far corner;
+ * pressed into it, a dashed ring and the padlock with the envelope's fold on it, on a 36 grid, in
+ * `onSolid` at the given opacities.
+ */
+export const sealedEnvelope = {
+  size: 160,
+  radius: 40,
+  flap: 'M24 46H136L92 88Q80 98 68 88Z',
+  sheen: 0.14,
+  shade: 0.08,
+  seal: {
+    x: 54,
+    y: 66,
+    size: 52,
+    light: { x: 38, y: 32 },
+    fade: 70,
+    grid: 36,
+    ring: { r: 14, stroke: 1.2, dash: '1.5 2.2', opacity: 0.35 },
+    shackle: 'M13.5 16.5v-2.5a4.5 4.5 0 0 1 9 0v2.5',
+    body: { x: 11, y: 16.5, width: 14, height: 10, radius: 2.4 },
+    fold: 'M15 20l3 2 3-2',
+    stroke: 1.7,
+    opacity: 0.85,
+  },
+} as const;

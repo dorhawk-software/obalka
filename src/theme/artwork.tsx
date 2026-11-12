@@ -1,14 +1,14 @@
 // Fixed-palette artwork - the few marks whose colours are NOT theme colours and therefore must not be
-// tokenised: the national flags used by the language picker (a flag's colours are its identity) and the
-// two-tone brand lock that sits on the fixed brand-blue tile (`theme.brandTile` is the same in light and
-// dark, so its glyph is too). Paths/colours are copied 1:1 from the design source (settings + lock).
+// tokenised: the national flags used by the language picker (a flag's colours are its identity). Paths
+// and colours are copied 1:1 from the design source (settings). The lock screen's two-tone brand lock
+// lived here until the sealed envelope replaced it (031 T034).
 //
 // This is a sanctioned palette file (exempt in `obalka/no-raw-color`, tools/eslint-plugin-obalka) - screens still take every OTHER
 // colour from useTheme().
 //
 // A `Rect` is placed with a `transform` translate rather than its own x/y - see DashedOutline for why.
 
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import Svg, { Path, Rect } from 'react-native-svg';
 import { YStack } from './ui';
 
 /** The design's 28×20 flag chip: rounded, clipped, with a 1px hairline ring. */
@@ -56,31 +56,5 @@ export function FlagEn() {
         <Path d="M30 0V40M0 20H60" stroke="#C8102E" strokeWidth={6} />
       </Svg>
     </FlagChip>
-  );
-}
-
-/**
- * The brand lock: a pale-blue padlock with a GOLD keyhole - the app-lock screen's mark, drawn on the
- * fixed brand-blue tile. Both colours are constant across themes (the tile is), so they stay literal.
- */
-export function BrandLockIcon({ size = 46 }: { readonly size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Rect
-        transform={[{ translateX: 4.5 }, { translateY: 10.5 }]}
-        width={15}
-        height={10.5}
-        rx={3}
-        stroke="#EEF4FB"
-        strokeWidth={2}
-      />
-      <Path
-        d="M7.5 10.5V8a4.5 4.5 0 0 1 9 0v2.5"
-        stroke="#EEF4FB"
-        strokeWidth={2}
-        strokeLinecap="round"
-      />
-      <Circle cx={12} cy={15.5} r={1.6} fill="#F5B81E" />
-    </Svg>
   );
 }

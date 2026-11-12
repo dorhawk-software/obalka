@@ -54,7 +54,12 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
 - **Offset glyphs**: a 1.75 ink stroke with one plane printed 1.3 off register, `icon-plane`
   (`#CFE0F5` / `#2F4A6E`), or `icon-plane-gold` (`#F3D891` / `#5A4716`) on gold. Plain controls stay
   Lucide.
-- **Seal**: the lock's wax seal, `seal-light` to `seal-shade`.
+- **Seal**: the lock's wax seal, `seal-light` to `seal-shade`. The lock screen holds up the sealed
+  envelope (`SealedEnvelope`, `sealedEnvelope`): the 160 tile in the envelope's blue, the gold flap
+  folded down and lit from the top, and the seal (52) where the flap's point meets the envelope - its
+  face a radial gradient lit from the top left, the `seal` shadow's highlights over it, a dashed ring
+  and the padlock with the envelope's fold pressed into it in `on-solid`. Its shadow is
+  `sealedEnvelope`, black at night.
 - **Sheet edge** (`#F7F1E4` / `#231F19`): the second envelope's edge under an attention sheet. Every
   board draws it under the sheet of a message delivered by fiction, and only there, so that is where
   the inbox puts it.

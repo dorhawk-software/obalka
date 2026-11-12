@@ -285,7 +285,8 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 - [ ] I121 Unread badge (99+, min 20) and the sync-error badge on a box avatar.
 - [ ] I122 Pull to refresh (both lists and the error state).
 - [ ] I123 `ContinueButton` after a restore (backup, transfer, What's new).
-- [ ] I124 The Mobile Key brand tile, the lock tile (`BrandLockIcon`), the logo at 40 / 84 / 120.
+- [ ] I124 The Mobile Key brand tile, the logo at 40 / 84 / 120 (the lock tile, `BrandLockIcon`, became
+  the sealed envelope in T034).
 
 ### What the system draws around the app
 
@@ -448,7 +449,22 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   - the steps after "Odesláno" are filled in from the sent list's answer when it comes (delivered,
     accepted, or accepted by fiction with the gold clock); until then they are dashed rings, "zatím ne";
   - the screen has no header: "Hotovo" is the way back, as on the board.
-- [ ] T034 Lock (I50).
+- [x] T034 Lock (I50). Checked on Obalka_Demo in both themes, with the failure line and the reset link
+  showing, against the board. Where the build differs from the board, and why:
+  - the board's words replace the old ones: "Obálka je zapečetěná" and "Zprávy i přihlášení jsou pod
+    zámkem." ("Obálka is sealed", "Your messages and sign-ins are under lock."); the system prompt's
+    reason stays "Odemknout Obálku";
+  - the hint "Otisk prstu · obličej · kód zařízení" is gone, as on the board; its slot held the reset
+    link, which now sits under the failure line - both below everything the board places, so neither
+    moves anything; the failure line is laid out always, invisible until an attempt fails;
+  - the envelope's drawing starts 168/844 of the way down the screen, as on the board, and the screen
+    scrolls only when the largest text sizes need it;
+  - rounded to the scale: the gap under the envelope 40 to 36 (`hero`); the button's label BodyStrong
+    (15; board 16);
+  - not on a board: the dark shadow, black where the light one is blue;
+  - the brand lock tile (`BrandLockIcon`, `ICON_TIER.lock`) is gone, replaced by the sealed envelope;
+  - not yet seen on iOS: the seal's face is React Native's own radial gradient, seen on Android; under
+    it is `seal-shade`, should a platform not draw the gradient.
 - [ ] T035 Motion: I67-I70, each with its Reduce Motion form.
 - [ ] T036 Capture each built screen in demo mode, both themes, and compare with its board.
 

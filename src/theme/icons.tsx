@@ -103,6 +103,24 @@ export function LockIcon({ size = 22, color = '#000' }: IconProps) {
   return <Lock size={size} color={color} strokeWidth={2} />;
 }
 
+/**
+ * Unlock - a face in the viewfinder's corners, the lock screen's button (board "Lock - sealed"); the
+ * board draws it itself, at a 1.8 line.
+ */
+export function UnlockIcon({ size = 20, color = '#000' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M9 9.5v1M15 9.5v1M12 9.5v3.5h-1M9.5 15.5a3.5 3.5 0 0 0 5 0"
+        stroke={color}
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
 /** Rename / compose - the design uses the Lucide pencil. */
 export function EditIcon({ size = 20, color = '#000' }: IconProps) {
   return <Pencil size={size} color={color} strokeWidth={2} />;
