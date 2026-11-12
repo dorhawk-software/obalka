@@ -26,7 +26,9 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
 - **Window** (`#FFFDF8` / `#2A251E`): who it is addressed to - the box switcher, the recipient in
   compose (also its search field), the login name while signing in. Its edge is an inset shade (the
   envelope's paper over it) and a film that catches the light, over a `window-glint` cast
-  (`rgba(214,228,246,.14)` / `.03`). In dark it is 2.47:1 against the
+  (`rgba(214,228,246,.14)` / `.03`). The glint follows the phone's tilt by up to 8 at a 0.06 lerp
+  (`windowFilm.tilt`), from the gravity sensor, only while its screen is focused and the app in front;
+  with Reduce Motion it lies still. In dark it is 2.47:1 against the
   envelope; the words in it identify it, so 1.4.11's boundary floor does not apply, and the number is
   pinned in `contrast.test.ts`.
 - **Security tint**: the inside, the private - chevrons of the envelope's blue, 16 x 14, at 16 % (light)

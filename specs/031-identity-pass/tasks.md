@@ -492,6 +492,16 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     waited about 100 ms for JS between steps. And Android drew nothing of a view turned about a
     percentage origin (`50% 28.749999999999996%`), so the flap shut and vanished; the fold is in points
     and a test in `lockScreen.test.tsx` holds it.
+  - I70 the window film's glint, done 2026-11-12: the glint (the sheen and its two bands) is its own
+    layer, drawn 8 wider on each side, and follows the gravity sensor along the phone's width by up to
+    8, closing 0.06 of the gap each frame and still once within 0.25. Only sideways: the board names no
+    axis, and up-down has no level to measure from (a phone is read held at any angle). The sensor runs
+    only while the window's screen is focused and the app in front (`useOnScreen`; on the device it was
+    released 2 s after going home and taken again on return); with Reduce Motion the glint lies still.
+    It moves by `left`: Android never drew Reanimated's transform here (the shift reached -7.6 and the
+    glint stood still). Walked on Obalka_Demo with the emulator's virtual sensor: the band's centre at
+    60 / 80 / 94 px tilted right / level / left. Not here: the scroll-out of a window that is still on
+    a focused screen; it is a few small layers, and the sensor stops with the screen.
 - [ ] T036 Capture each built screen in demo mode, both themes, and compare with its board.
 
 ## Phase 5: Round 2 on the canvas

@@ -55,6 +55,8 @@ What changed in each Obálka release, written for the people using it. The newes
 - **Unlocking breaks the seal and opens the envelope.** The first time since the app started, the
   seal snaps in two with a light tap, the flap turns over and the inbox is underneath; later unlocks
   only open the flap. A failed check just shakes the seal. With Reduce Motion the lock simply fades.
+- **The glint on the envelope's window moves as you tilt the phone.** Only a little, and only on the
+  screen in front of you; with Reduce Motion it stays still.
 
 ### Fixed
 

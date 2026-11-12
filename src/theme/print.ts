@@ -75,6 +75,12 @@ export const windowFilm = {
     light: [[0.06, 0], [0.12, 0.5], [0.17, 0.1], [0.24, 0], [0.62, 0], [0.67, 0.3], [0.73, 0]],
     dark: [[0.06, 0], [0.12, 0.1], [0.17, 0.03], [0.24, 0], [0.62, 0], [0.67, 0.07], [0.73, 0]],
   },
+  /**
+   * The glint follows the phone's tilt (board Motion 4): up to `reach` either way, closing `lerp` of
+   * the distance each frame; it stops once within `rest` (under a pixel), so a steady hand lays out
+   * nothing.
+   */
+  tilt: { reach: 8, lerp: 0.06, rest: 0.25 },
 } as const;
 
 /**

@@ -3,16 +3,16 @@
 // the phone: the sent result called `sendMoment` inside `useAnimatedStyle` and Android showed
 // "[Worklets] Tried to synchronously call a Remote Function" (2026-11-12, Obalka_Demo).
 //
-// So every `useAnimatedStyle` / `useDerivedValue` / `useAnimatedProps` body in src/ may call only
-// Reanimated's own worklet helpers and `Math`; anything else is computed outside and captured as a plain
-// value.
+// So every `useAnimatedStyle` / `useDerivedValue` / `useAnimatedProps` / `useFrameCallback` body in src/
+// may call only Reanimated's own worklet helpers and `Math`; anything else is computed outside and
+// captured as a plain value.
 
 import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';
 
 const ROOT = path.join(__dirname, '..', '..', 'src');
-const HOOKS = /^use(AnimatedStyle|DerivedValue|AnimatedProps)$/;
+const HOOKS = /^use(AnimatedStyle|DerivedValue|AnimatedProps|FrameCallback)$/;
 const ALLOWED = new Set([
   'interpolate',
   'interpolateColor',

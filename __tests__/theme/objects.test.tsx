@@ -185,9 +185,11 @@ describe.each([
       expect(style(root).boxShadow).toBe(objectShadow(theme.name, 'window'));
       expect(all().some(n => n.type === 'RNSVGFeGaussianBlur')).toBe(true);
       expect(filled(all(), theme.windowGlint).length).toBe(1);
-      // The film comes first, so the words print over it.
+      // The film and the glint come first, so the words print over them.
       const kids = (root.children ?? []).filter((c): c is Node => typeof c !== 'string');
       expect(kids[0].type).toBe('RNSVGSvgView');
+      expect(nodes(kids[1]).some(n => n.props.testID === 'windowGlint')).toBe(true);
+      expect(kids[kids.length - 1].type).toBe('Text');
     });
 
     it(isDark ? 'keeps the film to its margins at night' : 'lets the film cover it by day', async () => {

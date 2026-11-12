@@ -33,6 +33,10 @@ jest.mock('react-native-reanimated', () => {
     SlideInDown: { duration: () => ({}) },
     interpolate: () => 0,
     Extrapolation: { CLAMP: 'clamp' },
+    // The phone lies level and still; the frame callback is never called.
+    SensorType: { ACCELEROMETER: 1, GYROSCOPE: 2, GRAVITY: 3, MAGNETIC_FIELD: 4, ROTATION: 5 },
+    useAnimatedSensor: jest.fn(() => ({ sensor: { value: { x: 0, y: 0, z: 9.81 } }, unregister: () => {} })),
+    useFrameCallback: () => ({ setActive: () => {}, isActive: true, callbackId: 0 }),
   };
 });
 
