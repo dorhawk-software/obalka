@@ -476,7 +476,7 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     320 ms while the words and the record fade in. The board says the envelope "rises and fades"; the
     Sent board keeps it, so it rises and stays. Reduce Motion: the postmark and the rest crossfade,
     the haptic stays. Walked on Obalka_Demo, both ways. On Android Reanimated dropped the last frames
-    of a `transform`, leaving the envelope 34-48 short of its place, so the rise animates `top` and the
+    of a `transform`, leaving the envelope 44-75 short of its place, so the rise animates `top` and the
     end is rendered as plain values; and a worklet that called an app function crashed the screen,
     which `__tests__/lint/worklets.test.ts` now refuses everywhere.
 - [ ] T036 Capture each built screen in demo mode, both themes, and compare with its board.

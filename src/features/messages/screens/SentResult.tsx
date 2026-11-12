@@ -307,7 +307,7 @@ export function SentResult({
   const [landed, setLanded] = useState(false);
   /**
    * The moment is over. Its end is then rendered with plain values: on Android, Reanimated moves
-   * `transform` and `opacity` outside React and dropped the last frames, leaving the envelope 34-48
+   * `transform` and `opacity` outside React and dropped the last frames, leaving the envelope 44-75
    * short of its place (2026-11-12, Obalka_Demo); what React commits itself always lands.
    */
   const [settled, setSettled] = useState(false);
