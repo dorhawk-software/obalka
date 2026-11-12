@@ -17,14 +17,15 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
-import { Animated, AppState, ScrollView, useWindowDimensions, View } from 'react-native';
+import { Animated, AppState, Easing, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import { XStack, YStack } from '../../theme/ui';
 import { PressScale } from '../../theme/PressScale';
 import { Body, BodyStrong, Caption, Display, Meta } from '../../theme/Typography';
 import { useTheme } from '../../theme/ThemeProvider';
 import { UnlockIcon } from '../../theme/icons';
-import { SealedEnvelope } from '../../theme/objects/SealedEnvelope';
+import { SealedEnvelope, type SealMotion } from '../../theme/objects/SealedEnvelope';
+import { haptics } from '../../services/haptics';
 import { SecurityTint } from '../../theme/objects/SecurityTint';
 import { Dialog } from '../../theme/Dialog';
 import { textSlop } from '../../theme/touchTarget';
@@ -35,12 +36,32 @@ import { depth } from '../../theme/depth';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { space } from '../../theme/spacing';
 
-// After biometric success, hold the cover briefly so the OS success animation (iOS Face ID's
-// checkmark) finishes BEFORE the app is revealed - then cross-fade the cover out. Without this the
-// content flashes in mid-animation, which reads as "did it actually pass?" (the user noticed this vs
-// bank apps like Revolut / George). Tunable; validated for feel on a real device.
-const REVEAL_HOLD_MS = 260; // let the OS success animation settle
-const REVEAL_FADE_MS = 240; // then dissolve the cover
+/**
+ * How the envelope opens after an unlock (031, board Motion 3). On the first unlock since the app
+ * started, the seal breaks (`sealMs`, a light tick as it splits) and then the flap opens (`flapMs`);
+ * later unlocks are only the flap, quicker, because people unlock many times a day. Then the cover
+ * dissolves (`fadeMs`) and the app is there. Nothing of the app shows before the flap is open, which is
+ * also what the old hold was for: content must not flash in while Face ID's checkmark still plays (the
+ * user compared it to bank apps). With Reduce Motion nothing moves: that hold, then a crossfade; the
+ * tick stays.
+ */
+export function unlockMoment(firstSinceLaunch: boolean, reduceMotion: boolean) {
+  if (reduceMotion) {
+    return { holdMs: 260, sealMs: 0, flapMs: 0, fadeMs: 240, tick: firstSinceLaunch } as const;
+  }
+  return firstSinceLaunch
+    ? ({ holdMs: 0, sealMs: 180, flapMs: 260, fadeMs: 180, tick: true } as const)
+    : ({ holdMs: 0, sealMs: 0, flapMs: 180, fadeMs: 180, tick: false } as const);
+}
+
+/** The seal is broken once per launch; after that an unlock only opens the flap. */
+let sealBrokenThisLaunch = false;
+
+/** For tests: start as if the app had just launched. */
+export function resetSealForTests(): void {
+  sealBrokenThisLaunch = false;
+}
+
 const ENTER_FADE_MS = 250; // the design's `rfade .25s ease` entry (the panel, not the cover - below)
 // How long an unlock that finished while the app was in the background waits for the app to return.
 // On Android 10 and older the phone's own passcode screen ("Use PIN") is an activity of its own, so
@@ -239,8 +260,14 @@ function LockScreen({
   const inFlight = useRef(false);
   /** Between a successful unlock and `onUnlock`: the hold, then the fade. */
   const revealing = useRef(false);
-  const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** The opening under way, stopped if the app leaves before it ends. */
+  const opening = useRef<Animated.CompositeAnimation | null>(null);
   const coverOpacity = useRef(new Animated.Value(1)).current;
+  const motion = useRef<SealMotion>({
+    seal: new Animated.Value(0),
+    flap: new Animated.Value(0),
+    shake: new Animated.Value(0),
+  }).current;
   const panelOpacity = useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
 
   // The design fades the lock in (`animation: rfade .25s ease`). Only the PANEL fades - the opaque
@@ -258,49 +285,75 @@ function LockScreen({
     }).start();
   }, [reduceMotion, panelOpacity]);
 
-  // Reveal the app only AFTER the OS biometric success animation has finished: hold briefly, then
-  // dissolve the cover (or, under Reduce Motion, hold then cut). So content never flashes in while
-  // Face ID is still animating.
+  // The envelope opens, then the cover dissolves (`unlockMoment`).
   const revealAfterAuth = useCallback(() => {
     revealing.current = true;
-    revealTimer.current = setTimeout(() => {
-      revealTimer.current = null;
-      if (reduceMotion) {
+    const m = unlockMoment(!sealBrokenThisLaunch, reduceMotion);
+    if (m.tick) {
+      haptics.light(); // the seal splits
+    }
+    // Each step is timed from the start, not from the end of the one before: a sequence waits for the
+    // finished step to report back to JS, about 100 ms on Obalka_Demo, and the envelope stood still.
+    const ease = Easing.out(Easing.cubic);
+    // The flap lifts while the halves fall away: eased out, they are gone by the middle of their
+    // time, and a flap that waited for the end stood still for 3 frames.
+    const flapAt = m.holdMs + m.sealMs / 2;
+    const fadeAt = flapAt + m.flapMs;
+    const steps: Animated.CompositeAnimation[] = [
+      Animated.timing(coverOpacity, { toValue: 0, duration: m.fadeMs, delay: fadeAt, useNativeDriver: true }),
+    ];
+    if (m.sealMs > 0) {
+      steps.push(
+        Animated.timing(motion.seal, { toValue: 1, duration: m.sealMs, delay: m.holdMs, easing: ease, useNativeDriver: true }),
+      );
+    }
+    if (m.flapMs > 0) {
+      steps.push(
+        Animated.timing(motion.flap, { toValue: 1, duration: m.flapMs, delay: flapAt, easing: ease, useNativeDriver: true }),
+      );
+    }
+    opening.current = Animated.parallel(steps);
+    opening.current.start(({ finished }) => {
+      // Not when `cancelReveal` stopped it: the app went to the background and is locked again.
+      if (finished && revealing.current) {
         revealing.current = false;
+        opening.current = null;
+        sealBrokenThisLaunch = true;
         onUnlock();
-        return;
       }
-      Animated.timing(coverOpacity, {
-        toValue: 0,
-        duration: REVEAL_FADE_MS,
-        useNativeDriver: true,
-      }).start(({ finished }) => {
-        // Not when `cancelReveal` stopped it: the app went to the background and is locked again.
-        if (finished && revealing.current) {
-          revealing.current = false;
-          onUnlock();
-        }
-      });
-    }, REVEAL_HOLD_MS);
-  }, [reduceMotion, coverOpacity, onUnlock]);
+    });
+  }, [reduceMotion, coverOpacity, motion, onUnlock]);
 
   // The app went to the background between the unlock and the reveal. The gate has dropped the key by
   // then, so finishing the reveal would open the app on return without the prompt a return owes - and
   // with no key behind it, so every refresh would wait for an unlock no screen was asking for. The
-  // cover goes back up instead, and the return prompts.
+  // envelope closes again, and the return prompts.
   const cancelReveal = useCallback(() => {
     if (!revealing.current) {
       return;
     }
     revealing.current = false;
-    if (revealTimer.current !== null) {
-      clearTimeout(revealTimer.current);
-      revealTimer.current = null;
-    }
-    coverOpacity.stopAnimation();
+    opening.current?.stop();
+    opening.current = null;
+    motion.seal.setValue(0);
+    motion.flap.setValue(0);
     coverOpacity.setValue(1);
     setBusy(false);
-  }, [coverOpacity]);
+  }, [coverOpacity, motion]);
+
+  /** A failed attempt: the seal stays whole and nudges, the refusal a blocked button gives (PressScale). */
+  const refuse = useCallback(() => {
+    haptics.warning();
+    if (reduceMotion) {
+      return;
+    }
+    motion.shake.setValue(0);
+    Animated.sequence([
+      Animated.timing(motion.shake, { toValue: 1, duration: 50, useNativeDriver: true }),
+      Animated.timing(motion.shake, { toValue: -1, duration: 50, useNativeDriver: true }),
+      Animated.timing(motion.shake, { toValue: 0, duration: 50, useNativeDriver: true }),
+    ]).start();
+  }, [reduceMotion, motion]);
 
   /** One attempt at opening the app - `unlock`, or `resetKey` once confirmed - and what follows it. */
   const run = useCallback(
@@ -329,9 +382,12 @@ function LockScreen({
       } else {
         setBusy(false);
         setFailure(result);
+        if (result === 'failed') {
+          refuse();
+        }
       }
     },
-    [lock, revealAfterAuth, onUnlocking],
+    [lock, revealAfterAuth, onUnlocking, refuse],
   );
   // Reads the vault key behind the gate - or, the first time after an update or after the phone
   // invalidated it, puts one there and reads that back. Either way one prompt, and a cancel never
@@ -388,7 +444,7 @@ function LockScreen({
         >
           {/* The board's drawing is 168, the tile inset 4 in it. */}
           <View style={{ padding: space.xs }}>
-            <SealedEnvelope />
+            <SealedEnvelope motion={motion} />
           </View>
           {/* Stretched to the column and centred: a centred text measured to its own words loses the
               last one on Android (practices, mobile/lifecycle.md). */}

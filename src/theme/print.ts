@@ -226,6 +226,13 @@ export const sealedEnvelope = {
   flap: 'M24 46H136L92 88Q80 98 68 88Z',
   sheen: 0.14,
   shade: 0.08,
+  /** The flap's fold, from the tile's top, and the depth it turns in (board Motion 3). */
+  hinge: 46,
+  perspective: 600,
+  /** The seal breaking: each half tilts `breakTilt` degrees and drops `breakDrop`; a refusal nudges it `shake`. */
+  breakTilt: 14,
+  breakDrop: 6,
+  shake: 4,
   seal: {
     x: 54,
     y: 66,

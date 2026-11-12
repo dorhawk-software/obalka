@@ -44,6 +44,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   o stůl a obálka pak vyjede na své místo; se sníženým pohybem se vše jen prolne.
 - **Zamčená Obálka je obálka zapečetěná voskovou pečetí.** Zámek říká, že zprávy i přihlášení jsou pod
   zámkem, a tlačítko Odemknout je dole, kam dosáhne palec.
+- **Při odemknutí se pečeť zlomí a obálka otevře.** Poprvé od spuštění aplikace se pečeť s lehkým
+  ťuknutím rozlomí, chlopeň se překlopí a pod ní je schránka; při dalším odemknutí se jen otevře chlopeň.
+  Nepovedené ověření pečetí jen zatřese. Se sníženým pohybem se zámek jen prolne.
 
 ### Opraveno
 

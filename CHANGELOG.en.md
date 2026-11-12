@@ -52,6 +52,9 @@ What changed in each Obálka release, written for the people using it. The newes
   all simply crossfades.
 - **A locked Obálka is an envelope sealed with wax.** The lock says your messages and sign-ins are
   under lock, and the Unlock button sits at the bottom, within reach of your thumb.
+- **Unlocking breaks the seal and opens the envelope.** The first time since the app started, the
+  seal snaps in two with a light tap, the flap turns over and the inbox is underneath; later unlocks
+  only open the flap. A failed check just shakes the seal. With Reduce Motion the lock simply fades.
 
 ### Fixed
 

@@ -90,6 +90,16 @@ describe.each([
   });
 });
 
+// On Obalka_Demo the flap turned about `50% 28.749999999999996%` (its fold as a percentage) was not
+// drawn at all once turned: the unlock showed the flap shut, then gone (2026-11-12). The fold is
+// given in points.
+it('turns the flap on its fold given in points, which Android draws', async () => {
+  const view = await mount();
+  const turning = nodes(view.toJSON()).filter(n => flat(n.props.style).transformOrigin != null);
+  const flap = turning.find(n => flat(n.props.style).width === sealedEnvelope.size);
+  expect(flat(flap?.props.style).transformOrigin).toEqual([sealedEnvelope.size / 2, sealedEnvelope.hinge, 0]);
+});
+
 it('says the envelope is sealed, and what is under the lock', async () => {
   const view = await mount();
   expect(view.getByText('Obálka je zapečetěná')).toBeTruthy();

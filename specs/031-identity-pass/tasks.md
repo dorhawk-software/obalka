@@ -479,6 +479,19 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     of a `transform`, leaving the envelope 44-75 short of its place, so the rise animates `top` and the
     end is rendered as plain values; and a worklet that called an app function crashed the screen,
     which `__tests__/lint/worklets.test.ts` now refuses everywhere.
+  - I69 unlocking, done 2026-11-12: on the first unlock since launch the seal splits with a light tick
+    (`haptics.light`), each half tilting 14 and dropping 6 as it fades in 180 ms; the flap turns 180 on
+    its fold (perspective 600) in 260 ms, starting halfway through the break - eased out, the halves
+    are gone by then and a flap that waited stood still for 3 frames; then the cover dissolves in
+    180 ms and the inbox is underneath. Later unlocks: the flap only, 180 ms, no tick. The board says
+    "the inbox rises from inside"; the inbox comes up as the cover dissolves, the envelope opened over
+    it. A failed scan: the seal nudges ±4 three times with the warning haptic, the refusal a blocked
+    button gives. Reduce Motion: no seal, no flap; the old hold for the system's own checkmark
+    (260 ms) and a 240 ms crossfade, the tick kept. Replaces the 260 + 240 ms cover fade; the panel's
+    250 ms fade-in as the lock appears stays. Walked on Obalka_Demo. The steps are timed from the start, not chained: a sequence
+    waited about 100 ms for JS between steps. And Android drew nothing of a view turned about a
+    percentage origin (`50% 28.749999999999996%`), so the flap shut and vanished; the fold is in points
+    and a test in `lockScreen.test.tsx` holds it.
 - [ ] T036 Capture each built screen in demo mode, both themes, and compare with its board.
 
 ## Phase 5: Round 2 on the canvas
