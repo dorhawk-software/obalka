@@ -18,14 +18,15 @@ import {
   type ComponentProps,
   type ComponentType,
 } from 'react';
-import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
+import { NavigationContainer, useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { NativeStackNavigationOptions, NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { DataBoxAccount, MessageEnvelope } from '../services/isds/types';
 import type { MessageFolder } from '../services/db/messagesStore';
 import { BoxSwitcherSheet } from '../features/accounts/screens/BoxSwitcherSheet';
 import { MessageList } from '../features/messages/screens/MessageList';
 import { MessageDetail } from '../features/messages/screens/MessageDetail';
+import type { TileRect } from '../features/messages/screens/EnvelopeFlight';
 import {
   ComposeScreen,
   type ComposeHandle,
@@ -56,7 +57,8 @@ import { SenderGate } from '../features/messages/screens/SenderPicker';
 export type RootStackParamList = {
   // The root inbox reads the ACTIVE box from context (in-place switch) - no per-box route param.
   Messages: undefined;
-  MessageDetail: { boxId: string; messageId: string; folder?: MessageFolder };
+  /** `from`: the row's sender tile, which grows into the message's envelope (board Motion 1). */
+  MessageDetail: { boxId: string; messageId: string; folder?: MessageFolder; from?: TileRect };
   /** `boxId` null: opened from the merged view, so the sender is chosen first (027 US2). */
   Compose: { boxId: string | null };
   Search: undefined;
@@ -117,6 +119,15 @@ export interface AppData {
 const AppDataContext = createContext<AppData | null>(null);
 
 const SCREEN_OPTIONS = { headerShown: false } as const;
+/** A message opened from its row fades in over the list, so the row's tile can grow into its envelope. */
+const OPENED_FROM_ROW: NativeStackNavigationOptions = { headerShown: false, animation: 'fade', animationDuration: 150 };
+
+/** The platform's push, except for a message opened from its row (board Motion 1). */
+export function screenOptions({ route }: { route: RouteProp<RootStackParamList> }): NativeStackNavigationOptions {
+  const params = route.params;
+  const fromRow = route.name === 'MessageDetail' && params != null && 'from' in params && params.from != null;
+  return fromRow ? OPENED_FROM_ROW : SCREEN_OPTIONS;
+}
 
 /** How long the box switcher takes to slide in (`SlideInDown.duration(240)`), plus a frame. */
 const SWITCHER_ENTRANCE_MS = 260;
@@ -178,8 +189,8 @@ function MessagesScreen({
   }, [reloadAccounts]);
   const openSearch = useCallback(() => navigation.navigate('Search'), [navigation]);
   const openMessage = useCallback(
-    (messageId: string, folder: MessageFolder, boxId: string) =>
-      navigation.navigate('MessageDetail', { boxId, messageId, folder }),
+    (messageId: string, folder: MessageFolder, boxId: string, from?: TileRect) =>
+      navigation.navigate('MessageDetail', { boxId, messageId, folder, from }),
     [navigation],
   );
   const compose = useCallback(
@@ -562,6 +573,7 @@ function MessageDetailScreen({
       messageId={route.params.messageId}
       folder={route.params.folder ?? 'received'}
       onBack={() => navigation.goBack()}
+      openedFrom={route.params.from}
     />
   );
 }
@@ -658,7 +670,7 @@ export function AppNavigator(props: Readonly<AppData>) {
           {/* Root = the active box's inbox; the rest are pushed on top and back to it. */}
           <Stack.Navigator
             initialRouteName="Messages"
-            screenOptions={SCREEN_OPTIONS}
+            screenOptions={screenOptions}
             screenLayout={withRecordingStrip}
           >
             {/* Rendered FROM the registry rather than listed again by hand. The hand-written list

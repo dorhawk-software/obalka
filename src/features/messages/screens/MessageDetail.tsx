@@ -63,6 +63,7 @@ import { AttachmentRow, formatBytes } from './AttachmentRow';
 import { AddressLines } from './AddressLines';
 import { DeliveryRecordSlip } from './DeliveryRecord';
 import { DetailEnvelope } from './DetailEnvelope';
+import { TileAtRest, type TileRect } from './EnvelopeFlight';
 import { FictionBanner } from './FictionBanner';
 import { SignedOriginalSection } from './SignedOriginalSection';
 import {
@@ -172,14 +173,11 @@ export interface MessageDetailProps {
   /** Which folder it was opened from (008): a sent message orients you → recipient + isn't "read". */
   readonly folder?: MessageFolder;
   readonly onBack: () => void;
+  /** The row's tile it was opened from, which grows into the envelope (board Motion 1). */
+  readonly openedFrom?: TileRect;
 }
 
-export function MessageDetail({
-  account,
-  messageId,
-  folder = 'received',
-  onBack,
-}: MessageDetailProps) {
+export function MessageDetail({ account, messageId, folder = 'received', onBack, openedFrom }: MessageDetailProps) {
   const theme = useTheme();
   // czebox boxes get a persistent "Testovací" banner pushed in above the header (US3, no overlap).
   const showTestBanner = account.host === 'czebox';
@@ -458,7 +456,7 @@ export function MessageDetail({
     return (
       <YStack flex={1} backgroundColor={theme.bg}>
         {renderHeader(boxName)}
-        <DetailSkeleton />
+        {openedFrom ? <TileAtRest from={openedFrom} /> : <DetailSkeleton />}
       </YStack>
     );
   }
@@ -736,6 +734,7 @@ export function MessageDetail({
             envelope={envelope}
             account={account}
             attachmentCount={attachments ? attachments.length : null}
+            openedFrom={openedFrom}
           />
         ) : null}
         <YStack paddingHorizontal={isSent ? 24 : 16} paddingTop={isSent ? 24 : 0}>

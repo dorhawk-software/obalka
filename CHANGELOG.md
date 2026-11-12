@@ -47,6 +47,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Při odemknutí se pečeť zlomí a obálka otevře.** Poprvé od spuštění aplikace se pečeť s lehkým
   ťuknutím rozlomí, chlopeň se překlopí a pod ní je schránka; při dalším odemknutí se jen otevře chlopeň.
   Nepovedené ověření pečetí jen zatřese. Se sníženým pohybem se zámek jen prolne.
+- **Otevřená zpráva vyjde z obálky.** Dlaždice odesílatele se zvětší v obálku zprávy a z ní vyjede list
+  s předmětem; otevření zprávy už neťuká, čtení je tiché. Se sníženým pohybem se zpráva jen prolne.
 - **Odlesk na okénku obálky se pohne, když telefon nakloníte.** Jen o kousek a jen na obrazovce, kterou
   máte před sebou; se sníženým pohybem zůstane stát.
 

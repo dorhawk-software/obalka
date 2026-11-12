@@ -71,7 +71,6 @@ import {
 } from '../state/messageState';
 import { sentRowLabel } from '../state/rowLabel';
 import { DeliveryStateIcon } from './DeliveryStateIcon';
-import { haptics } from '../../../services/haptics';
 import { reportFailure } from '../../../services/telemetry/telemetry';
 import { touchSlop } from '../../../theme/touchTarget';
 import { t, plural } from '../../../i18n/strings';
@@ -99,6 +98,7 @@ import { CrossBoxLine, crossBoxSummary } from './CrossBoxLine';
 import { BoxPill } from './BoxPill';
 import { InboxHeader } from './InboxHeader';
 import { AttentionHead, AttentionSheet, RegisterRow, SectionHead, freshnessText } from './InboxRows';
+import type { TileRect } from './EnvelopeFlight';
 import { EmptyObject } from '../../../theme/EmptyObject';
 import { OpenEnvelope } from '../../../theme/objects/Envelope';
 import { draftsBus } from '../state/draftsBus';
@@ -326,11 +326,7 @@ export interface MessageListProps {
    * the active one - opening a row in whichever box happened to be selected would show a different
    * message, or none, and in this app the boxes are different legal entities.
    */
-  readonly onOpenMessage: (
-    messageId: string,
-    folder: MessageFolder,
-    boxId: string,
-  ) => void;
+  readonly onOpenMessage: (messageId: string, folder: MessageFolder, boxId: string, from?: TileRect) => void;
   readonly onCompose: () => void;
   /**
    * Re-authenticate this box when its session/credentials expired (reauth empty-state), handing over
@@ -486,14 +482,15 @@ export function MessageList({
    * row now receives THIS (stable) plus its own id, and closes over neither.
    */
   const openMessage = useCallback(
-    (messageId: string, folder_: MessageFolder) => {
-      haptics.selection(); // a light tick on opening a message
+    // No haptic: reading is quiet (board Motion 1).
+    (messageId: string, folder_: MessageFolder, from?: TileRect) => {
       onOpenMessage(
         messageId,
         folder_,
         // Per-box: always the active box. Merged: the row's own, resolved from the read that built
         // the list. Falls back to the active box, which is the only honest guess left.
         boxByMessageRef.current.get(messageId) ?? accountRef.current.boxId,
+        from,
       );
     },
     [onOpenMessage],

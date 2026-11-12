@@ -502,6 +502,24 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     glint stood still). Walked on Obalka_Demo with the emulator's virtual sensor: the band's centre at
     60 / 80 / 94 px tilted right / level / left. Not here: the scroll-out of a window that is still on
     a focused screen; it is a few small layers, and the sensor stops with the screen.
+  - I67 opening a message, the opening done 2026-11-12 (owner's picks, 2026-11-12: the agreed Message
+    layout, and the app's own transition). Opened from its row, the message fades in (150 ms, the
+    native stack's `fade`) instead of the platform's push; the row's sender tile, measured where it was
+    tapped, rests there while the message is read, then grows into the envelope in 280 ms, eased out,
+    from the sender's colour to the envelope's blue, and the envelope's print takes over as it lands.
+    The letter then rises 24 into its place over the envelope's edge in 280 ms, starting at 60 % of
+    the flight. The Motion board's sketch has the letter settling over a shrunk envelope; the agreed
+    Message board keeps the sheet coming out under the envelope, so it rises into that place. No
+    haptic: the selection tick the list gave on opening is gone (the board: "reading is quiet").
+    Opened from elsewhere (search, a notification, a sent row: no envelope) it is pushed as before,
+    and the letter rises alone. Reduce Motion: the fade only. Walked on Obalka_Demo, cards and the
+    register. Three Android findings: taking a native-driven style off the view once settled failed
+    Fabric's prop assertion and killed the app, so the styles stay on at their end (a test holds it);
+    the letter's own delayed animation waited for JS while the message rendered, 3-4 frames late, so
+    one clock on the UI thread drives both, the ease sampled into the interpolation; and styles made
+    on each render handed the view new nodes mid-flight, so they are made once. Not yet: iOS (the edge
+    swipe-back with the fade must be walked on an iOS build), and the board's "scrolling down tucks the
+    envelope into a 54 dp band with the window still showing", which is next.
 - [ ] T036 Capture each built screen in demo mode, both themes, and compare with its board.
 
 ## Phase 5: Round 2 on the canvas

@@ -3,7 +3,7 @@
 // with the gold flap while unread; the register lists the rest by day, the day printed once beside its
 // first row.
 
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useRef } from 'react';
 import { View } from 'react-native';
 import { XStack, YStack } from '../../../theme/ui';
 import { Body, Caption, Day, Heading, Meta, Numeral, Small, Subheading, Title } from '../../../theme/Typography';
@@ -27,6 +27,7 @@ import { freshnessLabel, rowDate, type DateSectionLabel } from '../state/groupBy
 import { attentionRowLabel, receivedRowLabel, termChipLabel } from '../state/rowLabel';
 import { formatTermDate } from './TermPicker';
 import { BoxPill } from './BoxPill';
+import { openFromTile, type TileRect } from './EnvelopeFlight';
 
 /** Localized date-section header (a fixed bucket, or "Month Year" for older groups). */
 export function sectionTitle(label: DateSectionLabel): string {
@@ -123,14 +124,20 @@ export const AttentionSheet = memo(function AttentionSheetView({
   /** Why this row qualified. Null is treated as "say nothing", never as fiction. */
   readonly entry: AttentionEntry | null;
   readonly now: number;
-  readonly onOpen: (messageId: string, folder: MessageFolder) => void;
+  /** `from`: where the sender's tile was, so it can grow into the message's envelope. */
+  readonly onOpen: (messageId: string, folder: MessageFolder, from?: TileRect) => void;
   readonly folder: MessageFolder;
   /** Opens the FAQ answer for a term this row uses. */
   readonly onExplain: (focus: FaqId) => void;
   /** Set only in the merged view, where a row has to say which box it belongs to. */
   readonly boxAccount?: DataBoxAccount;
 }) {
-  const onPress = useCallback(() => onOpen(message.id, folder), [onOpen, message.id, folder]);
+  const tile = useRef<View>(null);
+  const tileColor = avatarColor(message.sender || '—');
+  const onPress = useCallback(
+    () => openFromTile(tile.current, { color: tileColor, radius: 11 }, from => onOpen(message.id, folder, from)),
+    [onOpen, message.id, folder, tileColor],
+  );
   const theme = useTheme();
   const tone = chipTone('statusFiction', theme);
   const servedAt = servedByFiction(message);
@@ -165,7 +172,9 @@ export const AttentionSheet = memo(function AttentionSheetView({
         })}
         testID={`message-${message.id}`}
       >
-        <EnvelopeTile name={sender} color={avatarColor(sender)} sealed={unread} />
+        <View ref={tile} collapsable={false}>
+          <EnvelopeTile name={sender} color={tileColor} sealed={unread} />
+        </View>
         <YStack flex={1} minWidth={0} gap={2}>
           <XStack justifyContent="space-between" gap={10}>
             <Heading flexShrink={1} numberOfLines={2}>
@@ -298,12 +307,17 @@ export const RegisterRow = memo(function RegisterRowView({
   readonly termDate: number | null;
   /** The first row of its day prints the day; the rest of that day leave the column blank. */
   readonly showDay: boolean;
-  readonly onOpen: (messageId: string, folder: MessageFolder) => void;
+  readonly onOpen: (messageId: string, folder: MessageFolder, from?: TileRect) => void;
   readonly folder: MessageFolder;
   /** Set ONLY in the merged view, where a row has to say which box it belongs to. */
   readonly boxAccount?: DataBoxAccount;
 }) {
-  const onPress = useCallback(() => onOpen(message.id, folder), [onOpen, message.id, folder]);
+  const tile = useRef<View>(null);
+  const tileColor = avatarColor(message.sender || '—');
+  const onPress = useCallback(
+    () => openFromTile(tile.current, { color: tileColor, radius: 7 }, from => onOpen(message.id, folder, from)),
+    [onOpen, message.id, folder, tileColor],
+  );
   const theme = useTheme();
   const sender = message.sender || '—';
   const subject = message.subject || t('messages.noSubject');
@@ -342,7 +356,9 @@ export const RegisterRow = memo(function RegisterRowView({
           {subject}
         </Body>
         <XStack alignItems="center" gap={6}>
-          <EnvelopeTile name={sender} color={avatarColor(sender)} size={24} />
+          <View ref={tile} collapsable={false}>
+            <EnvelopeTile name={sender} color={tileColor} size={24} />
+          </View>
           <Small color={theme.textMuted} numberOfLines={1} flexShrink={1}>
             {sender}
           </Small>
