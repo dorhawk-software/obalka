@@ -358,8 +358,11 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   geometry in `print.ts`, shadows as `objectShadow`/`objectFilter` in `depth.ts`, DESIGN.md › The
   printed objects; measured: the dark window is 2.47:1 on the envelope, as the agreed board draws it
   (not a 1.4.11 failure: its words identify it), pinned in the test.
-- [ ] T021 The offset icon family (`src/theme/offsetIcons.tsx`), one drawing per glyph from the canvas's
+- [x] T021 The offset icon family (`src/theme/offsetIcons.tsx`), one drawing per glyph from the canvas's
   `<symbol>` source; plane colour from the theme; tests that every glyph renders in both themes.
+  Done 2026-11-12: the 20 glyphs of the board, 85 tests (plane colour and 1.3 offset, ink stroke 1.75
+  with round ends, the gold plane, hidden from assistive technology); a plane printed on register
+  fails 40 of them. Not yet used by a screen: each screen takes its glyphs in Phase 4.
 - [ ] T022 The objects, one source file each: `Envelope` (with the avatar form), `Window`, `SecurityTint`,
   `Postmark`, `Stamp`, `Slip`, `AirmailStrip`.
 
