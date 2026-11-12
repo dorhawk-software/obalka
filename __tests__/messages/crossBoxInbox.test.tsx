@@ -141,16 +141,12 @@ describe('the line in the inbox', () => {
     ]);
     expect(await view.findByTestId('message-served')).toBeTruthy();
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent('Jinde: připomínka za 2 dny');
-    // The line's own top hairline closes the block, so the block's footer steps aside.
-    expect(view.queryByTestId('attentionEnd')).toBeNull();
   });
 
-  it('is not inserted when the other boxes have nothing to say, and the block stays closed', async () => {
-    // `crossBoxAttention` never builds a box like this; the inbox must still not trust that. A line
-    // section that drew nothing would have taken the block's footer with it.
+  it('is not inserted when the other boxes have nothing to say', async () => {
+    // `crossBoxAttention` never builds a box like this; the inbox must still not trust that.
     const view = await inbox([other()]);
     expect(await view.findByTestId('message-served')).toBeTruthy();
     expect(view.queryByTestId('crossBoxLine')).toBeNull();
-    expect(view.getByTestId('attentionEnd')).toBeTruthy();
   });
 });

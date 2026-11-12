@@ -251,7 +251,7 @@ describe('the static audit', () => {
 
   it('knows every role component', () => {
     expect([...ROLES].sort()).toEqual(
-      ['Badge', 'Body', 'BodyStrong', 'Caption', 'Code', 'Display', 'Heading', 'Hero', 'Label', 'Meta', 'Numeral', 'Overline', 'Small', 'SmallStrong', 'Subheading', 'Tag', 'Title', 'Value'],
+      ['Badge', 'Body', 'BodyStrong', 'Caption', 'Code', 'Day', 'Display', 'Heading', 'Hero', 'Label', 'Meta', 'Numeral', 'Overline', 'Small', 'SmallStrong', 'Subheading', 'Tag', 'Title', 'Value'],
     );
   });
 

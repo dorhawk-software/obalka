@@ -168,3 +168,5 @@ export const Subheading = roleComponent('subheading', 'text');
 export const Hero = roleComponent('hero', 'text');
 /** The attention group's count (44) - a number standing on its own. */
 export const Numeral = roleComponent('numeral', 'text');
+/** The day of the month in the inbox's register: printed once per day, beside its first row. */
+export const Day = roleComponent('day', 'text');

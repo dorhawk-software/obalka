@@ -17,6 +17,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 - **Horní část schránky je přední strana obálky.** Jméno schránky je v okénku obálky pod zlatou
   chlopní; klepnutím na okénko přepnete schránku, vedle je hledání a pod ním Přijaté a Odeslané.
+- **Zprávy, které na vás čekají, leží jako listy papíru, ostatní jsou v knize zpráv po dnech.** Obálka
+  odesílatele je zalepená zlatou chlopní, dokud zprávu nepřečtete, a pod zprávou doručenou fikcí je
+  vidět okraj druhé obálky. Den a den v týdnu stojí jednou u první zprávy dne.
 
 ### Opraveno
 

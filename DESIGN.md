@@ -126,6 +126,11 @@ typography:
     fontWeight: 800
     lineHeight: "36px"
     letterSpacing: "-2px"
+  day:
+    fontFamily: "BricolageGrotesque-ExtraBold, Bricolage Grotesque, system-ui, sans-serif"
+    fontSize: "24px"
+    fontWeight: 800
+    lineHeight: "26px"
 rounded:
   chip: "8px"
   tile: "11px"
@@ -273,42 +278,11 @@ A warm paper ramp with two accents - a brand blue that acts, and a gold that not
 ### The printed objects
 
 "Obálka is printed matter" (spec 031; the identity agreed by the owner on 2026-11-11, every board by
-2026-11-12, on the design canvas). Six objects, each with one job; objects play, chrome doesn't. The
-values are read from the canvas's source. Colours are in `src/theme/theme.ts`, the geometry in
-`src/theme/print.ts`, the shadows in `src/theme/depth.ts` (`objectShadow`, `objectFilter`).
-
-- **Envelope** (`#2563A6`, **fixed in both appearances**): a box, and what arrives in it. The inbox
-  header, a message, compose, the sent result, the box avatars. Its folds are `envelope-crease`
-  (`rgba(9,30,64,.22)`). Words on it are `on-solid`; its secondary words and the postmark are
-  `envelope-ink-soft` (`rgba(255,255,255,.92)`, 5.51:1 composited). As an avatar tile (a box, a
-  sender) it is a small envelope: a sealed gold flap while unread, else an `envelope-fold` line
-  (`rgba(255,255,255,.55)`). The inbox header is its front (lower corners 22, the flap shaded by
-  `print-shade`); controls printed on it take `envelope-well`, `envelope-button`, `envelope-ink-faint`
-  and `envelope-plane`.
-- **Flap** (`#FFC305`, fixed): the envelope's gold, and the stamp-shaped compose button. Words on it
-  are `on-gold`; the compose stamp's frame is `flap-frame` (`rgba(33,27,18,.28)`).
-- **Window** (`#FFFDF8` / `#2A251E`): who it is addressed to - the box switcher, the recipient in
-  compose (also its search field), the login name while signing in. Its edge is an inset shade (the
-  envelope's paper over it) and a film that catches the light, over a `window-glint` cast
-  (`rgba(214,228,246,.14)` / `.03`). In dark it is 2.47:1 against the
-  envelope; the words in it identify it, so 1.4.11's boundary floor does not apply, and the number is
-  pinned in `contrast.test.ts`.
-- **Security tint**: the inside, the private - chevrons of the envelope's blue, 16 x 14, at 16 % (light)
-  or 12 % (dark), behind the lock and the slips. The lining of an open envelope is the finer `lining`
-  print (`#9EC0EA`).
-- **Postmark**: a date ISDS certifies - two rings, the waves, the word and the date in
-  `envelope-ink-soft`. It lands when ISDS accepts a send (board Motion).
-- **Stamp**: what a send costs - `stamp-paper`, a `stamp-frame` rule, `stamp-ink` for the value, the
-  muted `stamp-label` for the small print, perforated (4 every 12; the small stamp 3.5 every 10). Light
-  in both appearances: it is paper stuck on the envelope. A used stamp is cancelled in `cancel-ink`.
-- **Slip**: a record you keep - the delivery record, the recovery key, the transfer code. A sheet with
-  a perforated top (5 every 14) and a faint `slip-mark` ring.
-- **Airmail strip**: the test environment, stripes of envelope, paper, flap and paper at 135 degrees.
-- **Offset glyphs**: a 1.75 ink stroke with one plane printed 1.3 off register, `icon-plane`
-  (`#CFE0F5` / `#2F4A6E`), or `icon-plane-gold` (`#F3D891` / `#5A4716`) on gold. Plain controls stay
-  Lucide.
-- **Seal**: the lock's wax seal, `seal-light` to `seal-shade`.
-- **Sheet edge** (`#F7F1E4` / `#231F19`): the second envelope's edge under an attention sheet.
+2026-11-12, on the design canvas). The envelope, its flap and window, the security tint, the postmark,
+the stamp, the slip and the airmail strip each have one job; objects play, chrome doesn't. Colours are
+in `src/theme/theme.ts`, geometry in `src/theme/print.ts`, shadows in `src/theme/depth.ts`, the
+components in `src/theme/objects/`. **What each one is for and the tokens it takes:
+[docs/printed-objects.md](docs/printed-objects.md).**
 
 The envelope, flap, stamp, slip mark and seal keep their colours at night - printed matter does not
 change with the room's light. Only what is paper on the screen (the window, the planes, the sheet's
@@ -372,6 +346,7 @@ Sans holds them.
 - **Hero** (Bricolage ExtraBold, 34/41, −1): the Welcome title, and nothing else.
 - **Numeral** (Bricolage ExtraBold, 44/36, −2): the attention group's count. Its line is shorter than
   its ink on purpose; the Whole Ink Rule below keeps it whole on iOS.
+- **Day** (Bricolage ExtraBold, 24/26): the day of the month in the inbox's register, once per day.
 
 **12 is the floor (decided 2026-10-04, spec 028).** Until then the roles stopped at 13 while the design
 used 14, 12 and 11 throughout - 150-odd call sites sized a 13 or 15 role by hand, so the same 12px date

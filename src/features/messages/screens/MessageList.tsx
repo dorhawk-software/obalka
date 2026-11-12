@@ -25,7 +25,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Button, XStack, YStack } from '../../../theme/ui';
-import { Badge, Body, Heading, Label, Meta, Numeral, Small, SmallStrong, Subheading, Tag, Value } from '../../../theme/Typography';
+import { Badge, Body, Heading, Meta, Small, SmallStrong, Tag, Value } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   AlertIcon,
@@ -37,7 +37,6 @@ import {
   HelpIcon,
   MailGlyph,
   SendGlyph,
-  StatusAcceptedIcon,
   TimerIcon,
   VaultIcon,
   WifiOffIcon,
@@ -66,18 +65,13 @@ import {
   rowDate,
   type DateSectionLabel,
 } from '../state/groupByDate';
-import { sentFictionCountdown, servedByFiction } from '../state/fikce';
+import { sentFictionCountdown } from '../state/fikce';
 import {
   fictionCountdownTone,
   messageStatus,
   showsListChip,
 } from '../state/messageState';
-import {
-  attentionRowLabel,
-  receivedRowLabel,
-  sentRowLabel,
-  termChipLabel,
-} from '../state/rowLabel';
+import { sentRowLabel } from '../state/rowLabel';
 import { DeliveryStateIcon } from './DeliveryStateIcon';
 import { haptics } from '../../../services/haptics';
 import { reportFailure } from '../../../services/telemetry/telemetry';
@@ -106,6 +100,7 @@ import type { BoxAttention } from '../state/crossBox';
 import { CrossBoxLine, crossBoxSummary } from './CrossBoxLine';
 import { BoxPill } from './BoxPill';
 import { InboxHeader } from './InboxHeader';
+import { AttentionHead, AttentionSheet, RegisterRow, SectionHead } from './InboxRows';
 import { draftsBus } from '../state/draftsBus';
 
 /**
@@ -161,22 +156,6 @@ type InboxSection =
   // `renderSectionHeader` - which is what puts it between this box's attention block and its date
   // sections, scrolling with the list, instead of floating above everything as a card did.
   | { key: string; kind: 'crossBox'; data: []; boxes: readonly BoxAttention[] };
-
-/** Localized date-section header (a fixed bucket, or "Month Year" for older groups). */
-function sectionTitle(label: DateSectionLabel): string {
-  switch (label.kind) {
-    case 'today':
-      return t('messages.section.today');
-    case 'yesterday':
-      return t('messages.section.yesterday');
-    case 'thisWeek':
-      return t('messages.section.thisWeek');
-    case 'thisMonth':
-      return t('messages.section.thisMonth');
-    case 'month':
-      return `${t(`messages.month.${label.month}`)} ${label.year}`;
-  }
-}
 
 /**
  * The design's slim sync bar: a RESERVED 3px strip (so the list never shifts) in which a 38%-wide
@@ -308,6 +287,14 @@ function sentCountdownLabel(daysRemaining: number): string {
       ? t('status.fikce.today')
       : t(`status.fikce.in.${plural(daysRemaining)}`, { n: daysRemaining });
   return `${t('status.notPickedUp')} · ${tail}`;
+}
+
+/** Whether two delivery times fall on the same local day (a missing one never matches). */
+function sameDay(a: number | null, b: number | null): boolean {
+  if (a == null || b == null) {
+    return false;
+  }
+  return new Date(a).toDateString() === new Date(b).toDateString();
 }
 
 /**
@@ -1048,8 +1035,7 @@ export function MessageList({
     // there is no "elsewhere" left to report.
     //
     // Asked of the sentence rather than of the box count, the same test `CrossBoxLine` makes before
-    // drawing: a section whose line then renders nothing would still take the attention block's
-    // closing footer away (`crossBoxFollowsAttention`), leaving it open-ended.
+    // drawing, so the list never holds a section that renders nothing.
     if (!unified && crossBox && crossBoxSummary(crossBox, now) !== '') {
       sections.push({
         key: 'crossBox',
@@ -1062,12 +1048,6 @@ export function MessageList({
       sections.push({ key: s.key, kind: 'date', label: s.label, data: s.data });
     }
   }
-
-  // Whether the "Jinde" line is the next thing after the attention block - it is always pushed
-  // directly after it, so its presence is the whole test.
-  const crossBoxFollowsAttention =
-    sections.some(x => x.kind === 'attention') &&
-    sections.some(x => x.kind === 'crossBox');
 
   // The scrollable body. The header, the two strips and the compose FAB are STATIC siblings of it
   // (design): they are pinned in every state - loading, load error, empty and populated alike.
@@ -1192,90 +1172,12 @@ export function MessageList({
             );
           }
           if (section.kind === 'attention') {
-            // Design's signature header: an OVERSIZED gold Bricolage numeral beside the title + a
-            // one-line reason. It OPENS the shared `card` attention block - the hairline here is the
-            // block's top edge, each row carries its own, and the footer closes it (see below).
             return (
-              <YStack
-                backgroundColor={theme.surface}
-                borderTopWidth={1}
-                borderColor={theme.border}
-              >
-                <XStack
-                  paddingTop={18}
-                  paddingHorizontal={18}
-                  paddingBottom={12}
-                  alignItems="center"
-                  gap={12}
-                >
-                  <Numeral
-                    // The design draws this numeral on a 36pt line, tighter than the glyph. Android
-                    // paints past a line box; iOS clips to it, and cut off the top of the "2" (iPhone,
-                    // 2026-09-24). The role draws it on a line its ink fits and takes the extra back
-                    // with margins (Typography.tsx), so the row keeps the design's 36pt on both.
-                    // `goldInk`, not `gold`: this numeral is the COUNT, stated in no other text on
-                    // the screen, and plain gold reads 2.17:1 on `surface` - under even the 3:1 that
-                    // large text is held to. Unchanged in dark mode, where the two are the same value.
-                    color={theme.goldInk}
-                  >
-                    {String(section.data.length)}
-                  </Numeral>
-                  <YStack flex={1} minWidth={0}>
-                    <Heading fontWeight="800"
-                      color={theme.text}
-                      accessibilityRole="header"
-                    >
-                      {t('messages.attention')}
-                    </Heading>
-                    <Meta fontWeight="600"
-                      dense
-                      color={theme.textFaint}
-                      marginTop={4}
-                      numberOfLines={2}
-                    >
-                      {attentionSubtitle(section.summary)}
-                    </Meta>
-                  </YStack>
-                </XStack>
-              </YStack>
+              <AttentionHead count={section.data.length} summary={attentionSubtitle(section.summary)} />
             );
           }
-          return (
-            <YStack
-              backgroundColor={theme.bg}
-              paddingTop={18}
-              paddingHorizontal={18}
-              paddingBottom={8}
-            >
-              {/* Dnes / Tento týden / a month - a screen reader can jump between them (001 T042). */}
-              <Subheading
-                accessibilityRole="header"
-                dense
-              >
-                {sectionTitle(section.label)}
-              </Subheading>
-            </YStack>
-          );
+          return <SectionHead label={section.label} />;
         }}
-        renderSectionFooter={({ section }) =>
-          // Closes the attention block: its bottom hairline, then the 10px gap the design leaves
-          // before the first date header.
-          //
-          // …unless the "Jinde" line comes next, in which case there is nothing to leave a gap
-          // BEFORE: the line carries its own top hairline, so this footer would add a second one
-          // with 11px of paper between them, and the line would float away from the block instead of
-          // closing it. Reported exactly that way. The gap exists to separate the block from a date
-          // HEADER, which draws no top edge of its own; the line does, so it needs no help.
-          section.kind === 'attention' && !crossBoxFollowsAttention ? (
-            <YStack
-              height={11}
-              backgroundColor={theme.bg}
-              borderTopWidth={1}
-              borderColor={theme.border}
-              testID="attentionEnd"
-            />
-          ) : null
-        }
         // Not `ListHeaderComponent` any more - see where it is rendered as a static sibling. Kept
         // out of the list so it survives the states where the list does not exist.
         refreshControl={
@@ -1308,10 +1210,10 @@ export function MessageList({
           // would be a claim the app cannot make while it has not been able to look.
           state.status === 'reauth' ? reauthEmptyState : emptyState
         }
-        renderItem={({ item, section }) => {
+        renderItem={({ item, section, index }) => {
           if (section.kind === 'attention') {
             return (
-              <AttentionCard
+              <AttentionSheet
                 message={item}
                 entry={section.reasons.get(item.id) ?? null}
                 now={now}
@@ -1334,11 +1236,14 @@ export function MessageList({
               />
             );
           }
+          // The day is printed once, beside the first row of that day in the section.
+          const before = index > 0 ? section.data[index - 1] : null;
           return (
-            <ReceivedRow
+            <RegisterRow
               message={item}
               now={now}
               termDate={termDates.get(item.id) ?? null}
+              showDay={before == null || !sameDay(before.deliveryTime, item.deliveryTime)}
               onOpen={openMessage}
               folder={shownFolder}
               boxAccount={boxOf(item.id)}
@@ -1577,316 +1482,6 @@ function MessageRowSkeleton() {
     </XStack>
   );
 }
-
-/**
- * "Vyžaduje pozornost" row - a FLAT, full-bleed row inside the shared attention block (the block's
- * `card` surface + hairlines come from the section header/footer): a 40px avatar column, then the
- * quiet sender + date, the loud Bricolage subject, and the fiction notice.
- *
- * The notice carries a PILL now, not a bare icon+label: it states a fact that already happened
- * ("Doručeno fikcí 20. 6. · lhůta už běží") rather than a countdown, and the design gives it the same
- * gold `statusFiction` tone the sent side uses - so the same event looks the same from either side.
- *
- * The pill follows the REASON the row is in the group (010 US2), which is why `entry` is a prop rather
- * than something this card re-derives. Since 010 the group also holds user deadlines and plain unread
- * messages; rendering the fiction pill on those would tell someone their message had been served by
- * law when it had not - a false legal claim on the strength of a layout convenience (Principle VI).
- * A row with nothing to say (`unread`) shows no pill at all - EXCEPT in the merged view, where every
- * row owes the reader its box regardless of why it is in the group.
- */
-const AttentionCard = memo(function AttentionCardView({
-  message,
-  entry,
-  now,
-  onOpen,
-  folder,
-  onExplain,
-  boxAccount,
-}: {
-  readonly message: MessageEnvelope;
-  /** Why this row qualified. Null is treated as "say nothing", never as fiction. */
-  readonly entry: AttentionEntry | null;
-  readonly now: number;
-  readonly onOpen: (messageId: string, folder: MessageFolder) => void;
-  readonly folder: MessageFolder;
-  /** Set only in the merged view - see `ReceivedRow`. */
-  readonly boxAccount?: DataBoxAccount;
-  /** Opens the FAQ answer for a term this row uses. */
-  readonly onExplain: (focus: FaqId) => void;
-}) {
-  const onPress = useCallback(
-    () => onOpen(message.id, folder),
-    [onOpen, message.id, folder],
-  );
-  const theme = useTheme();
-  const tone = chipTone('statusFiction', theme);
-  // Read from the MESSAGE, not from `entry.reason`. A message can be both served by fiction and
-  // carry a deadline, and the reason is only which of the two put it in the group - suppressing the
-  // pill because the deadline ranked higher would hide the fact that a legal clock is running.
-  const servedAt = servedByFiction(message);
-  const termDate =
-    entry != null && (entry.reason === 'reminder' || entry.reason === 'estimate')
-      ? entry.date
-      : null;
-  const sender = message.sender || '—';
-  // The fiction pill's two halves, kept as parts: the chip joins them with the design's middle dot,
-  // the label with the sentence rule that knows "3. 6." has already closed itself. One source, so the
-  // row cannot say less than the pill shows.
-  const fictionParts =
-    servedAt != null
-      ? [
-          `${t('status.byFiction')} ${rowDate(servedAt, now)}`,
-          t('status.fikce.running'),
-        ]
-      : null;
-  return (
-    <XStack
-      backgroundColor={theme.surface}
-      borderTopWidth={1}
-      borderColor={theme.border}
-      paddingVertical={14}
-      paddingHorizontal={18}
-      gap={12}
-      alignItems="flex-start"
-      pressStyle={{ backgroundColor: theme.surfaceAlt }}
-      onPress={onPress}
-      accessibilityRole="button"
-      // This is the row the whole attention group exists for - a legal clock and a deadline, drawn as
-      // two pills. Announced fragment by fragment it was the least legible row in the app.
-      accessibilityLabel={attentionRowLabel({
-        sender,
-        subject: message.subject || t('messages.noSubject'),
-        date: rowDate(message.deliveryTime, now),
-        unread: isUnread(message.state),
-        fiction: fictionParts,
-        term: termDate != null ? termChipLabel(termDate, now) : null,
-      })}
-      testID={`message-${message.id}`}
-    >
-      <Avatar name={sender} size={40} />
-      <YStack flex={1} minWidth={0}>
-        <XStack alignItems="center" gap={8}>
-          {/* The attention row carries the same unread dot as an ordinary received row - a message
-              served by fiction is very much still unread, and hiding that here read as "handled". */}
-          {isUnread(message.state) ? (
-            // Same ring as the received row's dot - see there.
-            <YStack
-              width={7}
-              height={7}
-              flexShrink={0}
-              borderRadius={999}
-              backgroundColor={theme.gold}
-              borderWidth={1}
-              borderColor={theme.goldInk}
-            />
-          ) : null}
-          <Label flex={1} minWidth={0} numberOfLines={1}>
-            {sender}
-          </Label>
-          <Meta fontWeight="600" flexShrink={0} color={theme.textFaint}>
-            {rowDate(message.deliveryTime, now)}
-          </Meta>
-        </XStack>
-        <Subheading fontWeight="600" // Bricolage 600 - the Bold face would render 700
-          marginTop={2}
-          numberOfLines={2}
-        >
-          {message.subject || t('messages.noSubject')}
-        </Subheading>
-        {/* Both chips can be present. They WRAP rather than truncate - a legal status abbreviated to
-            fit beside a deadline would be the same kind of half-truth as not showing it. */}
-        {servedAt != null || termDate != null || boxAccount ? (
-          <XStack marginTop={8} flexWrap="wrap" gap={6}>
-            {servedAt != null ? (
-              // Tappable, because this pill is the app saying a legal clock is running using a term
-              // - "fikce", "lhůta" - that its own audience of ordinary citizens and sole traders has
-              // no reason to know. The answer already exists in `content/faq.ts`; this is the route
-              // to it (2026-09-09 critique). Its own press target, so it does not steal the row's.
-              <XStack
-                alignItems="center"
-                gap={6}
-                backgroundColor={tone.bg}
-                borderRadius={8}
-                paddingVertical={6}
-                paddingLeft={8}
-                paddingRight={10}
-                // The wrapping the comment above promises only worked BETWEEN the chips. A single
-                // chip wider than the row still ran off the edge, because nothing inside it could
-                // give: the sentence is longer in English ("the deadline is already running" against
-                // "lhůta už běží") and it pushed its own help mark off screen, so the row lost the
-                // one affordance that explains the word "fiction" to the people who need it.
-                flexShrink={1}
-                maxWidth="100%"
-                hitSlop={touchSlop({ height: 26 })}
-                pressStyle={{ opacity: 0.65 }}
-                onPress={() => onExplain('fiction')}
-                accessibilityRole="button"
-                accessibilityLabel={`${fictionParts?.join(' · ')}, ${t(
-                  'faq.explain',
-                )}`}
-                testID="explainFiction"
-              >
-                <StatusAcceptedIcon
-                  size={14}
-                  color={tone.fg}
-                  knockout={tone.bg}
-                />
-                {/* Shrinks and wraps to a second line; the two icons do not (RN defaults them to
-                    `flexShrink: 0`), so the legal status can grow without costing the help mark. */}
-                <Meta fontWeight="700" flexShrink={1} color={tone.fg}>
-                  {fictionParts?.join(' · ')}
-                </Meta>
-                <HelpIcon size={13} color={tone.fg} />
-              </XStack>
-            ) : null}
-            {termDate != null ? <TermChip date={termDate} now={now} /> : null}
-            {boxAccount ? <BoxPill account={boxAccount} /> : null}
-          </XStack>
-        ) : null}
-      </YStack>
-    </XStack>
-  );
-});
-
-/** A flat received row (the "Dříve" remainder): avatar + optional unread dot + sender + date + subject. */
-/**
- * The user's own deadline chip (010 US2). Blue, because it is the only thing on a row the USER put
- * there - every other chip in the app reports something ISDS said.
- *
- * One component for both places it appears (the flat received row and the attention card), so the two
- * cannot drift apart in radius, height or wording - the metrics come from the scale, not from each
- * screen's taste (Principle V).
- */
-function TermChip({ date, now }: { readonly date: number; readonly now: number }) {
-  const theme = useTheme();
-  const blue = chipTone('userBlue', theme);
-  // The wording lives in `rowLabel.ts` because the row's spoken label has to say the same thing this
-  // chip shows, and two copies of "za 3 dny" is exactly the pair that drifts.
-  const label = termChipLabel(date, now);
-  return (
-    <XStack
-      minHeight={22}
-      paddingHorizontal={10}
-      borderRadius={8}
-      alignItems="center"
-      backgroundColor={blue.bg}
-    >
-      <Tag color={blue.fg}>
-        {label}
-      </Tag>
-    </XStack>
-  );
-}
-
-const ReceivedRow = memo(function ReceivedRowView({
-  message,
-  now,
-  termDate,
-  onOpen,
-  folder,
-  boxAccount,
-}: {
-  readonly message: MessageEnvelope;
-  readonly now: number;
-  /** The user's reminder date on this message, or null. */
-  readonly termDate: number | null;
-  readonly onOpen: (messageId: string, folder: MessageFolder) => void;
-  readonly folder: MessageFolder;
-  /**
-   * Set ONLY in the merged view, where a row has to say which box it belongs to.
-   *
-   * Undefined in a per-box inbox, where every row shares one box and repeating it on all of them
-   * would be noise. This single prop is the entire difference between the two views.
-   */
-  readonly boxAccount?: DataBoxAccount;
-}) {
-  const onPress = useCallback(
-    () => onOpen(message.id, folder),
-    [onOpen, message.id, folder],
-  );
-  const theme = useTheme();
-  const sender = message.sender || '—';
-  const unread = isUnread(message.state);
-  return (
-    <XStack
-      paddingHorizontal={18}
-      paddingVertical={13}
-      gap={12}
-      alignItems="flex-start"
-      borderTopWidth={1}
-      borderTopColor={theme.border}
-      pressStyle={{ backgroundColor: theme.surfaceAlt }}
-      onPress={onPress}
-      accessibilityRole="button"
-      // One stop, one sentence - without it the row is read out as four unrelated fragments and the
-      // gold unread dot, which carries meaning no announcement had, is silent.
-      accessibilityLabel={receivedRowLabel({
-        sender,
-        subject: message.subject || t('messages.noSubject'),
-        date: rowDate(message.deliveryTime, now),
-        unread,
-        term: termDate != null ? termChipLabel(termDate, now) : null,
-      })}
-      testID={`message-${message.id}`}
-    >
-      <Avatar name={sender} size={38} />
-      <YStack flex={1} gap={2}>
-        <XStack alignItems="center" gap={8}>
-          {unread ? (
-            // The design's gold dot, kept - plus the ring that makes it visible. Gold is 2.17:1 on
-            // `surface`, and this dot is the ONLY unread cue a sighted user gets (the row's a11y
-            // label carries it for everyone else), so 1.4.11's 3:1 has nothing else to lean on.
-            // In dark mode `goldInk` IS `gold`, so the ring draws nothing there.
-            <YStack
-              width={7}
-              height={7}
-              borderRadius={999}
-              backgroundColor={theme.gold}
-              borderWidth={1}
-              borderColor={theme.goldInk}
-            />
-          ) : null}
-          {/* Sender is the PRIMARY line - always bold + dark (heavier than the subject below), per the
-              design. Read/unread is signalled by the gold dot alone, not by thinning the sender.
-              `dense`: the design sets no line-height on these, so they take the font's metric leading. */}
-          <SmallStrong
-            flex={1}
-            // Without a zero floor a flex child refuses to shrink below its content, so at a large
-            // text size the sender ran into the date and its own ellipsis was clipped mid-glyph.
-            minWidth={0}
-            dense
-            color={theme.text}
-            numberOfLines={1}
-          >
-            {sender}
-          </SmallStrong>
-          <Meta fontWeight="600"
-            flexShrink={0}
-            color={theme.textFaint}
-            dense
-            numberOfLines={1}
-          >
-            {rowDate(message.deliveryTime, now)}
-          </Meta>
-        </XStack>
-        <Value fontWeight="500"
-          color={theme.textMuted}
-          numberOfLines={1}
-        >
-          {message.subject || t('messages.noSubject')}
-        </Value>
-        {/* No reserved slot: the list waits for the reminders read, so a row is painted at its final
-            height once and never grows under the ones below it (Principle V - see `reminders`). */}
-        {termDate != null || boxAccount ? (
-          <XStack marginTop={6} alignItems="center" gap={6} flexWrap="wrap">
-            {termDate != null ? <TermChip date={termDate} now={now} /> : null}
-            {boxAccount ? <BoxPill account={boxAccount} /> : null}
-          </XStack>
-        ) : null}
-      </YStack>
-    </XStack>
-  );
-});
 
 /**
  * A flat sent row: avatar + you→recipient (arrow + name) + date + subject + the delivery-state glyph,

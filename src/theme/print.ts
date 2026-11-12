@@ -126,6 +126,9 @@ export const envelopeShape = {
  */
 export const envelopeTile = {
   radius: 11,
+  /** The small tile beside a sender in the register (24 pt): plain, its corner `smallRadius`. */
+  smallRadius: 7,
+  smallBelow: 30,
   flap: 'M0 0H42V5L24 16Q21 18 18 16L0 5Z',
   flapHeight: 20,
   fold: 'M5 9l16 11 16-11',

@@ -28,6 +28,7 @@
 //   subheading - a month header, a card's own title (15)        [Bricolage Grotesque]
 //   hero       - the Welcome title (34)                         [Bricolage Grotesque]
 //   numeral    - the attention count (44)                       [Bricolage Grotesque]
+//   day        - the day of the month beside a list row (24)    [Bricolage Grotesque]
 //
 // The last four were added on 2026-10-04 (spec 028): the design used 14, 12 and 11 all along, and with
 // no role for them 150-odd call sites sized a 13 or 15 role by hand.
@@ -50,7 +51,8 @@ export type TextRole =
   | 'code'
   | 'subheading'
   | 'hero'
-  | 'numeral';
+  | 'numeral'
+  | 'day';
 
 export interface TypeStyle {
   fontSize: number;
@@ -97,6 +99,7 @@ export const type: Record<TextRole, TypeStyle> = {
   subheading: { fontSize: 15, lineHeight: 19, fontWeight: '700', letterSpacing: 0, fontFamily: fonts.displayBold },
   hero: { fontSize: 34, lineHeight: 41, fontWeight: '800', letterSpacing: -1, fontFamily: fonts.displayXBold },
   numeral: { fontSize: 44, lineHeight: 36, fontWeight: '800', letterSpacing: -2, fontFamily: fonts.displayXBold },
+  day: { fontSize: 24, lineHeight: 26, fontWeight: '800', letterSpacing: 0, fontFamily: fonts.displayXBold },
 };
 
 // Each family's own METRIC leading, in ems: (hhea ascender − descender + lineGap) / unitsPerEm, read

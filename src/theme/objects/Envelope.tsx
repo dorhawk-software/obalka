@@ -9,7 +9,7 @@ import { useTheme } from '../ThemeProvider';
 import { monogram } from '../avatarPalette';
 import { objectShadow } from '../depth';
 import { envelopeShape, envelopeTile } from '../print';
-import { fonts } from '../typeScale';
+import { fonts, type } from '../typeScale';
 
 /**
  * The front of an envelope around `children` (the sender, the window, the postmark), which set its
@@ -74,12 +74,43 @@ export function EnvelopeTile({
   readonly name: string | null | undefined;
   readonly color: string;
   readonly sealed?: boolean;
-  /** 42 for a sender in a list, 40 for a box. */
+  /** 42 for a sender in a list, 40 for a box, 24 beside a sender in the register. */
   readonly size?: number;
 }) {
   const theme = useTheme();
   const t = envelopeTile;
   const large = size >= 42;
+  if (size < t.smallBelow) {
+    // The register's small tile (InboxA): too small for a flap or a fold to read, so plain, the
+    // monogram centred. A read row's sender; the attention sheets carry the sealed ones.
+    return (
+      <View
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+        style={{
+          width: size,
+          height: size,
+          borderRadius: t.smallRadius,
+          backgroundColor: color,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {/* The Tag role's face and size; only the face, never `fontWeight`, as Typography does. */}
+        <Text
+          style={{
+            fontFamily: type.tag.fontFamily,
+            fontSize: type.tag.fontSize,
+            lineHeight: type.tag.lineHeight,
+            letterSpacing: type.tag.letterSpacing,
+            color: theme.onSolid,
+          }}
+        >
+          {monogram(name)}
+        </Text>
+      </View>
+    );
+  }
   return (
     <View
       accessibilityElementsHidden

@@ -177,7 +177,9 @@ describe('the attention group tells the truth about each row', () => {
 
   it('shows the user their own deadline', async () => {
     const view = await inbox();
-    expect(view.queryAllByText(/^Připomínka /)).toHaveLength(2);
+    // The mark is the reminder glyph and the date (board InboxA); the row's spoken label says it in
+    // words, so that is where "Připomínka" is counted.
+    expect(view.queryAllByLabelText(/Připomínka /)).toHaveLength(2);
   });
 
   it('shows BOTH when a message has a deadline and was served by fiction', async () => {
@@ -186,7 +188,8 @@ describe('the attention group tells the truth about each row', () => {
     // ranking must not decide which true things the user gets told.
     const row = view.getByTestId('message-both');
     expect(row).toHaveTextContent(/Doručeno fikcí/);
-    expect(row).toHaveTextContent(/Připomínka /);
+    expect(row).toHaveTextContent(/\d+\. \d+\.$/);
+    expect(row.props.accessibilityLabel).toMatch(/Připomínka /);
   });
 
   // Principle V. A chip that arrives a frame after its row shoves every row below it down - the
@@ -202,9 +205,10 @@ describe('the attention group tells the truth about each row', () => {
       await act(async () => {
         mockGate.release?.();
       });
-      // …and once they are, the row appears WITH its chip already on it.
+      // …and once they are, the row appears WITH its mark already on it.
       const row = view.getByTestId('message-termed');
-      expect(row).toHaveTextContent(/Připomínka /);
+      expect(row).toHaveTextContent(/\d+\. \d+\.$/);
+      expect(row.props.accessibilityLabel).toMatch(/Připomínka /);
     } finally {
       mockGate.held = false;
       mockGate.release = null;

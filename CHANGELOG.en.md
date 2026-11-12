@@ -18,6 +18,10 @@ What changed in each Obálka release, written for the people using it. The newes
 - **The top of the inbox is the front of an envelope.** The box's name is in the envelope's window
   under the gold flap; tap the window to switch boxes, with search beside it and Received and Sent
   below.
+- **Messages that need you lie as sheets of paper; the rest are in a register by day.** The sender's
+  envelope stays sealed with the gold flap until you read the message, and the edge of a second
+  envelope shows under a message delivered by fiction. The day and weekday appear once, beside the
+  day's first message.
 
 ### Fixed
 
