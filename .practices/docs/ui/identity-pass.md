@@ -203,34 +203,85 @@ clacketies, modals, animations, processes", then iterating and
 re-auditing until it is polished.
 
 **Apply.**
-1. Build an inventory from the code, not from the canvas. List every
-   route, window, view, dialog and popover.
+1. Build an inventory from the code, not from the canvas or from memory,
+   and prove it complete ([below](#an-inventory-that-misses-nothing)).
+   List every route, window, view, dialog and popover.
 2. For each, list its states: empty, loading, partial, full, error,
-   offline, read-only, first run, signed out.
+   offline, read-only, first run, signed out. One line per state, not
+   one per screen.
 3. List every control and its states: rest, hover, pressed, focus,
    selected, disabled, busy.
 4. List every transient surface: toasts, menus, tooltips, confirmations,
    notifications, the tray or menu-bar icon, the app icon at every size.
-5. List every process end to end: onboarding, sign-in, adding an account,
+   Every use of a shared dialog, sheet or menu is its own line.
+5. List every surface the system draws around the app: launch and
+   launch failure, permission prompts and the app's words before them,
+   share sheets and file export, document viewers, keyboard and autofill.
+6. List every process end to end: onboarding, sign-in, adding an account,
    sending, syncing, undo, deleting, settings changes, quitting.
-6. List every motion: transitions, progress, empty-state scenes, and what
+7. List every motion: transitions, progress, empty-state scenes, and what
    reduced motion shows instead.
-7. Walk the list in both themes and in every shipped language, including
-   a pseudo-locale for long strings.
-8. Grade each item against the spec: matches, drifts, or misses the
+8. Walk the list in both themes, in every shipped language (with a
+   pseudo-locale for long strings), at the largest text size, and in
+   every orientation and device size the app allows.
+9. Grade each item against the spec: matches, drifts, or misses the
    identity. Use the rules in [visual-craft.md](visual-craft.md).
-9. Redraw what drifts or misses. Put it on the canvas with variants when
-   the choice is open. Ask the owner. Strip the losers.
-10. Fix canvas-versus-code drift as you find it: stale states, leftovers,
+   "Matches" needs a picture: a capture or a board, compared with the
+   spec. An item nobody has looked at is "not seen", never "matches".
+10. Redraw what drifts, misses or was not seen. Put it on the canvas with
+    variants when the choice is open. Ask the owner. Strip the losers.
+11. Fix canvas-versus-code drift as you find it: stale states, leftovers,
     features the canvas still calls "soon".
-11. Build the agreed designs one to one, then capture the app and compare
+12. Build the agreed designs one to one, then capture the app and compare
     it with the canvas ([design-before-build.md](design-before-build.md)).
-12. Re-audit the built app with a fresh critique. Iterate with the owner
+13. Re-audit the built app with a fresh critique. Iterate with the owner
     until the critique and the owner find nothing left to fix.
 
-**Check.** The inventory exists as a checklist, and every line is marked
-matches or fixed. The owner has seen every redrawn item. The last
-critique of the built app found nothing new.
+**Check.** The inventory exists as a checklist and passed its own check
+([below](#an-inventory-that-misses-nothing)). Every line is marked
+matches or fixed. The owner has seen every item in the identity, redrawn
+or not. The last critique of the built app found nothing new.
+
+## An inventory that misses nothing
+
+**What.** The iteration 3 inventory is derived from the code by a method
+that can be checked, then checked twice. A list written by reading and
+remembering is a draft, not the inventory.
+
+**Why.** Obálka's first iteration 3 inventory (2026-11-12) had 83 lines
+and looked complete. The owner asked where the modals were. The modals
+were there: 22 uses of the shared dialog, graded together as one
+"matches" line that nobody had drawn. The backup and transfer screens
+were one line each and hid 10 dialogs and two whole flows. A sweep then
+found at least nine kinds of surface with no line at all: a launch
+failure, a security notice, the permission explanations, file sharing,
+the progress bar, and the largest text size among them. Fifteen lines
+said "matches" without a picture. Each gap would have shipped in the old
+look beside the new one.
+
+**Apply.**
+1. **Sweep the sources.** List every UI source file, every route, and
+   every group of user-visible strings. Map each to inventory lines. A
+   file or string group that maps to nothing is a gap.
+2. **Count the shared pieces.** Search for every use of the shared
+   dialog, sheet, menu, alert, toast and banner. Each use is a line,
+   named by its title or trigger. The count on the list equals the count
+   in the code.
+3. **Split by state.** A screen with more than one state, flow or dialog
+   gets a line for each. "The backup screen" is not a line.
+4. **Get a second inventory.** Someone who has not seen yours (a person
+   or a fresh agent) builds one from the code with the same headings.
+   Compare line by line. Every difference is a gap in one of the lists
+   or a mistake; resolve each before grading.
+5. **No grade without a picture.** Grade from a capture of the app or a
+   board on the canvas. Quiet chrome is drawn too; the owner judges
+   whether it holds the identity.
+6. **Record the proof** in the checklist: the files swept, the counts
+   per shared piece, and who made the second inventory.
+
+**Check.** Every UI file and string group maps to a line. The checklist
+records the counts, and they match the code. The two inventories' diff is
+resolved. No line says "matches" without a capture or a board.
 
 ## Where the product's mark appears
 

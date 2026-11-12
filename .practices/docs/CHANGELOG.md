@@ -5,6 +5,20 @@ newest first, in the kinds common/changelog.md describes.
 
 ## Unreleased
 
+## 1.3.1 (2026-11-12)
+
+### Fixed
+
+- **An identity pass's inventory proves it misses nothing.** Iteration 3
+  said "build an inventory from the code" with no way to check it, and a
+  list written by reading passed. Obálka's missed 22 dialogs, two flows
+  and nine kinds of surface. A new section in `ui/identity-pass.md`
+  sweeps every UI file and string group, and counts every use of a shared
+  dialog, sheet or menu. Screens split by state. A second inventory, made
+  without seeing the first, is compared line by line. "Matches" needs a
+  capture or a board. Iteration 3 also lists the system's surfaces, the
+  largest text size and every orientation.
+
 ## 1.3.0 (2026-11-12)
 
 ### New

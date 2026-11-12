@@ -29,8 +29,11 @@ sometimes edits it.
 - **Brief agreed, nothing redesigned**: iteration 2. A few defining parts,
   variants in real context, a critique, the owner picks, polish, repeat.
 - **A few parts agreed**: iteration 3. Inventory the whole app from the
-  code (every view, state, control, transient surface, process, motion),
-  grade each against the spec, redraw, ask, build, re-audit.
+  code (every view, state, control, transient surface, system surface,
+  process, motion) and prove it complete (identity-pass.md, "An inventory
+  that misses nothing": sweep every UI file, count every dialog and sheet
+  use, one line per state, a second inventory from a fresh agent). Grade
+  each from a picture, redraw, ask, build, re-audit.
 - **A small change in an agreed design**: follow the spec and the craft
   rules; put it on the canvas in the same piece of work.
 
