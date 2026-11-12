@@ -372,11 +372,19 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 
 ## Phase 5: Round 2 on the canvas
 
-- [ ] T040 R8 Sign-in and the Mobile Key wait, spinners, the launch, done states (I03, I10, I76).
-- [ ] T041 R9 Sheets, dialogs, menus and transient surfaces, both themes (I49, I52-I61): a confirm
-  dialog and a destructive one, the language, sender and term sheets, the box overflow menu, the alias
-  editor, What's new, the snackbar, and the transfer and backup dialogs; each sheet's Reduce Motion form.
-- [ ] T042 Ask the owner; strip the losers.
+- [x] T040 R8 Sign-in and the Mobile Key wait, the launch, the SMS code, a refused sign-in, the password
+  change's error and done states, a transfer running and done, the app icons (I03, I08-I13, I46.4-5,
+  I65.1, I76).
+- [x] T041 R9 Every question as one anatomy (a destructive one, one with no danger, a notice with a
+  retry, dark), the language, reminder and sender sheets, the box menu, the alias editor, What's new,
+  the snackbar (I49, I52-I61, I84-I105); each sheet's Reduce Motion form in its label.
+- [x] T043 R10 Backup and transfer, every state: running, the restore list, an opened backup, first
+  run, send, nothing to send and the iPhone card, receive, stopped by going away (I45.1-I45.7,
+  I46.1-I46.6). Derived, for review.
+- [x] T042 Asked the owner on 2026-11-12, each the recommendation: Q1 a screen that waits shows its object
+  still and one waiting bar (busy buttons keep their small spinner); Q2 every question is the bottom
+  sheet of the paid send; Q3 the dark iOS icon is the app's envelope, blue and gold, on a dark ground.
+  Losers stripped (canvas version 23).
 
 ## Phase 6: Build round 1 and round 2; Phase 7: close
 

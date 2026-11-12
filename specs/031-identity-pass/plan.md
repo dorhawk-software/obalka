@@ -38,7 +38,10 @@ The questions (round 1): Q1 Welcome A/B/C, Q2 Compose A/B, Q3 Cards A/B/C, Q4 Em
 **Picked 2026-11-12**, each the recommendation: Welcome A, Compose A, Cards B, Empty states A; the
 losers are stripped (canvas version 21).
 
-**Round 2** reuses round 1's answers:
+**Round 2** reuses round 1's answers. **Picked 2026-11-12**, each the recommendation (canvas version 23):
+Q1 a screen that waits shows its object still and one waiting bar (R8), Q2 every question is the paid
+send's bottom sheet (R9), Q3 the dark iOS icon is the envelope itself (R8). R10 (backup and transfer,
+every state) is derived, for review.
 
 - **R8** sign-in and the Mobile Key wait, spinners, the launch, done states (I03, I10, I76).
 - **R9** sheets, dialogs, menus and transient surfaces (I49, I52-I61). The first grading called them
