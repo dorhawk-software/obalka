@@ -18,7 +18,9 @@
 // The changelog (spec 029): "## Unreleased" in CHANGELOG.md and CHANGELOG.en.md becomes
 // "## <version> (<today>)", and the app's built-in copy is regenerated, in the release commit. That
 // section is what the release workflow publishes on GitHub and the stores, and what the app shows.
-// `npm run verify` runs first, because a tag on a red commit ships a red commit.
+// `npm run verify` runs first, because a tag on a red commit ships a red commit; then both apps are built
+// on this Mac (scripts/verify-native.sh, owner 2026-11-12), so a tag never waits for CI to find that iOS
+// or the Android release bundle doesn't compile.
 //
 // Where the version is kept, and why each copy exists:
 //   package.json, package-lock.json - the source. Android reads it for local builds (build.gradle).
@@ -202,6 +204,8 @@ function main() {
       : `release: ${current} → ${version}. Running npm run verify first…\n`,
   );
   execFileSync('npm', ['run', 'verify'], { stdio: 'inherit' });
+  console.log('\nrelease: building both apps on this Mac (verify-native)…\n');
+  execFileSync('nice', ['-n', '19', 'scripts/verify-native.sh'], { stdio: 'inherit' });
 
   const today = new Date().toISOString().slice(0, 10);
   if (!rebuild) {

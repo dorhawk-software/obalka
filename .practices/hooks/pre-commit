@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# git's pre-commit hook: nothing private (check-private); when Rust files
+# are committed, the lint gate and the coverage floors; when JavaScript or
+# TypeScript files are, the lint gate and the tests (NPM_TEST). It runs at
+# the lowest CPU priority: the person committing is usually working on the
+# same machine.
+set -uo pipefail
+bin=$(git rev-parse --show-toplevel)/.practices/bin
+
+"$bin/check-private" || exit 1
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+linted=
+if printf '%s\n' "$staged" | grep -qE '(\.rs|Cargo\.(toml|lock))$'; then
+    nice -n 19 "$bin/lint" || exit 1
+    linted=1
+    nice -n 19 "$bin/check-coverage" || exit 1
+fi
+if [ -f package.json ] && printf '%s\n' "$staged" | grep -qE '(\.(ts|tsx|js|jsx|mjs|cjs)|package(-lock)?\.json)$'; then
+    [ -n "$linted" ] || nice -n 19 "$bin/lint" || exit 1
+    NPM_TEST='test'
+    # shellcheck source=/dev/null
+    [ -f .practices/config ] && . .practices/config
+    if [ -n "$NPM_TEST" ]; then
+        nice -n 19 npm run --silent "$NPM_TEST" || exit 1
+    fi
+fi

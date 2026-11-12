@@ -1,0 +1,21 @@
+# Files past the size limit when Obálka adopted it (2026-11-12): "path lines".
+# The list only shrinks: split these by topic (docs/engineering/not-now.md).
+__tests__/app/transferScreen.test.tsx 1177
+__tests__/backup/backupController.test.ts 1723
+__tests__/messages/messages.test.ts 1871
+__tests__/transfer/transferController.test.ts 1836
+scripts/gen-attributions.mjs 813
+src/app/AppShell.tsx 1465
+src/app/settings/BackupScreen.tsx 2171
+src/app/settings/TransferScreen.tsx 1107
+src/features/backup/state/backupController.ts 1372
+src/features/messages/screens/ComposeScreen.tsx 1589
+src/features/messages/screens/MessageDetail.tsx 1548
+src/features/messages/screens/MessageList.tsx 2203
+src/features/messages/state/messagesController.ts 1351
+src/features/transfer/state/transferController.ts 961
+src/i18n/strings.ts 2391
+src/services/db/messagesStore.ts 766
+src/services/isds/isdsTransport.ts 1201
+src/services/isds/soap.ts 717
+src/services/secureStore/vault.ts 916

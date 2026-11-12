@@ -1,0 +1,15 @@
+# .practices/config: Obálka's settings for the scripts in .practices/bin
+# (shell KEY=value lines). The defaults are in .practices/bin/lib.sh. This
+# file is the project's own: practices updates never change it.
+
+# The git-ignored list of names never to commit (dev/private-terms).
+PRIVATE_TERMS=dev/private-terms
+
+# The npm scripts the gate runs after `tsc --noEmit` (under a second each,
+# measured 2026-11-12), and the tests pre-commit runs (jest, about 13 s).
+NPM_CHECKS='lint changelog:check attributions:check'
+NPM_TEST='test'
+
+# Generated code nobody edits by hand: the ISDS types (codegen-isds) and
+# the in-app changelog and licence lists.
+SIZE_EXCLUDE='(\.generated\.ts$|/generated/)'

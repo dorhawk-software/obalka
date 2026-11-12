@@ -33,7 +33,8 @@ government mail or credentials to any server we operate.
 > under a vault key that sits behind the lock's biometric gate when the lock is on (001 T028,
 > `docs/accounts.md`), and React Native's shared cookie jar is emptied whenever a sign-in ends, so no
 > session waits outside the vault between sign-ins (018). Still outside the gate: a handshake cookie a
-> process killed mid-sign-in leaves in that jar, until the next sign-in starts; and the database key and
+> process killed mid-sign-in leaves in that jar, until the next launch empties it (a handshake mark says so;
+> `isdsTransport.ts`); and the database key and
 > the backup passphrase's app-usable copy, which are device-bound Keychain items that protect the
 > archive, not a sign-in.
 
@@ -104,10 +105,12 @@ device/emulator.
 
 ## Development Workflow
 
-- **Spec-driven**: every feature flows constitution → specify → clarify → plan → tasks → analyze →
-  implement, with artifacts under `specs/NNN-*/`. `tasks.md` checkboxes are the unit of progress.
-- **Quality gates per feature**: `/speckit-analyze` clean; all tasks checked; a manual run-through
-  on a real device/emulator against a czebox test box before the next feature starts.
+- **Spec-driven**: every feature has a `spec.md` and a `tasks.md` under `specs/NNN-*/`; `tasks.md`
+  checkboxes are the unit of progress. `plan.md` (with clarify and analyze) is written when the design or
+  the architecture is still open, not as paperwork after the fact (owner, 2026-11-12).
+- **Quality gates per feature**: all tasks checked; `/speckit-analyze` clean where the feature has a
+  plan; a manual run-through on a real device/emulator against a czebox test box before the next feature
+  starts.
 - **Code style**: **always use braces for blocks** — every `if`/`else`/`for`/`while`/`do` body is
   wrapped in `{ }`, even single statements (no `if (x) return;`). Enforced by ESLint
   `curly: ['error', 'all']`; code must pass `npm run lint`, `npm test`, and `tsc --noEmit` clean.
@@ -116,7 +119,8 @@ device/emulator.
 
 ## Governance
 
-This constitution supersedes other practices. Any plan or task that conflicts with a NON-NEGOTIABLE
+This constitution supersedes other practices. After it come `CLAUDE.md`, then the shared practices
+it loads (`.practices/rules.md`, from github.com/dorhawk-software/practices). Any plan or task that conflicts with a NON-NEGOTIABLE
 principle (I, II) is rejected, not merely flagged. Amendments require: a written rationale, a version
 bump per the policy below, and propagation to dependent templates/specs. Complexity that appears to
 violate a principle MUST be justified in the feature's plan or removed.
@@ -125,7 +129,17 @@ Versioning policy (semantic): MAJOR = principle removed/redefined or other backw
 governance change; MINOR = new principle/section or materially expanded guidance; PATCH = wording
 /typo/non-semantic clarifications.
 
-**Version**: 3.0.0 | **Ratified**: 2026-06-12 | **Last Amended**: 2026-09-15
+**Version**: 3.1.0 | **Ratified**: 2026-06-12 | **Last Amended**: 2026-11-12
+
+Amendment 3.1.0 (2026-11-12) — MINOR: the workflow states what features actually do, and the order of
+the rules is written down, as Obálka adopted the shared practices.
+1. **Development Workflow** — spec and tasks always; the plan (with clarify and analyze) only while the
+   design or architecture is open. Features 019 to 030 ran without a plan, so the old "every feature
+   flows through the full loop" was a rule nobody followed.
+2. **Governance** — the order: this constitution, then `CLAUDE.md`, then the shared practices.
+3. **III, known gaps** — a killed sign-in's cookie lasts until the next launch, not the next sign-in:
+   the app empties the jar at launch when the handshake mark says one was left (found while collecting
+   the not-now list).
 
 Amendment 3.0.0 (2026-09-15) — MAJOR: a principle was redefined by an owner's decision, and two known
 gaps were closed by building rather than by rewording.

@@ -116,3 +116,7 @@ ios/ObalkaTransferModule/Obalkatransfer.xcframework/
 .fixture-worktree/
 # Python bytecode from the tools/ scripts (asc.py, store_screens.py run with uv).
 __pycache__/
+
+# Local only (the shared practices): names never to commit, and this computer's notes.
+dev/private-terms
+CLAUDE.local.md

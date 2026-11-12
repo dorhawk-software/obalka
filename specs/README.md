@@ -129,6 +129,11 @@ Portal-only and unbuilt; the spike is deferred and unnumbered (Principle VI in t
 
 ## Going forward
 
+**From 2026-11-12** (constitution 3.1.0): every feature has a spec and tasks; the plan, with clarify and
+analyze, is written while the design or architecture is still open. That is what 019 to 030 did. Spec
+Kit's git extension is off: work lands on `main`, not on feature branches. What was decided "not now"
+lives in `docs/engineering/not-now.md`.
+
 **013** came out of a research pass on the ISDS Provozní řád: the app modelled three delivery states
 where ISDS has ten, reporting an *undeliverable* message as delivered and leaving an antivirus failure
 on "Odesláno" forever, and its single background-sync setting did two incomparable things — one inert,

@@ -52,6 +52,10 @@ jobs:
       # OFL-1.1 typefaces ship with no notice at all.
       - name: Attributions up to date
         run: npm run attributions:check
+      # Both changelogs in step, the in-app copy current, the store limits kept. `npm run verify` and the
+      # release ran it, CI did not, so main could drift until release day.
+      - name: Changelog in step
+        run: npm run changelog:check
       # Dependency advisories, filtered to the packages that actually reach a phone. A plain
       # `npm audit` fails on Metro and the RN CLI, which never ship - and a gate everyone learns to
       # ignore protects nothing. Depends on the step above: the shipped list is what it filters by,

@@ -45,7 +45,10 @@ fi
 [ -f "$TARGET" ] || fail "$TARGET does not exist."
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
-unzip -q "$TARGET" -d "$WORK"
+# -o: an R8-shrunk APK holds resources whose names differ only in case (res/2f.xml, res/2F.xml). On a
+# Mac's case-insensitive disk they collide, and without -o unzip stops to ask. Only lib/ and the dex
+# files are read below.
+unzip -qo "$TARGET" -d "$WORK"
 abis="$(sed -n 's/^reactNativeArchitectures=//p' "$ROOT/android/gradle.properties" | tr ',' ' ')"
 [ -n "$abis" ] || fail "no reactNativeArchitectures in android/gradle.properties."
 for abi in $abis; do
