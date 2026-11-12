@@ -280,12 +280,15 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
 - **Envelope** (`#2563A6`, **fixed in both appearances**): a box, and what arrives in it. The inbox
   header, a message, compose, the sent result, the box avatars. Its folds are `envelope-crease`
   (`rgba(9,30,64,.22)`). Words on it are `on-solid`; its secondary words and the postmark are
-  `envelope-ink-soft` (`rgba(255,255,255,.92)`, 5.51:1 composited).
+  `envelope-ink-soft` (`rgba(255,255,255,.92)`, 5.51:1 composited). As an avatar tile (a box, a
+  sender) it is a small envelope: a sealed gold flap while unread, else an `envelope-fold` line
+  (`rgba(255,255,255,.55)`).
 - **Flap** (`#FFC305`, fixed): the envelope's gold, and the stamp-shaped compose button. Words on it
-  are `on-gold`.
+  are `on-gold`; the compose stamp's frame is `flap-frame` (`rgba(33,27,18,.28)`).
 - **Window** (`#FFFDF8` / `#2A251E`): who it is addressed to - the box switcher, the recipient in
   compose (also its search field), the login name while signing in. Its edge is an inset shade (the
-  envelope's paper over it) and a film that catches the light. In dark it is 2.47:1 against the
+  envelope's paper over it) and a film that catches the light, over a `window-glint` cast
+  (`rgba(214,228,246,.14)` / `.03`). In dark it is 2.47:1 against the
   envelope; the words in it identify it, so 1.4.11's boundary floor does not apply, and the number is
   pinned in `contrast.test.ts`.
 - **Security tint**: the inside, the private - chevrons of the envelope's blue, 16 x 14, at 16 % (light)

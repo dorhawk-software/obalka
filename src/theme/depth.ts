@@ -88,14 +88,17 @@ const OBJECT_SHADOWS: Record<'light' | 'dark', Record<ObjectShadow, string>> = {
   },
 };
 
-const OBJECT_FILTERS: Record<'light' | 'dark', Record<ObjectFilter, string>> = {
+const OBJECT_FILTERS: Record<'light' | 'dark', Record<ObjectFilter, string | undefined>> = {
   light: {
-    slip: 'drop-shadow(0px 1px 0px #ECE3D2) drop-shadow(0px 4px 10px rgba(33,27,18,0.07))',
+    // The canvas also casts a 1 px `border` edge first; the Slip draws that edge as a shape, since iOS
+    // keeps only one drop-shadow of a chain.
+    slip: 'drop-shadow(0px 4px 10px rgba(33,27,18,0.07))',
     stamp: 'drop-shadow(0px 6px 10px rgba(20,32,60,0.18))',
     stampFab: 'drop-shadow(0px 8px 14px rgba(184,128,0,0.38))',
   },
   dark: {
-    slip: 'drop-shadow(0px 1px 0px #3A332A)',
+    // Only the 1 px edge at night, which the Slip draws.
+    slip: undefined,
     stamp: 'drop-shadow(0px 6px 10px rgba(20,32,60,0.18))',
     stampFab: 'drop-shadow(0px 8px 14px rgba(184,128,0,0.38))',
   },
@@ -106,8 +109,11 @@ export function objectShadow(themeName: 'light' | 'dark', kind: ObjectShadow): s
   return OBJECT_SHADOWS[themeName][kind];
 }
 
-/** A perforated object's shadow (`filter`), which follows the holes cut out of its edge. */
-export function objectFilter(themeName: 'light' | 'dark', kind: ObjectFilter): string {
+/**
+ * A perforated object's shadow (`filter`), which follows the holes cut out of its edge; undefined where
+ * the object casts none (a slip at night).
+ */
+export function objectFilter(themeName: 'light' | 'dark', kind: ObjectFilter): string | undefined {
   return OBJECT_FILTERS[themeName][kind];
 }
 

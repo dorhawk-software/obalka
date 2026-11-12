@@ -363,8 +363,24 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   Done 2026-11-12: the 20 glyphs of the board, 85 tests (plane colour and 1.3 offset, ink stroke 1.75
   with round ends, the gold plane, hidden from assistive technology); a plane printed on register
   fails 40 of them. Not yet used by a screen: each screen takes its glyphs in Phase 4.
-- [ ] T022 The objects, one source file each: `Envelope` (with the avatar form), `Window`, `SecurityTint`,
-  `Postmark`, `Stamp`, `Slip`, `AirmailStrip`.
+- [x] T022 The objects, one source file each: `Envelope` (with the avatar form), `Window`, `SecurityTint`,
+  `Postmark`, `Stamp`, `Slip`, `AirmailStrip`. Done 2026-11-12 in `src/theme/objects/`, 40 tests in
+  `objects.test.tsx`, both themes. The holes are placed where the canvas's CSS mask cuts them
+  (`perforation.ts`), including the inner ring of half-holes the agreed Main stamp shows (rendered at 3x
+  to check). Where the build differs from the boards' markup, and why:
+  - the window's film is react-native-svg's native blur, not the pre-rendered PNG the Main board's
+    "Buildable today" note suggests: the same drawing, and no asset per window size;
+  - the slip's 1 pt edge is drawn as the same shape one point lower, not a second `drop-shadow`: iOS
+    keeps only the last of a chain (so `objectFilter('dark', 'slip')` is now none);
+  - the avatar tile is one drawing at 42 scaled to 40 ("one object, one drawing"); the board's 40 pt box
+    tile drew its fold separately, up to 1.2 pt away;
+  - the postmark is the Detail board's drawing. **Open for T033:** the Sent board draws its postmark
+    another way (larger rings, no waves; the cancellation waves cross the stamp instead) - one object,
+    two drawings, to settle when the sent result is built;
+  - the envelope's flap poses (the inbox header's front, Welcome, Lock, the open envelope with its
+    lining) come with their screens (T030, T031, T034, R1).
+  New tokens: `envelopeFold`, `flapFrame`, `windowGlint` (DESIGN.md › The printed objects). No screen
+  uses the objects yet; each is checked against its board by screenshot when its screen is built.
 
 ## Phase 4: Build the agreed boards, one to one
 

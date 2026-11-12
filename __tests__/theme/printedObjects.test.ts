@@ -13,9 +13,17 @@ describe('object shadows', () => {
     expect(objectShadow('dark', kind)).toMatch(/px/);
   });
 
-  it.each(FILTERS)('%s is a drop-shadow filter in both themes, so it follows the perforations', kind => {
-    expect(objectFilter('light', kind)).toMatch(/^drop-shadow\(/);
+  it.each(FILTERS)('%s is a single drop-shadow filter by day, so it follows the perforations', kind => {
+    // One: iOS keeps only the last drop-shadow of a chain.
+    expect(objectFilter('light', kind)).toMatch(/^drop-shadow\([^)]*\)\)$/);
+  });
+
+  it.each(['stamp', 'stampFab'] as const)('%s keeps its drop-shadow at night', kind => {
     expect(objectFilter('dark', kind)).toMatch(/^drop-shadow\(/);
+  });
+
+  it('lets a slip cast no shadow at night: its 1 pt edge is drawn, not filtered', () => {
+    expect(objectFilter('dark', 'slip')).toBeUndefined();
   });
 
   it('casts a resting sheet\'s shadow below it, never a bevel on top (paper lies on the screen)', () => {

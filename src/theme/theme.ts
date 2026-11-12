@@ -156,14 +156,20 @@ export interface Theme {
   /** Secondary words printed on the envelope (the "Od" overline, the identity line, the postmark). The
    * main words on it take `onSolid`. */
   envelopeInkSoft: string;
+  /** The fold line drawn across an envelope-shaped avatar tile (a read sender, a box). */
+  envelopeFold: string;
   /** The flap, and the stamp-shaped compose button: the envelope's gold, fixed in both appearances. */
   flap: string;
+  /** The frame printed inside the gold stamp of the compose button. */
+  flapFrame: string;
   /** The lining's print inside an open envelope (the empty inbox). */
   lining: string;
   /** The window: who it is addressed to. Paper in light, a raised sheet in dark. */
   window: string;
   /** The window's inset shade, where the envelope's paper lies over its edge. */
   windowShade: string;
+  /** The window's cool cast, under the glint's two highlights (`print.ts` › `windowFilm`). */
+  windowGlint: string;
   /** The offset glyphs' plane, printed off register under the ink (blue). */
   iconPlane: string;
   /** The same plane under a glyph that sits on gold (the fiction chip, the paid stamp). */
@@ -231,10 +237,13 @@ export const lightTheme: Theme = {
   envelope: '#2563A6',
   envelopeCrease: 'rgba(9,30,64,0.22)',
   envelopeInkSoft: 'rgba(255,255,255,0.92)',
+  envelopeFold: 'rgba(255,255,255,0.55)',
   flap: '#FFC305',
+  flapFrame: 'rgba(33,27,18,0.28)',
   lining: '#9EC0EA',
   window: '#FFFDF8',
   windowShade: 'rgba(9,30,64,0.28)',
+  windowGlint: 'rgba(214,228,246,0.14)',
   iconPlane: '#CFE0F5',
   iconPlaneGold: '#F3D891',
   sheetEdge: '#F7F1E4',
@@ -304,10 +313,13 @@ export const darkTheme: Theme = {
   envelope: '#2563A6',
   envelopeCrease: 'rgba(9,30,64,0.22)',
   envelopeInkSoft: 'rgba(255,255,255,0.92)',
+  envelopeFold: 'rgba(255,255,255,0.55)',
   flap: '#FFC305',
+  flapFrame: 'rgba(33,27,18,0.28)',
   lining: '#9EC0EA',
   window: '#2A251E',
   windowShade: 'rgba(0,0,0,0.55)',
+  windowGlint: 'rgba(214,228,246,0.03)',
   iconPlane: '#2F4A6E',
   iconPlaneGold: '#5A4716',
   sheetEdge: '#231F19',

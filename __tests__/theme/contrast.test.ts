@@ -281,8 +281,8 @@ describe('the printed objects', () => {
   });
 
   it('keeps the envelope, its flap, the stamp and the seal the same in both themes', () => {
-    const fixed = ['envelope', 'envelopeInkSoft', 'flap', 'lining', 'stampPaper', 'stampFrame', 'stampInk',
-      'stampLabel', 'cancelInk', 'slipMark', 'sealLight', 'sealShade'] as const;
+    const fixed = ['envelope', 'envelopeInkSoft', 'envelopeFold', 'flap', 'flapFrame', 'lining', 'stampPaper',
+      'stampFrame', 'stampInk', 'stampLabel', 'cancelInk', 'slipMark', 'sealLight', 'sealShade'] as const;
     for (const key of fixed) {
       expect([key, darkTheme[key]]).toEqual([key, lightTheme[key]]);
     }
