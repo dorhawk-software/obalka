@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { touchSlop } from '../../../theme/touchTarget';
-import { ScrollView } from 'react-native';
+import { Animated } from 'react-native';
 import { Button, Paragraph, XStack, YStack } from '../../../theme/ui';
 import { PressScale } from '../../../theme/PressScale';
 import { Skeleton } from '../../../theme/Skeleton';
@@ -62,6 +62,7 @@ import { DeliveryStateIcon } from './DeliveryStateIcon';
 import { AttachmentRow, formatBytes } from './AttachmentRow';
 import { AddressLines } from './AddressLines';
 import { DeliveryRecordSlip } from './DeliveryRecord';
+import { DetailBand, useTuck } from './DetailBand';
 import { DetailEnvelope } from './DetailEnvelope';
 import { TileAtRest, type TileRect } from './EnvelopeFlight';
 import { FictionBanner } from './FictionBanner';
@@ -183,6 +184,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
   const showTestBanner = account.host === 'czebox';
   const headerTop = useHeaderTop(showTestBanner);
   const contentBottom = useContentBottom(24);
+  const tuck = useTuck(); // the envelope tucking into the bar as the message scrolls (DetailBand)
   const [state, setState] = useState<State>({ status: 'loading' });
   // The user's own deadline on this message (010 US2). RECEIVED only: a termín is a note about
   // something you have to do, and a message you sent asks nothing of you.
@@ -404,17 +406,15 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
     }
   }, [account, messageId, downloading, folder, runScan]);
 
-  // The "paper" header (009): a 54dp bar (surfaceAlt + a hairline below) with a back chevron and a
-  // quiet subtitle (the message's counterparty once loaded; the box name while it's still loading).
-  // 54dp of CONTENT below the safe-area inset, with a 44x44 tap target on the chevron (design §detail).
-  // The banner is a SIBLING of the header bar, not a child of it - nesting it inside the header's
-  // YStack made Android draw-clip its label ("Testovací" instead of "Testovací prostředí"). Every
-  // other screen puts it at the top of the root column; this one now does too.
-  const renderHeader = (subtitle: string) => (
+  // The "paper" header (009): a 54dp bar and a hairline, a back chevron (44x44) and a quiet subtitle;
+  // a received message's `band` comes in over it as the envelope tucks under (DetailBand). The test
+  // banner is a SIBLING of the bar: nested inside it, Android clipped its label to "Testovací".
+  const renderHeader = (subtitle: string, band?: ReactNode) => (
     <>
       <TestEnvBanner show={showTestBanner} />
-      <YStack backgroundColor={theme.surfaceAlt}>
+      <YStack backgroundColor={theme.surfaceAlt} zIndex={1}>
         <XStack
+          accessibilityElementsHidden={band != null && tuck.tucked}
           alignItems="center"
           paddingLeft={6}
           paddingRight={16}
@@ -446,6 +446,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
           </Label>
         </XStack>
         <YStack height={1} backgroundColor={theme.border} />
+        {band}
       </YStack>
     </>
   );
@@ -540,8 +541,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
   //   * state 3 / 8 → the journey STOPS. The remaining steps are dropped entirely rather than left
   //     greyed out, because a greyed-out step reads as "still coming" when nothing is coming, and a
   //     `stopWhy` paragraph below explains what to do instead.
-  // ISDS gives us no timestamp for the stop itself, so that step shows an em-dash rather than
-  // borrowing another step's time.
+  // ISDS gives no timestamp for the stop itself: that step shows an em-dash, not another step's time.
   const steps: {
     kind: MessageStateKind;
     labelKey: string;
@@ -589,10 +589,8 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
       });
     }
   }
-  // "Odesláno" and "Dodáno" both render `deliveryTime` - ISDS reports no separate submission time -
-  // so once the message HAS been delivered the rail was printing one fact under two labels, implying
-  // the app knew two moments. Collapsed into one row that says as much (017 T011). While the message
-  // is still on its way the two stay separate, because then they are a real progression.
+  // "Odesláno" and "Dodáno" both render `deliveryTime` (ISDS has no submission time): once delivered,
+  // one row says so (017 T011); on its way, the two stay separate, a real progression.
   const sentSteps = mergeSameTimeHead(steps, formatDateTime, {
     labelKey: 'sent.merged',
     noteKey: 'sent.merged.note',
@@ -605,9 +603,8 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
     envelope.state === MESSAGE_STATE.delivered;
   const stateAsOf = stateCanChange ? state.syncedAt : null;
 
-  // Standing "no longer in ISDS" notice (B2) - shown wherever a re-download would otherwise be offered.
-  // Standalone (nothing downloaded) it carries the section's own 22dp top margin; inside the downloaded
-  // attachment stack the surrounding gap already spaces it, so the caller passes 0.
+  // Standing "no longer in ISDS" notice (B2), wherever a re-download would be offered. Standalone it
+  // carries the section's top margin; inside the attachment stack the caller passes 0.
   const renderUnavailableNotice = (marginTop: number) => (
     <Card
       marginTop={marginTop}
@@ -718,16 +715,18 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
   };
 
   // A full-bleed banner at the top of the scroll: the fikce attention band (received only). A sent
-  // message no longer gets one - its state is spelled out step by step in the delivery timeline
-  // below, so a coloured band restating the last step was redundant and pushed the subject down.
+  // message's state is spelled out step by step in the delivery timeline instead.
   const banner =
     servedAt != null ? <FictionBanner servedAt={servedAt} onRemind={() => setPickingTerm(true)} /> : null;
 
   return (
     <YStack flex={1} backgroundColor={theme.bg}>
       {/* Received (031): the header names what this is, and the envelope says who it is from. */}
-      {renderHeader(isSent ? party : t('detail.header.received'))}
-      <ScrollView contentContainerStyle={{ paddingBottom: contentBottom }}>
+      {renderHeader(isSent ? party : t('detail.header.received'), isSent ? null : (
+        <DetailBand top={headerTop} envelope={envelope} account={account} tuck={tuck} onBack={onBack} />
+      ))}
+      <Animated.ScrollView onScroll={tuck.onScroll} scrollEventThrottle={16} testID="detailScroll"
+        contentContainerStyle={{ paddingBottom: contentBottom }}>
         {banner}
         {!isSent ? (
           <DetailEnvelope
@@ -735,6 +734,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
             account={account}
             attachmentCount={attachments ? attachments.length : null}
             openedFrom={openedFrom}
+            onBottom={tuck.onEnvelopeBottom}
           />
         ) : null}
         <YStack paddingHorizontal={isSent ? 24 : 16} paddingTop={isSent ? 24 : 0}>
@@ -1186,7 +1186,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
             />
           ) : null}
         </YStack>
-      </ScrollView>
+      </Animated.ScrollView>
       {pickingTerm ? (
         <TermPicker
           current={term}

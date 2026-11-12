@@ -518,8 +518,18 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     the letter's own delayed animation waited for JS while the message rendered, 3-4 frames late, so
     one clock on the UI thread drives both, the ease sampled into the interpolation; and styles made
     on each render handed the view new nodes mid-flight, so they are made once. Not yet: iOS (the edge
-    swipe-back with the fade must be walked on an iOS build), and the board's "scrolling down tucks the
-    envelope into a 54 dp band with the window still showing", which is next.
+    swipe-back with the fade must be walked on an iOS build).
+  - I67 the tuck, done 2026-11-12: no board drew "scrolling down tucks the envelope into a 54 dp band
+    with the window still showing", so board "Message, scrolled" proposed three; the owner chose B, the
+    bar becomes the envelope (2026-11-12). As the envelope's last 54 slide under the paper bar, a band
+    of its blue comes in over the bar: white chevron, "Odesílatel" and the sender (one line, an
+    ellipsis), and the window with the recipient (no box ID, at most 150 wide); the status bar turns
+    light while it is in. It follows the finger, no animation of its own, so Reduce Motion leaves it.
+    The blue covers the bar over the first 27 and the print comes in over the last 27: one fade put
+    the bar's title and the sender over each other (Obalka_Demo). The band grows at the largest text
+    sizes instead of clipping the sender (2.0x). Walked on Obalka_Demo at 1.0x (the band's start moved
+    up for the look: the demo messages scroll 25 dp) in both themes, and at 2.0x for real, down and
+    back. Sent messages have no envelope and so no band.
 - [ ] T036 Capture each built screen in demo mode, both themes, and compare with its board.
 
 ## Phase 5: Round 2 on the canvas

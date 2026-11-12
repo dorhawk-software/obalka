@@ -49,6 +49,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   Nepovedené ověření pečetí jen zatřese. Se sníženým pohybem se zámek jen prolne.
 - **Otevřená zpráva vyjde z obálky.** Dlaždice odesílatele se zvětší v obálku zprávy a z ní vyjede list
   s předmětem; otevření zprávy už neťuká, čtení je tiché. Se sníženým pohybem se zpráva jen prolne.
+- **Posunete-li zprávu dolů, obálka se zasune do horní lišty.** Odesílatel a v okénku adresát zůstanou
+  nahoře, zatímco čtete doručenku a přílohy; nahoře zprávy se lišta vrátí.
 - **Odlesk na okénku obálky se pohne, když telefon nakloníte.** Jen o kousek a jen na obrazovce, kterou
   máte před sebou; se sníženým pohybem zůstane stát.
 

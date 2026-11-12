@@ -58,6 +58,9 @@ What changed in each Obálka release, written for the people using it. The newes
 - **An opened message comes out of its envelope.** The sender's tile grows into the message's
   envelope and the sheet with the subject rises out of it; opening a message no longer taps, reading
   is quiet. With Reduce Motion the message simply fades in.
+- **Scroll down a message and its envelope tucks into the bar at the top.** The sender and, in the
+  window, the recipient stay in sight while you read the record and the attachments; back at the top,
+  the bar returns.
 - **The glint on the envelope's window moves as you tilt the phone.** Only a little, and only on the
   screen in front of you; with Reduce Motion it stays still.
 

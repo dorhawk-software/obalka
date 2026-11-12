@@ -39,6 +39,43 @@ const BAR_PADDING = 6;
 /** The chevron's drawn size. Its touch target is derived from it - see `touchTarget.ts`. */
 const CHEVRON = 44;
 
+/**
+ * The bar's back control, for a bar this component does not draw: the message's envelope band, whose
+ * chevron is white on the blue (`DetailBand`).
+ */
+export function HeaderBack({
+  onBack,
+  testID = 'back',
+  color,
+}: {
+  readonly onBack: () => void;
+  readonly testID?: string;
+  /** The chevron's ink: the bar's text colour unless it sits on something else. */
+  readonly color?: string;
+}) {
+  const theme = useTheme();
+  return (
+    <XStack
+      width={CHEVRON}
+      height={CHEVRON}
+      flexShrink={0}
+      alignItems="center"
+      justifyContent="center"
+      borderRadius={999}
+      // Derived, not typed: resize the chevron and its touch area follows. Two of the copies
+      // this replaces had hand-typed slops that no longer reached 48.
+      hitSlop={touchSlop({ width: CHEVRON, height: CHEVRON })}
+      pressStyle={{ opacity: 0.5 }}
+      onPress={onBack}
+      accessibilityRole="button"
+      accessibilityLabel={t('common.back')}
+      testID={testID}
+    >
+      <ChevronLeftIcon size={24} color={color ?? theme.text} />
+    </XStack>
+  );
+}
+
 export function ScreenHeader({
   title,
   onBack,
@@ -79,26 +116,7 @@ export function ScreenHeader({
         paddingRight={content ? 12 : BAR_PADDING}
         gap={content ? 6 : 0}
       >
-        {onBack ? (
-          <XStack
-            width={CHEVRON}
-            height={CHEVRON}
-            flexShrink={0}
-            alignItems="center"
-            justifyContent="center"
-            borderRadius={999}
-            // Derived, not typed: resize the chevron and its touch area follows. Two of the copies
-            // this replaces had hand-typed slops that no longer reached 48.
-            hitSlop={touchSlop({ width: CHEVRON, height: CHEVRON })}
-            pressStyle={{ opacity: 0.5 }}
-            onPress={onBack}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.back')}
-            testID={testID}
-          >
-            <ChevronLeftIcon size={24} color={theme.text} />
-          </XStack>
-        ) : null}
+        {onBack ? <HeaderBack onBack={onBack} testID={testID} /> : null}
         {content ?? (
           <Title
             // Announced as a heading so a screen reader can jump straight to it - every stack screen

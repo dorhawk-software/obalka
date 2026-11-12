@@ -3,7 +3,8 @@
 // and the subject on the sheet sliding out of it. Opened from a row, the row's tile grows into the
 // envelope and the sheet rises out of it (board Motion 1, `EnvelopeFlight`).
 
-import { Animated, View } from 'react-native';
+import { useRef } from 'react';
+import { Animated, View, type LayoutChangeEvent } from 'react-native';
 import { XStack, YStack } from '../../../theme/ui';
 import { Caption, Display, Heading, Overline, Subheading } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -33,6 +34,7 @@ export function DetailEnvelope({
   account,
   attachmentCount,
   openedFrom,
+  onBottom,
 }: {
   readonly envelope: MessageEnvelope;
   /** The box it arrived in: who the window names when the message itself does not. */
@@ -41,16 +43,34 @@ export function DetailEnvelope({
   readonly attachmentCount: number | null;
   /** The row's tile it was opened from, which grows into the envelope. */
   readonly openedFrom?: TileRect;
+  /** Where the envelope ends in the scrolled content, for the band it tucks into (`DetailBand`). */
+  readonly onBottom?: (y: number) => void;
 }) {
   const theme = useTheme();
   const opening = useOpening(openedFrom);
   const delivered = envelope.deliveryTime;
   const recipient = envelope.recipient || (account.alias ?? account.label);
   const recipientId = envelope.recipientBoxId ?? account.boxId;
+  // The envelope's frame inside this, and this one's place in the content: its bottom is the sum.
+  const at = useRef({ root: null as number | null, envelope: null as number | null });
+  const report = () => {
+    if (at.current.root != null && at.current.envelope != null) {
+      onBottom?.(at.current.root + at.current.envelope);
+    }
+  };
+  const onRootLayout = (e: LayoutChangeEvent) => {
+    at.current.root = e.nativeEvent.layout.y;
+    report();
+  };
+  const onEnvelopeLayout = (e: LayoutChangeEvent) => {
+    at.current.envelope = e.nativeEvent.layout.y + e.nativeEvent.layout.height;
+    report();
+    opening.onEnvelopeLayout();
+  };
   return (
     // Over what follows it on the screen, which the tile flies across.
-    <YStack paddingHorizontal={16} paddingTop={12} zIndex={1}>
-      <View ref={opening.envelope} onLayout={opening.onEnvelopeLayout} collapsable={false}>
+    <YStack paddingHorizontal={16} paddingTop={12} zIndex={1} onLayout={onRootLayout} testID="detailEnvelope">
+      <View ref={opening.envelope} onLayout={onEnvelopeLayout} collapsable={false} testID="detailEnvelopeFront">
         {opening.tile ? <FlyingTile {...opening.tile} /> : null}
         <Animated.View style={opening.envelopeStyle}>
           <Envelope
