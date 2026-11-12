@@ -262,7 +262,9 @@ Obálka's own harness gaps, to be fixed as the next pieces of work.
   027 reuses T013. Plan: generate the table and refuse duplicate task ids.
 - **Specs cite pre-squash commit hashes that no longer exist.** The README says so. Plan: cite files
   and tests from now on.
-- **Personal details in the public repository.** The owner's name appears in `release.yml`,
-  `docs/release-ci.md` and `ios/ExportOptions.plist`. Test box ids appear in 030's (and 010's)
-  tasks. For the owner to decide.
+- **The owner's name and test box ids in the public repository. Decided: left as it is
+  (2026-11-12).** The name in `release.yml`, `docs/release-ci.md` and `ios/ExportOptions.plist` is
+  already on every commit; the box ids in 030's (and 010's) tasks are the test environment's and
+  lead only to that name. This allows these items only: other personal details stay out of the
+  repository.
 
