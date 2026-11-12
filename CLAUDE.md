@@ -32,6 +32,9 @@ Never include Claude session information anywhere in the project, not even the c
   the GDPR controller line names a person (2026-09-24).
 - Design values come from the design's source (the Claude Design file), never from a screenshot; the code
   follows the design (2026-07-14).
+- A value off the scale rounds to the nearest step without asking (spacing 7→8, 9→10, 20→18; radius
+  4→8), and text that matches no type role takes the nearest role unless that breaks the hierarchy; no
+  new roles. Each rounding is listed in its commit (2026-11-12).
 
 ## Practices (github.com/dorhawk-software/practices, adopted 2026-11-12)
 

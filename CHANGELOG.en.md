@@ -28,6 +28,9 @@ What changed in each Obálka release, written for the people using it. The newes
 - **The Compose button is a gold postage stamp.** It has a perforated edge and a printed frame.
 - **An empty inbox is an open envelope.** Under it, when Obálka last looked ("Last checked today at
   14:02"), in the same words as at the end of the message list.
+- **A received message lies in the envelope it came in.** The sender is on the envelope with a
+  postmark of the day and minute it was delivered, the recipient in the window and the subject on the
+  sheet sliding out of it.
 
 ### Fixed
 

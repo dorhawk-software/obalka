@@ -94,7 +94,7 @@ export function Fab({
               height: FRAME_HEIGHT,
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 9,
+              gap: 10,
               paddingHorizontal: 16,
             }}
           >

@@ -25,6 +25,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Tlačítko Napsat je zlatá poštovní známka.** Má perforovaný okraj a natištěný rámeček.
 - **Prázdná schránka je otevřená obálka.** Pod ní stojí, kdy se Obálka naposledy podívala
   ("Naposledy dnes ve 14:02"), stejnými slovy jako na konci seznamu zpráv.
+- **Přijatá zpráva leží v obálce, ve které přišla.** Odesílatel je na obálce s poštovním razítkem
+  dne a minuty doručení, adresát v okénku a předmět na listu, který z obálky vyjíždí.
 
 ### Opraveno
 

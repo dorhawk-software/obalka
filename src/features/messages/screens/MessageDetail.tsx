@@ -64,6 +64,7 @@ import { DeliveryStateIcon } from './DeliveryStateIcon';
 import { AttachmentRow, formatBytes } from './AttachmentRow';
 import { AddressLines } from './AddressLines';
 import { DeliveryRecordCard } from './DeliveryRecord';
+import { DetailEnvelope } from './DetailEnvelope';
 import { SignedOriginalSection } from './SignedOriginalSection';
 import {
   deliveryRecord,
@@ -768,15 +769,23 @@ export function MessageDetail({
 
   return (
     <YStack flex={1} backgroundColor={theme.bg}>
-      {renderHeader(party)}
+      {/* Received (031): the header names what this is, and the envelope says who it is from. */}
+      {renderHeader(isSent ? party : t('detail.header.received'))}
       <ScrollView contentContainerStyle={{ paddingBottom: contentBottom }}>
         {banner}
-        <YStack paddingHorizontal={24} paddingTop={24}>
-          {/* Bricolage subject - the loud line (design detail subject ≈ 25). */}
-          <Display fontWeight="700"
-          >
-            {envelope.subject || t('detail.noSubject')}
-          </Display>
+        {!isSent ? (
+          <DetailEnvelope
+            envelope={envelope}
+            account={account}
+            attachmentCount={attachments ? attachments.length : null}
+          />
+        ) : null}
+        <YStack paddingHorizontal={isSent ? 24 : 16} paddingTop={isSent ? 24 : 0}>
+          {/* Bricolage subject - the loud line (design detail subject ≈ 25). Received messages carry
+              theirs on the sheet sliding out of the envelope above. */}
+          {isSent ? (
+            <Display fontWeight="700">{envelope.subject || t('detail.noSubject')}</Display>
+          ) : null}
 
           {/* Identity card: a "postmark" for received (sender + delivered/accepted), a "Komu" card for
               sent (recipient + box ID). */}
@@ -815,31 +824,7 @@ export function MessageDetail({
                 </YStack>
               </XStack>
             </YStack>
-          ) : (
-            <YStack
-              marginTop={24}
-              backgroundColor={theme.surface}
-              borderWidth={1}
-              borderColor={theme.border}
-              borderRadius={16}
-              padding={16}
-            >
-              <XStack gap={14} alignItems="center">
-                <Avatar name={party} size={52} />
-                <YStack flex={1} minWidth={0}>
-                  <BodyStrong color={theme.text}>
-                    {envelope.sender || '—'}
-                  </BodyStrong>
-                  {/* Where it actually came from (015 US2). Stored when the message entered the
-                      archive, so this works offline and costs no ISDS call. */}
-                  <AddressLines address={envelope.senderAddress} marginTop={4} />
-                  {/* The delivery facts used to live HERE, as one grey line in the same muted tone
-                      as the box ID - the weakest presentation in the app on the fact every deadline
-                      runs from. They now have their own record below (017). */}
-                </YStack>
-              </XStack>
-            </YStack>
-          )}
+          ) : null}
 
           {/* Received: the delivery record, a SIBLING of the sender card rather than a panel inside
               it (the design has them as two cards). Nesting it read as a sub-detail of the sender;
