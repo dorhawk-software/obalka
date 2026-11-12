@@ -183,7 +183,7 @@ describe('the detail screen for a large-volume message with enclosures missing',
     expect(view.getByTestId('attachment-0')).toBeTruthy();
     expect(view.getByText(t('detail.attachments.missingFailed'))).toBeTruthy();
     expect(view.getByText(t('detail.attachments.partlySaved'))).toBeTruthy();
-    expect(view.queryByText(t('detail.attachments.fullSaved'))).toBeNull();
+    expect(view.queryByText(/Celá zpráva/)).toBeNull();
 
     mockGetDetail.mockResolvedValue({
       kind: 'detail',
@@ -192,7 +192,9 @@ describe('the detail screen for a large-volume message with enclosures missing',
     await fireEvent.press(view.getByTestId('downloadMissingAttachments'));
     await waitFor(() => expect(mockGetDetail).toHaveBeenCalledTimes(2));
     await waitFor(() => expect(view.queryByText(incompleteText)).toBeNull());
-    expect(view.getByText(t('detail.attachments.fullSaved'))).toBeTruthy();
+    // Whole again: no warning line, and each file says it lies in the archive (031).
+    expect(view.queryByText(t('detail.attachments.partlySaved'))).toBeNull();
+    expect(view.getAllByText(new RegExp(t('detail.attachment.inArchive'))).length).toBeGreaterThan(0);
   });
 
   it('says a lost session in the words that lead to signing in again', async () => {

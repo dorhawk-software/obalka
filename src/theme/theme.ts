@@ -201,6 +201,8 @@ export interface Theme {
   cancelInk: string;
   /** The faint postmark ring printed on a slip (the delivery record). */
   slipMark: string;
+  /** The folded corner of a document sheet (an attachment's icon, board Message). */
+  docFold: string;
   /** The lock's wax seal, lit from the top left. */
   sealLight: string;
   sealShade: string;
@@ -278,6 +280,7 @@ export const lightTheme: Theme = {
   stampLabel: '#6B6253',
   cancelInk: '#1B2B45',
   slipMark: '#B5AA97',
+  docFold: '#E8DECB',
   sealLight: '#3A78C2',
   sealShade: '#1A4C86',
 };
@@ -363,6 +366,7 @@ export const darkTheme: Theme = {
   stampLabel: '#6B6253',
   cancelInk: '#1B2B45',
   slipMark: '#B5AA97',
+  docFold: '#3B3429',
   sealLight: '#3A78C2',
   sealShade: '#1A4C86',
 };

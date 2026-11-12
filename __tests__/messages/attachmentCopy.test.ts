@@ -13,7 +13,6 @@
 import {
   attachmentsNotice,
   downloadNoteKey,
-  savedBadgeKey,
 } from '../../src/features/messages/screens/MessageDetail';
 import { STRINGS_FOR_TEST, t } from '../../src/i18n/strings';
 
@@ -51,17 +50,6 @@ describe('the note under the download button', () => {
         });
       }
     }
-  });
-});
-
-describe('the saved badge', () => {
-  it('does not say the whole message is saved when files are missing', () => {
-    expect(savedBadgeKey(true)).toBe('detail.attachments.partlySaved');
-    expect(t(savedBadgeKey(true))).not.toMatch(/Celá zpráva/);
-  });
-
-  it('still says so when everything is there', () => {
-    expect(t(savedBadgeKey(false))).toBe(t('detail.attachments.fullSaved'));
   });
 });
 

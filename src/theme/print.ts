@@ -180,3 +180,17 @@ export const recordRing = {
   clock: 'M17 12.5V17l3 2.4',
   pendingDash: '2.5 3',
 } as const;
+
+/**
+ * An attachment's icon (board Message): a sheet of paper 40 x 46 with its top corner folded, the file's
+ * type printed on it. The board sets the type at 8.5; it is printed at 11, the smallest anything is
+ * read at (practices, visual craft).
+ */
+export const docSheet = {
+  width: 40,
+  height: 46,
+  sheet: 'M4 4h22l10 10v28H4z',
+  fold: 'M26 4v10h10',
+  stroke: 1.2,
+  label: { y: 35, size: 11, maxLetters: 4 },
+} as const;

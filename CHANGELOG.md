@@ -13,6 +13,11 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+### Nové
+
+- **Přílohu i podepsaný originál můžete stáhnout, kam chcete.** Tlačítko Stáhnout vedle souboru uloží
+  jeho kopii přes systémový dialog; klepnutím na řádek se soubor otevře jako dřív.
+
 ### Změněno
 
 - **Horní část schránky je přední strana obálky.** Jméno schránky je v okénku obálky pod zlatou
@@ -31,6 +36,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   zprávu doručil za vás, a Připomenout rovnou nastaví připomínku lhůty, která tím dnem začala.
 - **Doručenka je odtrhávací lístek.** Každý krok má razítko - fajfku za dodání, hodiny za fikci,
   plné kolečko za doručení přihlášením - krátkou poznámku a vpravo datum nad časem.
+- **Přílohy jsou listy papíru s typem souboru.** U každé stojí, že je v archivu; podepsaný originál
+  je v řadě s nimi.
 
 ### Opraveno
 

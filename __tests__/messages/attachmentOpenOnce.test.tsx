@@ -187,7 +187,6 @@ describe('the signed original', () => {
           envelope={mockEnvelope}
           original={original}
           unavailable={false}
-          formatSize={n => `${Math.round(n / 1024)} kB`}
           onChange={() => {}}
         />
       </TamaguiProvider>,

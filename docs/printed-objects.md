@@ -38,7 +38,14 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
   muted `stamp-label` for the small print, perforated (4 every 12; the small stamp 3.5 every 10). Light
   in both appearances: it is paper stuck on the envelope. A used stamp is cancelled in `cancel-ink`.
 - **Slip**: a record you keep - the delivery record, the recovery key, the transfer code. A sheet with
-  a perforated top (5 every 14) and a faint `slip-mark` ring.
+  a perforated top (5 every 14) and a faint `slip-mark` ring. On the delivery record each step is
+  struck as a ring (`RecordRing`, `recordRing`: two rings on a 34 grid) - a check for the arrival in
+  `body-text`, clock hands for fiction in `gold-ink` on a 1.6 line, the inner ring filled for a service
+  someone signed in for; a step still to come is the outer ring alone, dashed (the sent result).
+- **Document sheet**: a file in a message (board Message) - a sheet 40 x 46 in `surface-sunken` with a
+  `border-strong` edge and its corner folded in `doc-fold` (`#E8DECB` / `#3B3429`), the file's type
+  printed at 11 ("PDF" in `danger`, any other type in `text-muted`). The signed original sits beside it
+  as the seal glyph in a well.
 - **Airmail strip**: the test environment, stripes of envelope, paper, flap and paper at 135 degrees.
 - **Offset glyphs**: a 1.75 ink stroke with one plane printed 1.3 off register, `icon-plane`
   (`#CFE0F5` / `#2F4A6E`), or `icon-plane-gold` (`#F3D891` / `#5A4716`) on gold. Plain controls stay

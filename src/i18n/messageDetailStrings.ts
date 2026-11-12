@@ -43,7 +43,6 @@ export const cs: Record<string, string> = {
     'Stáhne přílohy a uloží celou zprávu do offline archivu. Na právní doručení to nemá vliv. To nastalo fikcí.',
   'detail.attachments.downloadFullNote.sent':
     'Stáhne přílohy a uloží celou zprávu do offline archivu. Na doručení adresátovi to nemá vliv.',
-  'detail.attachments.fullSaved': 'Celá zpráva uložena v archivu',
   'detail.attachments.partlySaved': 'Zpráva v archivu · některé přílohy chybí',
   'detail.attachments.downloading': 'Stahování…',
   'detail.attachments.redownload': 'Stáhnout znovu',
@@ -53,6 +52,10 @@ export const cs: Record<string, string> = {
   'detail.attachments.unavailable.body':
     'Zpráva už není v ISDS k dispozici (po uplynutí lhůty byla odstraněna), takže přílohy nelze znovu stáhnout.',
   'detail.attachment.savedOffline': 'Uloženo offline',
+  // 031: each saved file says it lies in the archive, and its download glyph saves a copy elsewhere.
+  'detail.attachment.inArchive': 'v archivu',
+  'detail.attachment.save': 'Stáhnout přílohu {name}',
+  'detail.attachment.saveError': 'Přílohu se nepodařilo uložit.',
   'detail.attachment.missing': 'Soubor chybí na zařízení',
   'detail.attachment.corrupt': 'Přílohu se nepodařilo zpracovat (poškozená data)',
   'detail.attachment.open': 'Otevřít přílohu {name}',
@@ -80,7 +83,9 @@ export const cs: Record<string, string> = {
   // days the copy says "nejspíš": a message served by fiction is kept for years, and a date alone is
   // not ISDS saying no.
   'detail.original.heading': 'Originál zprávy',
-  'detail.original.stored': 'Podepsaný originál (ZFO)',
+  'detail.original.stored': 'Podepsaný originál',
+  'detail.original.stored.note': 'Soubor ZFO s elektronickou pečetí',
+  'detail.original.save': 'Stáhnout podepsaný originál',
   'detail.original.open': 'Otevřít nebo uložit podepsaný originál {name}',
   'detail.original.fetch': 'Stáhnout podepsaný originál (ZFO)',
   'detail.original.fetch.note': 'S pečetí ISDS. Stáhnout ho lze, dokud ISDS zprávu uchovává.',
@@ -148,7 +153,6 @@ export const en: Record<string, string> = {
     'Downloads the attachments and saves the whole message to your offline archive. It does not affect legal delivery. That happened by fiction.',
   'detail.attachments.downloadFullNote.sent':
     'Downloads the attachments and saves the whole message to your offline archive. It does not affect delivery to the recipient.',
-  'detail.attachments.fullSaved': 'Full message saved to the archive',
   'detail.attachments.partlySaved': 'Message in the archive · some attachments are missing',
   'detail.attachments.downloading': 'Downloading…',
   'detail.attachments.redownload': 'Download again',
@@ -158,6 +162,9 @@ export const en: Record<string, string> = {
   'detail.attachments.unavailable.body':
     'The message is no longer in ISDS (removed after its retention period), so the attachments can’t be downloaded again.',
   'detail.attachment.savedOffline': 'Saved offline',
+  'detail.attachment.inArchive': 'in the archive',
+  'detail.attachment.save': 'Download attachment {name}',
+  'detail.attachment.saveError': 'The attachment could not be saved.',
   'detail.attachment.missing': 'File missing on this device',
   'detail.attachment.corrupt': 'Attachment could not be processed (corrupt data)',
   'detail.attachment.open': 'Open attachment {name}',
@@ -177,7 +184,9 @@ export const en: Record<string, string> = {
   'detail.attachments.missingFailed':
     'The missing attachments could not be downloaded right now. Please try again, or open the message at datovka.gov.cz.',
   'detail.original.heading': 'Original message',
-  'detail.original.stored': 'Signed original (ZFO)',
+  'detail.original.stored': 'Signed original',
+  'detail.original.stored.note': 'A ZFO file with the electronic seal',
+  'detail.original.save': 'Download the signed original',
   'detail.original.open': 'Open or save the signed original {name}',
   'detail.original.fetch': 'Download the signed original (ZFO)',
   'detail.original.fetch.note': 'Sealed by ISDS. It can be downloaded while ISDS keeps the message.',

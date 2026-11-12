@@ -13,6 +13,11 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+### New
+
+- **Save a copy of an attachment or the signed original wherever you like.** The Download button
+  beside a file saves a copy through the system dialog; tapping the row opens the file as before.
+
 ### Changed
 
 - **The top of the inbox is the front of an envelope.** The box's name is in the envelope's window
@@ -37,6 +42,8 @@ What changed in each Obálka release, written for the people using it. The newes
 - **The delivery record is a tear-off slip.** Each step has a stamp - a check for delivery, a clock
   for fiction, a filled ring for acceptance by signing in - a short note, and the date over the time on
   the right.
+- **Attachments are sheets of paper with the file type.** Each says it is in the archive; the signed
+  original sits in the same list.
 
 ### Fixed
 

@@ -7,11 +7,10 @@ import { Skeleton } from '../../../theme/Skeleton';
 import { Avatar } from '../../../theme/Avatar';
 import { chipTone } from '../../../theme/chipTone';
 import { attachmentFileStore } from '../../../services/files/attachmentFileStore';
-import { Body, BodyStrong, Caption, Display, Label, Meta, Overline, SmallStrong, Subheading, Tag, Value } from '../../../theme/Typography';
+import { Body, BodyStrong, Caption, Display, Heading, Label, Meta, Overline, Small, SmallStrong, Tag, Value } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   AlertIcon,
-  CheckIcon,
   ChevronLeftIcon,
   ContentErasedIcon,
   DownloadIcon,
@@ -131,16 +130,6 @@ export function downloadNoteKey({
   return served
     ? 'detail.attachments.downloadFullNote.fiction'
     : 'detail.attachments.downloadFullNote';
-}
-
-/**
- * The badge over the attachment list. "Celá zpráva uložena" is a claim about files on disk, so it
- * has to answer to whether they are there.
- */
-export function savedBadgeKey(anyBlocked: boolean): string {
-  return anyBlocked
-    ? 'detail.attachments.partlySaved'
-    : 'detail.attachments.fullSaved';
 }
 
 /**
@@ -1041,16 +1030,12 @@ export function MessageDetail({
           {/* Attachments - shared by both folders (a sent message can carry documents too). The
               heading is suppressed in the expired state: the "no longer available" notice stands
               alone there (design). The count only exists once a download confirmed the contents. */}
+          {/* 031 (board Message): "Přílohy" and the count beside it, 18 under what comes before (the
+              board's 20, on the scale). */}
           {attachments || !unavailable ? (
-            <XStack marginTop={24} alignItems="center" gap={8}>
-              <Subheading>
-                {t('detail.attachments')}
-              </Subheading>
-              {attachments ? (
-                <Caption color={theme.textFaint} fontWeight="700">
-                  {String(attachments.length)}
-                </Caption>
-              ) : null}
+            <XStack marginTop={18} alignItems="baseline" gap={8}>
+              <Heading>{t('detail.attachments')}</Heading>
+              {attachments ? <Small color={theme.textMuted}>{String(attachments.length)}</Small> : null}
             </XStack>
           ) : null}
 
@@ -1060,17 +1045,13 @@ export function MessageDetail({
               twenty lines below saying the opposite. Reached by restoring a backup - the backup
               carries the message rows and deliberately not the attachment bytes. */}
           {/* Nor while enclosures of a large-volume message never arrived (constitution IV). */}
-          {attachments ? (
+          {/* Each saved file says "v archivu" itself since 031; the line stays for what it must
+              warn about. */}
+          {attachments && (anyBlocked || incomplete) ? (
             <XStack marginTop={6} alignItems="center" gap={6}>
-              {anyBlocked || incomplete ? (
-                <AlertIcon size={14} color={theme.warningInk} />
-              ) : (
-                <CheckIcon size={14} color={theme.success} />
-              )}
-              <Meta fontWeight="700"
-                color={anyBlocked || incomplete ? theme.warningInk : theme.success}
-              >
-                {t(savedBadgeKey(anyBlocked || incomplete))}
+              <AlertIcon size={14} color={theme.warningInk} />
+              <Meta fontWeight="700" color={theme.warningInk}>
+                {t('detail.attachments.partlySaved')}
               </Meta>
             </XStack>
           ) : null}
@@ -1081,7 +1062,7 @@ export function MessageDetail({
             // attachments" from the list's dmAttachmentSize: it is the size in KB, rounded, so a
             // small file reports 0 and would otherwise hide a real attachment.)
             attachments.length > 0 ? (
-              <YStack marginTop={10} gap={8}>
+              <YStack marginTop={8} gap={8}>
                 {renderAttachmentsNotice(attachments.length)}
                 {attachments.map((att, i) => (
                   <AttachmentRow
@@ -1192,7 +1173,6 @@ export function MessageDetail({
               envelope={envelope}
               original={original}
               unavailable={unavailable}
-              formatSize={formatBytes}
               onChange={detail =>
                 setState(s =>
                   s.status === 'ready'

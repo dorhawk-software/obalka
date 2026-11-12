@@ -6,10 +6,12 @@ import { AppState } from 'react-native';
 import { Pressable as GHPressable } from 'react-native-gesture-handler';
 import { Spinner, XStack, YStack } from '../../../theme/ui';
 import { Dialog } from '../../../theme/Dialog';
-import { Card } from '../../../theme/Card';
-import { Caption, Meta, Value } from '../../../theme/Typography';
+import { Caption, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { AlertIcon, CheckIcon, FileIcon } from '../../../theme/icons';
+import { AlertIcon } from '../../../theme/icons';
+import { OffsetIcon } from '../../../theme/offsetIcons';
+import { DocSheet } from '../../../theme/objects/DocSheet';
+import { reportFailure } from '../../../services/telemetry/telemetry';
 import { haptics } from '../../../services/haptics';
 import { useSingleFlight } from '../../../app/useSingleFlight';
 import { useAfterPressSettles } from '../../../app/useAfterPressSettles';
@@ -31,8 +33,9 @@ export function formatBytes(n: number): string {
 
 
 /**
- * A downloaded attachment row - its content is cached, so it opens offline. Tap → write to a file and
- * open in the OS viewer. The ✓ marks it as saved offline.
+ * A downloaded attachment row (031, board Message): the file as a sheet of paper with its type on it,
+ * its name, "176 kB · v archivu". It lies in the archive, so it opens offline: tap the row to open it
+ * in the OS viewer, or the download glyph to save a copy where you choose.
  */
 export function AttachmentRow({
   attachment,
@@ -75,6 +78,29 @@ export function AttachmentRow({
     return () => sub.remove();
   }, [openOnce]);
 
+  /** A copy where the person chooses, through the system's save sheet; the archive keeps its own. */
+  const save = () => {
+    const path = attachment.localPath;
+    if (path == null) {
+      return;
+    }
+    void openOnce(async () => {
+      haptics.selection();
+      await new Promise<void>(done => {
+        afterPressSettles(async () => {
+          try {
+            await attachmentOpener.save(path, attachment.name, attachment.mimeType || 'application/octet-stream');
+          } catch (e) {
+            reportFailure('file.write', e, { stage: 'native' });
+            setAttachmentAlert(t('detail.attachment.saveError'));
+          } finally {
+            done();
+          }
+        });
+      });
+    });
+  };
+
   const open = () => {
     void openOnce(async () => {
       haptics.selection(); // a light tick on opening an attachment
@@ -104,73 +130,79 @@ export function AttachmentRow({
 
   return (
     <>
-    <GHPressable
-      onPress={() => {
-        if (!blocked) {
-          open(); // a missing/undecodable file can't be opened
-        }
-      }}
-      accessibilityRole="button"
-      accessibilityLabel={t('detail.attachment.open', {
-        name: attachment.name,
-      })}
-      testID={`attachment-${index}`}
-      style={({ pressed }) => ({ opacity: pressed && !blocked ? 0.7 : 1 })}
-    >
-      <Card flexDirection="row"
-        alignItems="center"
-        gap={12}
-        paddingVertical={12}
-        paddingHorizontal={13}
+    <XStack alignItems="center" gap={12} minHeight={52}>
+      {/* The row opens the file; the download glyph beside it saves a copy. Siblings, not nested:
+          a press inside the gesture-handler Pressable could fire both. */}
+      <GHPressable
+        onPress={() => {
+          if (!blocked) {
+            open(); // a missing/undecodable file can't be opened
+          }
+        }}
+        accessibilityRole="button"
+        accessibilityLabel={t('detail.attachment.open', {
+          name: attachment.name,
+        })}
+        testID={`attachment-${index}`}
+        style={({ pressed }) => ({ flex: 1, opacity: pressed && !blocked ? 0.7 : 1 })}
       >
-        {/* A NEUTRAL tile (design §detail attachments): a sunken square with a quiet file glyph - no
-            per-extension colour fill, no extension label. Only the blocked state colours it. */}
-        <YStack
-          width={40}
-          minHeight={40}
-          borderRadius={11}
-          backgroundColor={theme.surfaceSunken}
+        <XStack alignItems="center" gap={12} minHeight={52}>
+          {blocked ? (
+            // A file that cannot be opened keeps the alert in its tile (the blocked states are R7's).
+            <YStack
+              width={40}
+              minHeight={40}
+              borderRadius={12}
+              backgroundColor={theme.surfaceSunken}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <AlertIcon size={20} color={theme.danger} />
+            </YStack>
+          ) : (
+            <DocSheet name={attachment.name} />
+          )}
+          <YStack flex={1} minWidth={0}>
+            <SmallStrong color={theme.text} numberOfLines={1}>
+              {attachment.name || '—'}
+            </SmallStrong>
+            {blocked ? (
+              <Caption color={theme.danger} numberOfLines={1}>
+                {missing
+                  ? t('detail.attachment.missing')
+                  : t('detail.attachment.corrupt')}
+              </Caption>
+            ) : (
+              <Caption fontWeight="400" color={theme.textMuted} numberOfLines={1}>
+                {opening
+                  ? t('detail.attachment.opening')
+                  : [size, t('detail.attachment.inArchive')].filter(Boolean).join(' · ')}
+              </Caption>
+            )}
+          </YStack>
+        </XStack>
+      </GHPressable>
+      {blocked ? null : opening ? (
+        <XStack width={44} height={44} marginRight={-10} alignItems="center" justifyContent="center">
+          <Spinner size="small" color={theme.blue} />
+        </XStack>
+      ) : (
+        <XStack
+          width={44}
+          height={44}
+          marginRight={-10}
           alignItems="center"
           justifyContent="center"
+          pressStyle={{ opacity: 0.5 }}
+          onPress={save}
+          accessibilityRole="button"
+          accessibilityLabel={t('detail.attachment.save', { name: attachment.name })}
+          testID={`attachment-save-${index}`}
         >
-          {blocked ? (
-            <AlertIcon size={20} color={theme.danger} />
-          ) : (
-            <FileIcon size={19} color={theme.textMuted} />
-          )}
-        </YStack>
-        <YStack flex={1} minWidth={0}>
-          <Value color={theme.text} numberOfLines={1}>
-            {attachment.name || '—'}
-          </Value>
-          {blocked ? (
-            <Caption color={theme.danger} numberOfLines={1}>
-              {missing
-                ? t('detail.attachment.missing')
-                : t('detail.attachment.corrupt')}
-            </Caption>
-          ) : (
-            // The sub-line carries the size only - the "saved offline" mark lives on the right (design).
-            <Meta
-              color={theme.textFaint}
-              numberOfLines={1}
-            >
-              {opening ? t('detail.attachment.opening') : size}
-            </Meta>
-          )}
-        </YStack>
-        {blocked ? null : opening ? (
-          <Spinner size="small" color={theme.blue} />
-        ) : (
-          <XStack alignItems="center" gap={4} flexShrink={0}>
-            <CheckIcon size={15} color={theme.success} />
-            <Meta fontWeight="700" color={theme.success}>
-              {t('detail.attachment.savedOffline')}
-            </Meta>
-          </XStack>
-        )}
-      </Card>
-    </GHPressable>
+          <OffsetIcon name="download" size={20} color={theme.blue} />
+        </XStack>
+      )}
+    </XStack>
     {attachmentAlert ? (
       <Dialog
         title={t('detail.attachments')}

@@ -89,7 +89,6 @@ async function section(
         envelope={envelope(3)}
         original={null}
         unavailable={false}
-        formatSize={n => `${Math.round(n / 1024)} kB`}
         onChange={onChange}
         {...props}
       />
@@ -106,11 +105,11 @@ beforeEach(() => {
 });
 
 describe('the signed original row', () => {
-  it('names a stored original and its size, and opens it on a tap', async () => {
+  it('names a stored original as the board does, and opens it on a tap', async () => {
     const { view } = await section({ original: stored });
     const row = await view.findByTestId('signed-original');
-    expect(row).toHaveTextContent(/Podepsaný originál \(ZFO\)/);
-    expect(row).toHaveTextContent(/DZ_1234567\.zfo · 2 kB/);
+    expect(row).toHaveTextContent(/Podepsaný originál/);
+    expect(row).toHaveTextContent(/Soubor ZFO s elektronickou pečetí/);
     fireEvent.press(row);
     await waitFor(() => expect(mockOpen).toHaveBeenCalledWith(expect.anything(), stored));
     expect(mockFetch).not.toHaveBeenCalled();
@@ -169,7 +168,6 @@ describe('the signed original row', () => {
           envelope={envelope(3)}
           original={original}
           unavailable={false}
-          formatSize={n => `${Math.round(n / 1024)} kB`}
           onChange={jest.fn()}
         />
       </TamaguiProvider>
@@ -183,7 +181,7 @@ describe('the signed original row', () => {
     );
     await view.rerender(element(stored));
     await waitFor(() =>
-      expect(view.getByTestId('signed-original')).toHaveTextContent(/DZ_1234567\.zfo · 2 kB/),
+      expect(view.getByTestId('signed-original')).toHaveTextContent(/Soubor ZFO s elektronickou pečetí/),
     );
     expect(view.getByTestId('signed-original')).not.toHaveTextContent(
       t('detail.original.fetchFailed'), { exact: false }
@@ -197,7 +195,7 @@ describe('the signed original row', () => {
     expect(fontScale).not.toBe(1);
     const { view } = await section();
     const caption = await view.findByText(t('detail.original.fetch.note'));
-    expect(StyleSheet.flatten(caption.props.style).minHeight).toBe(2 * 16 * fontScale);
+    expect(StyleSheet.flatten(caption.props.style).minHeight).toBe(2 * 17 * fontScale);
   });
 
   it('keeps a stored original one line tall, as the attachment rows above it are', async () => {
@@ -205,8 +203,8 @@ describe('the signed original row', () => {
     // one-line file name - taller than the attachments it sits under.
     const { fontScale } = Dimensions.get('window');
     const { view } = await section({ original: stored });
-    const caption = await view.findByText(/DZ_1234567\.zfo · 2 kB/);
-    expect(StyleSheet.flatten(caption.props.style).minHeight).toBe(16 * fontScale);
+    const caption = await view.findByText(t('detail.original.stored.note'));
+    expect(StyleSheet.flatten(caption.props.style).minHeight).toBe(17 * fontScale);
     expect(caption.props.numberOfLines).toBe(1);
   });
 

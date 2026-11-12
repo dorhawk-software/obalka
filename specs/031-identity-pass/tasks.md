@@ -411,7 +411,31 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     were moved with it;
   - the list's end lost its hairline: the register's rows have none since T030;
   - `strings.ts` was split (`messageListStrings.ts`) rather than trimmed to make room.
-- [ ] T032 Message, light and dark (I29, I32, I33, I35 saved row, I36).
+- [x] T032 Message, light and dark (I29, I32, I33, I35 saved row, I36). Done 2026-11-12 in four commits:
+  the envelope it came in (`DetailEnvelope.tsx`: the sender on the envelope, the postmark, the recipient in
+  the window, the subject on the sheet sliding out), the fiction band with "Připomenout"
+  (`FictionBanner.tsx`), the delivery record as a slip (`RecordRing`, a ring per step) and the
+  attachments as sheets of paper with the signed original in their list (`DocSheet`). Checked on the
+  `Obalka_Demo` emulator in both themes against boards Message and Message - dark, rendered from the
+  canvas. Where the build differs from the board, and why:
+  - the header has no "Archivovat" or "Další akce": the app has neither (plan.md, leftovers);
+  - off the scale, rounded (owner, 2026-11-12): the sheet's top corners 4 -> 8, the band's gap 9 -> 10,
+    the attachments 20 below the record -> 18; the subject is Display (26), the sender Heading (17);
+  - the sheet says the attachment count only: the board's "Č. j." is not in the data model;
+  - the band gives the year when it is not this one (29.08.2025), or last August's fiction reads as
+    this August's; its glyph keeps the family's 1.75 line (board 2);
+  - the gold tones' dark pair is the canvas's gold ink on gold soft (#F0C452 on #33290F) for all three
+    gold tones, and the slip's dark header takes it too (board #E8A100);
+  - not on a board: a service someone signed in for is the inner ring filled with the check cut out;
+    its note and the merged step's are written in the board's style; the read note and the erased /
+    vault notes stay under the steps, without hairlines;
+  - the record's header takes the row's width: Android cut its last word ("DORUČENKA ·");
+  - the file type is printed at 11, not 8.5: nothing anyone reads is under 11 (practices);
+  - "Celá zpráva uložena v archivu" stays only as the warning it can be: each file says "v archivu";
+  - the signed original lost its own heading and joined the list; its caption is the board's words;
+  - "Stáhnout" saves a copy through the system's save sheet, the way the signed original already left
+    the phone where no app opens a .zfo; tapping the row still opens the file;
+  - the term card (I34) and the other attachment states (I35) are R7's, unchanged.
 - [ ] T033 Sent result (I39).
 - [ ] T034 Lock (I50).
 - [ ] T035 Motion: I67-I70, each with its Reduce Motion form.

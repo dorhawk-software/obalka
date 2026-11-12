@@ -1,12 +1,13 @@
 // A message's signed original on the detail screen (004 amendment, 2026-09-14).
 //
-// One row under the attachments, in the attachment row's own metrics so the two read as one list: the
-// .zfo when it is on the phone (open it, or save it where no app can), an offer to fetch it while ISDS
-// may still hold it, or a plain statement that it cannot be had any more. What ISDS still holds is
+// One row in the attachments' list, in the attachment row's own metrics so the two read as one list
+// (031, board Message: the seal in a well, "Podepsaný originál", "Soubor ZFO s elektronickou pečetí"):
+// the .zfo when it is on the phone (open it, or save a copy from its download glyph), an offer to fetch
+// it while ISDS may still hold it, or a plain statement that it cannot be had any more. What ISDS still holds is
 // decided in `signedOriginal.ts`, never here.
 //
 // Nothing moves while something is in flight (constitution V). An offer to fetch reserves its caption
-// at two lines and the trailing slot is 24dp, so a spinner or an error changes what is inside them
+// at two lines and the trailing slot is 44dp, so a spinner or an error changes what is inside them
 // and not where anything else on the screen sits. A stored original reserves one line (2026-11-11,
 // reported from a phone: two lines for its one-line file name made it taller than the attachment rows
 // above it, which it is meant to match): nothing it shows can grow - an open that fails says so in a
@@ -19,15 +20,11 @@ import { AppState, useWindowDimensions } from 'react-native';
 // responder across the hop to an external viewer and freeze the whole screen on return.
 import { Pressable as GHPressable } from 'react-native-gesture-handler';
 import { Spinner, XStack, YStack } from '../../../theme/ui';
-import { Meta, Subheading, Value } from '../../../theme/Typography';
+import { Caption, SmallStrong } from '../../../theme/Typography';
 import { Dialog } from '../../../theme/Dialog';
 import { useTheme } from '../../../theme/ThemeProvider';
-import {
-  CheckIcon,
-  DownloadIcon,
-  FileXIcon,
-  ShieldKeyIcon,
-} from '../../../theme/icons';
+import { FileXIcon } from '../../../theme/icons';
+import { OffsetIcon } from '../../../theme/offsetIcons';
 import { t } from '../../../i18n/strings';
 import { haptics } from '../../../services/haptics';
 import { useSingleFlight } from '../../../app/useSingleFlight';
@@ -38,11 +35,12 @@ import {
   attachmentOpener,
   openSignedOriginal,
 } from '../../../services/files/attachmentOpener';
-import type {
-  DataBoxAccount,
-  MessageDetail,
-  MessageEnvelope,
-  SignedOriginal,
+import {
+  ZFO_MIME_TYPE,
+  type DataBoxAccount,
+  type MessageDetail,
+  type MessageEnvelope,
+  type SignedOriginal,
 } from '../../../services/isds/types';
 import type { MessageFolder } from '../../../services/db/messagesStore';
 import { messagesController } from '../../accounts/deps';
@@ -52,22 +50,19 @@ import {
   signedOriginalRow,
   type SignedOriginalRow,
 } from '../state/signedOriginal';
-import { Card } from '../../../theme/Card';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 
-/** The caption's line height, as the attachment rows' 12pt caption sets it. */
-const CAPTION_LINE = 16;
+/** The caption's line height, as the attachment rows' 13pt caption sets it. */
+const CAPTION_LINE = 17;
 /** Lines an offer's caption reserves, so its note and a long error fit the same row. */
 const CAPTION_LINES = 2;
 
 /** The caption of a row that is not showing an error. */
-export function signedOriginalCaption(
-  row: SignedOriginalRow,
-  formatSize: (bytes: number) => string,
-): string {
+export function signedOriginalCaption(row: SignedOriginalRow): string {
   switch (row.kind) {
     case 'stored':
-      return `${row.original.fileName} · ${formatSize(row.original.size)}`;
+      // What it is, as the board says it; its file name is in the save sheet, its size is small.
+      return t('detail.original.stored.note');
     case 'fetch':
       if (row.missing) {
         return row.late
@@ -91,7 +86,6 @@ export interface SignedOriginalSectionProps {
   readonly original: SignedOriginal | null;
   /** The detail's `attachmentsUnavailable`: ISDS has confirmed the message gone. */
   readonly unavailable: boolean;
-  readonly formatSize: (bytes: number) => string;
   /** A fetch changed the cached detail: an original recorded, or the message recorded as gone. */
   readonly onChange: (detail: MessageDetail) => void;
 }
@@ -103,7 +97,6 @@ export function SignedOriginalSection({
   envelope,
   original,
   unavailable,
-  formatSize,
   onChange,
 }: SignedOriginalSectionProps) {
   const theme = useTheme();
@@ -241,20 +234,16 @@ export function SignedOriginalSection({
       : row.kind === 'fetch'
       ? t('detail.original.fetch')
       : t('detail.original.unavailable');
-  const caption = error ?? signedOriginalCaption(row, formatSize);
+  const caption = error ?? signedOriginalCaption(row);
   const captionLines = row.kind === 'stored' && error == null ? 1 : CAPTION_LINES;
 
-  const body = (
-    <Card flexDirection="row"
-      alignItems="center"
-      gap={12}
-      paddingVertical={12}
-      paddingHorizontal={13}
-    >
+  // The well and the words: the part of the row that opens, fetches or just states.
+  const main = (
+    <XStack flex={1} alignItems="center" gap={12} minHeight={52}>
       <YStack
         width={40}
-        minHeight={40}
-        borderRadius={11}
+        height={40}
+        borderRadius={12}
         backgroundColor={theme.surfaceSunken}
         alignItems="center"
         justifyContent="center"
@@ -262,52 +251,88 @@ export function SignedOriginalSection({
         {row.kind === 'unavailable' ? (
           <FileXIcon size={20} color={theme.textFaint} />
         ) : (
-          <ShieldKeyIcon size={19} color={theme.textMuted} />
+          <OffsetIcon name="seal" size={24} color={theme.text} />
         )}
       </YStack>
       <YStack flex={1} minWidth={0}>
-        <Value
-          color={row.kind === 'unavailable' ? theme.textMuted : theme.text}
-          numberOfLines={1}
-        >
+        <SmallStrong color={row.kind === 'unavailable' ? theme.textMuted : theme.text} numberOfLines={1}>
           {title}
-        </Value>
-        <Meta
+        </SmallStrong>
+        <Caption
+          fontWeight="400"
           // Two lines, at the reader's text size: RN scales the line height with the system font and
-          // leaves a dp minHeight alone, so a bare 32 would let a one-line caption turning into a
+          // leaves a dp minHeight alone, so a bare 34 would let a one-line caption turning into a
           // two-line error grow the row at any size but the default (constitution V).
           minHeight={captionLines * CAPTION_LINE * fontScale}
-          color={error ? theme.danger : theme.textFaint}
+          color={error ? theme.danger : theme.textMuted}
           numberOfLines={captionLines}
         >
           {caption}
-        </Meta>
+        </Caption>
       </YStack>
-      <XStack width={24} height={24} flexShrink={0} alignItems="center" justifyContent="center">
-        {busy ? (
-          <Spinner size="small" color={theme.blue} />
-        ) : row.kind === 'stored' ? (
-          <CheckIcon size={15} color={theme.success} />
-        ) : row.kind === 'fetch' ? (
-          <DownloadIcon size={17} color={theme.blue} />
-        ) : null}
-      </XStack>
-    </Card>
+    </XStack>
+  );
+
+  /** A copy of the stored original where the person chooses; the archive keeps its own. */
+  const saveOriginal = (stored: SignedOriginal) => {
+    if (fetching) {
+      return;
+    }
+    void openOnce(async () => {
+      haptics.selection();
+      await new Promise<void>(done => {
+        afterPressSettles(async () => {
+          try {
+            await attachmentOpener.save(stored.localPath, stored.fileName, ZFO_MIME_TYPE);
+          } catch (e) {
+            reportFailure('file.write', e, { stage: 'native' });
+            setAlert(t('detail.original.writeFailed'));
+          } finally {
+            done();
+          }
+        });
+      });
+    });
+  };
+
+  // The trailing slot, 44 wide whatever it holds, so nothing moves when a spinner takes its place.
+  const trailing = busy ? (
+    <XStack width={44} height={44} marginRight={-10} alignItems="center" justifyContent="center">
+      <Spinner size="small" color={theme.blue} />
+    </XStack>
+  ) : row.kind === 'unavailable' ? null : (
+    <XStack
+      width={44}
+      height={44}
+      marginRight={-10}
+      alignItems="center"
+      justifyContent="center"
+      pressStyle={{ opacity: 0.5 }}
+      onPress={() => {
+        if (row.kind === 'stored') {
+          saveOriginal(row.original);
+        } else {
+          void fetchOriginal();
+        }
+      }}
+      accessibilityRole="button"
+      accessibilityLabel={row.kind === 'stored' ? t('detail.original.save') : title}
+      testID="signed-original-download"
+    >
+      <OffsetIcon name="download" size={20} color={theme.blue} />
+    </XStack>
   );
 
   return (
     <>
-      <XStack marginTop={24} alignItems="center" gap={8}>
-        <Subheading>
-          {t('detail.original.heading')}
-        </Subheading>
-      </XStack>
-      <YStack marginTop={10}>
+      <XStack marginTop={8} alignItems="center" gap={12}>
         {row.kind === 'unavailable' ? (
-          <YStack accessible accessibilityLabel={`${title}. ${caption}`} testID="signed-original">
-            {body}
+          <YStack flex={1} accessible accessibilityLabel={`${title}. ${caption}`} testID="signed-original">
+            {main}
           </YStack>
         ) : (
+          // Siblings, not nested, as in the attachment row: a press inside the gesture-handler
+          // Pressable could fire both.
           <GHPressable
             onPress={() => {
               if (row.kind === 'stored') {
@@ -325,12 +350,13 @@ export function SignedOriginalSection({
             accessibilityHint={caption}
             accessibilityState={{ busy }}
             testID="signed-original"
-            style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+            style={({ pressed }) => ({ flex: 1, opacity: pressed ? 0.7 : 1 })}
           >
-            {body}
+            {main}
           </GHPressable>
         )}
-      </YStack>
+        {trailing}
+      </XStack>
       {alert ? (
         <Dialog
           title={t('detail.original.heading')}
