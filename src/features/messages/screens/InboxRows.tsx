@@ -15,7 +15,7 @@ import { objectShadow } from '../../../theme/depth';
 import { avatarColor } from '../../../theme/avatarPalette';
 import { chipTone } from '../../../theme/chipTone';
 import { touchSlop } from '../../../theme/touchTarget';
-import { t, getActiveLocale } from '../../../i18n/strings';
+import { t, getActiveLocale, plural } from '../../../i18n/strings';
 import type { FaqId } from '../../../content/faq';
 import type { DataBoxAccount, MessageEnvelope } from '../../../services/isds/types';
 import type { MessageFolder } from '../../../services/db/messagesStore';
@@ -23,7 +23,7 @@ import type { AttentionEntry } from '../state/attention';
 import { attentionDaysRemaining } from '../state/attention';
 import { servedByFiction } from '../state/fikce';
 import { isUnread } from '../state/messagesController';
-import { rowDate, type DateSectionLabel } from '../state/groupByDate';
+import { freshnessLabel, rowDate, type DateSectionLabel } from '../state/groupByDate';
 import { attentionRowLabel, receivedRowLabel, termChipLabel } from '../state/rowLabel';
 import { formatTermDate } from './TermPicker';
 import { BoxPill } from './BoxPill';
@@ -232,6 +232,32 @@ export const AttentionSheet = memo(function AttentionSheetView({
     </YStack>
   );
 });
+
+/** The hours Czech says with "ve": dvě, tři, čtyři, dvanáct, třináct, čtrnáct, dvacet and on. */
+const VE_HOURS = new Set([2, 3, 4, 12, 13, 14, 20, 21, 22, 23]);
+
+/**
+ * When the app last looked at the box (board Empty, I26): "Naposledy dnes ve 14:02", or "před 5
+ * minutami", or a date. The empty inbox says it under its envelope, and a list says it at its end.
+ */
+export function freshnessText(syncedAt: number | null, now: number): string {
+  const label = freshnessLabel(syncedAt, now);
+  if (label == null) {
+    return t('messages.synced.never');
+  }
+  if (label === 'now') {
+    return t('messages.synced.now');
+  }
+  if (label.startsWith('min:')) {
+    const n = Number(label.slice(4));
+    return t(`messages.synced.min.${plural(n)}`, { n });
+  }
+  if (label.startsWith('at:')) {
+    const d = label.slice(3);
+    return t(VE_HOURS.has(Number(d.split(':')[0])) ? 'messages.synced.at.ve' : 'messages.synced.at', { d });
+  }
+  return t('messages.synced.on', { d: label.slice(3) });
+}
 
 const weekdays = new Map<string, Intl.DateTimeFormat>();
 

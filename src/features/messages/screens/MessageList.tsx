@@ -25,7 +25,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Button, XStack, YStack } from '../../../theme/ui';
-import { Badge, Body, Heading, Meta, Small, SmallStrong, Tag, Value } from '../../../theme/Typography';
+import { Badge, Body, Caption, Heading, Meta, Small, SmallStrong, Tag, Value } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   AlertIcon,
@@ -35,7 +35,6 @@ import {
   ContentErasedIcon,
   EditIcon,
   HelpIcon,
-  MailGlyph,
   SendGlyph,
   TimerIcon,
   VaultIcon,
@@ -60,7 +59,6 @@ import {
   refusedForExpiredPassword,
 } from '../../accounts/state/passwordExpiry';
 import {
-  freshnessLabel,
   groupByDate,
   rowDate,
   type DateSectionLabel,
@@ -100,7 +98,9 @@ import type { BoxAttention } from '../state/crossBox';
 import { CrossBoxLine, crossBoxSummary } from './CrossBoxLine';
 import { BoxPill } from './BoxPill';
 import { InboxHeader } from './InboxHeader';
-import { AttentionHead, AttentionSheet, RegisterRow, SectionHead } from './InboxRows';
+import { AttentionHead, AttentionSheet, RegisterRow, SectionHead, freshnessText } from './InboxRows';
+import { EmptyObject } from '../../../theme/EmptyObject';
+import { OpenEnvelope } from '../../../theme/objects/Envelope';
 import { draftsBus } from '../state/draftsBus';
 
 /**
@@ -247,31 +247,13 @@ function ListEnd({
   readonly now: number;
 }) {
   const theme = useTheme();
-  const label = freshnessLabel(syncedAt, now);
-  let text = '';
-  if (!syncing) {
-    if (label == null) {
-      text = t('messages.synced.never');
-    } else if (label === 'now') {
-      text = t('messages.synced.now');
-    } else if (label.startsWith('min:')) {
-      const n = Number(label.slice(4));
-      text = t(`messages.synced.min.${plural(n)}`, { n });
-    } else if (label.startsWith('at:')) {
-      text = t('messages.synced.at', { d: label.slice(3) });
-    } else {
-      text = t('messages.synced.on', { d: label.slice(3) });
-    }
-  }
+  // Held blank while a refresh runs, so the line never says a time that is about to change. The
+  // register has no hairlines since 031, so neither does its end.
   return (
-    <YStack>
-      {/* The list's own closing edge - the counterpart to each row's top hairline. */}
-      <YStack height={1} backgroundColor={theme.border} />
-      <YStack paddingTop={14} paddingBottom={4} alignItems="center">
-        <Meta dense color={theme.textFaint} numberOfLines={1}>
-          {text}
-        </Meta>
-      </YStack>
+    <YStack paddingTop={14} paddingBottom={4} alignItems="center">
+      <Caption fontWeight="400" color={theme.textMuted} numberOfLines={1}>
+        {syncing ? '' : freshnessText(syncedAt, now)}
+      </Caption>
     </YStack>
   );
 }
@@ -1134,11 +1116,12 @@ export function MessageList({
           marginTop={60}
         />
       ) : (
-        <EmptyState
-          icon={<HeroIcon glyph={MailGlyph} />}
+        <EmptyObject
+          object={<OpenEnvelope />}
           title={t('messages.empty')}
-          subtitle={t('messages.empty.hint')}
-          marginTop={60}
+          body={t('messages.empty.hint')}
+          note={syncing ? null : freshnessText(loaded ? loaded.syncedAt : null, now)}
+          testID="emptyInbox"
         />
       );
     // Not "empty" - unavailable. The distinction matters: the app has not been able to look.

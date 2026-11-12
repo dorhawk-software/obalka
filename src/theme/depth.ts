@@ -60,7 +60,7 @@ export const depth = {
  * cut out of the object, and the shadow has to follow the holes.
  */
 type ObjectShadow = 'sheet' | 'sheetEdge' | 'envelope' | 'envelopeHeader' | 'letter' | 'window' | 'seal';
-type ObjectFilter = 'slip' | 'stamp' | 'stampFab';
+type ObjectFilter = 'slip' | 'stamp' | 'stampFab' | 'openEnvelope';
 
 const OBJECT_SHADOWS: Record<'light' | 'dark', Record<ObjectShadow, string>> = {
   light: {
@@ -95,12 +95,14 @@ const OBJECT_FILTERS: Record<'light' | 'dark', Record<ObjectFilter, string | und
     slip: 'drop-shadow(0px 4px 10px rgba(33,27,18,0.07))',
     stamp: 'drop-shadow(0px 6px 10px rgba(20,32,60,0.18))',
     stampFab: 'drop-shadow(0px 8px 14px rgba(184,128,0,0.38))',
+    openEnvelope: 'drop-shadow(0px 16px 22px rgba(33,50,90,0.22))',
   },
   dark: {
     // Only the 1 px edge at night, which the Slip draws.
     slip: undefined,
     stamp: 'drop-shadow(0px 6px 10px rgba(20,32,60,0.18))',
     stampFab: 'drop-shadow(0px 8px 14px rgba(184,128,0,0.38))',
+    openEnvelope: 'drop-shadow(0px 16px 22px rgba(33,50,90,0.22))',
   },
 };
 

@@ -4,11 +4,11 @@
 
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { ClipPath, Defs, G, Path, Pattern, Rect } from 'react-native-svg';
 import { useTheme } from '../ThemeProvider';
 import { monogram } from '../avatarPalette';
-import { objectShadow } from '../depth';
-import { envelopeShape, envelopeTile } from '../print';
+import { objectFilter, objectShadow } from '../depth';
+import { envelopeShape, envelopeTile, openEnvelope } from '../print';
 import { fonts, type } from '../typeScale';
 
 /**
@@ -158,6 +158,64 @@ export function EnvelopeTile({
       >
         {monogram(name)}
       </Text>
+    </View>
+  );
+}
+
+/**
+ * The open envelope of the empty inbox (board Empty): nothing in it but its lining. One drawing at
+ * 220 x 196, its shadow a filter so it follows the flap's point.
+ */
+export function OpenEnvelope() {
+  const theme = useTheme();
+  const g = openEnvelope;
+  const b = g.back;
+  return (
+    <View style={{ filter: objectFilter(theme.name, 'openEnvelope') }}>
+      <Svg
+        width={g.width}
+        height={g.height}
+        viewBox={`0 0 ${g.width} ${g.height}`}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
+        <Defs>
+          <Pattern id="lining" width={g.lining.width} height={g.lining.height} patternUnits="userSpaceOnUse">
+            <Path
+              d={g.lining.d}
+              fill="none"
+              stroke={theme.lining}
+              strokeWidth={g.lining.stroke}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </Pattern>
+          <ClipPath id="inside">
+            <Rect
+              transform={[{ translateX: b.x }, { translateY: b.y }]}
+              width={b.width}
+              height={b.height}
+              rx={b.radius}
+            />
+          </ClipPath>
+        </Defs>
+        <Path d={g.flap} fill={theme.flap} />
+        <Path d={g.flap} fill={theme.flapShade} />
+        <Rect
+          transform={[{ translateX: b.x }, { translateY: b.y }]}
+          width={b.width}
+          height={b.height}
+          rx={b.radius}
+          fill={theme.envelopeInside}
+        />
+        {/* The whole drawing's size, clipped to the inside: the lining's tiles start at the drawing's
+            corner, as the canvas's pattern does. */}
+        <G clipPath="url(#inside)">
+          <Rect width={g.width} height={g.height} fill="url(#lining)" opacity={g.lining.opacity} />
+        </G>
+        <Path d={g.front} fill={theme.envelope} />
+        <Path d={g.folds} fill="none" stroke={theme.envelopeFoldFaint} strokeWidth={g.foldStroke} />
+      </Svg>
     </View>
   );
 }

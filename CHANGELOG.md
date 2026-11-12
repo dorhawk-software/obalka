@@ -23,6 +23,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Řádek o ostatních schránkách je obyčejná věta.** "V ostatních schránkách **2 nepřečtené**" bez
   barevných teček a čar; na úzkém displeji se zkrátí úvod na "Jinde:", ne zpráva sama.
 - **Tlačítko Napsat je zlatá poštovní známka.** Má perforovaný okraj a natištěný rámeček.
+- **Prázdná schránka je otevřená obálka.** Pod ní stojí, kdy se Obálka naposledy podívala
+  ("Naposledy dnes ve 14:02"), stejnými slovy jako na konci seznamu zpráv.
 
 ### Opraveno
 

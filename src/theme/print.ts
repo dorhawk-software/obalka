@@ -123,6 +123,29 @@ export const envelopeShape = {
 } as const;
 
 /**
+ * The open envelope of the empty inbox (board Empty), on a 220 x 196 drawing: the flap up in the gold,
+ * shaded since its inside faces us; the envelope's inside with the lining's print; the front pocket
+ * with its two folds meeting in the middle.
+ */
+export const openEnvelope = {
+  width: 220,
+  height: 196,
+  flap: 'M16 78 L104 10 Q110 5 116 10 L204 78 Z',
+  back: { x: 10, y: 74, width: 200, height: 118, radius: 16 },
+  front: 'M10 104 L110 156 L210 104 V176 Q210 192 194 192 H26 Q10 192 10 176 Z',
+  folds: 'M10 104 L110 156 L210 104',
+  foldStroke: 1.2,
+  /** The lining: a tile of small chevrons, printed at `opacity`. */
+  lining: {
+    width: 12,
+    height: 10.5,
+    d: 'M.8 2l5.2 3.4L11.2 2M-5.2 7.2 0 10.6l5.2-3.4M6.8 7.2l5.2 3.4 5.2-3.4',
+    stroke: 0.9,
+    opacity: 0.55,
+  },
+} as const;
+
+/**
  * The envelope as an avatar tile (board InboxA): `tile` corners; a sealed gold flap while unread, else
  * a fold line - both drawn on a 42 x 42 tile and scaled to the size.
  */

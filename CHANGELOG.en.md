@@ -26,6 +26,8 @@ What changed in each Obálka release, written for the people using it. The newes
   without the coloured dots and rules; on a narrow screen the opening shortens to "Elsewhere:", never
   the news itself.
 - **The Compose button is a gold postage stamp.** It has a perforated edge and a printed frame.
+- **An empty inbox is an open envelope.** Under it, when Obálka last looked ("Last checked today at
+  14:02"), in the same words as at the end of the message list.
 
 ### Fixed
 

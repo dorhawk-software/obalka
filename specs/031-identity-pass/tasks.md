@@ -401,7 +401,16 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     twice as wide;
   - the compose stamp keeps the app's safe-area rule (22 above the safe area) rather than the board's
     30 from the screen's edge.
-- [ ] T031 Empty inbox (I22, I26).
+- [x] T031 Empty inbox (I22, I26). Done 2026-11-12: `OpenEnvelope` (the open pose of the envelope:
+  the flap up and shaded, the inside printed with the lining, the front pocket), `EmptyObject` (the
+  object, the title, the explanation, a quiet note) and `freshnessText`, the same words under the
+  envelope and at the list's end ("Naposledy dnes ve 14:02", with "v" or "ve" as Czech takes the hour).
+  Checked on the `Obalka_Demo` emulator in both themes. Where the build differs from the board:
+  - the envelope sits 60 below the header and the title 36 below it, not the board's 56 / 34: the owner
+    moved every empty state to these steps of the scale (2026-11-12), and the Empty and R4Empty boards
+    were moved with it;
+  - the list's end lost its hairline: the register's rows have none since T030;
+  - `strings.ts` was split (`messageListStrings.ts`) rather than trimmed to make room.
 - [ ] T032 Message, light and dark (I29, I32, I33, I35 saved row, I36).
 - [ ] T033 Sent result (I39).
 - [ ] T034 Lock (I50).

@@ -16,7 +16,9 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
   sender) it is a small envelope: a sealed gold flap while unread, else an `envelope-fold` line
   (`rgba(255,255,255,.55)`). The inbox header is its front (lower corners 22, the flap shaded by
   `print-shade`); controls printed on it take `envelope-well`, `envelope-button`, `envelope-ink-faint`
-  and `envelope-plane`.
+  and `envelope-plane`. Opened, it is the empty inbox (board Empty): the flap up in the gold under
+  `flap-shade` (`rgba(33,27,18,.14)`, its inside faces us), the `envelope-inside` (`#1A4C86`) printed
+  with the `lining`, and the front pocket's folds in `envelope-fold-faint` (`rgba(255,255,255,.18)`).
 - **Flap** (`#FFC305`, fixed): the envelope's gold, and the stamp-shaped compose button. Words on it
   are `on-gold`; the compose stamp's frame is `flap-frame` (`rgba(33,27,18,.28)`), printed in the
   stamp's drawing (a translucent View border drew twice as wide on Android), and its glyph sits on a
