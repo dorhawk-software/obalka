@@ -39,6 +39,8 @@ export interface RecordStep {
   labelKey: string;
   /** Already formatted by the caller - see `deliveryRecord`'s signature. */
   time: string;
+  /** The moment itself, for a record that sets the date and the time on lines of their own (031). */
+  at: number;
   /** i18n key for the explanatory line under the step, when it needs one. */
   noteKey?: string;
 }
@@ -147,6 +149,7 @@ export function deliveryRecord(
           kind: 'merged',
           labelKey: 'recv.merged',
           time: fmt(deliveredAt),
+          at: deliveredAt,
           noteKey: 'recv.merged.note',
         });
       } else {
@@ -154,6 +157,8 @@ export function deliveryRecord(
           kind: 'delivered',
           labelKey: 'detail.delivered',
           time: fmt(deliveredAt),
+          at: deliveredAt,
+          noteKey: byFiction ? 'recv.delivered.note.fiction' : 'recv.delivered.note',
         });
         steps.push(
           byFiction
@@ -161,12 +166,15 @@ export function deliveryRecord(
                 kind: 'fiction',
                 labelKey: 'status.byFiction',
                 time: fmt(acceptedAt),
+                at: acceptedAt,
                 noteKey: 'recv.fiction.note',
               }
             : {
                 kind: 'accepted',
                 labelKey: 'detail.accepted',
                 time: fmt(acceptedAt),
+                at: acceptedAt,
+                noteKey: 'recv.accepted.note',
               },
         );
       }
@@ -178,6 +186,8 @@ export function deliveryRecord(
           kind: 'delivered',
           labelKey: 'detail.delivered',
           time: fmt(deliveredAt),
+          at: deliveredAt,
+          noteKey: byFiction ? 'recv.delivered.note.fiction' : 'recv.delivered.note',
         });
       }
       if (acceptedAt != null && served) {
@@ -187,12 +197,15 @@ export function deliveryRecord(
                 kind: 'fiction',
                 labelKey: 'status.byFiction',
                 time: fmt(acceptedAt),
+                at: acceptedAt,
                 noteKey: 'recv.fiction.note',
               }
             : {
                 kind: 'accepted',
                 labelKey: 'detail.accepted',
                 time: fmt(acceptedAt),
+                at: acceptedAt,
+                noteKey: 'recv.accepted.note',
               },
         );
       }

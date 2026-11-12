@@ -99,6 +99,22 @@ export const cs: Record<string, string> = {
   'detail.error.offline':
     'Tato zpráva ještě nebyla stažena a nyní ji nelze získat (jste offline nebo je potřeba se znovu přihlásit).',
   'detail.offline': 'Offline – zobrazeno z uloženého archivu.',
+  // 017 - the received "Doručenka", a slip since 031. Each line states a fact about what ISDS did or
+  // did not report, never an inference of ours. The notes under the steps are the board's (Message).
+  'recv.head': 'Doručenka',
+  'recv.head.fiction': 'Doručenka · fikcí',
+  // Where the record comes from, printed in the slip's corner.
+  'recv.head.source': 'ISDS',
+  'recv.delivered.note': 'do schránky',
+  'recv.delivered.note.fiction': 'do schránky, nikdo se nepřihlásil',
+  'recv.accepted.note': 'přihlášením do schránky',
+  'recv.merged': 'Dodáno a doručeno',
+  'recv.merged.note': 'schránka byla zrovna přihlášená',
+  // The design wrote this as "…stát čas nepředává". Changed after a device read-through: on a message
+  // from Česká pošta, "stát" is read as the SENDER, and the sentence then looks false. The claim was
+  // never about who wrote to you - it is about what the ISDS system reports, which is nothing.
+  'recv.read.note': 'Přečteno, bez právního významu. ISDS čas přečtení neuvádí.',
+  'recv.fiction.note': 'po deseti dnech, lhůty běží',
 };
 
 /** English, at parity. */
@@ -181,4 +197,15 @@ export const en: Record<string, string> = {
   'detail.error.offline':
     'This message has not been downloaded yet and can’t be fetched now (you are offline or need to sign in again).',
   'detail.offline': 'Offline. Shown from the saved archive.',
+  'recv.head': 'Delivery record',
+  'recv.head.fiction': 'Delivery record · by fiction',
+  'recv.head.source': 'ISDS',
+  'recv.delivered.note': 'to the box',
+  'recv.delivered.note.fiction': 'to the box; nobody signed in',
+  'recv.accepted.note': 'when someone signed in to the box',
+  'recv.merged': 'Delivered and accepted',
+  'recv.merged.note': 'the box was signed in at the time',
+  'recv.read.note':
+    'Opened, no legal significance. ISDS does not report when.',
+  'recv.fiction.note': 'after ten days; deadlines are running',
 };

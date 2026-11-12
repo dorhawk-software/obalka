@@ -159,3 +159,24 @@ export const envelopeTile = {
   fold: 'M5 9l16 11 16-11',
   foldStroke: 1.6,
 } as const;
+
+/**
+ * The delivery record's marks (board Message; the sent result's slip uses them at 30): two rings on a
+ * 34 grid, struck like a postmark, with what happened in the middle - a check for an arrival, clock
+ * hands for fiction (served by time). A step still to come is the outer ring alone, dashed.
+ *
+ * The signed-in service is not on a board: the inner ring filled, the check knocked out of it - the
+ * same "filled for service" the sent rail has always drawn, so arrival and service never share a mark.
+ * The gold ring is drawn a touch heavier, as on the board: gold is the lighter ink.
+ */
+export const recordRing = {
+  grid: 34,
+  outer: 15,
+  inner: 9.5,
+  stroke: 1.4,
+  strokeGold: 1.6,
+  markStroke: 1.8,
+  check: 'M12.6 17.2l3 3 5.8-6',
+  clock: 'M17 12.5V17l3 2.4',
+  pendingDash: '2.5 3',
+} as const;

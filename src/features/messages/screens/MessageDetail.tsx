@@ -62,7 +62,7 @@ import type { Reminder } from '../state/reminders';
 import { DeliveryStateIcon } from './DeliveryStateIcon';
 import { AttachmentRow, formatBytes } from './AttachmentRow';
 import { AddressLines } from './AddressLines';
-import { DeliveryRecordCard } from './DeliveryRecord';
+import { DeliveryRecordSlip } from './DeliveryRecord';
 import { DetailEnvelope } from './DetailEnvelope';
 import { FictionBanner } from './FictionBanner';
 import { SignedOriginalSection } from './SignedOriginalSection';
@@ -795,14 +795,9 @@ export function MessageDetail({
             </YStack>
           ) : null}
 
-          {/* Received: the delivery record, a SIBLING of the sender card rather than a panel inside
-              it (the design has them as two cards). Nesting it read as a sub-detail of the sender;
-              it is the message's own legal receipt. */}
-          {!isSent ? (
-            <DeliveryRecordCard
-              record={deliveryRecord(envelope, formatDateTime)}
-            />
-          ) : null}
+          {/* Received: the delivery record, the slip under the envelope - the message's own legal
+              receipt, never a sub-detail of the sender. */}
+          {!isSent ? <DeliveryRecordSlip record={deliveryRecord(envelope, formatDateTime)} /> : null}
 
           {/* Sent: the delivery timeline. Each step is its own state glyph on a left rail, joined to
               the next by a dotted connector, so the three ISDS moments read as one progression rather

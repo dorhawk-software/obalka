@@ -170,6 +170,8 @@ describe('deliveryRecord', () => {
         kind: 'delivered',
         labelKey: 'detail.delivered',
         time: fmt(deliveredAt),
+        at: deliveredAt,
+        noteKey: 'recv.delivered.note',
       },
     ]);
     expect(r.merged).toBe(false);

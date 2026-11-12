@@ -1,4 +1,5 @@
-// The received message's delivery record - the "Doručenka" card (feature 017).
+// The received message's delivery record - the "Doručenka" (feature 017), since 031 a slip: a record
+// you keep, torn off along its perforated top (board Message).
 //
 // It replaces one line of grey caption that used to sit inside the sender block, in the same muted
 // grey as the box ID beneath it. Every deadline a user of this app cares about runs from the moment
@@ -7,168 +8,122 @@
 // The design deliberately did NOT return the sent side's rail. A sent message is a journey still
 // moving; a received one is a receipt for a journey that ended before the user could see it - listing
 // the inbox is what serves it. Hence a titled card rather than a progress rail, named after the thing
-// it actually is.
+// it actually is. Each step is struck as a ring, like the postmark on the envelope above it: a check
+// for the arrival, clock hands for fiction, the filled ring for a service someone signed in for.
 //
 // What is NOT on the rail is as considered as what is: "read" is a footnote (opening a message has no
 // legal weight, and ISDS never says when it happened), and erasure/vault are annotations (they
 // describe what became of the message, not how it arrived).
 
-import { Label, Meta, SmallStrong, Tag } from '../../../theme/Typography';
+import { Caption, Label, Meta, BodyStrong, Overline } from '../../../theme/Typography';
 import { XStack, YStack } from '../../../theme/ui';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { chipTone } from '../../../theme/chipTone';
 import { ContentErasedIcon, EyeIcon, VaultIcon } from '../../../theme/icons';
-import { DeliveryStateIcon } from './DeliveryStateIcon';
-import { DottedRail } from '../../../theme/DottedRail';
+import { Slip } from '../../../theme/objects/Slip';
+import { RecordRing, type RecordRingKind } from '../../../theme/objects/RecordRing';
 import { t } from '../../../i18n/strings';
-import {
-  stepStateKind,
-  type DeliveryRecord as Record,
-  type StepKind,
-} from '../state/deliveryRecord';
+import type { DeliveryRecord as Record, StepKind } from '../state/deliveryRecord';
 import { LineIcon } from '../../../theme/LineIcon';
 
-/** A step's tone. `delivered` is the quiet blue; service - however reached - is the loud one. */
-function stepTone(kind: StepKind) {
-  if (kind === 'fiction') {
-    return 'statusFiction' as const;
-  }
-  return kind === 'delivered'
-    ? ('statusDelivered' as const)
-    : ('statusRead' as const);
+const pad = (n: number) => String(n).padStart(2, '0');
+
+/** "19.08.2026" over "11:24", as the board sets a step's moment. */
+export function dateAndTime(epochMs: number): [string, string] {
+  const d = new Date(epochMs);
+  return [
+    `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`,
+    `${pad(d.getHours())}:${pad(d.getMinutes())}`,
+  ];
 }
 
-export function DeliveryRecordCard({ record }: { readonly record: Record }) {
+/** A step's ring: an arrival is checked, fiction is the clock, a signed-for service is filled. */
+export function ringKind(kind: StepKind): RecordRingKind {
+  if (kind === 'fiction') {
+    return 'fiction';
+  }
+  return kind === 'delivered' ? 'arrived' : 'signed';
+}
+
+export function DeliveryRecordSlip({ record }: { readonly record: Record }) {
   const theme = useTheme();
   const fiction = record.headKey === 'recv.head.fiction';
-  const head = chipTone(fiction ? 'statusFiction' : 'statusRead', theme);
 
   if (record.steps.length === 0 && !record.showRead) {
-    return null; // nothing ISDS told us - a card saying nothing is worse than no card
+    return null; // nothing ISDS told us - a slip saying nothing is worse than none
   }
 
-  return (
-    <YStack
-      marginTop={24}
-      backgroundColor={theme.surface}
-      borderWidth={1}
-      borderColor={theme.border}
-      borderRadius={16}
-      overflow="hidden"
-      testID="deliveryRecord"
-    >
-      <YStack backgroundColor={head.bg} paddingVertical={10} paddingHorizontal={16}>
-        <Tag
-          textTransform="uppercase"
-          color={head.fg}
-        >
-          {t(record.headKey)}
-        </Tag>
-      </YStack>
+  const ink = (kind: StepKind) => {
+    if (kind === 'fiction') {
+      return theme.goldInk;
+    }
+    return kind === 'delivered' ? theme.bodyText : chipTone('statusRead', theme).fg;
+  };
 
-      <YStack paddingTop={14} paddingHorizontal={16} paddingBottom={16}>
-        {record.steps.map((step, i) => {
-          const last = i === record.steps.length - 1;
-          const tone = chipTone(stepTone(step.kind), theme);
+  return (
+    <YStack paddingTop={16} testID="deliveryRecord">
+      <Slip style={{ paddingTop: 16, paddingHorizontal: 16, paddingBottom: 14, gap: 10 }}>
+        <XStack justifyContent="space-between" alignItems="center" gap={10}>
+          {/* Gold names fiction, the one way of being served that nobody chose. It takes the row's
+              width: measured to its own words, Android cut the last one ("DORUČENKA ·" for
+              "Doručenka · fikcí", seen on the emulator), as it did the empty inbox's title. */}
+          <Overline flex={1} color={fiction ? chipTone('statusFiction', theme).fg : theme.textMuted}>
+            {t(record.headKey)}
+          </Overline>
+          <Meta fontWeight="400" color={theme.textFaint}>
+            {t('recv.head.source')}
+          </Meta>
+        </XStack>
+
+        {record.steps.map(step => {
+          const [date, time] = dateAndTime(step.at);
           return (
-            <XStack key={step.kind} gap={12}>
-              <YStack width={18} alignItems="center" flexShrink={0}>
-                {/* The SAME component the sent rail uses, so "dodáno" and "doručeno" cannot drift
-                    into wearing the same mark - a bare check for arrival, a filled disc for
-                    service (Principle V). */}
-                <DeliveryStateIcon
-                  kind={stepStateKind(step.kind)}
-                  color={tone.fg}
-                  knockout={theme.surface}
-                  label={t(step.labelKey)}
-                />
-                {/* The connector only ever joins steps that BOTH happened, so it can never imply
-                    something still to come (013's rule). */}
-                {/* Dotted, in the step's own colour - the SENT rail's connector, prop for prop.
-                    The design drew this one solid, and that distinction turns out to carry no
-                    meaning: the sent rail stays dotted even on a fully completed message, so solid
-                    here was not "finished" against "in progress", just a second style for the same
-                    idea. Two rails of ISDS moments now look like two rails of ISDS moments.
-                    Drawn with SVG rather than a dotted border: a one-sided `borderStyle: 'dotted'`
-                    comes out SOLID on iOS (see `DottedRail`). */}
-                {last ? null : <DottedRail color={tone.fg} />}
-              </YStack>
-              <YStack flex={1} minWidth={0} paddingBottom={last ? 0 : 12}>
-                <XStack
-                  flexWrap="wrap"
-                  alignItems="baseline"
-                  justifyContent="space-between"
-                  gap={10}
-                >
-                  <SmallStrong color={theme.text}>
-                    {t(step.labelKey)}
-                  </SmallStrong>
-                  <Label color={theme.textMuted}>
-                    {step.time}
-                  </Label>
-                </XStack>
+            <XStack key={step.kind} alignItems="center" gap={12} testID={`recordStep-${step.kind}`}>
+              <RecordRing kind={ringKind(step.kind)} color={ink(step.kind)} knockout={theme.surface} />
+              <YStack flex={1} minWidth={0}>
+                <BodyStrong color={theme.text}>{t(step.labelKey)}</BodyStrong>
                 {step.noteKey ? (
-                  <Meta
-                    color={theme.textMuted}
-                    marginTop={4}
-                  >
+                  <Caption fontWeight="400" color={theme.textMuted}>
                     {t(step.noteKey)}
-                  </Meta>
+                  </Caption>
                 ) : null}
+              </YStack>
+              <YStack alignItems="flex-end" flexShrink={0}>
+                <Label color={theme.bodyText}>{date}</Label>
+                <Caption color={theme.textMuted}>{time}</Caption>
               </YStack>
             </XStack>
           );
         })}
 
+        {/* Off the steps, under them: opening a message is not a delivery event (017), and nor is
+            what became of it afterwards. */}
         {record.showRead ? (
-          <XStack
-            gap={12}
-            marginTop={13}
-            paddingTop={12}
-            borderTopWidth={1}
-            borderColor={theme.border}
-            alignItems="flex-start"
-          >
+          <XStack gap={12} marginTop={2} alignItems="flex-start">
             <LineIcon role="meta">
               <EyeIcon size={16} color={theme.textFaint} />
             </LineIcon>
-            <Meta
-              flex={1}
-              color={theme.textFaint}
-            >
+            <Meta flex={1} color={theme.textFaint}>
               {t('recv.read.note')}
             </Meta>
           </XStack>
         ) : null}
 
-        {record.annotations.length > 0 ? (
-          <YStack
-            marginTop={13}
-            paddingTop={12}
-            borderTopWidth={1}
-            borderColor={theme.border}
-            gap={8}
-          >
-            {record.annotations.map(a => (
-              <XStack key={a} gap={8} alignItems="flex-start">
-                <LineIcon role="meta">
-                  {a === 'erased' ? (
-                    <ContentErasedIcon size={15} color={theme.textFaint} />
-                  ) : (
-                    <VaultIcon size={15} color={theme.textFaint} />
-                  )}
-                </LineIcon>
-                <Meta fontWeight="600"
-                  flex={1}
-                  color={theme.textMuted}
-                >
-                  {t(a === 'erased' ? 'status.note.erased' : 'status.note.vault')}
-                </Meta>
-              </XStack>
-            ))}
-          </YStack>
-        ) : null}
-      </YStack>
+        {record.annotations.map(a => (
+          <XStack key={a} gap={8} alignItems="flex-start">
+            <LineIcon role="meta">
+              {a === 'erased' ? (
+                <ContentErasedIcon size={15} color={theme.textFaint} />
+              ) : (
+                <VaultIcon size={15} color={theme.textFaint} />
+              )}
+            </LineIcon>
+            <Meta fontWeight="600" flex={1} color={theme.textMuted}>
+              {t(a === 'erased' ? 'status.note.erased' : 'status.note.vault')}
+            </Meta>
+          </XStack>
+        ))}
+      </Slip>
     </YStack>
   );
 }

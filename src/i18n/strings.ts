@@ -502,9 +502,6 @@ const cs: Record<string, string> = {
   'status.stop.undeliverable':
     'Schránka adresáta byla zneplatněna. Tato zpráva už doručena nebude. Zvolte jinou cestu.',
   'status.note.erased': 'Obsah u státu smazán',
-  // 017 - the received "Doručenka". Wording from the design; each line states a fact about what ISDS
-  // did or did not report, never an inference of ours.
-  'recv.head': 'Doručenka',
   // 010 US3 - the scan toggle. Two lines: what it does, and the one guarantee that decides whether
   // someone wants it at all. Everything else - the library, the words it keys on, the page caps, what
   // it refuses to do - is a tap away in the FAQ, because a row long enough to be complete is a row
@@ -939,16 +936,6 @@ const cs: Record<string, string> = {
   // The SENT rail's first two steps read one ISDS field twice - there is no separate submission time.
   'sent.merged': 'Odesláno a dodáno',
   'sent.merged.note': 'ISDS uvádí pro odeslání i dodání jediný čas.',
-  'recv.head.fiction': 'Doručenka · fikcí',
-  'recv.merged': 'Dodáno a doručeno',
-  'recv.merged.note':
-    'Schránka byla v tu chvíli přihlášená, zpráva se doručila hned po dodání.',
-  // The design wrote this as "…stát čas nepředává". Changed after a device read-through: on a message
-  // from Česká pošta, "stát" is read as the SENDER, and the sentence then looks false. The claim was
-  // never about who wrote to you - it is about what the ISDS system reports, which is nothing.
-  'recv.read.note': 'Přečteno, bez právního významu. ISDS čas přečtení neuvádí.',
-  'recv.fiction.note':
-    'Deset dní se do schránky nikdo nepřihlásil, doručil ji zákon.',
   'status.note.vault': 'Uloženo v Datovém trezoru',
   'status.notPickedUp': 'Adresát dosud nepřevzal',
   'status.fikce.running': 'lhůta už běží',
@@ -1547,7 +1534,6 @@ const en: Record<string, string> = {
   'status.stop.undeliverable':
     'The recipient’s box was made invalid. This message will never be delivered. Use another route.',
   'status.note.erased': 'Contents erased at the state',
-  'recv.head': 'Delivery record',
   'settings.scan': 'Deadlines in attachments',
   'settings.scan.title': 'Look for a deadline in an attachment',
   'settings.scan.desc':
@@ -1849,13 +1835,6 @@ const en: Record<string, string> = {
   'login.needCommCode': 'Enter your communication code first',
   'sent.merged': 'Sent and delivered',
   'sent.merged.note': 'ISDS reports a single time for both.',
-  'recv.head.fiction': 'Delivery record · by fiction',
-  'recv.merged': 'Delivered and accepted',
-  'recv.merged.note':
-    'The box was signed in at that moment, so the message was accepted as soon as it arrived.',
-  'recv.read.note':
-    'Opened, no legal significance. ISDS does not report when.',
-  'recv.fiction.note': 'Nobody signed in for ten days, so the law accepted it.',
   'status.note.vault': 'Kept in the Data Vault',
   'status.notPickedUp': 'Recipient hasn’t signed for it',
   'status.fikce.running': 'the deadline is already running',

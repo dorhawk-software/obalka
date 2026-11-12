@@ -29,6 +29,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   dne a minuty doručení, adresát v okénku a předmět na listu, který z obálky vyjíždí.
 - **Zpráva doručená fikcí má nahoře zlatý pruh s tlačítkem Připomenout.** Pruh říká den, kdy zákon
   zprávu doručil za vás, a Připomenout rovnou nastaví připomínku lhůty, která tím dnem začala.
+- **Doručenka je odtrhávací lístek.** Každý krok má razítko - fajfku za dodání, hodiny za fikci,
+  plné kolečko za doručení přihlášením - krátkou poznámku a vpravo datum nad časem.
 
 ### Opraveno
 
