@@ -7,7 +7,7 @@ import { Skeleton } from '../../../theme/Skeleton';
 import { Avatar } from '../../../theme/Avatar';
 import { chipTone } from '../../../theme/chipTone';
 import { attachmentFileStore } from '../../../services/files/attachmentFileStore';
-import { Badge, Body, BodyStrong, Caption, Display, Label, Meta, Overline, SmallStrong, Subheading, Tag, Value } from '../../../theme/Typography';
+import { Body, BodyStrong, Caption, Display, Label, Meta, Overline, SmallStrong, Subheading, Tag, Value } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   AlertIcon,
@@ -17,7 +17,6 @@ import {
   DownloadIcon,
   FileXIcon,
   MailIcon,
-  StatusAcceptedIcon,
   VaultIcon,
   TimerIcon,
   ChevronRightIcon,
@@ -65,6 +64,7 @@ import { AttachmentRow, formatBytes } from './AttachmentRow';
 import { AddressLines } from './AddressLines';
 import { DeliveryRecordCard } from './DeliveryRecord';
 import { DetailEnvelope } from './DetailEnvelope';
+import { FictionBanner } from './FictionBanner';
 import { SignedOriginalSection } from './SignedOriginalSection';
 import {
   deliveryRecord,
@@ -175,17 +175,6 @@ function failureText(account: DataBoxAccount, failure: DownloadFailure): string 
   return failure.kind === 'reauth'
     ? t(reauthKey(account, 'messages.reauth', 'messages.reauth.credentials'))
     : t(failure.messageKey);
-}
-
-/**
- * The received-side fiction banner: "Doručeno fikcí 20. 6. · bez vašeho přihlášení". A statement of
- * what already happened - the deadline started on THAT day, not on the day the app was next opened,
- * which is the whole reason the date is spelled out rather than left as "doručeno fikcí".
- */
-function fikceBannerLabel(servedAt: number): string {
-  return `${t('status.byFiction')} ${formatDateTime(servedAt)} · ${t(
-    'status.byFiction.withoutYou',
-  )}`;
 }
 
 export interface MessageDetailProps {
@@ -554,7 +543,6 @@ export function MessageDetail({
   // Received: a message ALREADY served by fiction → an attention banner. Not a countdown; see
   // `fikce.ts` for why the received side can never have one.
   const servedAt = isSent ? null : servedByFiction(envelope);
-  const fikceTone = servedAt != null ? chipTone('statusFiction', theme) : null;
 
   // Sent: the delivery timeline. ISDS exposes only `deliveryTime` (dmDeliveryTime) + `acceptanceTime`
   // (dmAcceptanceTime); delivery into the box is effectively the send instant, so Odesláno + Dodáno
@@ -746,26 +734,7 @@ export function MessageDetail({
   // message no longer gets one - its state is spelled out step by step in the delivery timeline
   // below, so a coloured band restating the last step was redundant and pushed the subject down.
   const banner =
-    servedAt != null && fikceTone ? (
-      <XStack
-        backgroundColor={fikceTone.bg}
-        paddingHorizontal={18}
-        paddingVertical={12}
-        alignItems="center"
-        gap={10}
-      >
-        {/* The solid disc, not the timer: nothing is counting down any more. Same mark the sent side
-            uses for the same event, so the two read as one thing. */}
-        <StatusAcceptedIcon
-          size={18}
-          color={fikceTone.fg}
-          knockout={fikceTone.bg}
-        />
-        <Badge color={fikceTone.fg} flex={1}>
-          {fikceBannerLabel(servedAt)}
-        </Badge>
-      </XStack>
-    ) : null;
+    servedAt != null ? <FictionBanner servedAt={servedAt} onRemind={() => setPickingTerm(true)} /> : null;
 
   return (
     <YStack flex={1} backgroundColor={theme.bg}>

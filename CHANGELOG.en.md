@@ -31,6 +31,9 @@ What changed in each Obálka release, written for the people using it. The newes
 - **A received message lies in the envelope it came in.** The sender is on the envelope with a
   postmark of the day and minute it was delivered, the recipient in the window and the subject on the
   sheet sliding out of it.
+- **A message delivered by fiction has a gold band at the top with a Remind me button.** The band
+  gives the day the law delivered it for you, and Remind me sets a reminder of the deadline that day
+  started.
 
 ### Fixed
 

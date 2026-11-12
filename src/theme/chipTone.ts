@@ -36,6 +36,8 @@ type Pair = { light: ChipColors; dark: ChipColors };
 /** Tones the design derives from theme tokens rather than fixing as literals - see `chipTone`. */
 type DerivedKind = 'estSoft' | 'statusStop';
 
+// The gold tones' dark pair is the canvas's gold ink on its gold soft (#F0C452 on #33290F, boards
+// "Message - dark" and R4Empty), one pair for every gold tone (031).
 const TONES: Record<Exclude<ChipKind, DerivedKind>, Pair> = {
   fikceRed: {
     light: { bg: '#F7E4E1', fg: '#B5362F', accent: '#B5362F' },
@@ -43,7 +45,7 @@ const TONES: Record<Exclude<ChipKind, DerivedKind>, Pair> = {
   },
   fikceAmber: {
     light: { bg: '#FBEFD0', fg: '#8C6100', accent: '#E8A100' },
-    dark: { bg: '#34290F', fg: '#E7B85C', accent: '#E8A100' },
+    dark: { bg: '#33290F', fg: '#F0C452', accent: '#E8A100' },
   },
   userBlue: {
     light: { bg: '#E4ECF7', fg: '#2A5C9A', accent: '#2A5C9A' },
@@ -55,7 +57,7 @@ const TONES: Record<Exclude<ChipKind, DerivedKind>, Pair> = {
   },
   costPaid: {
     light: { bg: '#FBEFD0', fg: '#8C6100', accent: '#E8A100', border: '#EAD9A8' },
-    dark: { bg: '#34290F', fg: '#E7B85C', accent: '#E8A100', border: '#4A3D1C' },
+    dark: { bg: '#33290F', fg: '#F0C452', accent: '#E8A100', border: '#4A3D1C' },
   },
   statusSent: {
     light: { bg: '#F2EADB', fg: '#6B6253', accent: '#9A9180' },
@@ -77,7 +79,7 @@ const TONES: Record<Exclude<ChipKind, DerivedKind>, Pair> = {
     // nobody read the message - the law signed for them. It is also NOT the fikce red, which means
     // "hurry"; by the time this shows, there is nothing left to hurry for.
     light: { bg: '#FBEFD0', fg: '#8C6100', accent: '#E8A100' },
-    dark: { bg: '#34290F', fg: '#E7B85C', accent: '#E8A100' },
+    dark: { bg: '#33290F', fg: '#F0C452', accent: '#E8A100' },
   },
   info: {
     light: { bg: '#EEF4FB', fg: '#1E4E80', accent: '#2A5C9A', border: '#D6E4F4' },

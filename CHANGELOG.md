@@ -27,6 +27,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   ("Naposledy dnes ve 14:02"), stejnými slovy jako na konci seznamu zpráv.
 - **Přijatá zpráva leží v obálce, ve které přišla.** Odesílatel je na obálce s poštovním razítkem
   dne a minuty doručení, adresát v okénku a předmět na listu, který z obálky vyjíždí.
+- **Zpráva doručená fikcí má nahoře zlatý pruh s tlačítkem Připomenout.** Pruh říká den, kdy zákon
+  zprávu doručil za vás, a Připomenout rovnou nastaví připomínku lhůty, která tím dnem začala.
 
 ### Opraveno
 
