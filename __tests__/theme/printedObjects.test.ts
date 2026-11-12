@@ -1,0 +1,48 @@
+// The printed objects' shadows and geometry (031). Values come from the agreed canvas; these hold the
+// properties a later edit by eye would break without noticing.
+
+import { objectFilter, objectShadow } from '../../src/theme/depth';
+import { perforation, securityTint, windowFilm } from '../../src/theme/print';
+
+const SHADOWS = ['sheet', 'sheetEdge', 'envelope', 'envelopeHeader', 'letter', 'window', 'seal'] as const;
+const FILTERS = ['slip', 'stamp', 'stampFab'] as const;
+
+describe('object shadows', () => {
+  it.each(SHADOWS)('%s exists in both themes', kind => {
+    expect(objectShadow('light', kind)).toMatch(/px/);
+    expect(objectShadow('dark', kind)).toMatch(/px/);
+  });
+
+  it.each(FILTERS)('%s is a drop-shadow filter in both themes, so it follows the perforations', kind => {
+    expect(objectFilter('light', kind)).toMatch(/^drop-shadow\(/);
+    expect(objectFilter('dark', kind)).toMatch(/^drop-shadow\(/);
+  });
+
+  it('casts a resting sheet\'s shadow below it, never a bevel on top (paper lies on the screen)', () => {
+    for (const theme of ['light', 'dark'] as const) {
+      expect(objectShadow(theme, 'sheet')).not.toMatch(/inset/);
+    }
+  });
+
+  it('draws the window as an inset: the envelope\'s paper lies over its edge', () => {
+    for (const theme of ['light', 'dark'] as const) {
+      expect(objectShadow(theme, 'window')).toMatch(/^inset /);
+    }
+  });
+
+  it('gives a dark sheet a faint edge in place of the light theme\'s shadow', () => {
+    expect(objectShadow('dark', 'sheet')).not.toBe(objectShadow('light', 'sheet'));
+    expect(objectShadow('dark', 'sheet')).toMatch(/^0px 0px 0px 1px rgba\(255,255,255,/);
+  });
+});
+
+describe('print geometry', () => {
+  it.each(Object.entries(perforation))('%s: the holes never run into each other', (_name, p) => {
+    expect(p.pitch).toBeGreaterThan(2 * p.radius);
+  });
+
+  it('keeps the tint quieter at night, where the ground is darker', () => {
+    expect(securityTint.opacity.dark).toBeLessThan(securityTint.opacity.light);
+    expect(windowFilm.film.dark).toBeLessThan(windowFilm.film.light);
+  });
+});

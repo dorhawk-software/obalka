@@ -34,6 +34,19 @@ colors:
   hero-ink: "#D3C7AF"
   snackbar-bg: "#211B12"
   snackbar-ink: "#FBF6EA"
+  envelope: "#2563A6"
+  flap: "#FFC305"
+  lining: "#9EC0EA"
+  window: "#FFFDF8"
+  icon-plane: "#CFE0F5"
+  icon-plane-gold: "#F3D891"
+  sheet-edge: "#F7F1E4"
+  stamp-paper: "#FFFDF8"
+  stamp-frame: "#DCD2BF"
+  cancel-ink: "#1B2B45"
+  slip-mark: "#B5AA97"
+  seal-light: "#3A78C2"
+  seal-shade: "#1A4C86"
 typography:
   display:
     fontFamily: "BricolageGrotesque-ExtraBold, Bricolage Grotesque, system-ui, sans-serif"
@@ -257,6 +270,45 @@ A warm paper ramp with two accents - a brand blue that acts, and a gold that not
   (`#6B6253` / `#A89D8B`), **Faint Ink** (`#736A57` / `#9C9282`): four registers of text, and no
   fifth. Faint Ink is the floor - it is already the AA-corrected value, not the design's original.
 
+### The printed objects
+
+"Obálka is printed matter" (spec 031; the identity agreed by the owner on 2026-11-11, every board by
+2026-11-12, on the design canvas). Six objects, each with one job; objects play, chrome doesn't. The
+values are read from the canvas's source. Colours are in `src/theme/theme.ts`, the geometry in
+`src/theme/print.ts`, the shadows in `src/theme/depth.ts` (`objectShadow`, `objectFilter`).
+
+- **Envelope** (`#2563A6`, **fixed in both appearances**): a box, and what arrives in it. The inbox
+  header, a message, compose, the sent result, the box avatars. Its folds are `envelope-crease`
+  (`rgba(9,30,64,.22)`). Words on it are `on-solid`; its secondary words and the postmark are
+  `envelope-ink-soft` (`rgba(255,255,255,.92)`, 5.51:1 composited).
+- **Flap** (`#FFC305`, fixed): the envelope's gold, and the stamp-shaped compose button. Words on it
+  are `on-gold`.
+- **Window** (`#FFFDF8` / `#2A251E`): who it is addressed to - the box switcher, the recipient in
+  compose (also its search field), the login name while signing in. Its edge is an inset shade (the
+  envelope's paper over it) and a film that catches the light. In dark it is 2.47:1 against the
+  envelope; the words in it identify it, so 1.4.11's boundary floor does not apply, and the number is
+  pinned in `contrast.test.ts`.
+- **Security tint**: the inside, the private - chevrons of the envelope's blue, 16 x 14, at 16 % (light)
+  or 12 % (dark), behind the lock and the slips. The lining of an open envelope is the finer `lining`
+  print (`#9EC0EA`).
+- **Postmark**: a date ISDS certifies - two rings, the waves, the word and the date in
+  `envelope-ink-soft`. It lands when ISDS accepts a send (board Motion).
+- **Stamp**: what a send costs - `stamp-paper`, a `stamp-frame` rule, `stamp-ink` for the value, the
+  muted `stamp-label` for the small print, perforated (4 every 12; the small stamp 3.5 every 10). Light
+  in both appearances: it is paper stuck on the envelope. A used stamp is cancelled in `cancel-ink`.
+- **Slip**: a record you keep - the delivery record, the recovery key, the transfer code. A sheet with
+  a perforated top (5 every 14) and a faint `slip-mark` ring.
+- **Airmail strip**: the test environment, stripes of envelope, paper, flap and paper at 135 degrees.
+- **Offset glyphs**: a 1.75 ink stroke with one plane printed 1.3 off register, `icon-plane`
+  (`#CFE0F5` / `#2F4A6E`), or `icon-plane-gold` (`#F3D891` / `#5A4716`) on gold. Plain controls stay
+  Lucide.
+- **Seal**: the lock's wax seal, `seal-light` to `seal-shade`.
+- **Sheet edge** (`#F7F1E4` / `#231F19`): the second envelope's edge under an attention sheet.
+
+The envelope, flap, stamp, slip mark and seal keep their colours at night - printed matter does not
+change with the room's light. Only what is paper on the screen (the window, the planes, the sheet's
+edge) follows the appearance. `contrast.test.ts` holds both halves of that sentence.
+
 ### Named Rules
 
 **The One Job Rule.** Solid gold marks unread (the dot and the count badge), the active box's check
@@ -264,8 +316,9 @@ mark and the compose FAB; `gold-ink` draws the attention numeral. The gold chip 
 (`statusFiction`, `fikceAmber`, `costPaid`) mean delivery by fiction or a paid send, which is why a
 decorative glyph is never gold (016). Soft gold carries the test banner and pill, the paid-cost card
 and the paid-send confirmation, the missing-attachments notice, and the pressed add-box row in the
-box switcher. Beyond that, gold appears only in fixed artwork (the logo's flap, the lock's keyhole)
-and as `gold-bright` on the snackbar's action, for contrast on its dark bar. Gold takes on no other
+box switcher. Beyond that, gold appears only in fixed artwork (the logo's flap, the lock's keyhole),
+as the envelope's own `flap` (the printed objects, 031) and as `gold-bright` on the snackbar's
+action, for contrast on its dark bar. Gold takes on no other
 meaning: every new gold thing on a screen dilutes the ones already there.
 
 **The On-X Rule.** A token named `on-<something>` is safe **only on that something**. `on-blue` is
@@ -471,6 +524,19 @@ Shadow is reserved for objects that float, plus a few brand moments:
 - **Switch knob** (`0 1px 3px rgba(0,0,0,.25)`): one soft drop. No inset, no ambient layer.
 - **Selected segment** (`0 1px 2px rgba(33,27,18,.12)`): the raised pill in the segmented control.
 - **`depth.sm`**: the retry button on the sign-in error screen, its one use.
+
+**The printed objects' shadows** (031, `objectShadow` and `objectFilter` in `depth.ts`) follow
+"paper has weight": an object lies on the screen and casts a soft shadow below it, with no bevel.
+
+- **`sheet`** (`0 1px 2px rgba(33,27,18,.08), 0 8px 16px -10px rgba(33,27,18,.28)`; dark: a faint
+  `rgba(255,255,255,.04)` edge and `0 8px 16px -10px rgba(0,0,0,.7)`): every resting card, with no
+  hairline (Cards B, agreed 2026-11-12). It replaces the card's hairline when the cards are built.
+- **`envelope`** (`0 22px 34px -26px rgba(20,32,60,.7)`) and **`envelopeHeader`**
+  (`0 18px 30px -22px rgba(20,32,60,.6)`): an envelope on the paper, and the inbox header.
+- **`letter`** (`0 -6px 14px -10px`), **`window`** (an inset, `inset 0 2px 4px -1px`),
+  **`sheetEdge`** and **`seal`**.
+- **Filters** - `slip`, `stamp`, `stampFab` - are `drop-shadow`s, because a perforated edge is cut
+  out of the object and the shadow has to follow the holes.
 
 ### Named Rules
 

@@ -352,9 +352,12 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 
 ## Phase 3: Foundations (agreed on 2026-11-11, no open choice)
 
-- [ ] T020 Tokens in `src/theme/` and DESIGN.md: envelope, envelope inside, flap, icon planes, the
+- [x] T020 Tokens in `src/theme/` and DESIGN.md: envelope, envelope inside, flap, icon planes, the
   window's inset shadow and film, the sheet and envelope shadows, perforations, tint, airmail.
-  `contrast.test.ts` pairs for every new foreground/background.
+  `contrast.test.ts` pairs for every new foreground/background. Done 2026-11-12: colours in `theme.ts`,
+  geometry in `print.ts`, shadows as `objectShadow`/`objectFilter` in `depth.ts`, DESIGN.md › The
+  printed objects; measured: the dark window is 2.47:1 on the envelope, as the agreed board draws it
+  (not a 1.4.11 failure: its words identify it), pinned in the test.
 - [ ] T021 The offset icon family (`src/theme/offsetIcons.tsx`), one drawing per glyph from the canvas's
   `<symbol>` source; plane colour from the theme; tests that every glyph renders in both themes.
 - [ ] T022 The objects, one source file each: `Envelope` (with the avatar form), `Window`, `SecurityTint`,

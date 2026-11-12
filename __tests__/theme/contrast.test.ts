@@ -105,6 +105,14 @@ const pairs = (t: Theme): [string, string, string][] => [
   }),
   ['snackbarInk on snackbarBg', t.snackbarInk, t.snackbarBg],
   ['goldBright on snackbarBg', t.goldBright, t.snackbarBg],
+  // The printed objects (031): the words written in the window, on the envelope, on its flap and on a
+  // stamp. The envelope's secondary words are translucent; `printed objects` below composites them.
+  ['text on window', t.text, t.window],
+  ['textMuted on window', t.textMuted, t.window],
+  ['onSolid on envelope', t.onSolid, t.envelope],
+  ['onGold on flap', t.onGold, t.flap],
+  ['stampInk on stampPaper', t.stampInk, t.stampPaper],
+  ['stampLabel on stampPaper', t.stampLabel, t.stampPaper],
 ];
 
 const CHIP_KINDS: ChipKind[] = [
@@ -237,6 +245,53 @@ describe('the snackbar', () => {
     // Below the midpoint of the light/dark split, i.e. unambiguously a dark bar rather than a
     // near-white one that merely happens to pass with the ink currently on it.
     expect(luminance(lightTheme.snackbarBg)).toBeLessThan(0.1);
+  });
+});
+
+// The printed objects (031). An envelope is printed matter: it keeps its colours at night, which is
+// what lets the words on it be measured once - and what a later "dark variant" of the envelope would
+// silently break, so the sameness is asserted too.
+describe('the printed objects', () => {
+  /** An `rgba(r,g,b,a)` ink laid over an opaque `hex`, in sRGB as the compositor does. */
+  function over(rgba: string, hex: string): string {
+    const [, rgb, a] = rgba.match(/^rgba\((.+),([\d.]+)\)$/) ?? [];
+    const ink = rgb.split(',').map(Number);
+    const alpha = Number(a);
+    const out = [1, 3, 5].map((i, k) =>
+      Math.round(parseInt(hex.slice(i, i + 2), 16) * (1 - alpha) + ink[k] * alpha),
+    );
+    return `#${out.map(c => c.toString(16).padStart(2, '0')).join('')}`;
+  }
+
+  it.each(THEMES)('%s: the envelope\'s secondary words reach AA on it', (_name, t) => {
+    expect(contrast(over(t.envelopeInkSoft, t.envelope), t.envelope)).toBeGreaterThanOrEqual(AA);
+  });
+
+  // The window against the envelope round it is NOT held to 1.4.11's 3:1: the window always carries
+  // the words that identify it (a name, "Komu", what you type), and 1.4.11 asks a boundary only of a
+  // control with no other cue. Measured on 2026-11-12: 6.05:1 in light, 2.47:1 in dark, as the agreed
+  // DetailDark board draws it. This pins the dark number so a change to either colour is seen.
+  it('measures the window against the envelope, as the agreed boards draw it', () => {
+    expect(contrast(lightTheme.window, lightTheme.envelope)).toBeGreaterThanOrEqual(NON_TEXT);
+    expect(contrast(darkTheme.window, darkTheme.envelope)).toBeCloseTo(2.47, 2);
+  });
+
+  it.each(THEMES)('%s: the flap is told from the envelope under it', (_name, t) => {
+    expect(contrast(t.flap, t.envelope)).toBeGreaterThanOrEqual(NON_TEXT);
+  });
+
+  it('keeps the envelope, its flap, the stamp and the seal the same in both themes', () => {
+    const fixed = ['envelope', 'envelopeInkSoft', 'flap', 'lining', 'stampPaper', 'stampFrame', 'stampInk',
+      'stampLabel', 'cancelInk', 'slipMark', 'sealLight', 'sealShade'] as const;
+    for (const key of fixed) {
+      expect([key, darkTheme[key]]).toEqual([key, lightTheme[key]]);
+    }
+  });
+
+  it('follows the appearance where an object is paper on the screen', () => {
+    expect(darkTheme.window).toBe(darkTheme.surface);
+    expect(lightTheme.window).toBe(lightTheme.surface);
+    expect(darkTheme.iconPlane).not.toBe(lightTheme.iconPlane);
   });
 });
 

@@ -141,6 +141,47 @@ export interface Theme {
   accentSun: string;
   accentMoon: string;
   accentDevice: string;
+
+  // ── The printed objects (031, "Obálka is printed matter") ──────────────────────────────────────
+  // Values read from the agreed canvas's source (`Main`, `InboxA`, `Detail`, `DetailDark`, `Sent`,
+  // `Lock`, `Empty` boards, agreed 2026-11-11, and the round 1-3 boards agreed 2026-11-12), never from
+  // a picture. Each object has one job; DESIGN.md › Colors › The printed objects says which. The
+  // geometry that goes with them (perforations, the tint's pattern, the planes' offset) is in
+  // `print.ts`, the shadows in `depth.ts` (`objectShadow`).
+
+  /** The envelope: a box, and what arrives in it. Fixed in both appearances, the logo's own blue. */
+  envelope: string;
+  /** The envelope's diagonal folds, drawn over `envelope`. */
+  envelopeCrease: string;
+  /** Secondary words printed on the envelope (the "Od" overline, the identity line, the postmark). The
+   * main words on it take `onSolid`. */
+  envelopeInkSoft: string;
+  /** The flap, and the stamp-shaped compose button: the envelope's gold, fixed in both appearances. */
+  flap: string;
+  /** The lining's print inside an open envelope (the empty inbox). */
+  lining: string;
+  /** The window: who it is addressed to. Paper in light, a raised sheet in dark. */
+  window: string;
+  /** The window's inset shade, where the envelope's paper lies over its edge. */
+  windowShade: string;
+  /** The offset glyphs' plane, printed off register under the ink (blue). */
+  iconPlane: string;
+  /** The same plane under a glyph that sits on gold (the fiction chip, the paid stamp). */
+  iconPlaneGold: string;
+  /** The second envelope's edge peeking under an attention sheet. */
+  sheetEdge: string;
+  /** A stamp's paper, frame, printed value and small print: a printed object, light in both themes. */
+  stampPaper: string;
+  stampFrame: string;
+  stampInk: string;
+  stampLabel: string;
+  /** The cancellation's wavy lines across a used stamp. */
+  cancelInk: string;
+  /** The faint postmark ring printed on a slip (the delivery record). */
+  slipMark: string;
+  /** The lock's wax seal, lit from the top left. */
+  sealLight: string;
+  sealShade: string;
 }
 
 export const lightTheme: Theme = {
@@ -187,6 +228,24 @@ export const lightTheme: Theme = {
   accentSun: '#E8920C',
   accentMoon: '#7A6BC4',
   accentDevice: '#0E8C8C',
+  envelope: '#2563A6',
+  envelopeCrease: 'rgba(9,30,64,0.22)',
+  envelopeInkSoft: 'rgba(255,255,255,0.92)',
+  flap: '#FFC305',
+  lining: '#9EC0EA',
+  window: '#FFFDF8',
+  windowShade: 'rgba(9,30,64,0.28)',
+  iconPlane: '#CFE0F5',
+  iconPlaneGold: '#F3D891',
+  sheetEdge: '#F7F1E4',
+  stampPaper: '#FFFDF8',
+  stampFrame: '#DCD2BF',
+  stampInk: '#211B12',
+  stampLabel: '#6B6253',
+  cancelInk: '#1B2B45',
+  slipMark: '#B5AA97',
+  sealLight: '#3A78C2',
+  sealShade: '#1A4C86',
 };
 
 export const darkTheme: Theme = {
@@ -239,4 +298,25 @@ export const darkTheme: Theme = {
   accentSun: '#F2A93B',
   accentMoon: '#9B8FE0',
   accentDevice: '#39BDBD',
+  // The objects are printed matter: the envelope, its flap, the stamp and the seal keep their colours
+  // at night, as the agreed DetailDark board draws them. Only what is paper ON the screen - the window,
+  // the planes, the sheet's edge - follows the appearance.
+  envelope: '#2563A6',
+  envelopeCrease: 'rgba(9,30,64,0.22)',
+  envelopeInkSoft: 'rgba(255,255,255,0.92)',
+  flap: '#FFC305',
+  lining: '#9EC0EA',
+  window: '#2A251E',
+  windowShade: 'rgba(0,0,0,0.55)',
+  iconPlane: '#2F4A6E',
+  iconPlaneGold: '#5A4716',
+  sheetEdge: '#231F19',
+  stampPaper: '#FFFDF8',
+  stampFrame: '#DCD2BF',
+  stampInk: '#211B12',
+  stampLabel: '#6B6253',
+  cancelInk: '#1B2B45',
+  slipMark: '#B5AA97',
+  sealLight: '#3A78C2',
+  sealShade: '#1A4C86',
 };
