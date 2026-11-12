@@ -50,6 +50,7 @@ import {
   shareBundle,
   type SavedBundle,
 } from '../../services/debug/debugStore';
+import { useCloseOnBackground } from '../useCloseOnBackground';
 
 const MIB = 1024 * 1024;
 
@@ -208,6 +209,8 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
   const [reading, setReading] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<SavedBundle | null>(null);
+  // An RN Modal draws above the lock cover: a dialog the person opened closes as the app leaves.
+  useCloseOnBackground(useCallback(() => setPendingDelete(null), []));
   // True while a stopped recording is being written. The archive is built in slices that keep the app
   // answering (Principle I), so a press can now arrive mid-write - on this screen, or on this screen
   // opened again after someone left it during the save. Either way the buttons say so and wait.

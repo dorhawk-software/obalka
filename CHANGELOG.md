@@ -13,6 +13,12 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+### Opraveno
+
+- **Otevřený dotaz nezůstane nad zamčenou aplikací.** Když aplikace odešla do pozadí s otevřeným
+  dialogem (třeba s potvrzením placeného odeslání nebo s dotazem na mobilní data), po návratu byl vidět
+  i přes zamykací obrazovku. Teď se zavře; přijatý přenos počká, až bude aplikace zase odemčená.
+
 ## 1.1.0 (2026-11-11)
 
 ### Nové

@@ -16,21 +16,16 @@ import {
 import {
   KeyboardAvoidingView,
   Linking,
-  Modal,
   Platform,
-  Pressable,
-  ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { MIN_TARGET, textSlop, touchSlop } from '../../../theme/touchTarget';
-import { sheetWidth } from '../../../theme/ContentColumn';
 import { Button, Input, Spinner, XStack, YStack } from '../../../theme/ui';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
 import { PressScale } from '../../../theme/PressScale';
-import { Badge, BodyStrong, Caption, Heading, Label, Meta, Small, SmallStrong, Tag, Title, Value } from '../../../theme/Typography';
+import { Badge, BodyStrong, Caption, Label, Meta, Small, SmallStrong, Tag, Title, Value } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { useScrim } from '../../../theme/useScrim';
 import { chipTone } from '../../../theme/chipTone';
 import { EmblemIcon } from '../../../theme/iconTiers';
 import { AddressLines } from './AddressLines';
@@ -38,7 +33,6 @@ import { markSameName } from '../state/addressParts';
 import { creditState } from '../state/credit';
 import { totalAttachmentBytes } from '../state/costModel';
 import { Avatar } from '../../../theme/Avatar';
-import { raised } from '../../../theme/depth';
 import { DashedOutline } from '../../../theme/DashedOutline';
 import { ProgressBar } from '../../../theme/ProgressBar';
 import {
@@ -88,7 +82,7 @@ import { useSingleFlight } from '../../../app/useSingleFlight';
 import { SenderCard, SenderSheet } from './SenderPicker';
 import { Card } from '../../../theme/Card';
 import { space } from '../../../theme/spacing';
-import { useSheetMaxHeight } from '../../../theme/useSheetMaxHeight';
+import { PaidSendConfirm } from './PaidSendConfirm';
 
 /** A random id for a new draft (the app polyfills crypto.getRandomValues). */
 /** The search glyph inside the recipient field, and where it sits - as on the Licences search. */
@@ -168,10 +162,8 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
     ref,
   ) {
     const theme = useTheme();
-    const scrim = useScrim(0.4);
     const snackbar = useSnackbar();
     const insets = useSafeAreaInsets();
-    const sheetMaxHeight = useSheetMaxHeight();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<Recipient[]>([]);
     // Which results share an owner name with another result in the SAME set (015). A fact about the
@@ -1347,143 +1339,14 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
           </KeyboardAvoidingView>
         )}
 
-        {/* Paid-send confirmation - a bottom SHEET (design §7): this is the one action that spends
-          money, so it gets a deliberate gate (scrim + sheet + 🪙) with the committing dark button.
-          Same handlers/gating as before - only the chrome changed from a centered dialog to a sheet. */}
         {pendingConfirm ? (
-          <Modal
-            visible
-            transparent
-            animationType="slide"
-            statusBarTranslucent
-            onRequestClose={() => {
-              if (!busy) {
-                setPendingConfirm(null);
-              }
-            }}
-          >
-            <Pressable
-              accessible={false}
-              onPress={() => {
-                if (!busy) {
-                  setPendingConfirm(null);
-                }
-              }}
-              style={{
-                flex: 1,
-                backgroundColor: scrim,
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-              }}
-            >
-              <Pressable accessible={false} onPress={() => {}} style={sheetWidth}>
-                <YStack
-                  // Containment for VoiceOver, as in theme/Dialog.tsx.
-                  accessibilityViewIsModal
-                  backgroundColor={theme.surfaceAlt}
-                  borderTopLeftRadius={24}
-                  borderTopRightRadius={24}
-                  paddingHorizontal={18}
-                  paddingTop={10}
-                  paddingBottom={Math.max(20, insets.bottom + 8)}
-                  maxHeight={sheetMaxHeight}
-                  style={{ boxShadow: raised(theme.name, 'sheet') }}
-                  testID="composeConfirm"
-                >
-                  {/* Grab handle */}
-                  <YStack
-                    width={40}
-                    height={4}
-                    borderRadius={999}
-                    backgroundColor={theme.borderStrong}
-                    alignSelf="center"
-                    marginTop={6}
-                    marginBottom={16}
-                  />
-                  {/* What it costs scrolls at its cap; the two buttons below it never leave the screen. */}
-                  <ScrollView style={{ flexGrow: 0, flexShrink: 1 }} bounces={false}>
-                  <XStack gap={12} alignItems="center" marginBottom={12}>
-                    <YStack
-                      width={44}
-                      height={44}
-                      borderRadius={13}
-                      backgroundColor={theme.goldSoft}
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <CreditCardIcon size={24} color={theme.warningInk} />
-                    </YStack>
-                    <Heading
-                      flex={1}
-                    >
-                      {t('send.confirm.title')}
-                    </Heading>
-                  </XStack>
-                  <Small fontWeight="500"
-                    color={theme.textMuted}
-                  >
-                    {t('send.confirm.body', {
-                      czk: pendingConfirm.estimate.approxCzk ?? 0,
-                    })}
-                  </Small>
-                  <YStack
-                    backgroundColor={theme.surfaceSunken}
-                    borderRadius={12}
-                    paddingHorizontal={14}
-                    paddingVertical={12}
-                    marginTop={16}
-                    marginBottom={16}
-                  >
-                    <Label color={theme.text}>
-                      {t('send.confirm.balance', {
-                        czk: pendingConfirm.credit.balanceCzk,
-                      })}
-                    </Label>
-                  </YStack>
-                  </ScrollView>
-                  <PressScale
-                    fullWidth
-                    busy={busy}
-                    onPress={() => doSend(true)}
-                    accessibilityLabel={t('send.confirm.send', {
-                      czk: pendingConfirm.estimate.approxCzk ?? 0,
-                    })}
-                    testID="composeConfirmSend"
-                  >
-                    <XStack
-                      width="100%"
-                      minHeight={52}
-                      borderRadius={14}
-                      backgroundColor={theme.text}
-                      alignItems="center"
-                      justifyContent="center"
-                      opacity={busy ? 0.6 : 1}
-                    >
-                      <BodyStrong color={theme.surfaceAlt}>
-                        {t('send.confirm.send', {
-                          czk: pendingConfirm.estimate.approxCzk ?? 0,
-                        })}
-                      </BodyStrong>
-                    </XStack>
-                  </PressScale>
-                  <Button
-                    chromeless
-                    width="100%"
-                    minHeight={48}
-                    marginTop={4}
-                    color={theme.textMuted}
-                    fontSize={14}
-                    fontWeight="700"
-                    disabled={busy}
-                    onPress={() => setPendingConfirm(null)}
-                    testID="composeConfirmCancel"
-                  >
-                    {t('login.cancel')}
-                  </Button>
-                </YStack>
-              </Pressable>
-            </Pressable>
-          </Modal>
+          <PaidSendConfirm
+            approxCzk={pendingConfirm.estimate.approxCzk ?? 0}
+            balanceCzk={pendingConfirm.credit.balanceCzk}
+            busy={busy}
+            onSend={() => doSend(true)}
+            onCancel={() => setPendingConfirm(null)}
+          />
         ) : null}
         {choosingSender && onChangeSender ? (
           <SenderSheet

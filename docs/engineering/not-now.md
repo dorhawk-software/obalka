@@ -268,3 +268,21 @@ Obálka's own harness gaps, to be fixed as the next pieces of work.
   lead only to that name. This allows these items only: other personal details stay out of the
   repository.
 
+# Part C: found by the identity pass's second inventory (2026-11-12)
+
+The identity pass (031) changes how the app looks and moves, not what it does; these are behaviour, so
+they wait for their own work. The owner decided "not now" on 2026-11-12.
+
+- **The camera is asked for with no word first (2026-11-12).** The QR scanner (transfer, the backup
+  key) raises the OS prompt as it opens. The mobile practice "Explain before the permission prompt, and
+  ask once" wants a sentence first, as the notification nudge has. Plan: an explanation before the
+  first scan, drawn on the canvas with the sheets and dialogs.
+  ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I127)
+- **English is a second language (2026-11-12).** The app starts in Czech whatever the device says,
+  dates are written the Czech way in English too, and the iOS permission texts (camera, Face ID, local
+  network) exist only in Czech. Plan: its own spec - the device's language on first run, dates per
+  language, an English `.lproj`. ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I137)
+- **No error boundary (2026-11-12).** A render error leaves an empty screen with no way on. Plan: a
+  boundary at the root with a fallback screen that offers to start again, reported only with consent;
+  the screen gets a board on the canvas first. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
+  I139)

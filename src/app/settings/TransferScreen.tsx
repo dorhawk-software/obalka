@@ -20,7 +20,6 @@ import { AppState } from 'react-native';
 import { XStack, YStack, Input } from '../../theme/ui';
 import { Code, Label, Meta } from '../../theme/Typography';
 import { ProgressBar, WaitingBar } from '../../theme/ProgressBar';
-import { Dialog } from '../../theme/Dialog';
 import { QrCode } from '../../theme/QrCode';
 import { useTheme } from '../../theme/ThemeProvider';
 import { BackupIcon, CameraIcon, CloseIcon, ShieldKeyIcon } from '../../theme/icons';
@@ -65,25 +64,7 @@ import {
   documentsChipText,
   documentsMissingText,
 } from './BackupDocumentsChip';
-
-const pad = (n: number) => String(n).padStart(2, '0');
-
-function formatDateTime(epochMs: number): string {
-  const d = new Date(epochMs);
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(
-    d.getHours(),
-  )}:${pad(d.getMinutes())}`;
-}
-
-function formatBytes(n: number): string {
-  if (n < 1024) {
-    return `${n} B`;
-  }
-  if (n < 1024 * 1024) {
-    return `${Math.round(n / 1024)} kB`;
-  }
-  return `${(n / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`;
-}
+import { TransferDialogs, formatBytes, formatDateTime } from './TransferDialogs';
 
 /** Which of the three honest things to say about the route (FR-007). */
 export function routeKey(relayed: boolean | null): string {
@@ -677,70 +658,17 @@ export function TransferScreen({
   return (
     <>
 
-      {meteredAsk != null ? (
-        <Dialog
-          title={t('transfer.metered.title')}
-          body={t('transfer.metered.body', { size: formatBytes(meteredAsk) })}
-          onDismiss={() => setMeteredAsk(null)}
-          testID="transfer-metered-dialog"
-          actions={[
-            {
-              label: t('common.cancel'),
-              testID: 'transfer-metered-cancel',
-              onPress: () => setMeteredAsk(null),
-            },
-            {
-              label: t('transfer.metered.confirm'),
-              testID: 'transfer-metered-confirm',
-              onPress: () => {
-                setMeteredAsk(null);
-                startSend();
-              },
-            },
-          ]}
-        />
-      ) : null}
-
-      {got ? (
-        <Dialog
-          title={t('transfer.got.title')}
-          body={
-            got.restorable
-              ? t('transfer.got.body', {
-                  when: formatDateTime(got.manifest.createdAt),
-                  size: formatBytes(got.manifest.sizeBytes),
-                })
-              : got.compatibility.kind === 'tooNew'
-              ? t('transfer.got.tooNew')
-              : t('transfer.got.unsupported')
-          }
-          onDismiss={onDecline}
-          testID="transfer-received-dialog"
-          actions={
-            got.restorable
-              ? [
-                  {
-                    label: t('common.cancel'),
-                    testID: 'transfer-received-cancel',
-                    // Declining still has to let go of what arrived: the documents are on disk.
-                    onPress: onDecline,
-                  },
-                  {
-                    label: t('transfer.got.confirm'),
-                    testID: 'transfer-received-confirm',
-                    onPress: onConfirm,
-                  },
-                ]
-              : [
-                  {
-                    label: t('common.ok'),
-                    testID: 'transfer-received-close',
-                    onPress: onDecline,
-                  },
-                ]
-          }
-        />
-      ) : null}
+      <TransferDialogs
+        meteredAsk={meteredAsk}
+        onMeteredCancel={() => setMeteredAsk(null)}
+        onMeteredConfirm={() => {
+          setMeteredAsk(null);
+          startSend();
+        }}
+        got={got}
+        onDecline={onDecline}
+        onConfirm={onConfirm}
+      />
 
       <SubScreen title={receiveOnly ? t('transfer.receiveFrom') : t('transfer')} onBack={onBack}>
         {!available ? (

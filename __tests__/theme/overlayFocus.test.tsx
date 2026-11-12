@@ -372,7 +372,8 @@ describe('every Modal in the app', () => {
         'src/features/accounts/screens/BoxSwitcherSheet.tsx',
         // The Termín picker's Modal and the language picker's are this one (2026-09-24).
         'src/theme/BottomSheet.tsx',
-        'src/features/messages/screens/ComposeScreen.tsx',
+        // The paid-send confirmation, out of ComposeScreen since 2026-11-12.
+        'src/features/messages/screens/PaidSendConfirm.tsx',
       ]),
     );
   });

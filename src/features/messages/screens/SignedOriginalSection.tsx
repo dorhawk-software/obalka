@@ -13,7 +13,7 @@
 // dialog - and the one change of height, a finished fetch, is the user's own command and moves
 // nothing, the row being the last thing on the screen.
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, useWindowDimensions } from 'react-native';
 // gesture-handler's Pressable, as the attachment rows use: a plain onPress can keep the JS touch
 // responder across the hop to an external viewer and freeze the whole screen on return.
@@ -53,6 +53,7 @@ import {
   type SignedOriginalRow,
 } from '../state/signedOriginal';
 import { Card } from '../../../theme/Card';
+import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 
 /** The caption's line height, as the attachment rows' 12pt caption sets it. */
 const CAPTION_LINE = 16;
@@ -112,6 +113,8 @@ export function SignedOriginalSection({
   const [opening, setOpening] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [alert, setAlert] = useState<string | null>(null);
+  // An RN Modal draws above the lock cover: a dialog the person opened closes as the app leaves.
+  useCloseOnBackground(useCallback(() => setAlert(null), []));
   const inFlight = useRef<AbortController | null>(null);
   // One fetch and one viewer per tap (audit 2026-09-23). `fetching` and `opening` draw the row, but
   // they are state and land a render late: a double tap got past them and launched the viewer twice,

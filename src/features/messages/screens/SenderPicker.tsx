@@ -23,6 +23,7 @@ import { creditState, type CreditState } from '../state/credit';
 import { t } from '../../../i18n/strings';
 import type { DataBoxAccount } from '../../../services/isds/types';
 import { Card } from '../../../theme/Card';
+import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 
 const boxName = (a: DataBoxAccount) => a.alias ?? a.label;
 
@@ -144,6 +145,8 @@ export function SenderSheet({
   readonly onClose: () => void;
 }) {
   const theme = useTheme();
+  // BottomSheet leaves closing to its caller; an RN Modal draws above the lock cover.
+  useCloseOnBackground(onClose);
   return (
     <BottomSheet onClose={onClose} title={t('send.from.sheet')} testID="senderSheet">
       <Card

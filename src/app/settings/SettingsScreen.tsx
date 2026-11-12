@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 import { ScreenHeader } from '../../theme/ScreenHeader';
 import { Linking } from 'react-native';
 import { useContentBottom } from '../../theme/useContentBottom';
@@ -27,6 +27,7 @@ import {
 import { useSettings, type ThemeMode } from './SettingsProvider';
 import { LanguageChoice } from './LanguageChoice';
 import { Card } from '../../theme/Card';
+import { useCloseOnBackground } from '../useCloseOnBackground';
 
 const THEME_MODES: ThemeMode[] = ['light', 'dark', 'system'];
 
@@ -92,6 +93,14 @@ export function SettingsScreen({
    * arrive from now on, or every message already on the phone as well.
    */
   const [downloadAsk, setDownloadAsk] = useState<'new' | 'all' | null>(null);
+  // An RN Modal draws above the lock cover: a dialog the person opened closes as the app leaves.
+  useCloseOnBackground(
+    useCallback(() => {
+      setNoLock(false);
+      setLockStayedOn(false);
+      setDownloadAsk(null);
+    }, []),
+  );
 
   // Turning it on asks which messages; turning it off does not ask anything.
   const onToggleAutoDownload = (next: boolean) => {
