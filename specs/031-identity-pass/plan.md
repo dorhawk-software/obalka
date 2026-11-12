@@ -50,6 +50,13 @@ every state) is derived, for review.
   box overflow menu, the alias editor, What's new, the snackbar, both themes, each with its Reduce
   Motion form.
 
+**Round 3** draws every surface that still had no board (R11-R14), after the owner agreed R5-R7 and
+R10 as drawn. **Picked 2026-11-12**, each the recommendation (canvas version 25): Q1 the recipient is
+searched in the envelope's window (R12), Q2 the PDF from the typed text is a Czech letter on A4 (R12),
+Q3 a sign-in method is chosen in one card of choices (R11), Q4 the scanner shows a window to aim
+through (R13). The owner then agreed R11-R14 as drawn (after moving the inbox's debug strip onto the
+flap), so every board on the canvas is agreed (canvas version 27) and the build can start.
+
 ## Build order
 
 1. **Foundations** (agreed, no open choice): tokens in `src/theme/` and DESIGN.md with contrast tests
@@ -58,8 +65,9 @@ every state) is derived, for review.
 2. **The agreed boards** (T030-T036): inbox, empty inbox, message (both themes), sent result, lock,
    motion.
 3. **Round 1's picks**, then the derived boards R5-R7.
-4. **Round 2** (R8), the typesetting items (I82, I83), the leftovers (I63, I64, I80).
-5. **Close** (T050-T052).
+4. **Round 2** (R8-R10), the typesetting items (I82, I83), the leftovers (I63, I64, I80).
+5. **Round 3** (R11-R14), each screen once its board is agreed.
+6. **Close** (T050-T052).
 
 Each step is its own commit through `.practices/bin/lint` and `npm test`, with a CHANGELOG line where a
 user sees it.

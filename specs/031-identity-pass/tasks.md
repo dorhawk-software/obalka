@@ -386,6 +386,37 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   sheet of the paid send; Q3 the dark iOS icon is the app's envelope, blue and gold, on a dark ground.
   Losers stripped (canvas version 23).
 
+## Phase 5b: Round 3 on the canvas - every surface still without a board
+
+The owner checked rounds 1 and 2 on 2026-11-12 and agreed R5-R7 and R10 as drawn; round 3 draws
+everything else, so no screen is built before its board is agreed.
+
+- [x] T044 R11 The sign-in forms and the first run: the method step (Pokročilé closed and open), the
+  password and Mobile Key credentials, signing in, after a refusal, a sign-in error, Přihlásit znovu,
+  the whole password change with its ten rules, the crash-report question (both themes), the FAQ and
+  its delivery legend.
+- [x] T045 R12 Compose's other states (no sender, nothing typed and the drafts, searching / none /
+  error, short credit, reading an attachment, sending, a footer error) and the PDF made from the
+  typed text.
+- [x] T046 R13 The whole Settings (both themes), Debug (idle, recording, saved), Licences (list, a
+  group, a text, no results), the QR scanner (live both themes, no access, no camera), the privacy
+  covers (iOS both themes, Android 12 and older).
+- [x] T047 R14 The inbox strips (re-auth with offline, the password expiring and expired, the merged
+  view missing a box, debug recording, dark), every attachment state with the reminder, alerts-off
+  line and found date, and one sheet of every shared part in both themes.
+- [x] T048 Asked the owner on 2026-11-12, each the recommendation: Q1 the recipient is searched in the
+  envelope's window; Q2 the PDF from the typed text is a Czech letter on A4; Q3 a sign-in method is
+  chosen in one card of choices; Q4 the scanner shows a window to aim through. Losers stripped (canvas
+  version 25). The derived states of R11-R14 wait for the owner's review.
+- [x] T049 The owner reviewed R11-R14 on 2026-11-12 and agreed them, after one change: the debug strip
+  on the inbox sits on the flap (below). Every board on the canvas is now agreed (canvas version 27).
+
+Fixes found while drawing, built with their screens: the scanner's hint is unreadable in dark mode
+(surfaceAlt on black); the undeliverable delivery glyph takes surfaceAlt and nearly vanishes on the
+paper; the attachment download shows a still 40 % stub where the one waiting bar belongs. On the
+inbox the debug-recording strip sits on the envelope's flap under the status bar (the flap grows by
+the strip's height), so the envelope still reaches the top; today it pushes the whole header down.
+
 ## Phase 6: Build round 1 and round 2; Phase 7: close
 
 - [ ] T050 impeccable critique of the built app (two isolated reviewers), fixes, re-audit with the owner.

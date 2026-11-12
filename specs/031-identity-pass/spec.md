@@ -2,8 +2,8 @@
 
 **Feature Branch**: `main` (normal history since 2026-11-10)
 **Created**: 2026-11-12
-**Status**: Inventory graded; rounds 1 and 2 on the canvas and picked (2026-11-12, canvas version 23).
-The build is next, foundations first. Nothing of the new identity is built yet (see `tasks.md`).
+**Status**: Inventory graded; rounds 1-3 on the canvas and agreed by the owner (2026-11-12, canvas
+version 27): every surface of the app has an agreed board. The build is next, foundations first. Nothing of the new identity is built yet (see `tasks.md`).
 **Input**: The owner agreed the identity and its first screens on 2026-11-11, on the design canvas
 <https://claude.ai/artifact/NXmjzrevs3JuX9N7H71QbL> (canvas version 17, after an impeccable critique and
 polish). The owner calls this pass "the second step": the canvas covers the practices' iterations 1 and 2,
