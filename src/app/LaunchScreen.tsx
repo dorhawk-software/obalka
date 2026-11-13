@@ -5,9 +5,11 @@
 // shell, which waits for them, is never drawn. The root used to show nothing at all then, for good.
 // One component, so both places show exactly the same screen (constitution V).
 
-import { Button, Spinner, YStack } from '../theme/ui';
+import { YStack } from '../theme/ui';
 import { Display, Small } from '../theme/Typography';
 import { useTheme } from '../theme/ThemeProvider';
+import { NeutralButton } from '../theme/NeutralButton';
+import { WaitingBar } from '../theme/ProgressBar';
 import LogoMark from '../assets/logo.svg';
 import { t } from '../i18n/strings';
 
@@ -15,32 +17,21 @@ export function LaunchScreen({
   failed,
   onRetry,
 }: {
-  /** Say the saved boxes could not be loaded, and offer `onRetry`; otherwise the spinner. */
+  /** Say the saved boxes could not be loaded, and offer `onRetry`; otherwise the waiting bar. */
   readonly failed: boolean;
   readonly onRetry: () => void;
 }) {
   const theme = useTheme();
-  // Branded launch state (not a bare spinner), on `bg`: the envelope mark + the "Obálka" Bricolage
-  // wordmark centred (same brand lockup as Welcome/Lock), a quiet spinner held to the lower third so
-  // the brand is the hero, not the loader.
-  //
-  // When the boxes would not load, the same screen says so and offers to try again. The spinner's
-  // slot stays, only hidden, and the message sits over it: the lockup is centred against the same
-  // space either way, so nothing moves when the one turns into the other (constitution V). The
-  // message block takes the inbox's own load-error metrics.
+  // Board R8 (031, agreed 2026-11-12): the shipped mark and the "Obálka" wordmark centred over all but
+  // the bottom 120, and one waiting bar, 120 wide, 84 above the bottom, in the slot a platform spinner
+  // used to hold. The lockup is centred against the same space whatever sits under it, so nothing moves
+  // when the bar turns into the failure (constitution V): the message and a neutral retry, 64 above
+  // the bottom, 36 in from each side.
   return (
-    <YStack flex={1} backgroundColor={theme.bg} alignItems="center">
-      <YStack flex={1} alignItems="center" justifyContent="center" gap={16}>
+    <YStack flex={1} backgroundColor={theme.bg}>
+      <YStack position="absolute" top={0} left={0} right={0} bottom={120} alignItems="center" justifyContent="center" gap={16}>
         <LogoMark width={84} height={84} />
         <Display color={theme.blueDark}>{t('app.name')}</Display>
-      </YStack>
-      <YStack
-        paddingBottom={60}
-        opacity={failed ? 0 : 1}
-        accessibilityElementsHidden={failed}
-        importantForAccessibility={failed ? 'no-hide-descendants' : 'auto'}
-      >
-        <Spinner size="small" color={theme.blue} />
       </YStack>
       {failed ? (
         <YStack
@@ -59,24 +50,17 @@ export function LaunchScreen({
           >
             {t('app.loadFailed')}
           </Small>
-          <Button
-            marginTop={18}
-            height={46}
-            borderRadius={13}
-            paddingHorizontal={24}
-            backgroundColor={theme.surface}
-            borderWidth={1}
-            borderColor={theme.borderStrong}
-            color={theme.text}
-            fontSize={14}
-            fontWeight="700"
-            onPress={onRetry}
-            testID="loadRetry"
-          >
-            {t('app.loadFailed.retry')}
-          </Button>
+          <YStack marginTop={18}>
+            <NeutralButton compact inline label={t('app.loadFailed.retry')} onPress={onRetry} testID="loadRetry" />
+          </YStack>
         </YStack>
-      ) : null}
+      ) : (
+        <YStack position="absolute" left={0} right={0} bottom={84} alignItems="center">
+          <YStack width={120}>
+            <WaitingBar label={t('app.loading')} testID="launchBar" />
+          </YStack>
+        </YStack>
+      )}
     </YStack>
   );
 }

@@ -52,8 +52,12 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   logo is the envelope mark (captured 2026-11-12, `cap/00`).
 - [ ] I02 Android launch (no splash theme; the system splash shows the adaptive icon on #2563A6) - **N**.
 - [ ] I02.1 Before the settings load: a blank view on the paper colour (`App.tsx` 178-186) - **N**.
-- [ ] I03 JS `LaunchScreen` (loading: logo 84 + name + platform spinner; failed: retry) - **X**: a generic
-  spinner where the product waits. R8.
+- [x] I03 JS `LaunchScreen` (loading: logo 84 + name + platform spinner; failed: retry) - **X**: a generic
+  spinner where the product waits. R8. Fixed 2026-11-13: the lockup centred over all but the bottom
+  120, one `WaitingBar` 120 wide at 84 (spoken "Načítání schránek"), and on a failure the message and
+  a compact inline `NeutralButton` at 64 in its place; the outlined retry is gone. Roundings: the bar's
+  4 to the one waiting bar's 6 (DESIGN.md); the retry's 46/13/14 to the neutral button's compact
+  48/14/15. Walked both states light, dark and in English (forced on, reverted).
 - [ ] I04 `Welcome` (logo tile 120, Hero title, add box, restore, language, FAQ) - **X**: the envelope's
   biggest moment has no object. R1.
 - [ ] I05 FAQ overlay and `FaqScreen` (accordion cards, Overline groups) - **D** (cards).
@@ -308,7 +312,7 @@ surface below changes too, and the owner has seen none of them in the identity. 
 - [ ] I75 Skeleton pulse, waiting bar, sync bar - **N**: loop only while work runs. Under Reduce Motion
   the waiting bar is an empty track and the stage line beside it carries the meaning: shown on R8.
 - [ ] I76 Platform spinners in 11 places - **X**: R8 decides where an object waits instead. The Mobile Key wait's
-  spinner is gone (I10, 2026-11-13); ten places left.
+  spinner is gone (I10, 2026-11-13), and the launch's (I03); nine places left.
 - [ ] I77 Press dip, refusal shake, FAB press, segmented slide, radio fill - **N**.
 - [ ] I77.1 Haptics: 31 call sites (selection, light, medium, success, warning, error) - **N**: listed
   against the motion rule (a thump where paper lands).

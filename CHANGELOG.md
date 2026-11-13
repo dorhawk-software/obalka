@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Při spuštění čeká pod logem jeden tenký pruh místo točícího se kolečka.** Když se schránky
+  nenačtou, na jeho místě je zpráva a tlačítko Zkusit znovu; logo se přitom nepohne.
 - **Při čekání na Mobilní klíč leží obálka vaší schránky.** Chlopeň je zalepená, v okénku je
   přihlašovací jméno a pod ní se pohybuje jen jeden pruh; točící se kolečko a pulzující dlaždice zmizely.
 - **Napřed jméno, potom druh schránky.** „Jan Novák - podnikající fyzická osoba“ je teď na obálce

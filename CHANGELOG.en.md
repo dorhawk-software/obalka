@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **At launch, one thin bar waits under the logo instead of a spinner.** When the boxes will not
+  load, the message and Try again take its place; the logo does not move.
 - **While the Mobile Key is awaited, your box's envelope lies still.** Its flap is sealed, the login
   name is in the window, and one bar under it is the only motion; the spinner and the pulsing tile are
   gone.
