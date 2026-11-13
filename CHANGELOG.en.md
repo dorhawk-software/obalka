@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The SMS code goes into eight boxes, one for each digit.** The field takes digits only, eight at
+  most, even from a paste with spaces, and Confirm waits for the whole code. A blue strip says it was
+  sent.
 - **At launch, one thin bar waits under the logo instead of a spinner.** When the boxes will not
   load, the message and Try again take its place; the logo does not move.
 - **While the Mobile Key is awaited, your box's envelope lies still.** Its flap is sealed, the login

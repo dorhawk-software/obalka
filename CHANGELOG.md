@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Kód z SMS se píše do osmi políček, jedno na každou číslici.** Pole přijme jen číslice, nejvýš
+  osm, i když kód vložíte s mezerami. Potvrdit jde až celý kód. Že kód přišel, říká modrý pruh.
 - **Při spuštění čeká pod logem jeden tenký pruh místo točícího se kolečka.** Když se schránky
   nenačtou, na jeho místě je zpráva a tlačítko Zkusit znovu; logo se přitom nepohne.
 - **Při čekání na Mobilní klíč leží obálka vaší schránky.** Chlopeň je zalepená, v okénku je

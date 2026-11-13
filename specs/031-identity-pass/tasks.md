@@ -68,7 +68,14 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     the "i" help, FAQ link, Continue.
   - [ ] I08.2 Credentials step: method chip, login name, password or code with the eye, Mobile Key
     help, the OTP suggestion, alias, submit, busy, blocked (login name, password).
-- [ ] I09 `OtpForm` (code field, sending/sent notice, resend, blocked) - **N**.
+- [x] I09 `OtpForm` (code field, sending/sent notice, resend, blocked) - **N**. Fixed 2026-11-13
+  to R8: the Display title at the left, the notice on a blue tone strip with its bell, the field's
+  label, eight digit boxes over one hidden field (digits only, eight at most, a paste trimmed), Confirm
+  dimmed until all eight are in, the resend a blue link. The boxes share the column's width (the
+  owner, over the board's 34s); eight digits confirmed on the owner's own messages. Roundings: the
+  boxes' 10 corner to 11, the digit's 17 to the 20 `code` role, Confirm's 16 to 15. Walked light,
+  dark, empty, part and whole (forced on, reverted); the walk found the Android group-opacity fade
+  and the system face on every Button.
 - [ ] I09.1 Android's SMS User Consent sheet over the code field (the system's) - **N**: seen in place.
 - [x] I10 Mobile Key waiting (brand tile 84, phone glyph, pulse ring loop 1800 ms) - **X**: a generic
   pulse. R8. Fixed 2026-11-13: `WaitingEnvelope`, the box's envelope (300 by 186, -1.5 degrees, the
@@ -730,6 +737,8 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     blue tile with a gold triangle; the code draws the logo itself.
   - R6 transfer: 22 under the label and 12/8/4 in the waiting block; R8 (newer) 10, built.
   - R8 puts the route above cancel; constitution V keeps the line that appears late last, built.
+  - R8 SMS code: the boxes are 34 wide from the left; the owner wants them across the column, built.
+  - R8 launch: a 4 bar; DESIGN.md has one waiting bar, 6, built.
   - R6 draws no hidden key: the build shows the warning and one 52 button.
   - R6 and R10 draw section labels with no icon; the code keeps them until R10 drops them all.
   - R7 sent: the stamp prints the cost; the archive has none, so the build's is blank (not-now.md).
