@@ -150,10 +150,11 @@ describe('the box chip is the only difference', () => {
       true,
     );
     await waitFor(() => view.getByTestId('message-m1'));
-    // 027 decision 3C: the pill is filled with the box's colour and carries its monogram and name.
-    expect(view.getByTestId('boxPill-a')).toHaveTextContent(/^PFPodnikající FO$/);
-    expect(view.getByTestId('message-m1')).toHaveTextContent(/Podnikající FO/);
-    expect(view.getByTestId('message-m2')).toHaveTextContent(/Alfa s\.r\.o\./);
+    // 027 decision 3C: the pill is filled with the box's colour; in a row it carries only the
+    // monogram (031 R5), and the row's spoken label names the box.
+    expect(view.getByTestId('boxPill-a', { includeHiddenElements: true })).toHaveTextContent(/^PF$/);
+    expect(view.getByTestId('message-m1').props.accessibilityLabel).toContain('Ve schránce Podnikající FO');
+    expect(view.getByTestId('message-m2').props.accessibilityLabel).toContain('Ve schránce Alfa s.r.o.');
   });
 
   it('names no box in a per-box inbox, where every row shares one', async () => {
@@ -166,6 +167,8 @@ describe('the box chip is the only difference', () => {
     const view = await mount([box('a', { label: 'Podnikající FO' })], false);
     await waitFor(() => view.getByTestId('message-m1'));
     expect(view.getByTestId('message-m1')).not.toHaveTextContent(/Podnikající FO/);
+    expect(view.getByTestId('message-m1').props.accessibilityLabel).not.toContain('Ve schránce');
+    expect(view.queryByTestId('boxPill-a', { includeHiddenElements: true })).toBeNull();
   });
 });
 

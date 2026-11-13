@@ -2,7 +2,6 @@ import {
   MESSAGE_STATE,
   messageStateKind,
   messageStatus,
-  showsListChip,
   stopReasonKey,
 } from '../../src/features/messages/state/messageState';
 
@@ -64,16 +63,6 @@ describe('messageState - the ten ISDS states mapped onto five treatments', () =>
     expect(stopReasonKey(8)).toBe('status.stop.undeliverable');
     for (const state of [1, 2, 4, 5, 6, 7, 9, 10]) {
       expect(stopReasonKey(state)).toBeNull();
-    }
-  });
-
-  it('a list chip appears only when the news is not what you would assume', () => {
-    // Ordinary progress is carried by the glyph alone, so the common sent row stays two lines.
-    for (const state of [1, 2, 4, 6, 7, 9, 10]) {
-      expect(showsListChip(state)).toBe(false);
-    }
-    for (const state of [3, 5, 8]) {
-      expect(showsListChip(state)).toBe(true);
     }
   });
 

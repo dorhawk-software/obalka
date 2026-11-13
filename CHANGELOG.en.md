@@ -63,6 +63,9 @@ What changed in each Obálka release, written for the people using it. The newes
   the bar returns.
 - **The glint on the envelope's window moves as you tilt the phone.** Only a little, and only on the
   screen in front of you; with Reduce Motion it stays still.
+- **Sent messages are in the day-by-day register, like received ones.** On the right is when ISDS
+  delivered the message or when it was accepted, with a postmark; drafts are one sheet above the list.
+  In all boxes a message carries only its box's initials, so the sender or recipient fits beside it.
 
 ### Fixed
 

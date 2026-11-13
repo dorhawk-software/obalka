@@ -11,6 +11,10 @@
 // reads without reading, the box's monogram backs it up for anyone who cannot rely on hue, and the
 // name is the user's own name for the box when they gave it one. White on every box colour is at least
 // 5.9:1, and on the monogram's darker step more (`__tests__/theme/contrast.test.ts` measures both).
+//
+// In an inbox row it is `compact` (031 board R5, agreed 2026-11-12): the monogram alone on the box's
+// colour, so the sender or recipient keeps the row's width; the row's spoken label names the box.
+// Search keeps the name, where the box is what a hit has to say.
 
 import { XStack, YStack } from '../../../theme/ui';
 import { Tag } from '../../../theme/Typography';
@@ -31,18 +35,43 @@ export const MONOGRAM_SHADE = 0.2;
 const PILL_RADIUS = 7;
 const CHIP_GAP = 2;
 
+/** The box's name as the user knows it: their own name for it, else the one ISDS gives. */
+export function boxName(account: DataBoxAccount | undefined): string | null {
+  return account ? (account.alias ?? account.label) : null;
+}
+
 export function BoxPill({
   account,
   fallbackBoxId,
+  compact = false,
 }: {
   readonly account?: DataBoxAccount;
   /** Shown when the account is gone - a removed box whose archive survives (Principle IV). */
   readonly fallbackBoxId?: string;
+  /** The monogram alone - an inbox row, whose spoken label names the box. */
+  readonly compact?: boolean;
 }) {
   const theme = useTheme();
   const boxId = account?.boxId ?? fallbackBoxId ?? '';
-  const name = account?.alias ?? account?.label ?? fallbackBoxId ?? '';
+  const name = boxName(account) ?? fallbackBoxId ?? '';
   const fill = account ? boxColor(account) : avatarColor(boxId);
+  if (compact) {
+    return (
+      <YStack
+        flexShrink={0}
+        paddingHorizontal={8}
+        borderRadius={8}
+        backgroundColor={fill}
+        testID={`boxPill-${boxId}`}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
+        <Tag fontWeight="700" color={theme.onSolid}>
+          {monogram(name)}
+        </Tag>
+      </YStack>
+    );
+  }
   return (
     <XStack
       alignItems="center"

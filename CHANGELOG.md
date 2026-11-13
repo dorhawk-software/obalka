@@ -53,6 +53,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   nahoře, zatímco čtete doručenku a přílohy; nahoře zprávy se lišta vrátí.
 - **Odlesk na okénku obálky se pohne, když telefon nakloníte.** Jen o kousek a jen na obrazovce, kterou
   máte před sebou; se sníženým pohybem zůstane stát.
+- **Odeslané zprávy jsou v knize zpráv po dnech jako přijaté.** Vpravo stojí, kdy zprávu ISDS
+  dodalo nebo kdy byla doručena, s poštovním razítkem; rozepsané koncepty jsou list nad seznamem. Ve
+  všech schránkách nese zpráva jen zkratku své schránky, aby se vešel odesílatel i adresát.
 
 ### Opraveno
 

@@ -10,7 +10,7 @@ src/app/settings/TransferScreen.tsx 1035
 src/features/backup/state/backupController.ts 1372
 src/features/messages/screens/ComposeScreen.tsx 1356
 src/features/messages/screens/MessageDetail.tsx 1297
-src/features/messages/screens/MessageList.tsx 1631
+src/features/messages/screens/MessageList.tsx 1397
 src/features/messages/state/messagesController.ts 1351
 src/features/transfer/state/transferController.ts 961
 src/i18n/strings.ts 2079

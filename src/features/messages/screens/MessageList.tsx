@@ -1,5 +1,4 @@
 import {
-  memo,
   type ReactNode,
   useCallback,
   useEffect,
@@ -25,25 +24,17 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Button, XStack, YStack } from '../../../theme/ui';
-import { Badge, Body, Caption, Heading, Meta, Small, SmallStrong, Tag, Value } from '../../../theme/Typography';
+import { Badge, Caption, Heading, Meta, Small } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   AlertIcon,
-  ArrowRightIcon,
-  ChevronRightIcon,
   CloudOffGlyph,
-  ContentErasedIcon,
-  EditIcon,
-  HelpIcon,
   SendGlyph,
-  TimerIcon,
-  VaultIcon,
   WifiOffIcon,
 } from '../../../theme/icons';
 import { Fab, useFabClearance } from '../../../theme/Fab';
 import { EmptyState } from '../../../theme/EmptyState';
 import { Skeleton } from '../../../theme/Skeleton';
-import { Avatar } from '../../../theme/Avatar';
 import { chipTone } from '../../../theme/chipTone';
 import { HeroIcon } from '../../../theme/iconTiers';
 import {
@@ -60,21 +51,12 @@ import {
 } from '../../accounts/state/passwordExpiry';
 import {
   groupByDate,
-  rowDate,
   type DateSectionLabel,
 } from '../state/groupByDate';
-import { sentFictionCountdown } from '../state/fikce';
-import {
-  fictionCountdownTone,
-  messageStatus,
-  showsListChip,
-} from '../state/messageState';
-import { sentRowLabel } from '../state/rowLabel';
-import { DeliveryStateIcon } from './DeliveryStateIcon';
 import { reportFailure } from '../../../services/telemetry/telemetry';
 import { touchSlop } from '../../../theme/touchTarget';
 import { t, plural } from '../../../i18n/strings';
-import { FAQ_LEGEND_ID, type FaqId } from '../../../content/faq';
+import { type FaqId } from '../../../content/faq';
 import { storedReauthKey } from '../../accounts/state/reauthCopy';
 import { portalUrl } from '../../../services/isds/endpoints';
 import {
@@ -95,9 +77,9 @@ import {
 } from '../state/messagesController';
 import type { BoxAttention } from '../state/crossBox';
 import { CrossBoxLine, crossBoxSummary } from './CrossBoxLine';
-import { BoxPill } from './BoxPill';
 import { InboxHeader } from './InboxHeader';
 import { AttentionHead, AttentionSheet, RegisterRow, SectionHead, freshnessText } from './InboxRows';
+import { DraftsEntry, SentRegisterRow } from './SentRows';
 import type { TileRect } from './EnvelopeFlight';
 import { EmptyObject } from '../../../theme/EmptyObject';
 import { OpenEnvelope } from '../../../theme/objects/Envelope';
@@ -256,19 +238,6 @@ function ListEnd({
       </Caption>
     </YStack>
   );
-}
-
-/**
- * The SENT-side countdown label: "Adresát dosud nepřevzal · Fikce za 4 dny". Days are pluralized for
- * Czech; at 0 the fiction lands today. This is the only countdown left in the app - see `fikce.ts` for
- * why the received side cannot have one.
- */
-function sentCountdownLabel(daysRemaining: number): string {
-  const tail =
-    daysRemaining === 0
-      ? t('status.fikce.today')
-      : t(`status.fikce.in.${plural(daysRemaining)}`, { n: daysRemaining });
-  return `${t('status.notPickedUp')} · ${tail}`;
 }
 
 /** Whether two delivery times fall on the same local day (a missing one never matches). */
@@ -865,31 +834,8 @@ export function MessageList({
     </YStack>
   );
 
-  // A tappable "drafts" entry - the only way (pre-008) to reach saved-but-unsent messages, which
-  // otherwise live only inside Compose. Opens Compose, where the draft list is shown.
-  const draftsEntry =
-    draftCount > 0 ? (
-      <YStack backgroundColor={theme.bg}>
-        <XStack
-          alignItems="center"
-          gap={10}
-          paddingHorizontal={16}
-          paddingVertical={12}
-          pressStyle={{ backgroundColor: theme.surfaceAlt }}
-          onPress={onCompose}
-          accessibilityRole="button"
-          accessibilityLabel={t('messages.drafts', { n: draftCount })}
-          testID="messagesDrafts"
-        >
-          <EditIcon size={18} color={theme.blue} />
-          <Body flex={1} color={theme.blue} fontWeight="600">
-            {t('messages.drafts', { n: draftCount })}
-          </Body>
-          <ChevronRightIcon size={20} color={theme.textFaint} />
-        </XStack>
-        <YStack height={1} backgroundColor={theme.border} />
-      </YStack>
-    ) : null;
+  // The only way (pre-008) to reach saved-but-unsent messages outside Compose - see `DraftsEntry`.
+  const draftsEntry = draftCount > 0 ? <DraftsEntry count={draftCount} onPress={onCompose} /> : null;
 
   // Render against the LOADED folder (state.folder), not the live segment - so the rows + orientation
   // always match the data shown (the segment may have flipped while the new folder is still syncing).
@@ -1196,26 +1142,27 @@ export function MessageList({
               />
             );
           }
+          // The day is printed once, beside the first row of that day in the section.
+          const before = index > 0 ? section.data[index - 1] : null;
+          const showDay = before == null || !sameDay(before.deliveryTime, item.deliveryTime);
           if (shownFolder === 'sent') {
             return (
-              <SentRow
+              <SentRegisterRow
                 message={item}
                 now={now}
+                showDay={showDay}
                 onOpen={openMessage}
                 folder={shownFolder}
-                onExplain={onOpenFaq}
                 boxAccount={boxOf(item.id)}
               />
             );
           }
-          // The day is printed once, beside the first row of that day in the section.
-          const before = index > 0 ? section.data[index - 1] : null;
           return (
             <RegisterRow
               message={item}
               now={now}
               termDate={termDates.get(item.id) ?? null}
-              showDay={before == null || !sameDay(before.deliveryTime, item.deliveryTime)}
+              showDay={showDay}
               onOpen={openMessage}
               folder={shownFolder}
               boxAccount={boxOf(item.id)}
@@ -1448,184 +1395,3 @@ function MessageRowSkeleton() {
     </XStack>
   );
 }
-
-/**
- * A flat sent row: avatar + you→recipient (arrow + name) + date + subject + the delivery-state glyph,
- * plus - only when there is something a glance would not have assumed - one extra line.
- *
- * The design's rule for that extra line, in order of precedence:
- *   * a CHIP for `fiction` or `stop`: served without anyone reading it, or never delivered at all.
- *     Ordinary progress (odesláno → dodáno → doručeno) stays carried by the glyph alone, so the
- *     common row keeps its two-line height.
- *   * a COUNTDOWN while the recipient has not signed for it yet (state 4) - the one place in the app
- *     where a fiction clock is still running.
- *   * ANNOTATIONS (content erased at ISDS, kept in the Datový trezor) - a footnote on a journey that
- *     already finished, so it is quiet: faint, small, no pill.
- */
-const SentRow = memo(function SentRowView({
-  message,
-  now,
-  onOpen,
-  folder,
-  onExplain,
-  boxAccount,
-}: {
-  readonly message: MessageEnvelope;
-  readonly now: number;
-  readonly onOpen: (messageId: string, folder: MessageFolder) => void;
-  readonly folder: MessageFolder;
-  /** Set only in the merged view - see `ReceivedRow`. */
-  readonly boxAccount?: DataBoxAccount;
-  /** Opens the FAQ answer carrying the delivery-state legend. */
-  readonly onExplain: (focus: FaqId) => void;
-}) {
-  const onPress = useCallback(
-    () => onOpen(message.id, folder),
-    [onOpen, message.id, folder],
-  );
-  const theme = useTheme();
-  const recipient = message.recipient || '—';
-  const status = messageStatus(message.state);
-  const tone = chipTone(status.tone, theme);
-  const countdown = sentFictionCountdown(message, now);
-  // Escalates as the fiction date approaches (red ≤3 days, amber ≤7, gold beyond). Every countdown
-  // used to render the same gold whatever the distance.
-  const fictionTone = chipTone(
-    countdown
-      ? fictionCountdownTone(countdown.daysRemaining)
-      : 'statusFiction',
-    theme,
-  );
-  // The row's extra line, whichever one it draws - the state chip repeats `status`, so only the
-  // countdown adds anything the label does not already say.
-  const annotation = status.annotation
-    ? t(
-        status.annotation === 'erased'
-          ? 'status.note.erased'
-          : 'status.note.vault',
-      )
-    : null;
-  return (
-    <XStack
-      paddingHorizontal={18}
-      paddingVertical={13}
-      gap={12}
-      alignItems="flex-start"
-      borderTopWidth={1}
-      borderTopColor={theme.border}
-      pressStyle={{ backgroundColor: theme.surfaceAlt }}
-      onPress={onPress}
-      accessibilityRole="button"
-      // The delivery state is a GLYPH on this row - the word for it survives only here.
-      accessibilityLabel={sentRowLabel({
-        recipient,
-        subject: message.subject || t('messages.noSubject'),
-        date: rowDate(message.deliveryTime, now),
-        status: t(status.labelKey),
-        notes: [
-          !showsListChip(message.state) && countdown
-            ? sentCountdownLabel(countdown.daysRemaining)
-            : null,
-          annotation,
-        ],
-      })}
-      testID={`message-${message.id}`}
-    >
-      <Avatar name={recipient} size={38} />
-      <YStack flex={1} gap={2}>
-        <XStack alignItems="center" gap={8}>
-          <ArrowRightIcon size={13} color={theme.textFaint} />
-          {/* The twin of the received row's sender - same floor, same reason. */}
-          <SmallStrong
-            flex={1}
-            minWidth={0}
-            dense
-            color={theme.text}
-            numberOfLines={1}
-          >
-            {recipient}
-          </SmallStrong>
-          <Meta fontWeight="600"
-            flexShrink={0}
-            color={theme.textFaint}
-            dense
-            numberOfLines={1}
-          >
-            {rowDate(message.deliveryTime, now)}
-          </Meta>
-          {/* The delivery state rides at the END of the primary line as a glyph - it does NOT get a
-              line of its own, so a sent row is the same two lines (and the same height) as a received
-              one. The wording survives only as the icon's accessibility label. */}
-          <DeliveryStateIcon
-            kind={status.kind}
-            color={tone.fg}
-            label={t(status.labelKey)}
-            // The `stop` disc knocks its slash out against the LIST paper, not a card.
-            knockout={theme.bg}
-          />
-        </XStack>
-        <Value fontWeight="500"
-          color={theme.textMuted}
-          numberOfLines={1}
-        >
-          {message.subject || t('messages.noSubject')}
-        </Value>
-        {/* One meta row: the box (merged view only), then whichever of the two status forms this
-            message has. Previously two mutually exclusive branches; the box has to appear beside
-            either of them, so the row is now the constant and its contents vary. */}
-        {showsListChip(message.state) || countdown || boxAccount ? (
-          <XStack marginTop={8} alignItems="center" gap={6} flexWrap="wrap">
-            {boxAccount ? <BoxPill account={boxAccount} /> : null}
-            {countdown && !showsListChip(message.state) ? (
-              <XStack alignItems="center" gap={6}>
-                <TimerIcon size={13} color={fictionTone.fg} />
-                <Meta fontWeight="700" color={fictionTone.fg} numberOfLines={1}>
-                  {sentCountdownLabel(countdown.daysRemaining)}
-                </Meta>
-              </XStack>
-            ) : null}
-            {showsListChip(message.state) ? (
-            <>
-            {/* Tappable for the same reason the fiction pill is: "Dodáno" and "Doručeno" are a legal
-                distinction the app states and never explains, and the five-glyph delivery vocabulary
-                has its legend in the FAQ. `FAQ_LEGEND_ID` is the answer that renders the marks. */}
-            <XStack
-              minHeight={22}
-              alignItems="center"
-              gap={6}
-              paddingLeft={10}
-              paddingRight={8}
-              borderRadius={8}
-              backgroundColor={tone.bg}
-              hitSlop={touchSlop({ height: 22 })}
-              pressStyle={{ opacity: 0.65 }}
-              onPress={() => onExplain(FAQ_LEGEND_ID)}
-              accessibilityRole="button"
-              accessibilityLabel={`${t(status.labelKey)}, ${t('faq.explain')}`}
-              testID="explainDeliveryState"
-            >
-              <Tag color={tone.fg}>
-                {t(status.labelKey)}
-              </Tag>
-              <HelpIcon size={12} color={tone.fg} />
-            </XStack>
-            </>
-            ) : null}
-          </XStack>
-        ) : null}
-        {annotation ? (
-          <XStack alignItems="center" gap={6} marginTop={6}>
-            {status.annotation === 'erased' ? (
-              <ContentErasedIcon size={13} color={theme.textFaint} />
-            ) : (
-              <VaultIcon size={13} color={theme.textFaint} />
-            )}
-            <Tag color={theme.textFaint} numberOfLines={1}>
-              {annotation}
-            </Tag>
-          </XStack>
-        ) : null}
-      </YStack>
-    </XStack>
-  );
-});

@@ -87,7 +87,13 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   flap tiles, fiction chip with the offset glyph).
 - [ ] I18 Received rows and month sections - **D**: board Inbox (day numeral, small sender tile, offset
   attachment and reminder glyphs).
-- [ ] I19 Sent rows (delivery state per row) - **X**: no board. R5.
+- [x] I19 Sent rows (delivery state per row) - **X**: no board. R5. Fixed 2026-11-13: the register row
+  (`SentRows.tsx`), "Dodáno 11.11." muted / "Doručeno 25.10." green / "Doručeno fikcí" gold with the
+  postmark, only with a time ISDS certified; nothing while on its way, "Nedoručitelné" in stop ink.
+  The fiction and stop chips and their FAQ link left the row (the state is at its end now); the
+  countdown and the erased/vault note stay. Dates padded as everywhere ("03.10.", the board "3.10.").
+  In all boxes the box pill is the monogram alone (8 dp sides, the board's 7 rounded), inline after
+  the name on every row and sheet; the row's spoken label names the box.
 - [ ] I20 List loading (6 skeleton rows) and the 3 px sync bar - **X**: under the new header. R5.
 - [ ] I21 List error (CloudOff hero 132, reason, retry) - **X**: R4.
 - [ ] I22 Empty received - **D**: board "Empty inbox - the inside of the envelope".
@@ -95,7 +101,8 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 - [ ] I24 Empty, needs a new sign-in (CloudOff hero, "Zprávy zatím nejsou k dispozici") - **X**: R4.
 - [ ] I25 Cross-box line ("Jinde: …") - **D**: board Inbox ("V ostatních schránkách …", Schránky glyph).
 - [ ] I26 Freshness line at the list's end - **D**: board Empty ("Naposledy dnes ve 14:02").
-- [ ] I27 Drafts entry above the list - **X**: R5.
+- [x] I27 Drafts entry above the list - **X**: R5. Fixed 2026-11-13: one sheet (`DraftsEntry`), the draft
+  glyph in a 36 well.
 - [ ] I28 Compose FAB (gold extended, pencil) - **D**: the blank stamp, board Inbox.
 - [ ] I29 Message detail, received - **D**: boards "Message - the envelope it came in" and "Message - dark".
 - [ ] I30 Message detail, sent (recipient card, delivery timeline) - **X**: R7.

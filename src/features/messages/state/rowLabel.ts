@@ -61,6 +61,8 @@ export function receivedRowLabel(row: {
   unread: boolean;
   /** The user's own deadline on this message, already worded (`termChipLabel`), or null. */
   term: string | null;
+  /** The box it belongs to, in the merged view only - the pill shows just its initials. */
+  box?: string | null;
 }): string {
   return sentence([
     row.unread ? t('messages.unread') : null,
@@ -68,6 +70,7 @@ export function receivedRowLabel(row: {
     row.subject,
     row.date,
     row.term,
+    row.box ? t('messages.row.inBox', { name: row.box }) : null,
   ]);
 }
 
@@ -83,6 +86,8 @@ export function attentionRowLabel(row: {
   /** The fiction pill's parts ("Doručeno fikcí 3. 6.", "Lhůta běží"), or null when it shows none. */
   fiction: string[] | null;
   term: string | null;
+  /** The box it belongs to, in the merged view only - the pill shows just its initials. */
+  box?: string | null;
 }): string {
   return sentence([
     row.unread ? t('messages.unread') : null,
@@ -91,6 +96,7 @@ export function attentionRowLabel(row: {
     row.date,
     ...(row.fiction ?? []),
     row.term,
+    row.box ? t('messages.row.inBox', { name: row.box }) : null,
   ]);
 }
 
@@ -106,6 +112,8 @@ export function sentRowLabel(row: {
   status: string;
   /** The extra lines the row shows under the subject (fiction countdown, erased/vault note). */
   notes: (string | null)[];
+  /** The box it belongs to, in the merged view only - the pill shows just its initials. */
+  box?: string | null;
 }): string {
   return sentence([
     t('messages.row.to', { name: row.recipient }),
@@ -113,6 +121,7 @@ export function sentRowLabel(row: {
     row.date,
     row.status,
     ...row.notes,
+    row.box ? t('messages.row.inBox', { name: row.box }) : null,
   ]);
 }
 

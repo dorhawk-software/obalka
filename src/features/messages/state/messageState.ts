@@ -163,16 +163,6 @@ export function stopReasonKey(state: number): string | null {
 }
 
 /**
- * Whether a chip is worth drawing on a SENT list row. The design's rule: a chip appears only when the
- * news is not what you would assume from a message you sent - i.e. it was served without anyone
- * reading it, or it never arrived at all. Ordinary progress is carried by the row's glyph alone.
- */
-export function showsListChip(state: number): boolean {
-  const kind = messageStateKind(state);
-  return kind === 'fiction' || kind === 'stop';
-}
-
-/**
  * Which tone a SENT-side fiction countdown gets, by how close it is.
  *
  * `chipTone.ts` has declared `fikceRed` (≤3 days) and `fikceAmber` (≤7) since the redesign and

@@ -26,7 +26,7 @@ import { isUnread } from '../state/messagesController';
 import { freshnessLabel, rowDate, type DateSectionLabel } from '../state/groupByDate';
 import { attentionRowLabel, receivedRowLabel, termChipLabel } from '../state/rowLabel';
 import { formatTermDate } from './TermPicker';
-import { BoxPill } from './BoxPill';
+import { BoxPill, boxName } from './BoxPill';
 import { openFromTile, type TileRect } from './EnvelopeFlight';
 
 /** Localized date-section header (a fixed bucket, or "Month Year" for older groups). */
@@ -169,6 +169,7 @@ export const AttentionSheet = memo(function AttentionSheetView({
           unread,
           fiction: fictionParts,
           term: termDate != null ? termChipLabel(termDate, now) : null,
+          box: boxName(boxAccount),
         })}
         testID={`message-${message.id}`}
       >
@@ -184,12 +185,16 @@ export const AttentionSheet = memo(function AttentionSheetView({
               {rowDate(message.deliveryTime, now)}
             </Meta>
           </XStack>
-          <Small color={theme.textMuted} numberOfLines={1}>
-            {sender}
-          </Small>
+          {/* The box's monogram follows the sender's name, as on the register's rows (031 R5). */}
+          <XStack alignItems="center" gap={6}>
+            <Small color={theme.textMuted} numberOfLines={1} flexShrink={1}>
+              {sender}
+            </Small>
+            {boxAccount ? <BoxPill account={boxAccount} compact /> : null}
+          </XStack>
           {/* Both marks can be present. They WRAP rather than truncate - a legal status cut short to
               fit beside a deadline would be the same half-truth as not showing it. */}
-          {servedAt != null || termDate != null || boxAccount ? (
+          {servedAt != null || termDate != null ? (
             <XStack marginTop={4} flexWrap="wrap" alignItems="center" gap={6}>
               {servedAt != null ? (
                 // Tappable: "fikce" and "lhůta" are terms the app's audience has no reason to know,
@@ -218,7 +223,6 @@ export const AttentionSheet = memo(function AttentionSheetView({
                 </XStack>
               ) : null}
               {termDate != null ? <ReminderMark date={termDate} now={now} /> : null}
-              {boxAccount ? <BoxPill account={boxAccount} /> : null}
             </XStack>
           ) : null}
         </YStack>
@@ -338,6 +342,7 @@ export const RegisterRow = memo(function RegisterRowView({
         date: rowDate(delivered, now),
         unread: isUnread(message.state),
         term: termDate != null ? termChipLabel(termDate, now) : null,
+        box: boxName(boxAccount),
       })}
       testID={`message-${message.id}`}
     >
@@ -368,7 +373,7 @@ export const RegisterRow = memo(function RegisterRowView({
           {termDate != null ? <ReminderMark date={termDate} now={now} /> : null}
           {boxAccount ? (
             <YStack marginLeft="auto" flexShrink={0}>
-              <BoxPill account={boxAccount} />
+              <BoxPill account={boxAccount} compact />
             </YStack>
           ) : null}
         </XStack>
