@@ -9,6 +9,7 @@
 
 import { forwardRef, type ComponentType } from 'react';
 import { useTheme } from './ThemeProvider';
+import { fonts } from './typeScale';
 import {
   Button as TButton,
   H2 as TH2,
@@ -75,6 +76,10 @@ const ThemedInput = forwardRef<unknown, any>(function ThemedInputField(props, re
     <BaseInput
       ref={ref}
       keyboardAppearance={theme.name === 'dark' ? 'dark' : 'light'}
+      // What anyone types, and the placeholder, in the body face: with no face set, every field fell
+      // back to the system's (Roboto on Android) beside Public Sans everywhere else - seen on the
+      // search field against its board (031 R4, 2026-11-13).
+      fontFamily={fonts.bodyRegular}
       {...props}
     />
   );

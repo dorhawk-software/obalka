@@ -64,11 +64,15 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   tišší.
 - **Načítání schránky má tvar knihy zpráv.** Než se zprávy načtou, jsou na jejich místě řádky se
   dnem a dvěma řádky textu; synchronizaci ukazuje tenký pruh pod upozorněními, který nic neposune.
+- **Když není co ukázat, obálka ukáže proč.** Odeslané bez zpráv mají obálku s prázdnou známkou,
+  schránka, která se nenačetla, obálku zalepenou, schránka čekající na přihlášení prázdné okénko a
+  hledání stoh obálek. Pole hledání má lupu a horní lišta obrazovek už pod sebou nemá čáru.
 
 ### Opraveno
 
 - **Prázdná schránka ukáže prázdnou obálku, i když v ostatních schránkách něco čeká.** Dřív byl pod
   řádkem o ostatních schránkách jen prázdný papír.
+- **Co píšete do polí, je písmem aplikace.** Na Androidu pole psala systémovým písmem.
 - **Otevřený dotaz nezůstane nad zamčenou aplikací.** Když aplikace odešla do pozadí s otevřeným
   dialogem (třeba s potvrzením placeného odeslání nebo s dotazem na mobilní data), po návratu byl vidět
   i přes zamykací obrazovku. Teď se zavře; přijatý přenos počká, až bude aplikace zase odemčená.

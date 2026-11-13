@@ -31,7 +31,6 @@ colors:
   warning-ink: "#8C6100"
   track-off: "#CFC4AE"
   track-off-edge: "#8E7F62"
-  hero-ink: "#D3C7AF"
   snackbar-bg: "#211B12"
   snackbar-ink: "#FBF6EA"
   envelope: "#2563A6"
@@ -47,6 +46,7 @@ colors:
   slip-mark: "#B5AA97"
   seal-light: "#3A78C2"
   seal-shade: "#1A4C86"
+  envelope-behind: "#22508A"
 typography:
   display:
     fontFamily: "BricolageGrotesque-ExtraBold, Bricolage Grotesque, system-ui, sans-serif"
@@ -440,8 +440,9 @@ A single column, capped and centred. `ContentColumn` limits content to **720dp**
 take anything wider - the answer print has used for centuries, and the reason a tablet or an unfolded
 foldable does not get inbox rows a thousand pixels wide. On a phone the cap never binds.
 
-Screen structure is invariant: a **54dp header bar** on `surface-alt` below the safe-area inset, with
-a 1px hairline under it; then content on `paper`; then, where the screen has one primary action, a
+Screen structure is invariant: a **54dp header bar** on `surface-alt` below the safe-area inset, its
+tone the only edge (no hairline under it: every 031 board draws it so, the owner's catch 2026-11-13);
+then content on `paper`; then, where the screen has one primary action, a
 FAB 22dp above the safe-area bottom. Header top padding and content bottom padding both come from
 hooks (`useHeaderTop`, `useContentBottom`) that derive from the real insets - never a hardcoded
 guess, which is what put content under the gesture bar on every device that has one.
@@ -481,8 +482,8 @@ most load-bearing idea in the system: a new surface asks "which tonal level am I
 shadow do I get".
 
 Where tone alone cannot separate two planes - `surface-alt` on `paper` measures 1.06:1, which is
-nothing - a **1px hairline** finishes the job. Every header bar's bottom edge, every list-row
-divider, every card boundary is a hairline. That is not a fallback; it is the second half of the
+nothing - a **1px hairline** finishes the job where an edge is needed: a list-row divider, a card
+boundary. The header bar is the exception the design makes: its tone against the paper is its edge. That is not a fallback; it is the second half of the
 mechanism.
 
 ### Shadow vocabulary

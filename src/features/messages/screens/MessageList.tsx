@@ -14,13 +14,10 @@ import {
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Button, YStack } from '../../../theme/ui';
-import { Caption, Heading, Small } from '../../../theme/Typography';
+import { Caption } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { CloudOffGlyph, SendGlyph } from '../../../theme/icons';
 import { Fab, useFabClearance } from '../../../theme/Fab';
-import { EmptyState } from '../../../theme/EmptyState';
 import { chipTone } from '../../../theme/chipTone';
-import { HeroIcon } from '../../../theme/iconTiers';
 import {
   attentionEntries,
   summarizeAttention,
@@ -66,7 +63,7 @@ import { DraftsEntry, SentRegisterRow } from './SentRows';
 import { InboxStrip, StaleLine, StripAction, SyncBar } from './InboxStrips';
 import type { TileRect } from './EnvelopeFlight';
 import { EmptyObject } from '../../../theme/EmptyObject';
-import { OpenEnvelope } from '../../../theme/objects/Envelope';
+import { EnvelopePose, OpenEnvelope } from '../../../theme/objects/Envelope';
 import { draftsBus } from '../state/draftsBus';
 
 /**
@@ -893,45 +890,30 @@ export function MessageList({
           />
         }
       >
-        <YStack alignItems="center" paddingVertical={60} paddingHorizontal={36}>
-          <HeroIcon glyph={CloudOffGlyph} />
-          <Heading textAlign="center" marginTop={16}>
-            {t('messages.error.loadTitle')}
-          </Heading>
-          <Small fontWeight="500" // Public Sans 500 - a fontWeight prop can't switch the face
-            maxWidth={240}
-            color={theme.textMuted}
-            textAlign="center"
-            marginTop={6}
-          >
-            {/* The reason, not a guess at it. This said "Zkontrolujte připojení" for EVERY failure
-                - a server fault, a timeout, an expired session - which is the same false-offline
-                claim the stale banner was fixed to stop making (see the `stale` field). The state
-                already carries which one it was. */}
-            {t(
-              state.status === 'error' &&
-                state.messageKey !== 'messages.error.load'
-                ? state.messageKey
-                : 'messages.error.loadSub',
-            )}
-          </Small>
-          <Button
-            marginTop={18}
-            height={46}
-            borderRadius={13}
-            paddingHorizontal={24}
-            backgroundColor={theme.surface}
-            borderWidth={1}
-            borderColor={theme.borderStrong}
-            color={theme.text}
-            fontSize={14}
-            fontWeight="700"
-            onPress={onPullRefresh}
-            testID="retry"
-          >
-            {t('messages.retry')}
-          </Button>
-        </YStack>
+        {/* The envelope sealed: nothing came out this time (031 R4). The reason, not a guess at it -
+            "Zkontrolujte připojení" only when nothing more is known; a server fault, a timeout or an
+            expired session says so (the same false-offline claim the stale line was fixed to stop). */}
+        <EmptyObject
+          object={<EnvelopePose pose="sealed" />}
+          title={t('messages.error.loadTitle')}
+          body={t(state.messageKey !== 'messages.error.load' ? state.messageKey : 'messages.error.loadSub')}
+          action={
+            <Button
+              minHeight={52}
+              borderRadius={14}
+              paddingHorizontal={24}
+              backgroundColor={theme.surfaceSunken}
+              color={theme.text}
+              fontSize={16}
+              fontWeight="700"
+              onPress={onPullRefresh}
+              testID="retry"
+            >
+              {t('messages.retry')}
+            </Button>
+          }
+          testID="listError"
+        />
       </ScrollView>
     );
   } else {
@@ -939,11 +921,11 @@ export function MessageList({
     // (whatever is cached - nothing, for a box that never synced) simply stays behind it.
     const emptyState =
       shownFolder === 'sent' ? (
-        <EmptyState
-          icon={<HeroIcon glyph={SendGlyph} />}
+        <EmptyObject
+          object={<EnvelopePose pose="unsent" />}
           title={t('messages.sent.empty')}
-          subtitle={t('messages.sent.empty.hint')}
-          marginTop={60}
+          body={t('messages.sent.empty.hint')}
+          testID="emptySent"
         />
       ) : (
         <EmptyObject
@@ -956,11 +938,12 @@ export function MessageList({
       );
     // Not "empty" - unavailable. The distinction matters: the app has not been able to look.
     const reauthEmptyState = (
-      <EmptyState
-        icon={<HeroIcon glyph={CloudOffGlyph} />}
+      <EmptyObject
+        object={<EnvelopePose pose="addressed" />}
         title={t('messages.reauth.empty')}
-        subtitle={t('messages.reauth.empty.hint')}
-        marginTop={60}
+        body={t('messages.reauth.empty.hint')}
+        place="underStrip"
+        testID="reauthEmpty"
       />
     );
     // A box whose session expired says its list is unavailable until they sign in - never "this box

@@ -50,14 +50,6 @@ export interface Theme {
   onSolid: string;
   /** Solid brand-blue tile behind logo/lock marks - fixed in both modes so a white glyph stays AA. */
   brandTile: string;
-  /**
-   * Ink for a HERO-tier glyph (016): the 132px decorative mark on an empty or zero state.
-   *
-   * Deliberately its own token rather than `borderStrong`, which is close but not the design's value
-   * - and it is allowed to fall BELOW AA, because a hero glyph is decoration with the words beside
-   * it doing the work. Nothing else in the app may borrow it for text.
-   */
-  heroInk: string;
   gold: string; // signature accent (compose FAB, unread)
   goldSoft: string;
   onGold: string; // text/icons on the bright gold (dark in both themes - gold stays light)
@@ -177,6 +169,9 @@ export interface Theme {
    * blue than its front; the faint folds of its front pocket. Fixed in both appearances. */
   flapShade: string;
   envelopeInside: string;
+  /** The archive's stack (search, 031 R4): the envelope between the front one and the deepest
+   * (`envelopeInside`). Fixed in both appearances. */
+  envelopeBehind: string;
   envelopeFoldFaint: string;
   /** The lining's print inside an open envelope (the empty inbox). */
   lining: string;
@@ -226,7 +221,6 @@ export const lightTheme: Theme = {
   onBlue: '#FFFFFF',
   onSolid: '#FFFFFF',
   brandTile: '#2D6CB5',
-  heroInk: '#D3C7AF',
   gold: '#E8A100',
   goldSoft: '#FBEFD0',
   onGold: '#211B12',
@@ -266,6 +260,7 @@ export const lightTheme: Theme = {
   flapPlane: 'rgba(255,255,255,0.55)',
   flapShade: 'rgba(33,27,18,0.14)',
   envelopeInside: '#1A4C86',
+  envelopeBehind: '#22508A',
   envelopeFoldFaint: 'rgba(255,255,255,0.18)',
   lining: '#9EC0EA',
   window: '#FFFDF8',
@@ -309,7 +304,6 @@ export const darkTheme: Theme = {
   onBlue: '#1A1611',
   onSolid: '#FFFFFF', // white in BOTH themes - see the token's doc comment
   brandTile: '#2D6CB5',
-  heroInk: '#4E4638',
   gold: '#E8A100',
   goldSoft: '#3A2F12', // derived dark gold surface
   onGold: '#211B12',
@@ -352,6 +346,7 @@ export const darkTheme: Theme = {
   flapPlane: 'rgba(255,255,255,0.55)',
   flapShade: 'rgba(33,27,18,0.14)',
   envelopeInside: '#1A4C86',
+  envelopeBehind: '#22508A',
   envelopeFoldFaint: 'rgba(255,255,255,0.18)',
   lining: '#9EC0EA',
   window: '#2A251E',

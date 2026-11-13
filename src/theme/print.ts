@@ -151,6 +151,20 @@ export const openEnvelope = {
   },
 } as const;
 
+/** The envelope's poses for the empty, failed and search states (031 R4), on a 220 x 140 front. */
+export const envelopePose = {
+  width: 220,
+  height: 140,
+  stackHeight: 150,
+  creases: 'M0 140 L92 84 M220 140 L128 84',
+  /** Under the shut flap the creases meet a little higher. */
+  creasesSealed: 'M0 140 L92 82 M220 140 L128 82',
+  /** To the paper's top edge and its sides; the pose clips it to the round corners. */
+  flap: 'M0 0H220V9L118 74Q110 80 102 74L0 9Z',
+  windowLines: 'M28 96h70M28 108h46',
+  stackCreases: 'M10 146 L90 100 M200 146 L120 100',
+} as const;
+
 /**
  * The envelope as an avatar tile (board InboxA): `tile` corners; a sealed gold flap while unread, else
  * a fold line - both drawn on a 42 x 42 tile and scaled to the size.

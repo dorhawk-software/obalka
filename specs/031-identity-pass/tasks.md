@@ -106,10 +106,15 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   inset 16 and 10 under the strips, one segment a third long sweeping (1.3 s; still with Reduce Motion),
   laid over the list so nothing moves; core Animated on the native driver, not Reanimated (I68). Its
   ends are the 999 step (the board's 2).
-- [ ] I21 List error (CloudOff hero 132, reason, retry) - **X**: R4.
+- [x] I21 List error (CloudOff hero 132, reason, retry) - **X**: R4. Fixed 2026-11-13: the envelope in a pose (`EnvelopePose`, 220 x 140, tilted 2 degrees, the open envelope's shadow),
+  sealed under its gold flap; the reason as before; Zkusit znovu a 52 sunken button (radius 14, 16/700).
+  The flap and the creases are clipped to the round corners: the owner saw a blue rim above the flap and
+  crease ends past the corners on the device (the board draws the same overshoot - canvas sync-back).
 - [ ] I22 Empty received - **D**: board "Empty inbox - the inside of the envelope".
-- [ ] I23 Empty sent (paper-plane hero) - **X**: R4.
-- [ ] I24 Empty, needs a new sign-in (CloudOff hero, "Zprávy zatím nejsou k dispozici") - **X**: R4.
+- [x] I23 Empty sent (paper-plane hero) - **X**: R4. Fixed 2026-11-13: the unsent pose, a dashed blank
+  stamp and an empty window with dotted address lines; the heading lost its full stop.
+- [x] I24 Empty, needs a new sign-in (CloudOff hero, "Zprávy zatím nejsou k dispozici") - **X**: R4.
+  Fixed 2026-11-13: the addressed pose (an empty window, no stamp), 24 under the strip, not 60.
 - [ ] I25 Cross-box line ("Jinde: …") - **D**: board Inbox ("V ostatních schránkách …", Schránky glyph).
 - [ ] I26 Freshness line at the list's end - **D**: board Empty ("Naposledy dnes ve 14:02").
 - [x] I27 Drafts entry above the list - **X**: R5. Fixed 2026-11-13: one sheet (`DraftsEntry`), the draft
@@ -137,6 +142,12 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 - [ ] I40 Paid-send confirmation (modal, credit card tile) - **X**: R2.
 - [ ] I41 Draft rows (swipe to discard, snackbar Undo) - **X**: R2 (Koncept glyph).
 - [ ] I42 Search: hint, skeleton, no results, results - **X**: R4 (hint, no results), rows as I18.
+  Part built 2026-11-13: the hint and no results draw the archive pose (a stack of three envelopes, a new
+  `envelopeBehind` #22508A for the middle one); the field is a paper well with the offset search glyph
+  (18, muted), no outline, the placeholder muted, in Public Sans - every `Input` had fallen back to the
+  system face (owner's catch). No results is not on the board: it takes the hint's pose. Rounded:
+  the no-results top 96 -> 60 (the empty step), the body width 280 -> 300 (the board's). Open: the
+  result rows and their skeleton (I18).
 
 ### Settings and the rest
 
@@ -240,7 +251,8 @@ surface below changes too, and the owner has seen none of them in the identity. 
 - [ ] I78 The offset icon family in `src/theme/` and the map from today's Lucide wrappers (Mail, Send,
   Pencil, Search, Paperclip, ShieldCheck, Timer, Layers, Archive, Download, File and the custom
   settings glyph) - **D** build.
-- [ ] I79 Hero glyphs at 132 (Mail, Send, Search, CloudOff, stroke 1.25) - **X**: R4.
+- [x] I79 Hero glyphs at 132 (Mail, Send, Search, CloudOff, stroke 1.25) - **X**: R4. Fixed 2026-11-13:
+  every one is a pose; `HeroIcon`, the hero tier, `heroInk` and the unused `EmptyState` are deleted.
 - [ ] I80 `BrandHeader.tsx`, imported nowhere, with a stale TODO - **D**: delete.
 - [ ] I81 Every touched screen walked in English (the longest Czech strings are on the boards).
 
@@ -290,11 +302,14 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 - [ ] I108 `OptionGroup` radios (check 140 ms).
 - [ ] I109 Buttons: primary, outline, link, danger; busy and blocked (warning haptic, shake).
 - [ ] I110 Text fields: rest, focus, error, the password eye, the dark keyboard.
-- [ ] I111 `ScreenHeader` (min 54, back 44, two-line title, slot, hairline).
+- [x] I111 `ScreenHeader` (min 54, back 44, two-line title, slot, hairline). Fixed 2026-11-13: no
+  hairline - every board ends the bar at its `surfaceAlt` tone (the owner's catch on search); DESIGN.md
+  says so. Walked on search and add-a-box, light and dark.
 - [ ] I112 `ProgressBar` (6 px, determinate) and `WaitingBar`; MessageDetail draws its own copy of the
   bar - **D**: one drawing (visual-craft, "One object, one drawing").
 - [ ] I113 `Skeleton` rows.
-- [ ] I114 `EmptyState` and the hero glyphs (I79).
+- [x] I114 `EmptyState` and the hero glyphs (I79). Deleted 2026-11-13 with I79: `EmptyObject` draws
+  every empty state.
 - [ ] I115 `DashedOutline` (add a box, add an attachment, the sender gate).
 - [ ] I116 `DottedRail` (delivery steps).
 - [ ] I117 Chips and tags: every `chipTone` (fiction red and amber, user blue, cost free and paid, the

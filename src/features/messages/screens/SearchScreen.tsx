@@ -8,13 +8,10 @@ import { FlatList, type TextInput } from 'react-native';
 import { useContentBottom } from '../../../theme/useContentBottom';
 import { useAutoFocus } from '../../../theme/useAutoFocus';
 import { Input, XStack, YStack } from '../../../theme/ui';
-import { Badge, Heading, Meta, Value } from '../../../theme/Typography';
+import { Badge, Meta, Title, Value } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import {
-  SearchGlyph,
-} from '../../../theme/icons';
-import { HeroIcon } from '../../../theme/iconTiers';
-import { EmptyState } from '../../../theme/EmptyState';
+import { EmptyObject } from '../../../theme/EmptyObject';
+import { EnvelopePose } from '../../../theme/objects/Envelope';
 import { Skeleton } from '../../../theme/Skeleton';
 import { Avatar } from '../../../theme/Avatar';
 import { rowDate } from '../state/groupByDate';
@@ -28,6 +25,7 @@ import type {
 } from '../../../services/db/messagesStore';
 import { messagesController } from '../../accounts/deps';
 import { BoxPill } from './BoxPill';
+import { OffsetIcon } from '../../../theme/offsetIcons';
 
 
 
@@ -106,13 +104,14 @@ export function SearchScreen({
           <XStack
             flex={1}
             alignItems="center"
+            gap={8}
             minHeight={44}
-            paddingHorizontal={14}
+            paddingHorizontal={12}
             borderRadius={12}
             backgroundColor={theme.bg}
-            borderWidth={1}
-            borderColor={theme.border}
+            testID="search-field"
           >
+            <OffsetIcon name="search" size={18} color={theme.textMuted} />
             <Input
               ref={fieldRef}
               flex={1}
@@ -122,7 +121,7 @@ export function SearchScreen({
               paddingHorizontal={0}
               fontSize={15}
               color={theme.text}
-              placeholderTextColor={theme.textFaint}
+              placeholderTextColor={theme.textMuted}
               autoCapitalize="none"
               autoCorrect={false}
               value={query}
@@ -144,7 +143,7 @@ export function SearchScreen({
           ))}
         </YStack>
       ) : results.length === 0 ? (
-        <NoResults theme={theme} />
+        <NoResults />
       ) : (
         <FlatList
           data={shown}
@@ -193,35 +192,28 @@ export function SearchScreen({
 }
 
 /**
- * Empty query - the app's shared empty state, glyph and all.
- *
- * It was a lone centred sentence pinned near the top of an otherwise blank screen, while every other
- * empty state in the app (both inbox folders, both licence screens) uses `EmptyState` with a hero
- * glyph and a headline. Nothing about search justified being the exception (2026-09-09 critique).
+ * Empty query, and no matches: the archive as a stack of envelopes (031 R4), the search's own object,
+ * where a lone centred sentence and later a grey glyph were (2026-09-09 critique). "No matches" is not
+ * on the board; it keeps the stack and says so.
  */
 function Hint() {
   return (
-    <EmptyState
-      icon={<HeroIcon glyph={SearchGlyph} />}
+    <EmptyObject
+      object={<EnvelopePose pose="archive" />}
       title={t('search.hint.title')}
-      subtitle={t('search.hint')}
-      marginTop={60}
+      body={t('search.hint')}
+      testID="searchHint"
     />
   );
 }
 
-/** No matches - a bare 44px search glyph (no sunken circle) + a Bricolage heading. */
-function NoResults({ theme }: { readonly theme: ReturnType<typeof useTheme> }) {
+function NoResults() {
   return (
-    <YStack paddingVertical={60} paddingHorizontal={36} alignItems="center">
-      <HeroIcon glyph={SearchGlyph} />
-      <Heading
-        color={theme.text}
-        marginTop={14}
-        textAlign="center"
-      >
+    <YStack paddingTop={60} paddingHorizontal={24} alignItems="center" testID="searchNoResults">
+      <EnvelopePose pose="archive" />
+      <Title alignSelf="stretch" textAlign="center" marginTop={36} accessibilityRole="header">
         {t('search.noResults')}
-      </Heading>
+      </Title>
     </YStack>
   );
 }

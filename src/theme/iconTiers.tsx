@@ -12,8 +12,8 @@
 // invites "make it bigger here", and the whole discipline is that the tier is a claim about the
 // screen, not a preference about the picture.
 //
-// Note the stroke weights move AGAINST size - 2 inline, 1.9 at emblem, 1.25 at hero. A 132px glyph at
-// stroke 2 is a slab; the taper is what keeps it atmospheric.
+// Note the stroke weights move AGAINST size - 2 inline, 1.9 at emblem. (The 132px hero tier at 1.25
+// went in 031: an empty state draws the envelope in a pose, board R4.)
 //
 // `feature` (44 in a 72px tinted box) is defined by the design but NOT implemented here: its only
 // placement is the notification primer sheet, a screen 014 deleted and 010 chose not to restore.
@@ -42,37 +42,7 @@ export const ICON_TIER = {
   // 031 T034.)
   brand: { box: 84, radius: 24 },
   mark: { box: 120, radius: 26 },
-  hero: { size: 132, stroke: 1.25 },
 } as const;
-
-/**
- * HERO - a 132px decorative glyph for empty and zero states.
- *
- * Hidden from assistive technology, because it says nothing the headline beneath it does not, and a
- * 132px shape announced to a screen reader is noise for the people least able to skip it.
- *
- * The fixed 132px box is not decoration: it means the glyph cannot resize anything when it renders,
- * which is the layout-jump rule the app has broken twice (Principle V).
- */
-export function HeroIcon({ glyph: Glyph }: { readonly glyph: Glyph }) {
-  const theme = useTheme();
-  return (
-    <YStack
-      width={ICON_TIER.hero.size}
-      height={ICON_TIER.hero.size}
-      alignItems="center"
-      justifyContent="center"
-      accessibilityElementsHidden
-      importantForAccessibility="no-hide-descendants"
-    >
-      <Glyph
-        size={ICON_TIER.hero.size}
-        color={theme.heroInk}
-        strokeWidth={ICON_TIER.hero.stroke}
-      />
-    </YStack>
-  );
-}
 
 /**
  * EMBLEM - a 44px white glyph knocked out of a 96px solid brand-blue tile.

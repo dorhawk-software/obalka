@@ -14,14 +14,17 @@ import { useTheme } from './ThemeProvider';
  */
 const ABOVE_OBJECT = 60;
 const OBJECT_TO_TITLE = 36;
-/** The explanation's measure: short enough to balance in two lines. */
-const BODY_WIDTH = 280;
+const TOP = { list: ABOVE_OBJECT, underStrip: 24 } as const;
+/** The explanation's measure: short enough to balance in two lines (R4 drew 300 for three). */
+const BODY_WIDTH = 300;
 
 export function EmptyObject({
   object,
   title,
   body,
   note,
+  action,
+  place = 'list',
   testID,
 }: {
   /** The printed object, drawn at its own size (`OpenEnvelope`). */
@@ -30,11 +33,18 @@ export function EmptyObject({
   readonly body: string;
   /** A last quiet line, e.g. when the app last looked ("Naposledy dnes ve 14:02"). */
   readonly note?: string | null;
+  /** One way on, 20 under the words (a failed list's "Zkusit znovu"). */
+  readonly action?: ReactNode;
+  /**
+   * Where it starts: `list` 60 under the bar above it; `underStrip` 24 under a strip that already
+   * explains the state (031 R4). The search's 96 rounds to 60, the top of the scale.
+   */
+  readonly place?: 'list' | 'underStrip';
   readonly testID?: string;
 }) {
   const theme = useTheme();
   return (
-    <YStack alignItems="center" paddingTop={ABOVE_OBJECT} paddingHorizontal={24} testID={testID}>
+    <YStack alignItems="center" paddingTop={TOP[place]} paddingHorizontal={24} testID={testID}>
       {object}
       {/* Stretched to the column: measured to its own words, Android cut the last one of a centred
           Bricolage line ("Ve schránce nic" for "… nic není", seen on the emulator). */}
@@ -56,6 +66,7 @@ export function EmptyObject({
           {note}
         </Caption>
       ) : null}
+      {action ? <YStack marginTop={20}>{action}</YStack> : null}
     </YStack>
   );
 }

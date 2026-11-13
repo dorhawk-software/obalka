@@ -74,11 +74,16 @@ What changed in each Obálka release, written for the people using it. The newes
   saved messages sits quieter under them.
 - **A loading box takes the register's shape.** Until the messages load, rows with a day and two lines
   of text hold their place; a sync shows as a thin bar under the notices that moves nothing.
+- **When there is nothing to show, the envelope shows why.** An empty Sent folder has an envelope
+  with a blank stamp, a box that failed to load a sealed envelope, a box waiting for a sign-in an empty
+  window, and search a stack of envelopes. The search field has a magnifier, and the bar at the top of
+  the screens no longer has a line under it.
 
 ### Fixed
 
 - **An empty box shows its empty envelope, even when something waits in the other boxes.** Before,
   there was only blank paper under the line about the other boxes.
+- **What you type into a field is in the app's typeface.** On Android, fields used the system font.
 - **An open question no longer shows over the lock screen.** When the app went to the background
   with a dialog open (the paid-send confirmation or the mobile-data question, for example), it was
   still visible over the lock screen on return. It now closes; a transfer that arrived waits until the

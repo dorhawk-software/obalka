@@ -4,11 +4,11 @@
 
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import Svg, { ClipPath, Defs, G, Path, Pattern, Rect } from 'react-native-svg';
+import Svg, { ClipPath, Defs, G, LinearGradient, Path, Pattern, Rect, Stop } from 'react-native-svg';
 import { useTheme } from '../ThemeProvider';
 import { monogram } from '../avatarPalette';
 import { objectFilter, objectShadow } from '../depth';
-import { envelopeShape, envelopeTile, openEnvelope } from '../print';
+import { envelopePose, envelopeShape, envelopeTile, openEnvelope } from '../print';
 import { fonts, type } from '../typeScale';
 
 /**
@@ -263,6 +263,116 @@ export function OpenEnvelope() {
         <Path d={g.front} fill={theme.envelope} />
         <Path d={g.folds} fill="none" stroke={theme.envelopeFoldFaint} strokeWidth={g.foldStroke} />
       </Svg>
+    </View>
+  );
+}
+
+/** A rounded rectangle as a path. */
+function roundRect(x: number, y: number, w: number, h: number, r: number): string {
+  return (
+    `M${x + r} ${y}H${x + w - r}A${r} ${r} 0 0 1 ${x + w} ${y + r}V${y + h - r}A${r} ${r} 0 0 1 ${x + w - r} ${y + h}` +
+    `H${x + r}A${r} ${r} 0 0 1 ${x} ${y + h - r}V${y + r}A${r} ${r} 0 0 1 ${x + r} ${y}Z`
+  );
+}
+
+/** Turned `deg` about a point, as SVG's `rotate(deg cx cy)`. */
+function turned(deg: number, cx: number, cy: number) {
+  return [{ translateX: cx }, { translateY: cy }, { rotate: `${deg}deg` }, { translateX: -cx }, { translateY: -cy }];
+}
+
+/** What an empty, failed or waiting list draws (031 R4): the envelope in the pose the state needs. */
+export type EnvelopePoseName = 'unsent' | 'sealed' | 'addressed' | 'archive';
+
+/**
+ * The envelope in a pose (031 board R4, agreed 2026-11-12), in place of the 132 px Lucide glyphs:
+ * - `unsent`: the front with a blank stamp and an empty window - nothing sent yet;
+ * - `sealed`: shut under its gold flap - nothing came out this time (the list failed to load);
+ * - `addressed`: the front with an empty window - the app has not got in yet (sign in again);
+ * - `archive`: a stack of envelopes - the archive search looks through.
+ * One drawing at 220 x 140 (the stack 220 x 150), tilted 2 degrees as if laid down, with the open
+ * envelope's shadow.
+ */
+export function EnvelopePose({ pose }: { readonly pose: EnvelopePoseName }) {
+  const theme = useTheme();
+  const g = envelopePose;
+  const tilt = pose === 'sealed' ? '2deg' : pose === 'archive' ? '0deg' : '-2deg';
+  // The creases run to the corners, which are round: clipped to the paper, or they poke out past it.
+  const front = roundRect(0, 0, g.width, g.height, 16);
+  const stackFront = roundRect(10, 36, 190, 110, 15);
+  const windowLines = (
+    <Path
+      d={g.windowLines}
+      stroke={theme.borderStrong}
+      strokeWidth={2}
+      strokeDasharray="1.5 3"
+      strokeLinecap="round"
+      fill="none"
+    />
+  );
+  return (
+    <View
+      testID={`envelopePose-${pose}`}
+      style={{ filter: objectFilter(theme.name, 'openEnvelope'), transform: [{ rotate: tilt }] }}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
+      {pose === 'archive' ? (
+        <Svg width={g.width} height={g.stackHeight} viewBox={`0 0 ${g.width} ${g.stackHeight}`}>
+          <Defs>
+            <ClipPath id="poseStackFront">
+              <Path d={stackFront} />
+            </ClipPath>
+          </Defs>
+          <G transform={turned(4, 112, 56)}>
+            <Path d={roundRect(22, 4, 180, 104, 14)} fill={theme.envelopeInside} />
+          </G>
+          <G transform={turned(-3, 108, 74)}>
+            <Path d={roundRect(16, 20, 184, 108, 14)} fill={theme.envelopeBehind} />
+          </G>
+          <Path d={stackFront} fill={theme.envelope} />
+          <G clipPath="url(#poseStackFront)">
+            <Path d={g.stackCreases} stroke={theme.envelopeCrease} strokeWidth={1.5} fill="none" />
+          </G>
+          <Path d={roundRect(24, 100, 110, 34, 8)} fill={theme.window} />
+        </Svg>
+      ) : (
+        <Svg width={g.width} height={g.height} viewBox={`0 0 ${g.width} ${g.height}`}>
+          <Defs>
+            <LinearGradient id="poseSheen" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset={0} stopColor={theme.onSolid} stopOpacity={envelopeShape.headerFlap.sheen} />
+              <Stop offset={1} stopColor={theme.printShade} stopOpacity={envelopeShape.headerFlap.shade} />
+            </LinearGradient>
+            <ClipPath id="poseFront">
+              <Path d={front} />
+            </ClipPath>
+          </Defs>
+          <Path d={front} fill={theme.envelope} />
+          <G clipPath="url(#poseFront)">
+            <Path d={pose === 'sealed' ? g.creasesSealed : g.creases} stroke={theme.envelopeCrease} strokeWidth={1.5} fill="none" />
+            {pose === 'sealed' ? (
+              <>
+                <Path d={g.flap} fill={theme.flap} />
+                <Path d={g.flap} fill="url(#poseSheen)" />
+              </>
+            ) : null}
+          </G>
+          {pose === 'sealed' ? null : (
+            <>
+              {pose === 'unsent' ? (
+                <Path
+                  d={roundRect(168, 14, 36, 42, 2)}
+                  fill="none"
+                  stroke={theme.envelopeInkFaint}
+                  strokeWidth={1.4}
+                  strokeDasharray="2.5 2.5"
+                />
+              ) : null}
+              <Path d={roundRect(16, 78, 132, 46, 10)} fill={theme.window} />
+              {windowLines}
+            </>
+          )}
+        </Svg>
+      )}
     </View>
   );
 }

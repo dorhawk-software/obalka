@@ -13,7 +13,7 @@
 import { render } from '@testing-library/react-native';
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
@@ -106,5 +106,17 @@ describe('ScreenHeader', () => {
     );
     expect(view.getByTestId('header-slot')).toBeTruthy();
     expect(view.queryByText('Nastavení')).toBeNull();
+  });
+
+  it('ends at its own tone, with no hairline under it (031 boards, the owner\'s catch 2026-11-13)', async () => {
+    // Every board draws the bar as surfaceAlt over the paper and nothing more; the line the code drew
+    // under it was spotted on the search screen beside its board.
+    const view = await wrap(<ScreenHeader title="Nastavení" onBack={() => {}} />);
+    const root = view.toJSON() as { children: { props: { style?: unknown } }[] };
+    const lines = root.children.filter(c => {
+      const flat = (StyleSheet.flatten(c.props.style as never) ?? {}) as { height?: number };
+      return flat.height === 1;
+    });
+    expect(lines).toEqual([]);
   });
 });
