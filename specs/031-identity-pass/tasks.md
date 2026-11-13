@@ -83,8 +83,12 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 - [x] I15 Inbox header, all boxes (Layers tile, subtitle) - **X**: R5. Fixed 2026-11-13: `BoxStackTile`, the
   boxes' envelopes fanned (3 and 8 degrees, the board's 10 corner rounded to 11), the count on the
   front one; "Sloučený archiv · 3 schránky", no unread count (the board's).
-- [ ] I16 Inbox strips: reauth, password expiry, unified missing, stale, offline - **X**: not drawn under
-  the envelope header. R5.
+- [x] I16 Inbox strips: reauth, password expiry, unified missing, stale, offline - **X**: not drawn under
+  the envelope header. R5. Fixed 2026-11-13 (board R14): `InboxStrips.tsx`, a tone
+  card inset 16 under the envelope, radius 12, minimum 44, no hairline, the 20 alert glyph, the action
+  at 800; an expired password's two actions under the message (the board's 11 padding rounded to 12).
+  The stale line is a sunken card, centred, minimum 32, its 10 corner rounded to 11, 8 under a strip.
+  Copy stays the app's own (the board: "copy is the app's own"). The debug strip on the flap is I62's.
 - [ ] I17 Attention block and its rows - **D**: board Inbox (sheets with the second envelope's edge,
   flap tiles, fiction chip with the offset glyph).
 - [ ] I18 Received rows and month sections - **D**: board Inbox (day numeral, small sender tile, offset

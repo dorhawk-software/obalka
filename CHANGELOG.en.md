@@ -69,6 +69,9 @@ What changed in each Obálka release, written for the people using it. The newes
 - **All boxes shows the boxes' envelopes fanned out.** In the header and in the switcher the merged
   boxes' envelopes lie over each other with their count on the front one; each box in the switcher
   has its envelope, and adding a box is a filled button.
+- **The notices above the message list are cards in their message's colour.** A signed-out box, a
+  password running out and a missing box each have their own card with its button; the line about
+  saved messages sits quieter under them.
 
 ### Fixed
 

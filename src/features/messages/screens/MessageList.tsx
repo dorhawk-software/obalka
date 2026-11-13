@@ -24,14 +24,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Button, XStack, YStack } from '../../../theme/ui';
-import { Badge, Caption, Heading, Meta, Small } from '../../../theme/Typography';
+import { Caption, Heading, Small } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import {
-  AlertIcon,
-  CloudOffGlyph,
-  SendGlyph,
-  WifiOffIcon,
-} from '../../../theme/icons';
+import { CloudOffGlyph, SendGlyph } from '../../../theme/icons';
 import { Fab, useFabClearance } from '../../../theme/Fab';
 import { EmptyState } from '../../../theme/EmptyState';
 import { Skeleton } from '../../../theme/Skeleton';
@@ -54,7 +49,6 @@ import {
   type DateSectionLabel,
 } from '../state/groupByDate';
 import { reportFailure } from '../../../services/telemetry/telemetry';
-import { touchSlop } from '../../../theme/touchTarget';
 import { t, plural } from '../../../i18n/strings';
 import { type FaqId } from '../../../content/faq';
 import { storedReauthKey } from '../../accounts/state/reauthCopy';
@@ -80,6 +74,7 @@ import { InboxHeader } from './InboxHeader';
 import { boxColor } from '../../../theme/boxColor';
 import { AttentionHead, AttentionSheet, RegisterRow, SectionHead, freshnessText } from './InboxRows';
 import { DraftsEntry, SentRegisterRow } from './SentRows';
+import { InboxStrip, StaleLine, StripAction } from './InboxStrips';
 import type { TileRect } from './EnvelopeFlight';
 import { EmptyObject } from '../../../theme/EmptyObject';
 import { OpenEnvelope } from '../../../theme/objects/Envelope';
@@ -874,24 +869,10 @@ export function MessageList({
   const pwdTone = chipTone('info', theme);
   // The re-auth strip's "Přihlásit znovu" - one element for both of that strip's shapes (below).
   const reauthAction = (
-    <XStack
-      flexShrink={0}
-      pressStyle={{ opacity: 0.6 }}
-      onPress={() => onReauth(refusedAt)}
-      accessibilityRole="button"
-      accessibilityLabel={t('box.reauth.action')}
-      // Derived from the Badge's own 16dp line box → 48. It read `hitSlop={8}` (a 32dp target)
-      // until the critique caught it: this is one of only two ways out of "your box does not
-      // work", and it was the smallest control on the screen.
-      hitSlop={touchSlop({ height: 16 })}
-      testID="reauth"
-    >
-      <Badge fontWeight="800" // Public Sans 800 - a fontWeight prop can't switch the face
-        color={reauthTone.fg}
-      >
-        {t('box.reauth.action')}
-      </Badge>
-    </XStack>
+    <StripAction tone={reauthTone} label={t('box.reauth.action')} onPress={() => onReauth(refusedAt)} testID="reauth" />
+  );
+  const reauthActionBelow = (
+    <StripAction tone={reauthTone} label={t('box.reauth.action')} below onPress={() => onReauth(refusedAt)} testID="reauth" />
   );
 
   // Build the sections. RECEIVED: "Vyžaduje pozornost" on top, then the remainder date-grouped (Dnes /
@@ -1158,183 +1139,88 @@ export function MessageList({
   return (
     <YStack flex={1} backgroundColor={theme.bg}>
       {header}
-      {/* Session expired - an inline gold strip pinned under the header, with the (cached) list still
-          readable behind it. Tapping the action re-authenticates this box. */}
+      {/* The strips (031 I16, `InboxStrips.tsx`). Session expired: the more severe one - the box cannot
+          be used until it is answered - so soft red; tapping the action re-authenticates this box. */}
       {!unified && needsReauth ? (
-        <XStack
-          // `flex-start`, not `center`: at a large text size the message wraps to three lines, and a
-          // centred action lands in the MIDDLE of it - the strip then reads "Platnost / hesla končí
-          // 11. Změnit v portálu / 9.", with the date split either side of the button. Aligned to the
-          // first line, the message stays one block and the action sits beside it.
-          alignItems="flex-start"
-          gap={10}
-          paddingHorizontal={16}
-          paddingVertical={10}
-          // NOT gold. Gold on this screen already means unread, the compose action, the attention
-          // count, a fiction pill and the test environment; a sixth meaning made the two strips that
-          // are ACTIONABLE look exactly like the four that are merely informational, so nothing on
-          // screen said which of the amber was a button (2026-09-09 critique). This one is the more
-          // severe of the two - the box cannot be used at all until it is answered - so it takes the
-          // soft red; the password strip below takes blue, the colour this design system already
-          // reserves for "this does something".
-          backgroundColor={reauthTone.bg}
-          borderBottomWidth={1}
-          borderColor={reauthTone.accent}
-        >
-          <AlertIcon size={17} color={reauthTone.fg} />
-          {/* 001 FR-009: an EXPIRED password takes two steps, in order - change it on the portal,
-              then sign in with the new one - so that strip carries both actions, UNDER the message:
-              two beside it would squeeze the sentence to a word per line. Every other refusal keeps
-              the one-action shape, with the action beside the message. */}
-          <YStack flex={1} gap={8}>
-            <Badge color={reauthTone.fg}>
-              {t(
-                storedReauthKey(
-                  account,
-                  'box.reauth.session',
-                  'box.reauth.credentials',
-                  refusedAt,
-                ),
-              )}
-            </Badge>
-            {passwordExpired ? (
-              <XStack gap={18} flexWrap="wrap">
-                <XStack
-                  pressStyle={{ opacity: 0.6 }}
+        <InboxStrip
+          tone={reauthTone}
+          message={t(storedReauthKey(account, 'box.reauth.session', 'box.reauth.credentials', refusedAt))}
+          action={passwordExpired ? undefined : reauthAction}
+          actionsBelow={
+            passwordExpired ? (
+              <>
+                <StripAction
+                  tone={reauthTone}
+                  label={t('pwd.action')}
+                  role="link"
+                  below
                   onPress={() => openPortal(account.host)}
-                  accessibilityRole="link"
-                  accessibilityLabel={t('pwd.action')}
-                  hitSlop={touchSlop({ height: 16 })}
                   testID="reauthPortal"
-                >
-                  <Badge fontWeight="800"
-                    color={reauthTone.fg}
-                  >
-                    {t('pwd.action')}
-                  </Badge>
-                </XStack>
-                {reauthAction}
-              </XStack>
-            ) : null}
-          </YStack>
-          {passwordExpired ? null : reauthAction}
-        </XStack>
+                />
+                {reauthActionBelow}
+              </>
+            ) : undefined
+          }
+        />
       ) : null}
       {/* The box's PASSWORD is running out - a different thing from the session above, and a quieter
-          one: the box still works today. Shown only when re-auth is NOT being asked for, because a
-          box you cannot use has one problem, not two, and stacking strips buries the actionable one.
-          While the password still works, a box that signs in with name and password changes it here
-          (030 US2); an expired one, or any other box, is handed to the portal - an in-app change of an
-          expired password is a sign-in ISDS refuses (Principle VI). */}
+          one: the box still works today, so blue. Shown only when re-auth is NOT being asked for: a box
+          you cannot use has one problem, not two. While the password still works, a box that signs in
+          with name and password changes it here (030 US2); an expired one, or any other box, is handed
+          to the portal - an in-app change of an expired password is a sign-in ISDS refuses (VI). */}
       {!unified && !needsReauth && pwd.kind !== 'none' ? (
-        <XStack
-          // See the reauth strip above - the same shape, and it had the same defect.
-          alignItems="flex-start"
-          gap={10}
-          paddingHorizontal={16}
-          paddingVertical={10}
-          // Blue, not gold - see the reauth strip above. Quieter than that one on purpose: the box
-          // still works today, so this is a thing to do soon rather than a thing blocking you.
-          backgroundColor={pwdTone.bg}
-          borderBottomWidth={1}
-          borderColor={pwdTone.border ?? pwdTone.accent}
+        <InboxStrip
+          tone={pwdTone}
           testID="passwordExpiry"
-        >
-          <AlertIcon size={17} color={pwdTone.fg} />
-          <Badge flex={1} color={pwdTone.fg}>
-            {pwd.kind === 'expired'
+          message={
+            pwd.kind === 'expired'
               ? t('pwd.expired')
               : pwd.kind === 'today'
-              ? t('pwd.today')
-              : t('pwd.soon', { d: formatTermDate(pwd.date) })}
-          </Badge>
-          <XStack
-            flexShrink={0}
-            pressStyle={{ opacity: 0.6 }}
-            onPress={changeInApp ? onChangePassword : () => openPortal(account.host)}
-            accessibilityRole={changeInApp ? 'button' : 'link'}
-            accessibilityLabel={t(changeInApp ? 'pwd.change' : 'pwd.action')}
-            hitSlop={touchSlop({ height: 16 })}
-            testID="passwordExpiryAction"
-          >
-            <Badge fontWeight="800"
-              color={pwdTone.fg}
-            >
-              {t(changeInApp ? 'pwd.change' : 'pwd.action')}
-            </Badge>
-          </XStack>
-        </XStack>
+                ? t('pwd.today')
+                : t('pwd.soon', { d: formatTermDate(pwd.date) })
+          }
+          action={
+            <StripAction
+              tone={pwdTone}
+              label={t(changeInApp ? 'pwd.change' : 'pwd.action')}
+              role={changeInApp ? 'button' : 'link'}
+              onPress={changeInApp ? onChangePassword : () => openPortal(account.host)}
+              testID="passwordExpiryAction"
+            />
+          }
+        />
       ) : null}
       {/* MERGED: a list that quietly omits a box it could not reach is lying by arrangement rather
-          than by statement. Same shape as the per-box re-auth strip above, including the
-          first-line alignment, and the same action when exactly one box is fixable. */}
+          than by statement. One fixable box: sign it in. Several: the switcher, where each broken one
+          is marked, because "sign in" would otherwise be vague about which. */}
       {unified && missingBoxes.length > 0 ? (
-        <XStack
-          alignItems="flex-start"
-          gap={10}
-          paddingHorizontal={16}
-          paddingVertical={10}
-          backgroundColor={reauthTone.bg}
-          borderBottomWidth={1}
-          borderColor={reauthTone.border ?? reauthTone.accent}
+        <InboxStrip
+          tone={reauthTone}
           testID="unifiedMissing"
-        >
-          <AlertIcon size={17} color={reauthTone.fg} />
-          <Badge flex={1} color={reauthTone.fg}>
-            {t(`unified.missing.${plural(missingBoxes.length)}`, {
-              n: missingBoxes.length,
-            })}
-          </Badge>
-          <XStack
-            flexShrink={0}
-            pressStyle={{ opacity: 0.6 }}
-            onPress={() => {
-              const fixable = missingBoxes.filter(a => needsSignIn(a.syncError));
-              // One box: fix it. Several: the switcher, where each broken one is already marked,
-              // because "sign in" would otherwise be vague about which.
-              if (fixable.length === 1) {
-                unified.onReauthBox(fixable[0].boxId);
-              } else {
-                onOpenSwitcher();
-              }
-            }}
-            accessibilityRole="button"
-            accessibilityLabel={t('box.reauth.action')}
-            hitSlop={touchSlop({ height: 16 })}
-            testID="unifiedMissingAction"
-          >
-            <Badge fontWeight="800"
-              color={reauthTone.fg}
-            >
-              {t('box.reauth.action')}
-            </Badge>
-          </XStack>
-        </XStack>
+          message={t(`unified.missing.${plural(missingBoxes.length)}`, { n: missingBoxes.length })}
+          action={
+            <StripAction
+              tone={reauthTone}
+              label={t('box.reauth.action')}
+              onPress={() => {
+                const fixable = missingBoxes.filter(a => needsSignIn(a.syncError));
+                if (fixable.length === 1) {
+                  unified.onReauthBox(fixable[0].boxId);
+                } else {
+                  onOpenSwitcher();
+                }
+              }}
+              testID="unifiedMissingAction"
+            />
+          }
+        />
       ) : null}
-      {/* Stale-content notice - pinned under the header (it must not scroll away with the content it
-          labels). Two wordings, because "offline" is a statement of fact the app is often in no
-          position to make: it is used only for a genuine network failure, and every other failed sync
-          says what it can honestly say - these rows could not be refreshed. */}
+      {/* Pinned under the header: it must not scroll away with the content it labels. */}
       {stale ? (
-        <XStack
-          alignItems="center"
-          justifyContent="center"
-          gap={8}
-          paddingHorizontal={16}
-          paddingVertical={8}
-          backgroundColor={theme.surfaceSunken}
-          borderBottomWidth={1}
-          borderColor={theme.border}
-        >
-          {stale === 'offline' ? (
-            <WifiOffIcon size={16} color={theme.textFaint} />
-          ) : (
-            <AlertIcon size={16} color={theme.textFaint} />
-          )}
-          <Meta fontWeight="600" color={theme.textMuted}>
-            {t(stale === 'offline' ? 'messages.offline' : 'messages.stale')}
-          </Meta>
-        </XStack>
+        <StaleLine
+          kind={stale}
+          afterStrip={(!unified && (needsReauth || pwd.kind !== 'none')) || (unified != null && missingBoxes.length > 0)}
+        />
       ) : null}
       {/* Drafts sit ABOVE the body rather than inside the list.
           As the list's `ListHeaderComponent` they vanished in `loading` and `error`, because the

@@ -59,6 +59,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Všechny schránky ukazují obálky schránek vějířem.** V záhlaví i v přepínači leží obálky
   sloučených schránek přes sebe, na přední je jejich počet; schránky v přepínači mají svou obálku a
   přidání schránky je plné tlačítko.
+- **Upozornění nad seznamem zpráv jsou karty v barvě sdělení.** Odhlášená schránka, končící heslo
+  i chybějící schránka mají vlastní kartu s tlačítkem; řádek o uložených zprávách je pod nimi
+  tišší.
 
 ### Opraveno
 
