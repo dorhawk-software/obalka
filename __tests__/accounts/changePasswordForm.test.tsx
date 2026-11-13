@@ -1,6 +1,6 @@
 // The change-password screen (030 US2).
 
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor, within } from '@testing-library/react-native';
 import { TamaguiProvider } from 'tamagui';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { tamaguiConfig } from '../../tamagui.config';
@@ -117,5 +117,42 @@ describe('ChangePasswordForm', () => {
       expect(view.getByText(t('pwdChange.error.refused', { m: 'Heslo již bylo použito.' }))).toBeTruthy(),
     );
     expect(view.queryByTestId('pwdChangePortal')).toBeNull();
+  });
+});
+
+// Boards R11 (the form) and R8 (its error and done states), 031, agreed 2026-11-12. Before: an outlined
+// box with an avatar, an alert-icon banner, loose rules and a tick beside a heading for done.
+describe('as the boards draw it', () => {
+  it('shows the box as a sheet with its envelope and the lock, as signing in again does', async () => {
+    const { view } = await screen({ kind: 'wrongPassword' });
+    const box = view.getByTestId('boxSheet');
+    expect(within(box).getByTestId('envelopeTile', { includeHiddenElements: true })).toBeTruthy();
+    expect(within(box).getByTestId('boxSheetLock', { includeHiddenElements: true })).toBeTruthy();
+  });
+
+  it('lists the rules on a sheet, a met one a filled tick, an open one a ring', async () => {
+    const { view, type } = await screen({ kind: 'wrongPassword' });
+    await type('Old1pass', 'Brand2New!x', 'Brand2');
+    expect(view.getByTestId('pwdRules')).toHaveStyle({ borderTopLeftRadius: 14 });
+    expect(view.getByTestId('tick-length')).toHaveStyle({ width: 20, height: 20, borderTopLeftRadius: 999 });
+    expect(view.getByTestId('ring-match')).toHaveStyle({ width: 20, height: 20, borderTopLeftRadius: 999 });
+  });
+
+  it('puts an error in a danger tone block with no icon', async () => {
+    const { view, type, press } = await screen({ kind: 'timeout' });
+    await type('Old1pass', 'Brand2New!x');
+    await press('submit');
+    const banner = await view.findByTestId('pwdChangeError');
+    expect(banner).toHaveStyle({ backgroundColor: '#F7E4E1', borderTopLeftRadius: 12 });
+    expect(within(banner).queryByTestId('alertIcon')).toBeNull();
+    expect(within(banner).getByText(t('pwdChange.error.timeout'))).toBeOnTheScreen();
+  });
+
+  it('says it is done under the lock at hero size', async () => {
+    const { view, type, press } = await screen({ kind: 'changed', passwordExpiresAt: null });
+    await type('Old1pass', 'Brand2New!x');
+    await press('submit');
+    const hero = await view.findByTestId('pwdDoneLock');
+    expect(hero).toHaveStyle({ width: 132, height: 132, borderTopLeftRadius: 999 });
   });
 });

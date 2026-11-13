@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Changing the password looks like the rest of signing in.** The new password's rules are on a
+  sheet and tick green as they are met. An error is a tinted block with no icon, and a large lock
+  confirms the change.
 - **Signing in again looks like adding a box.** The box is a sheet with its own envelope and a lock.
   When ISDS refuses the password, the form and what you typed stay, with the reasons and two links
   in a sheet under the field.

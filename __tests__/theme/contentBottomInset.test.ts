@@ -26,6 +26,7 @@ const SRC = join(ROOT, 'src');
 const ABOVE_A_PINNED_FOOTER = [
   'src/features/accounts/screens/ReauthForm.tsx',
   'src/features/accounts/screens/AddBoxForm.tsx',
+  'src/features/accounts/screens/ChangePasswordForm.tsx',
   'src/features/messages/screens/ComposeScreen.tsx',
 ];
 

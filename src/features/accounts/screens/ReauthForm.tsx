@@ -16,14 +16,10 @@ import { t } from '../../../i18n/strings';
 import { hasNoSession, storedReauthKey } from '../state/reauthCopy';
 import { refusedForExpiredPassword } from '../state/passwordExpiry';
 import { EyeIcon } from '../../../theme/icons';
-import { OffsetIcon } from '../../../theme/offsetIcons';
-import { EnvelopeTile } from '../../../theme/objects/Envelope';
-import { Card } from '../../../theme/Card';
 import { textSlop, touchSlop } from '../../../theme/touchTarget';
 import { RefusedSuggestion } from './RefusedSuggestion';
-import { BoxIdentityLine } from './BoxIdentityLine';
+import { BoxSheet } from './BoxSheet';
 import type { AuthMethod, DataBoxAccount } from '../../../services/isds/types';
-import { boxColor } from '../../../theme/boxColor';
 import { space } from '../../../theme/spacing';
 
 // The same three methods the add-box step offers (design).
@@ -167,34 +163,7 @@ export function ReauthForm({
             ) : null}
           </YStack>
 
-          {/* Which box is being signed in again - fixed, not editable: its own envelope at 46 with
-              R11's 13 corner, the name, the identity line, and the lock. */}
-          <Card
-            flexDirection="row"
-            paddingVertical={12}
-            paddingHorizontal={14}
-            gap={12}
-            alignItems="center"
-            testID="reauthBox"
-          >
-            <EnvelopeTile
-              name={account.alias ?? account.label}
-              color={boxColor(account)}
-              size={46}
-              radius={13}
-              box
-              testID="envelopeTile"
-            />
-            <YStack flex={1} minWidth={0}>
-              <SmallStrong color={theme.text} numberOfLines={1}>
-                {account.alias ?? account.label}
-              </SmallStrong>
-              <BoxIdentityLine account={account} inWindow fontWeight="500" />
-            </YStack>
-            <YStack testID="reauthLock">
-              <OffsetIcon name="lock" size={20} color={theme.textMuted} />
-            </YStack>
-          </Card>
+          <BoxSheet account={account} />
 
           {/* The sign-in method - the add-box step's one sheet of choices (R11; a box's method can
               have changed on the portal, so re-auth is where it gets corrected). */}

@@ -62,10 +62,10 @@ async function reauthScreen() {
 describe('signing in again (R11)', () => {
   it('shows the box as a sheet with its envelope and the lock', async () => {
     const view = await reauthScreen();
-    const box = view.getByTestId('reauthBox');
+    const box = view.getByTestId('boxSheet');
     expect(within(box).getByText('Jana Nováková')).toBeOnTheScreen();
     expect(within(box).getByTestId('envelopeTile', { includeHiddenElements: true })).toBeTruthy();
-    expect(within(box).getByTestId('reauthLock', { includeHiddenElements: true })).toBeTruthy();
+    expect(within(box).getByTestId('boxSheetLock', { includeHiddenElements: true })).toBeTruthy();
   });
 
   it('shows the Mobile Key communication code as typed, with no eye', async () => {

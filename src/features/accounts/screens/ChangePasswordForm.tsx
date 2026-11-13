@@ -5,6 +5,11 @@
 // typed twice, and every rule ISDS states is listed under it from the start and ticked as it is met,
 // so nothing appears or moves while the person types (constitution V). Only ISDS knows whether a
 // password was used before; that one is a note, and ISDS's own refusal says so if it was.
+//
+// Board R11 draws the form (031, agreed 2026-11-12): the box as the sign-in screens' sheet, the rules
+// on a sheet of their own, a met rule a filled green tick and an open one a ring. R8 draws its error,
+// a danger tone block with no outline and no icon, and the done state, the lock at hero size (no
+// postmark: ISDS certifies no time here).
 
 import { useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, type TextInput } from 'react-native';
@@ -13,17 +18,18 @@ import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { Input, Spinner, XStack, YStack } from '../../../theme/ui';
 import { PressScale } from '../../../theme/PressScale';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
-import { Body, BodyStrong, Heading, Label, Meta, Small } from '../../../theme/Typography';
+import { Body, BodyStrong, Caption, Label, Meta, Small, SmallStrong, Title } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { chipTone } from '../../../theme/chipTone';
-import { AlertIcon, CheckIcon, EyeIcon, LockIcon } from '../../../theme/icons';
-import { Avatar } from '../../../theme/Avatar';
-import { boxColor } from '../../../theme/boxColor';
+import Svg, { Path } from 'react-native-svg';
+import { EyeIcon } from '../../../theme/icons';
+import { OffsetIcon } from '../../../theme/offsetIcons';
+import { Card } from '../../../theme/Card';
 import { textSlop, touchSlop } from '../../../theme/touchTarget';
 import { space } from '../../../theme/spacing';
 import { t } from '../../../i18n/strings';
 import type { DataBoxAccount } from '../../../services/isds/types';
-import { BoxIdentityLine } from './BoxIdentityLine';
+import { BoxSheet } from './BoxSheet';
 import { PASSWORD_RULES, passwordRules } from '../state/passwordRules';
 import type { ChangePasswordOutcome } from '../state/changePassword';
 import { formatExpiryDate } from '../state/passwordExpiry';
@@ -32,8 +38,10 @@ import { formatExpiryDate } from '../state/passwordExpiry';
 const EYE_W = 40;
 /** How far in from the field's right edge the show-password button sits. */
 const EYE_RIGHT = space.xs;
-/** The drawn size of a rule's tick, and of the ring that stands in for it until the rule is met. */
-const TICK = 16;
+/** A rule's mark (R11): a filled tick once it is met, a ring of the same size until then. */
+const TICK = 20;
+/** The check inside the filled tick. */
+const CHECK = 13;
 
 type Field = 'current' | 'new' | 'repeat';
 
@@ -91,7 +99,6 @@ export function ChangePasswordForm({
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const danger = chipTone('dangerSoft', theme);
-  const info = chipTone('info', theme);
   const [values, setValues] = useState<Record<Field, string>>({
     current: '',
     new: '',
@@ -156,13 +163,12 @@ export function ChangePasswordForm({
   };
 
   const footerButton = (label: string, onPress: () => void, testID: string) => (
+    // R11: a surfaceAlt bar, tone and no hairline; R8's done state has no bar, only the button.
     <YStack
-      backgroundColor={theme.surfaceAlt}
-      borderTopWidth={1}
-      borderTopColor={theme.border}
-      paddingHorizontal={space.inset}
-      paddingTop={space.lg}
-      paddingBottom={insets.bottom + space.lg}
+      backgroundColor={testID === 'done' ? undefined : theme.surfaceAlt}
+      paddingHorizontal={16}
+      paddingTop={12}
+      paddingBottom={insets.bottom + 12}
     >
       <PressScale
         fullWidth
@@ -190,20 +196,34 @@ export function ChangePasswordForm({
   );
 
   if (outcome?.kind === 'changed') {
+    // R8: the lock at hero size in its sunken disc, then what happened and what follows. The board's
+    // 96 above the disc rounds to 60, the top of the scale, and its 32 under it to 36.
     return (
       <YStack flex={1} backgroundColor={theme.bg} testID="pwdChangeDone">
         <ScreenHeader title={t('pwdChange.title')} onBack={onDone} />
-        <YStack flex={1} paddingHorizontal={space.inset} paddingTop={space.section} gap={space.lg}>
-          <XStack gap={space.md} alignItems="center">
-            <CheckIcon size={24} color={theme.success} />
-            <Heading color={theme.text}>{t('pwdChange.done.title')}</Heading>
-          </XStack>
-          <Body color={theme.text}>
+        <YStack flex={1} alignItems="center" paddingHorizontal={28} paddingTop={60}>
+          <YStack
+            width={132}
+            height={132}
+            borderRadius={999}
+            backgroundColor={theme.surfaceSunken}
+            alignItems="center"
+            justifyContent="center"
+            testID="pwdDoneLock"
+          >
+            <OffsetIcon name="lock" size={72} color={theme.text} />
+          </YStack>
+          <Title alignSelf="stretch" textAlign="center" marginTop={36} accessibilityRole="header">
+            {t('pwdChange.done.title')}
+          </Title>
+          <Body color={theme.bodyText} textAlign="center" marginTop={8}>
             {outcome.passwordExpiresAt != null
               ? t('pwdChange.done.until', { date: formatExpiryDate(outcome.passwordExpiresAt) })
               : t('pwdChange.done.noDate')}
           </Body>
-          <Small color={theme.textMuted}>{t('pwdChange.done.everywhere')}</Small>
+          <Small color={theme.textMuted} textAlign="center" maxWidth={300} marginTop={8} textBreakStrategy="balanced">
+            {t('pwdChange.done.everywhere')}
+          </Small>
         </YStack>
         {footerButton(t('pwdChange.done.close'), onDone, 'done')}
       </YStack>
@@ -234,78 +254,62 @@ export function ChangePasswordForm({
           style={{ flex: 1 }}
           adjustKeyboardInsets={false}
           contentContainerStyle={{
-            paddingHorizontal: space.inset,
-            paddingTop: space.section,
-            paddingBottom: space.section,
+            paddingHorizontal: 16,
+            paddingTop: 16,
+            paddingBottom: 24,
           }}
         >
-          <YStack gap={space.gutter}>
-            <Small fontWeight="500" color={theme.textMuted}>
-              {t('pwdChange.intro')}
-            </Small>
+          <YStack gap={14}>
+            <Small color={theme.bodyText}>{t('pwdChange.intro')}</Small>
 
-            {/* Which box - locked, as on the re-auth screen. */}
-            <XStack
-              backgroundColor={theme.surface}
-              borderWidth={1}
-              borderColor={theme.border}
-              borderRadius={16}
-              padding={space.xl}
-              gap={space.lg}
-              alignItems="center"
-            >
-              <Avatar name={account.alias ?? account.label} color={boxColor(account)} size={46} />
-              <YStack flex={1} minWidth={0} gap={space.hair}>
-                <BodyStrong color={theme.text} numberOfLines={1}>
-                  {account.alias ?? account.label}
-                </BodyStrong>
-                <BoxIdentityLine account={account} />
-              </YStack>
-              <LockIcon size={17} color={theme.textFaint} />
-            </XStack>
+            <BoxSheet account={account} />
 
+            {/* R8: a danger tone block, the words in its ink at 14/600, no outline and no icon. */}
             {outcome != null ? (
-              <XStack
+              <YStack
                 backgroundColor={danger.bg}
-                borderRadius={14}
-                padding={space.xl}
-                gap={space.md}
-                alignItems="flex-start"
+                borderRadius={12}
+                paddingVertical={12}
+                paddingHorizontal={14}
                 testID="pwdChangeError"
               >
-                <AlertIcon size={17} color={danger.fg} />
-                <YStack flex={1} gap={space.base}>
-                  <Small color={danger.fg}>{errorText(outcome)}</Small>
-                  {outcome.kind === 'wrongPassword' ? (
-                    <XStack
-                      alignSelf="flex-start"
-                      hitSlop={textSlop('bodyStrong')}
-                      pressStyle={{ opacity: 0.6 }}
-                      onPress={onOpenPortal}
-                      accessibilityRole="link"
-                      accessibilityLabel={t('pwd.action')}
-                      testID="pwdChangePortal"
-                    >
-                      <BodyStrong color={info.accent}>{t('pwd.action')} →</BodyStrong>
-                    </XStack>
-                  ) : null}
-                </YStack>
-              </XStack>
+                <Small fontWeight="600" color={danger.fg}>
+                  {errorText(outcome)}
+                </Small>
+                {outcome.kind === 'wrongPassword' ? (
+                  <XStack
+                    alignSelf="flex-start"
+                    marginTop={2}
+                    hitSlop={textSlop('smallStrong')}
+                    pressStyle={{ opacity: 0.6 }}
+                    onPress={onOpenPortal}
+                    accessibilityRole="link"
+                    accessibilityLabel={t('pwd.action')}
+                    testID="pwdChangePortal"
+                  >
+                    <SmallStrong color={danger.fg}>{t('pwd.action')} →</SmallStrong>
+                  </XStack>
+                ) : null}
+              </YStack>
             ) : null}
 
             {field('current', t('pwdChange.current'), 'current-password')}
             {field('new', t('pwdChange.new'), 'new-password')}
             {field('repeat', t('pwdChange.repeat'), 'new-password')}
 
-            <YStack gap={space.sm} testID="pwdRules">
-              <Label>{t('pwdChange.rules')}</Label>
-              {LISTED_RULES.map(rule => (
-                <Rule key={rule} met={verdicts[rule]} text={t(RULE_TEXT[rule])} rule={rule} />
-              ))}
-              <Meta color={theme.textFaint} marginTop={space.xs}>
-                {t('pwdChange.rule.history')}
-              </Meta>
-            </YStack>
+            <Card paddingVertical={12} paddingHorizontal={14} testID="pwdRules">
+              <Label fontWeight="700" color={theme.textMuted}>
+                {t('pwdChange.rules')}
+              </Label>
+              <YStack marginTop={6}>
+                {LISTED_RULES.map(rule => (
+                  <Rule key={rule} met={verdicts[rule]} text={t(RULE_TEXT[rule])} rule={rule} />
+                ))}
+              </YStack>
+            </Card>
+            <Meta color={theme.textMuted} marginHorizontal={4}>
+              {t('pwdChange.rule.history')}
+            </Meta>
           </YStack>
         </KeyboardAwareScrollView>
         {footerButton(t('pwdChange.submit'), () => void submit(), 'submit')}
@@ -314,33 +318,55 @@ export function ChangePasswordForm({
   );
 }
 
-/** One rule: a tick once it is met, an empty ring until then - the same size, so nothing moves. */
+/**
+ * One rule (R11): a filled green tick once it is met, an empty ring of the same size until then, so
+ * nothing moves. A met rule's words sit back in body ink; an open one's stay in ink, to be seen.
+ */
 function Rule({ met, text, rule }: { readonly met: boolean; readonly text: string; readonly rule: string }) {
   const theme = useTheme();
   return (
     <XStack
-      gap={space.base}
+      gap={10}
+      paddingVertical={4}
       alignItems="flex-start"
       accessible
       accessibilityLabel={`${text}: ${t(met ? 'pwdChange.rule.met' : 'pwdChange.rule.unmet')}`}
       testID={`rule-${rule}-${met ? 'met' : 'unmet'}`}
     >
-      <YStack width={TICK} height={TICK} alignItems="center" justifyContent="center" marginTop={space.hair}>
-        {met ? (
-          <CheckIcon size={TICK} color={theme.success} />
-        ) : (
-          <YStack
-            width={TICK - space.xs}
-            height={TICK - space.xs}
-            borderRadius={999}
-            borderWidth={1.5}
-            borderColor={theme.borderStrong}
-          />
-        )}
-      </YStack>
-      <Meta flex={1} color={met ? theme.text : theme.textMuted}>
+      {met ? (
+        <YStack
+          width={TICK}
+          height={TICK}
+          borderRadius={999}
+          backgroundColor={theme.success}
+          alignItems="center"
+          justifyContent="center"
+          testID={`tick-${rule}`}
+        >
+          <Svg width={CHECK} height={CHECK} viewBox="0 0 24 24">
+            <Path
+              d="M20 6 9 17l-5-5"
+              fill="none"
+              stroke={theme.surface}
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </Svg>
+        </YStack>
+      ) : (
+        <YStack
+          width={TICK}
+          height={TICK}
+          borderRadius={999}
+          borderWidth={2}
+          borderColor={theme.borderStrong}
+          testID={`ring-${rule}`}
+        />
+      )}
+      <Caption flex={1} color={met ? theme.bodyText : theme.text}>
         {text}
-      </Meta>
+      </Caption>
     </XStack>
   );
 }
@@ -366,7 +392,7 @@ function PasswordField({
   const [show, setShow] = useState(false);
   return (
     <YStack gap={space.base}>
-      <Label>{label}</Label>
+      <Label color={theme.textMuted}>{label}</Label>
       <YStack position="relative">
         <Input
           ref={inputRef}

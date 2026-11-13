@@ -119,11 +119,24 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   Walked light, dark, the sheet forced on, and Mobile Key in English. The English walk found the
   unmasked code's placeholder wrapping onto a clipped second line (a regression from I08.2). It now
   reads "Code from the portal (not your password)", and a test holds it to 40 characters.
-- [ ] I13 `ChangePasswordForm` (avatar 46, three fields, ten rules and the history rule, busy) - **D**
-  (avatar, icons).
-  - [ ] I13.1 Its error banner: wrong password (with the portal), refused, network, timeout, not
-    saved, server fault - **N**: R8.
-  - [ ] I13.2 Its done state (check, until a date or no expiry, "everywhere", close) - **X**: R8.
+- [x] I13 `ChangePasswordForm` (avatar 46, three fields, ten rules and the history rule, busy) - **D**
+  (avatar, icons). Fixed 2026-11-13 to R11:
+  - The intro is in body ink, and the box is `BoxSheet`, shared with signing in again.
+  - The field labels are muted, and the footer has no hairline.
+  - The rules are on a sheet under a muted bold "Nové heslo musí". A met rule is a 20 green disc
+    with the check in the surface ink, an open one a 20 ring; a met rule's words go to body ink.
+  - The history note sits under the sheet.
+  Roundings: a rule's 5 above and below to 4. Walked light, dark and in English, empty and typed.
+  The busy spinner stays with I76.
+  - [x] I13.1 Its error banner: wrong password (with the portal), refused, network, timeout, not
+    saved, server fault - **N**: R8. A danger tone block, 12 corner, 12/14, the words at 14/600 in its
+    ink, with no icon and no outline. The wrong-password portal link is in the same ink. Walked
+    (timeout, forced on) light, dark and in English. R8 sets the banner under a bare box line; the
+    build keeps R11's (newer) sheet above it.
+  - [x] I13.2 Its done state (check, until a date or no expiry, "everywhere", close) - **X**: R8. The
+    offset lock at 72 in a 132 sunken disc, the `title`, the date in `body`, then "everywhere"
+    balanced at 300. Hotovo has no bar under it. Roundings: the disc's 96 from the top to 60, and the
+    title's 32 under it to 36. Walked (forced on) light, dark and in English.
 
 ### Messages
 

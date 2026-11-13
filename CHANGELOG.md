@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Změna hesla vypadá jako zbytek přihlášení.** Pravidla nového hesla jsou na listu a splněná se
+  zeleně zaškrtnou. Chyba je tónovaný blok bez ikony a změněné heslo potvrdí velký zámek.
 - **Přihlásit znovu vypadá jako přidání schránky.** Schránka je list s vlastní obálkou a zámkem. Když
   ISDS heslo odmítne, formulář i napsané heslo zůstanou a pod polem je list s důvody a dvěma odkazy.
 - **Všechny zprávy, které vyžadují pozornost, leží na stejném okraji.** Dřív ho měly jen zprávy
