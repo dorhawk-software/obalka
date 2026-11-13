@@ -100,7 +100,7 @@ describe('a sheet in the attention block', () => {
     expect(hasFlap(view.toJSON())).toBe(false);
   });
 
-  it('shows the second envelope\'s edge under a message the law served', async () => {
+  it('shows the edge under a message the law served', async () => {
     const view = await sheet(
       envelope({ state: MESSAGE_STATE.servedByFiction, acceptanceTime: SUNDAY + DAY_MS }),
     );
@@ -109,9 +109,11 @@ describe('a sheet in the attention block', () => {
     expect(view.getByTestId('explainFiction')).toHaveTextContent(/Doručeno fikcí/);
   });
 
-  it('draws no edge under a sheet that is there for any other reason', async () => {
+  // The owner, 2026-11-13: "draw under all". Under fiction alone it read as a pile of messages, a
+  // meaning no board or spec gave it; the fiction chip already says how the message was delivered.
+  it('draws the same edge under a sheet that is there for any other reason', async () => {
     const view = await sheet(envelope({ state: MESSAGE_STATE.servedBySignIn }), NOW + 2 * DAY_MS);
-    expect(view.queryByTestId('sheetEdge')).toBeNull();
+    expect(style(view.getByTestId('sheetEdge') as unknown as Node).backgroundColor).toBe(lightTheme.sheetEdge);
   });
 
   it('marks the user\'s own reminder in the blue, past due in the danger ink', async () => {

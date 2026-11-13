@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Všechny zprávy, které vyžadují pozornost, leží na stejném okraji.** Dřív ho měly jen zprávy
+  doručené fikcí a vypadaly jako hromádka více zpráv; jak byla zpráva doručena, říká štítek.
 - **Přihlašovací pole jsou klidnější.** Způsob přihlášení označuje malý štítek, popisky polí jsou
   tlumené a komunikační kód Mobilního klíče je vidět, jak ho píšete. Když ISDS heslo odmítne, je pod
   poli list s důvody a dvěma odkazy.

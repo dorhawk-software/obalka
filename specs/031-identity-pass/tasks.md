@@ -539,8 +539,8 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   by day, new `Day` role), the line about the other boxes, and the compose stamp (`Fab.tsx`). Checked on
   the `Obalka_Demo` emulator in both themes against board InboxA, rendered at 3x. Where the build differs
   from the board, and why:
-  - the second envelope's edge is drawn under a sheet only when the message was delivered by fiction:
-    every board draws it there and nowhere else;
+  - the edge is drawn under every sheet (the owner, 2026-11-13: "draw under all"); until then it was
+    drawn under fiction only, from InboxA's one contrast, and read as a pile;
   - the fiction chip keeps its "?" (it opens the answer in the FAQ) and the code's words, "lhůta už
     běží"; the month is the Title role (21), the board's 20 is not a step of the type scale;
   - the register shows a clip, not the board's clip and count: ISDS lists only the attachments' total
@@ -748,8 +748,7 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   Raised in I11: R8's refusal card repeats its title as the first words of its body ("ISDS
   přihlášení odmítlo: …"), built as drawn; the error string could lose them.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
-  fiction reads as a pile - more messages than one - though the owner likes it; keep it, or mark
-  fiction another way.
+  fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
   families and weights, each component's anatomy and the rejected variants.
   The sync-back, where the build is right and the board is not (collected as they are found):
@@ -769,6 +768,8 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R11 After a refusal: the two links 2 apart; two 44 targets cannot be, so the build sets each in
     its own 44 row. The phone also drops the alias field and Nápověda; the build keeps both.
   - R11 fields: no Nápověda under them; the build keeps it, help before sign-in (019).
+  - InboxA: the edge only under the fiction sheet; the owner had it drawn under every attention sheet
+    (2026-11-13), built.
   - R6 draws no hidden key: the build shows the warning and one 52 button.
   - R6 and R10 draw section labels with no icon; the code keeps them until R10 drops them all.
   - R7 sent: the stamp prints the cost; the archive has none, so the build's is blank (not-now.md).

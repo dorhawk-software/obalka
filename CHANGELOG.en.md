@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Every message in Needs attention rests on the same edge.** Only messages delivered by fiction
+  had it, and they looked like a pile of several; the tag says how a message was delivered.
 - **The sign-in fields are calmer.** A small tag names the method, the field labels are muted, and
   the Mobile Key communication code shows as you type it. When ISDS refuses the password, a sheet
   under the fields lists the reasons with two links.

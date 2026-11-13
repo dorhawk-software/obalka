@@ -110,8 +110,9 @@ function ReminderMark({ date, now }: { readonly date: number; readonly now: numb
  * A message in the attention block (I17): a sheet on the paper, its sender's envelope sealed with the
  * gold flap while unread. The fiction chip is read from the MESSAGE, not from why it qualified: a
  * message can be served by fiction and carry a deadline, and hiding the legal clock because the
- * deadline ranked higher would be a half-truth (Principle VI). A message served by fiction also shows
- * the second envelope's edge under its sheet - every board draws it there, and only there.
+ * deadline ranked higher would be a half-truth (Principle VI). Every sheet stands on the same edge
+ * (the owner, 2026-11-13): under fiction alone it read as a pile of messages, a meaning no board or
+ * spec gave it, and the chip already says how the message was delivered.
  */
 export const AttentionSheet = memo(function AttentionSheetView({
   message,
@@ -230,21 +231,19 @@ export const AttentionSheet = memo(function AttentionSheetView({
           ) : null}
         </YStack>
       </XStack>
-      {servedAt != null ? (
-        <View
-          testID="sheetEdge"
-          style={{
-            zIndex: 0,
-            marginTop: -8,
-            marginHorizontal: 10,
-            height: 14,
-            borderBottomLeftRadius: 12,
-            borderBottomRightRadius: 12,
-            backgroundColor: theme.sheetEdge,
-            boxShadow: objectShadow(theme.name, 'sheetEdge'),
-          }}
-        />
-      ) : null}
+      <View
+        testID="sheetEdge"
+        style={{
+          zIndex: 0,
+          marginTop: -8,
+          marginHorizontal: 10,
+          height: 14,
+          borderBottomLeftRadius: 12,
+          borderBottomRightRadius: 12,
+          backgroundColor: theme.sheetEdge,
+          boxShadow: objectShadow(theme.name, 'sheetEdge'),
+        }}
+      />
     </YStack>
   );
 });

@@ -69,6 +69,6 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
   face a radial gradient lit from the top left, the `seal` shadow's highlights over it, a dashed ring
   and the padlock with the envelope's fold pressed into it in `on-solid`. Its shadow is
   `sealedEnvelope`, black at night.
-- **Sheet edge** (`#F7F1E4` / `#231F19`): the second envelope's edge under an attention sheet. Every
-  board draws it under the sheet of a message delivered by fiction, and only there, so that is where
-  the inbox puts it.
+- **Sheet edge** (`#F7F1E4` / `#231F19`): the edge every attention sheet stands on. The boards drew it
+  only under a message delivered by fiction, and there it read as a pile of messages; the owner had it
+  drawn under all (2026-11-13). The fiction chip says how a message was delivered.
