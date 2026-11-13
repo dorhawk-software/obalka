@@ -66,6 +66,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **An empty box shows its empty envelope, even when something waits in the other boxes.** Before,
+  there was only blank paper under the line about the other boxes.
 - **An open question no longer shows over the lock screen.** When the app went to the background
   with a dialog open (the paid-send confirmation or the mobile-data question, for example), it was
   still visible over the lock screen on return. It now closes; a transfer that arrived waits until the

@@ -1130,6 +1130,9 @@ export function MessageList({
         marginTop={60}
       />
     );
+    // A box whose session expired says its list is unavailable until they sign in - never "this box
+    // is empty", a claim the app cannot make while it has not been able to look (2026-09-09 critique).
+    const noRows = state.status === 'reauth' ? reauthEmptyState : emptyState;
     content = (
       <SectionList<MessageEnvelope, InboxSection>
         testID="messagesList"
@@ -1168,28 +1171,17 @@ export function MessageList({
             colors={[theme.blue]}
           />
         }
-        // On reauth there are no messages *yet* (nothing cached) - the strip above says why, so don't
-        // also claim the box is empty.
-        // Closes the list and says how fresh it is - see `ListEnd`. Only when there is something to
-        // close: an empty folder ends with its own empty state, which needs no footer.
+        // Closes the list and says how fresh it is - see `ListEnd`. A folder with no rows ends with
+        // its empty state instead, also under the other boxes' line, which is a section of its own
+        // and so kept the list from being empty (Obalka_Demo, 2026-11-13).
         ListFooterComponent={
-          sections.length > 0 ? (
-            <ListEnd
-              syncedAt={loaded ? loaded.syncedAt : null}
-              syncing={syncing}
-              now={now}
-            />
+          sections.some(s => s.kind !== 'crossBox') ? (
+            <ListEnd syncedAt={loaded ? loaded.syncedAt : null} syncing={syncing} now={now} />
+          ) : sections.length > 0 ? (
+            noRows
           ) : null
         }
-        ListEmptyComponent={
-          // A box whose session expired and has nothing cached used to render NOTHING here - the
-          // strip above, then a full-viewport void. The comment said "the strip already explains
-          // it", and it does explain the CAUSE, but a blank screen is not a designed state and does
-          // not say what the user is looking at (2026-09-09 critique). It gets its own empty state,
-          // saying the list is unavailable until they sign in - never "this box is empty", which
-          // would be a claim the app cannot make while it has not been able to look.
-          state.status === 'reauth' ? reauthEmptyState : emptyState
-        }
+        ListEmptyComponent={noRows}
         renderItem={({ item, section, index }) => {
           if (section.kind === 'attention') {
             return (

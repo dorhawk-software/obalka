@@ -149,4 +149,17 @@ describe('the line in the inbox', () => {
     expect(await view.findByTestId('message-served')).toBeTruthy();
     expect(view.queryByTestId('crossBoxLine')).toBeNull();
   });
+
+  it("leaves an empty box its empty envelope, under the other boxes' line", async () => {
+    // The line is a section of the list, so the list was never empty: an empty box showed the line,
+    // its freshness and a blank page instead of the open envelope (Obalka_Demo, 2026-11-13).
+    const kept = mockMessages.splice(0);
+    try {
+      const view = await inbox([other({ fiction: 1 })]);
+      expect(await view.findByTestId('crossBoxLine')).toBeTruthy();
+      expect(view.getByTestId('emptyInbox')).toBeTruthy();
+    } finally {
+      mockMessages.push(...kept);
+    }
+  });
 });
