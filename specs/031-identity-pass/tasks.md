@@ -536,7 +536,15 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     sizes instead of clipping the sender (2.0x). Walked on Obalka_Demo at 1.0x (the band's start moved
     up for the look: the demo messages scroll 25 dp) in both themes, and at 2.0x for real, down and
     back. Sent messages have no envelope and so no band.
-- [ ] T036 Capture each built screen in demo mode, both themes, and compare with its board.
+- [x] T036 Capture each built screen in demo mode, both themes, and compare with its board. Done
+  2026-11-13 on Obalka_Demo, light and dark, Czech and English: the inbox, the empty inbox, a message
+  (opened, scrolled), the sent result; the lock was captured in T034. The built parts match their
+  boards (InboxA, Empty, Detail, DetailDark, Sent); English fits without new wraps. Two bugs found and
+  fixed in their own commits: the sent result ended 40 low and pale (I68 above), and an empty box with
+  the other boxes' line showed blank paper (the line is a list section). What differs is not built
+  yet, and waits for the build of R5-R14 below: the inbox strips (I16, R14), the box switcher and its
+  menu (I54 R5, I55 R9), the sent rows (I19, R5), the reminder row (R7); the demo message has no
+  reference number, so the board's "Č. j." line does not show.
 
 ## Phase 5: Round 2 on the canvas
 
