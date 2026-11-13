@@ -362,9 +362,9 @@ and tracking belong to the role, and `obalka/role-typography` reports a screen t
 
 **The Ranked Facts Rule** (the owner, 2026-11-13). Text that carries different facts is ranked, not
 run together: what a person looks for leads, what can wait goes quieter, short, or behind a tap, and
-nothing is dropped - a screen reader hears it whole. ISDS writes a self-employed holder as "Ondřej
-Šimon - podnikající fyzická osoba"; the envelope prints "Ondřej Šimon" over a Caption "PFO · ID
-c57mi5x", which a tap spells out (`partyName`, `FormNote`), and a row prints the name alone. The
+nothing is dropped - a screen reader hears it whole. ISDS writes a self-employed holder as "Jan
+Novák - podnikající fyzická osoba"; the envelope prints "Jan Novák" over a Caption "PFO · ID
+ab12cd3", which a tap spells out (`partyName`, `FormNote`), and a row prints the name alone. The
 address follows the same rule the other way round: the town line is bold because it is what tells
 three Jan Nováks apart (`AddressLines`, 015).
 

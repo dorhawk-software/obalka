@@ -180,7 +180,7 @@ describe('a message the archive does not hold (I31)', () => {
 });
 
 describe('a name and its legal form (the owner, 2026-11-13)', () => {
-  // ISDS's "Ondřej Šimon - podnikající fyzická osoba" ran three lines in the sender's 120 on the owner's
+  // ISDS's "Jan Novák - podnikající fyzická osoba" ran three lines in the sender's 120 on the owner's
   // test box, the form as loud as the name.
   it('leads with the name and puts the form, short, on the quieter line with the ID', async () => {
     mockSender = 'Jan Novák - podnikající fyzická osoba';

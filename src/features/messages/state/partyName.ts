@@ -1,7 +1,7 @@
 // A party's name as ISDS writes it, split into what a person reads first and what can wait (031, the
 // owner 2026-11-13: "the podnikající fyzická osoba is less important than the name").
 //
-// ISDS names a self-employed person's box "Ondřej Šimon - podnikající fyzická osoba": the person and
+// ISDS names a self-employed person's box "Jan Novák - podnikající fyzická osoba": the person and
 // the box's legal form in one string. Printed as one, the form takes the name's weight and, on the
 // envelope's 120, three lines of it. The name leads; the form goes to a quieter line, short ("PFO"),
 // and in full on a tap and to a screen reader - it is not dropped, only ranked.
@@ -23,7 +23,7 @@ export interface PartyName {
   readonly form: BoxType | null;
 }
 
-/** "Ondřej Šimon - podnikající fyzická osoba" → { name: "Ondřej Šimon", form: "PFO" }. */
+/** "Jan Novák - podnikající fyzická osoba" → { name: "Jan Novák", form: "PFO" }. */
 export function partyName(raw: string | null | undefined): PartyName {
   const whole = (raw ?? '').trim();
   for (const { words, type } of FORM_SUFFIXES) {

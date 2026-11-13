@@ -20,8 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
-- **Napřed jméno, potom druh schránky.** „Ondřej Šimon - podnikající fyzická osoba“ je teď na obálce
-  „Ondřej Šimon“ a pod ním tišeji „PFO · ID …“; klepnutím se zkratka rozepíše. V seznamech a hledání
+- **Napřed jméno, potom druh schránky.** „Jan Novák - podnikající fyzická osoba“ je teď na obálce
+  „Jan Novák“ a pod ním tišeji „PFO · ID …“; klepnutím se zkratka rozepíše. V seznamech a hledání
   stojí jen jméno.
 - **Horní část schránky je přední strana obálky.** Jméno schránky je v okénku obálky pod zlatou
   chlopní; klepnutím na okénko přepnete schránku, vedle je hledání a pod ním Přijaté a Odeslané.
