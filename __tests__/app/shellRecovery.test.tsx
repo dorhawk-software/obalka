@@ -18,6 +18,7 @@ import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import { AppShell } from '../../src/app/AppShell';
 import { t } from '../../src/i18n/strings';
+import { NUDGE_PERMISSION_ASKED_KEY } from '../../src/app/settings/settingsKeys';
 import * as telemetry from '../../src/services/telemetry/telemetry';
 import type { DataBoxAccount } from '../../src/services/isds/types';
 
@@ -46,6 +47,8 @@ const mockWorld = {
   notifyAccess: 'unasked' as 'unasked' | 'on' | 'off',
   permissionAsked: 0,
   nudgeSyncs: [] as string[][],
+  /** The app's settings, kept across launches the way the phone keeps them. */
+  settings: new Map<string, string>(),
 };
 
 jest.mock('../../src/features/accounts/deps', () => {
@@ -122,8 +125,10 @@ jest.mock('../../src/features/accounts/deps', () => {
     appLock: { forget: async () => {} },
     draftsStore: { list: async () => [] },
     settingsStore: {
-      getSetting: async () => null,
-      setSetting: async () => {},
+      getSetting: async (key: string) => mockWorld.settings.get(key) ?? null,
+      setSetting: async (key: string, value: string) => {
+        mockWorld.settings.set(key, value);
+      },
     },
     // The sign-in flow, over a fake ISDS that signs in as `signInAs`.
     createLoginDeps: () => ({
@@ -241,6 +246,7 @@ beforeEach(() => {
   mockWorld.notifyAccess = 'unasked';
   mockWorld.permissionAsked = 0;
   mockWorld.nudgeSyncs = [];
+  mockWorld.settings = new Map();
 });
 
 afterEach(() => {
@@ -435,6 +441,23 @@ describe('asking for notifications after a sign-in', () => {
     expect(mockWorld.permissionAsked).toBe(0);
 
     await press(view, 'nudgeAskLater');
+    expect(view.queryByTestId('nudgeAsk')).toBeNull();
+    expect(mockWorld.permissionAsked).toBe(0);
+  });
+
+  // "Ask once" (the owner signed a test box in on 2026-11-13 and said no): the answer is kept, and a
+  // sign-in on any later launch finds it and asks nothing.
+  it('keeps a "not now"', async () => {
+    const view = await reauthBoxWithADate();
+    await waitFor(() => expect(view.getByTestId('nudgeAsk')).toBeTruthy());
+    await press(view, 'nudgeAskLater');
+    await waitFor(() => expect(mockWorld.settings.get(NUDGE_PERMISSION_ASKED_KEY)).toBe('1'));
+  });
+
+  it('asks nothing after a sign-in once it has been answered', async () => {
+    mockWorld.settings.set(NUDGE_PERMISSION_ASKED_KEY, '1');
+    const view = await reauthBoxWithADate();
+    await waitFor(() => expect(mockWorld.nudgeSyncs.length).toBeGreaterThan(0));
     expect(view.queryByTestId('nudgeAsk')).toBeNull();
     expect(mockWorld.permissionAsked).toBe(0);
   });

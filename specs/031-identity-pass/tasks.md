@@ -161,8 +161,10 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   sides, the Badge label in ink taking the row's width (dark cut "prostředí" off before), no glyph or
   hairline; StatusStrip lost its `test` tone. Walked light and dark by forcing it on (no czebox box on
   the demo), reverted.
-  - [ ] I37.1 Walk it in place, under a czebox box the owner signs in on Obalka_Demo (owner,
-    2026-11-13): the header straight under the strip, no second status-bar gap.
+  - [x] I37.1 Walk it in place, under a czebox box the owner signs in on Obalka_Demo (owner,
+    2026-11-13): the header straight under the strip, no second status-bar gap. Walked 2026-11-13 on
+    the owner's test box, a sent message, light and dark: the strip takes the status bar (132 px) and
+    its band; the header's title sits 79 px under it, as it sits under the bare status bar.
 - [ ] I38 Compose - **X**: the envelope you are sending (R2, agreed A).
   - [ ] I38.1 Sender gate (no box can send; dimmed placeholders).
   - [ ] I38.2 Sender card and the change; recipient card, its type and the change.
