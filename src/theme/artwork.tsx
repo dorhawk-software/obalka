@@ -11,16 +11,13 @@
 import Svg, { Path, Rect } from 'react-native-svg';
 import { YStack } from './ui';
 
-/** The design's 28×20 flag chip: rounded, clipped, with a 1px hairline ring. */
+/**
+ * The flag as boards R3 and R13 draw it beside a language: 22 x 15, its corners just softened, no ring
+ * around it (it was a 28 x 20 chip with a hairline ring: "tone, not outlines", 031).
+ */
 function FlagChip({ children }: { readonly children: React.ReactNode }) {
   return (
-    <YStack
-      width={28}
-      height={20}
-      borderRadius={4}
-      overflow="hidden"
-      style={{ boxShadow: '0 0 0 1px rgba(33,27,18,0.14)' }}
-    >
+    <YStack width={22} height={15} borderRadius={3} overflow="hidden" flexShrink={0}>
       {children}
     </YStack>
   );
@@ -30,30 +27,30 @@ function FlagChip({ children }: { readonly children: React.ReactNode }) {
 export function FlagCz() {
   return (
     <FlagChip>
-      <Svg width={28} height={20} viewBox="0 0 28 20">
-        <Rect width={28} height={20} fill="#fff" />
-        <Rect transform={[{ translateY: 10 }]} width={28} height={10} fill="#D7141A" />
-        <Path d="M0 0L14 10L0 20Z" fill="#11457E" />
+      <Svg width={22} height={15} viewBox="0 0 22 15">
+        <Rect width={22} height={7.5} fill="#fff" />
+        <Rect transform={[{ translateY: 7.5 }]} width={22} height={7.5} fill="#D7141A" />
+        <Path d="M0 0L11 7.5L0 15Z" fill="#11457E" />
       </Svg>
     </FlagChip>
   );
 }
 
-/** Union Jack (drawn at the design's 60×40 aspect, squashed into the 28×20 chip). */
+/** Union Jack (drawn at the design's 60×40, into the 22×15 flag). */
 export function FlagEn() {
   return (
     <FlagChip>
       <Svg
-        width={28}
-        height={20}
+        width={22}
+        height={15}
         viewBox="0 0 60 40"
         preserveAspectRatio="none"
       >
         <Rect width={60} height={40} fill="#012169" />
         <Path d="M0 0L60 40M60 0L0 40" stroke="#fff" strokeWidth={8} />
-        <Path d="M0 0L60 40M60 0L0 40" stroke="#C8102E" strokeWidth={3.5} />
+        <Path d="M0 0L60 40M60 0L0 40" stroke="#C8102E" strokeWidth={3} />
         <Path d="M30 0V40M0 20H60" stroke="#fff" strokeWidth={12} />
-        <Path d="M30 0V40M0 20H60" stroke="#C8102E" strokeWidth={6} />
+        <Path d="M30 0V40M0 20H60" stroke="#C8102E" strokeWidth={7} />
       </Svg>
     </FlagChip>
   );

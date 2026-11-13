@@ -194,7 +194,7 @@ describe('the detail screen for a large-volume message with enclosures missing',
     await waitFor(() => expect(view.queryByText(incompleteText)).toBeNull());
     // Whole again: no warning line, and each file says it lies in the archive (031).
     expect(view.queryByText(t('detail.attachments.partlySaved'))).toBeNull();
-    expect(view.getAllByText(new RegExp(t('detail.attachment.inArchive'))).length).toBeGreaterThan(0);
+    expect(view.getAllByText(new RegExp(t('detail.attachment.inArchive').replace(/\u00A0/g, ' '))).length).toBeGreaterThan(0);
   });
 
   it('says a lost session in the words that lead to signing in again', async () => {

@@ -39,7 +39,7 @@ import {
 import { SegmentedControl } from '../../theme/SegmentedControl';
 import { SwipeableRow } from '../../theme/SwipeableRow';
 import type { FaqId } from '../../content/faq';
-import { plural, t } from '../../i18n/strings';
+import { formatBytes, plural, t } from '../../i18n/strings';
 import { haptics } from '../../services/haptics';
 import { SubScreen } from './SubScreen';
 import { useSnackbar } from '../Snackbar';
@@ -94,15 +94,6 @@ function formatDateTime(epochMs: number): string {
   );
 }
 
-function formatBytes(n: number): string {
-  if (n < 1024) {
-    return `${n} B`;
-  }
-  if (n < 1024 * 1024) {
-    return `${Math.round(n / 1024)} kB`;
-  }
-  return `${(n / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`;
-}
 
 type Busy =
   | 'toggle'

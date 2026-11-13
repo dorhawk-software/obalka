@@ -1,6 +1,6 @@
 // The stack-screen header - the design draws ONE header bar and repeats it verbatim across every
 // stack screen (compose, search, settings, add-box, credentials, OTP, mobile key, reauth): a flat
-// 54px `surfaceAlt` bar below the safe area, a 44×44 back chevron and a
+// 54px `surfaceAlt` bar below the safe area, a 1px bottom hairline, a 44×44 back chevron and a
 // Bricolage 18/700 title. (Entity screens that carry a context subtitle - the message list and
 // detail - keep their own header.)
 //
@@ -82,6 +82,7 @@ export function ScreenHeader({
   testID = 'back',
   content,
   insetTop = true,
+  hairline = true,
 }: {
   /** The screen's name. Omit only when `content` fills the row instead. */
   readonly title?: string;
@@ -98,6 +99,11 @@ export function ScreenHeader({
    * something above it (a `TestEnvBanner`) has already consumed the inset, or the gap is paid twice.
    */
   readonly insetTop?: boolean;
+  /**
+   * The line under the bar. Every board draws it but one: the archive search, whose field is its own
+   * well and whose bar ends at its tone (031 R4, the owner's catch 2026-11-13).
+   */
+  readonly hairline?: boolean;
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -138,6 +144,8 @@ export function ScreenHeader({
           </Title>
         )}
       </XStack>
+      {/* The bar's bottom edge. `surfaceAlt` on `bg` is 1.06:1 - without this there is no edge. */}
+      {hairline ? <YStack height={1} backgroundColor={theme.border} /> : null}
     </YStack>
   );
 }

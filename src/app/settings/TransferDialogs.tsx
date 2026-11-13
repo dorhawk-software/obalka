@@ -4,7 +4,7 @@
 // question waits, hidden, while the app is covered, because the transfer is on disk until answered.
 
 import { Dialog } from '../../theme/Dialog';
-import { t } from '../../i18n/strings';
+import { formatBytes, t } from '../../i18n/strings';
 import type { ReceivedTransfer } from '../../features/transfer/state/transferController';
 import { useAppCovered } from '../lock/LockGate';
 import { useCloseOnBackground } from '../useCloseOnBackground';
@@ -18,15 +18,6 @@ export function formatDateTime(epochMs: number): string {
   )}:${pad(d.getMinutes())}`;
 }
 
-export function formatBytes(n: number): string {
-  if (n < 1024) {
-    return `${n} B`;
-  }
-  if (n < 1024 * 1024) {
-    return `${Math.round(n / 1024)} kB`;
-  }
-  return `${(n / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`;
-}
 
 export function TransferDialogs({
   meteredAsk,

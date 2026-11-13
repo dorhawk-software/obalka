@@ -16,20 +16,10 @@ import { haptics } from '../../../services/haptics';
 import { useSingleFlight } from '../../../app/useSingleFlight';
 import { useAfterPressSettles } from '../../../app/useAfterPressSettles';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
-import { t } from '../../../i18n/strings';
+import { formatBytes, t } from '../../../i18n/strings';
 import type { MessageAttachment } from '../../../services/isds/types';
 import { attachmentOpener, NoViewerError } from '../../../services/files/attachmentOpener';
 
-/** Human file size: B / kB / MB (Czech comma decimal for MB). From the on-disk byte count. */
-export function formatBytes(n: number): string {
-  if (n < 1024) {
-    return `${n} B`;
-  }
-  if (n < 1024 * 1024) {
-    return `${Math.round(n / 1024)} kB`;
-  }
-  return `${(n / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`;
-}
 
 
 /**

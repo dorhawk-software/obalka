@@ -1,4 +1,6 @@
-// The bordered card (DESIGN.md › Components › Cards, spec 028 D4).
+// The card (DESIGN.md › Components › Cards, spec 028 D4): a sheet with weight - the surface and the
+// inbox sheet's soft shadow, no line around it (031 Cards B, board R3, agreed 2026-11-12: "tone, not
+// outlines"). In dark mode the lighter surface carries it, with a faint edge for a shadow.
 //
 // It lived in the settings screens, so everything outside them drew its own - 59 places with a radius, a
 // border and a surface typed out, not all of them the same. The card owns those four; a caller decides
@@ -8,13 +10,15 @@
 import type { ReactNode } from 'react';
 import { YStack } from './ui';
 import { useTheme } from './ThemeProvider';
+import { objectShadow } from './depth';
 
-/** Layout only: the look (border, radius, surface, clipping) is the card's own. */
+/** Layout only: the look (radius, surface, shadow, clipping) is the card's own. */
 type CardLayout = Readonly<Record<string, unknown>> & {
   readonly borderWidth?: never;
   readonly borderRadius?: never;
   readonly borderColor?: never;
   readonly backgroundColor?: never;
+  readonly style?: never;
 };
 
 export const CARD_RADIUS = 14;
@@ -27,10 +31,9 @@ export function Card({ children, ...layout }: { readonly children: ReactNode } &
     <YStack
       overflow="hidden"
       {...layout}
-      borderWidth={1}
       borderRadius={CARD_RADIUS}
-      borderColor={theme.border}
       backgroundColor={theme.surface}
+      style={{ boxShadow: objectShadow(theme.name, 'sheet') }}
     >
       {children}
     </YStack>

@@ -2,8 +2,8 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { Animated } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import { XStack, YStack } from './ui';
-import { Body, Caption } from './Typography';
-import { fonts } from './typeScale';
+import { Caption, Small } from './Typography';
+import { Card } from './Card';
 import { useTheme } from './ThemeProvider';
 import { haptics } from '../services/haptics';
 
@@ -21,12 +21,11 @@ export interface SelectOption<T extends string> {
   trailing?: ReactNode;
 }
 
-const RADIUS = 14;
-
 /**
- * A compact grouped selector. Every option shares one rounded, bordered container split by hairline
- * dividers; the selected option is shown ONLY by its radio (design: no tint, no divider suppression -
- * every non-last row keeps its solid `border` hairline). A `selection` haptic ticks on pick.
+ * A compact grouped selector. Every option shares one card (a sheet with weight, 031 Cards B), its
+ * rows parted by a hairline inset 14; the selected option is shown ONLY by its radio - a blue ring
+ * with a blue dot, the dot growing in over 140 ms (boards R3, R13; no tint, no divider suppression).
+ * A `selection` haptic ticks on pick.
  */
 export function OptionGroup<T extends string>({
   options,
@@ -39,15 +38,8 @@ export function OptionGroup<T extends string>({
   readonly onChange: (value: T) => void;
   readonly testIDPrefix?: string;
 }) {
-  const theme = useTheme();
   return (
-    <YStack
-      borderRadius={RADIUS}
-      borderWidth={1}
-      borderColor={theme.border}
-      backgroundColor={theme.surface}
-      overflow="hidden"
-    >
+    <Card>
       {options.map((opt, i) => {
         const selected = opt.value === value;
         return (
@@ -66,7 +58,7 @@ export function OptionGroup<T extends string>({
           />
         );
       })}
-    </YStack>
+    </Card>
   );
 }
 
@@ -101,12 +93,13 @@ function OptionRow<T extends string>({
 
   return (
     <YStack>
-      {/* Every non-last row carries the hairline, whatever is selected (design). */}
-      {showDivider ? <YStack height={1} backgroundColor={theme.border} /> : null}
+      {/* Every row but the first has the hairline above it, inset 14, whatever is selected. */}
+      {showDivider ? <YStack height={1} marginLeft={14} backgroundColor={theme.border} /> : null}
       <XStack
         alignItems="center"
         gap={12}
-        paddingVertical={13}
+        minHeight={52}
+        paddingVertical={10}
         paddingHorizontal={14}
         backgroundColor="transparent"
         pressStyle={{ opacity: 0.85 }}
@@ -115,31 +108,21 @@ function OptionRow<T extends string>({
         accessibilityState={{ selected }}
         testID={testID}
       >
-        {/* 28px leading slot (the design's flag chip) → the label starts at 14 + 28 + 12 = 54px. */}
-        {option.leading != null ? (
-          <YStack width={28} alignItems="center">
-            {option.leading}
-          </YStack>
-        ) : null}
-        {/* Selection is shown ONLY by the radio (design): label stays text 15/600 in every state.
-            The SemiBold FACE must be named explicitly - Public Sans is 4-style grouped, so a bare
-            fontWeight can't reach it from the Regular family. */}
-        <YStack flex={1}>
-          <Body fontFamily={fonts.bodySemiBold} fontWeight="600" color={theme.text}>
+        {/* The leading mark (a flag) sits in the row's own 12 gap, as the boards draw it. */}
+        {option.leading != null ? option.leading : null}
+        {/* Selection is shown ONLY by the radio: the label stays 14/600 in ink in every state. */}
+        <YStack flex={1} minWidth={0} gap={2}>
+          <Small fontWeight="600" color={theme.text}>
             {option.label}
-          </Body>
-          {option.description ? (
-            <Caption fontSize={12} lineHeight={15} marginTop={1} color={theme.textFaint}>
-              {option.description}
-            </Caption>
-          ) : null}
+          </Small>
+          {option.description ? <Caption color={theme.textMuted}>{option.description}</Caption> : null}
         </YStack>
         {option.trailing != null ? option.trailing : null}
-        {/* Radio: an empty ring; when selected a filled-blue disc with a white centre dot grows in. */}
+        {/* Radio: a 2 dp ring, `borderStrong`; selected, a blue ring with a 12 dp blue dot. */}
         <YStack
           width={22}
           height={22}
-          borderRadius={11}
+          borderRadius={999}
           borderWidth={2}
           alignItems="center"
           justifyContent="center"
@@ -148,24 +131,14 @@ function OptionRow<T extends string>({
         >
           <Animated.View
             style={{
-              position: 'absolute',
-              width: 22,
-              height: 22,
-              borderRadius: 11,
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: 12,
+              height: 12,
+              borderRadius: 999,
               backgroundColor: theme.blue,
               opacity: check,
               transform: [{ scale: check }],
             }}
-          >
-            <YStack
-              width={9}
-              height={9}
-              borderRadius={5}
-              backgroundColor={theme.onBlue}
-            />
-          </Animated.View>
+          />
         </YStack>
       </XStack>
     </YStack>

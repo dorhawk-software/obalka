@@ -11,8 +11,9 @@
 // row. It is catchable by asking which rows navigate and which of them draw a mark, which is what
 // this file does. Same reasoning as `theme/screenHeader.test.tsx`, one level down.
 //
-// `AboutRow` is local to SettingsScreen, so the scan is too. If it is ever hoisted into `theme/`,
-// widen the glob rather than deleting the test.
+// The rows are `CardRow`s (SettingsSection.tsx, board R13); the scan reads SettingsScreen, where the
+// tappable ones are. If another screen grows tappable card rows, widen the glob rather than deleting
+// the test. (Until 031 the rows were a local `AboutRow`; the scan followed the rename.)
 
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -22,12 +23,12 @@ const FILE = join(__dirname, '../../src/app/settings/SettingsScreen.tsx');
 /** Anything that tells the eye "there is more behind this row". */
 const AFFORDANCES = ['ChevronRightIcon', 'ExternalLinkIcon'];
 
-/** Every `<AboutRow …>…</AboutRow>`, with its opening tag and its body. */
-function aboutRows(source: string): { line: number; open: string; body: string }[] {
+/** Every `<CardRow …>…</CardRow>`, with its opening tag and its body. */
+function cardRows(source: string): { line: number; open: string; body: string }[] {
   const rows: { line: number; open: string; body: string }[] = [];
   const lines = source.split('\n');
   for (let i = 0; i < lines.length; i += 1) {
-    if (!lines[i].includes('<AboutRow')) {
+    if (!lines[i].includes('<CardRow')) {
       continue;
     }
     const start = i;
@@ -35,9 +36,9 @@ function aboutRows(source: string): { line: number; open: string; body: string }
     const buf: string[] = [];
     for (let j = i; j < lines.length; j += 1) {
       buf.push(lines[j]);
-      depth += (lines[j].match(/<AboutRow/g) ?? []).length;
-      depth -= (lines[j].match(/<\/AboutRow>/g) ?? []).length;
-      if (depth === 0 && buf.length > 0 && lines[j].includes('</AboutRow>')) {
+      depth += (lines[j].match(/<CardRow/g) ?? []).length;
+      depth -= (lines[j].match(/<\/CardRow>/g) ?? []).length;
+      if (depth === 0 && buf.length > 0 && lines[j].includes('</CardRow>')) {
         break;
       }
     }
@@ -53,10 +54,10 @@ function aboutRows(source: string): { line: number; open: string; body: string }
 
 describe('Settings rows', () => {
   const source = readFileSync(FILE, 'utf8');
-  const rows = aboutRows(source);
+  const rows = cardRows(source);
 
   it('finds the rows at all, so a passing scan means something', () => {
-    // A regex that silently matches nothing is a test that passes forever. There are five tappable
+    // A regex that silently matches nothing is a test that passes forever. There are seven tappable
     // rows today; the assertion is only that the scan is finding real ones.
     expect(rows.length).toBeGreaterThanOrEqual(5);
     expect(rows.filter(r => r.open.includes('onPress')).length).toBeGreaterThanOrEqual(5);
@@ -67,7 +68,7 @@ describe('Settings rows', () => {
       .filter(row => row.open.includes('onPress'))
       .filter(row => !AFFORDANCES.some(icon => row.body.includes(icon)))
       .map(row => {
-        const title = /<RowTitle>\{?t\('([^']+)'\)/.exec(row.body);
+        const title = /(?:<RowTitle[^>]*>\{?|title=\{)t\('([^']+)'\)/.exec(row.body);
         return `SettingsScreen.tsx:${row.line} (${title ? title[1] : 'unknown row'})`;
       });
 

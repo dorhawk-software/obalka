@@ -17,7 +17,7 @@ interface Language {
   readonly code: string;
   /** The language's name in itself. */
   readonly name: string;
-  /** Its drawn 28×20 flag chip. */
+  /** Its drawn 22×15 flag. */
   readonly flag: ReactNode;
 }
 

@@ -1,10 +1,10 @@
-// The settings furniture as the design draws it (2026-09-15).
+// The settings furniture as the design draws it (2026-09-15; boards R3 and R13 since 031).
 //
 // `Section`, `CardRow` and `SubScreen` are what the Settings, Backup, Transfer and Debug screens are
 // built from, and `SubScreen` also frames help and the licences. Each number they draw was checked
 // against DESIGN.md, which records the design. A value DESIGN.md records is read from it below rather
-// than retyped; a value the design draws that DESIGN.md does not record - a section's 9 and 22 - is
-// named here as the design's; anything else is a step of the spacing scale.
+// than retyped; anything else is a step of the spacing scale. Until 031 a section drew the 009 port's
+// 9 and 22, which DESIGN.md did not record; boards R3 and R13 draw 8 and 18, both steps.
 //
 // Everything below is asserted on what renders. Until the same day two assertions read source text
 // instead: the 28 in `SettingsScreen`'s `useContentBottom(28)`, and a scan of the two files for typed
@@ -23,7 +23,7 @@ import { lightTheme } from '../../src/theme/theme';
 import { space } from '../../src/theme/spacing';
 import { fonts } from '../../src/theme/typeScale';
 import { Text } from '../../src/theme/ui';
-import { Card, CardRow, RowTitle, Section } from '../../src/app/settings/SettingsSection';
+import { Card, CardRow, RowTitle, Section, WELL_INSET } from '../../src/app/settings/SettingsSection';
 import { SubScreen } from '../../src/app/settings/SubScreen';
 
 // `mock`-prefixed so jest allows the factory below to close over it. Settings is rendered here only for
@@ -53,13 +53,6 @@ const { SettingsScreen } = require('../../src/app/settings/SettingsScreen') as t
 
 const DESIGN = readFileSync(join(__dirname, '../..', 'DESIGN.md'), 'utf8');
 
-/**
- * A section's gap under its label and its margin under its last card: the design's, as the 009 port of
- * the design drew them. Neither DESIGN.md nor `specs/009-visual-redesign/design-system.md` records a
- * number for them, so they cannot be read from a record; they are named here instead of being moved to
- * the nearest steps, which is what happened to them for part of 2026-09-15.
- */
-const DESIGN_SECTION = { gap: 9, marginBottom: 22 } as const;
 
 type Json = {
   type: string;
@@ -97,6 +90,21 @@ const wrap = (ui: React.ReactElement, insets = INSETS) =>
 /** The first capture of `pattern` in DESIGN.md, as a number; NaN when DESIGN.md does not say it. */
 const designNumber = (pattern: RegExp) => Number(pattern.exec(DESIGN)?.[1]);
 
+/** A section's gap under its label and its margin under its last card (Components › Settings sections). */
+const DESIGN_SECTION = {
+  gap: designNumber(/the cards sit (\d+)dp under the label/),
+  marginBottom: designNumber(/the next section (\d+)dp under the last card/),
+};
+
+/** A card row (Components › Cards). */
+const DESIGN_ROW = {
+  minHeight: designNumber(/a card row is at least (\d+)dp tall/),
+  vertical: designNumber(/a card row is at least \d+dp tall, (\d+)dp above and below/),
+  sides: designNumber(/(\d+)dp at the sides, \d+dp between what\s+it holds/),
+  gap: designNumber(/at the sides, (\d+)dp between what\s+it holds/),
+  inset: designNumber(/parted by a 1px `hairline` inset (\d+)dp/),
+};
+
 /** The content style of the first scroll view a screen renders. */
 function contentOf(root: Json): Record<string, unknown> {
   const scroll = find(root, n => n.type === 'RCTScrollView');
@@ -106,19 +114,19 @@ function contentOf(root: Json): Record<string, unknown> {
 
 describe('what DESIGN.md says about the furniture', () => {
   it('is there to be read, so nothing below passes against a number it does not state', () => {
-    // Row padding (Layout), card padding (Components › Cards), the settings scroll's gutter (Layout)
-    // and the section label (Components › Settings sections).
-    expect(designNumber(/Row padding is (\d+) vertical/)).toBe(13);
-    expect(designNumber(/\*\*Padding:\*\* (\d+)dp/)).toBe(14);
+    // A card row and a section (Components › Cards, › Settings sections), the settings scroll's gutter
+    // (Layout) and the section label.
+    expect(DESIGN_ROW).toEqual({ minHeight: 52, vertical: 10, sides: 14, gap: 12, inset: 14 });
+    expect(DESIGN_SECTION).toEqual({ gap: 8, marginBottom: 18 });
     expect(designNumber(/(\d+) on settings-shaped scroll content/)).toBe(16);
     expect(designNumber(/\*\*Label:\*\* Public Sans Bold (\d+), uppercase/)).toBe(12);
   });
 });
 
 describe('a section', () => {
-  it('sits its card 9 under the label and the next section 22 under it, as the design draws them', async () => {
-    // Moved to the `base` and `gutter` steps (8 and 18) for part of 2026-09-15, for being off the scale,
-    // which moved every section on the Settings, Backup, Transfer and Debug screens.
+  it('sits its card 8 under the label and the next section 18 under it, as the boards draw them', async () => {
+    // The 009 port drew 9 and 22 until 031; boards R3 and R13 draw 8 and 18 on every settings-shaped
+    // screen (Settings, Backup, Transfer, Debug).
     const view = await wrap(
       <Section label="Vzhled">
         <Text>x</Text>
@@ -153,23 +161,44 @@ describe('a section', () => {
 });
 
 describe('a card row', () => {
-  it('pads as DESIGN.md pads a row and a card, with a `md` step between what it holds', async () => {
+  it('is as tall and padded as DESIGN.md says a card row is', async () => {
     const view = await wrap(
       <CardRow last testID="row">
         <Text>x</Text>
       </CardRow>,
     );
-    const vertical = designNumber(/Row padding is (\d+) vertical/);
-    const horizontal = designNumber(/\*\*Padding:\*\* (\d+)dp/);
     expect(flat(view.getByTestId('row').props.style)).toEqual(
       expect.objectContaining({
-        paddingTop: vertical,
-        paddingBottom: vertical,
-        paddingLeft: horizontal,
-        paddingRight: horizontal,
-        gap: space.md,
+        minHeight: DESIGN_ROW.minHeight,
+        paddingTop: DESIGN_ROW.vertical,
+        paddingBottom: DESIGN_ROW.vertical,
+        paddingLeft: DESIGN_ROW.sides,
+        paddingRight: DESIGN_ROW.sides,
+        gap: DESIGN_ROW.gap,
       }),
     );
+  });
+
+  it('parts itself from the next row with a hairline inset 14, or where the words start after a well', async () => {
+    const lines = async (inset?: number) => {
+      const view = await wrap(
+        <View testID="card">
+          <CardRow last={false} dividerInset={inset}>
+            <Text>x</Text>
+          </CardRow>
+          <CardRow last>
+            <Text>y</Text>
+          </CardRow>
+        </View>,
+      );
+      const card = find(view.toJSON() as Json, n => n.props.testID === 'card') as Json;
+      return (card.children as Json[])
+        .map(child => flat(child.props.style))
+        .filter(style => style.height === 1)
+        .map(style => ({ marginLeft: style.marginLeft, backgroundColor: style.backgroundColor }));
+    };
+    expect(await lines()).toEqual([{ marginLeft: DESIGN_ROW.inset, backgroundColor: lightTheme.border }]);
+    expect(await lines(WELL_INSET)).toEqual([{ marginLeft: 66, backgroundColor: lightTheme.border }]);
   });
 });
 
@@ -246,11 +275,10 @@ describe('on DESIGN.md s scales', () => {
     return out;
   }
 
-  it('draws nothing in a section, card or row but a step or a value DESIGN.md records, past a section s own 9 and 22', async () => {
+  it('draws nothing in a section, card or row but a step or a value DESIGN.md records', async () => {
     // What a scan of the source used to hold them to, on what renders: every branch drawn - a section
     // with an icon and one without, a pressable row and a last one. A number that is neither is how
-    // off-scale spacing gets in, one close-enough value at a time. The section's 9 and 22 are allowed
-    // where the design draws them, on the section itself, and nowhere else.
+    // off-scale spacing gets in, one close-enough value at a time.
     const view = await wrap(
       <View testID="furniture">
         <Section label="Vzhled" icon={<Text>i</Text>}>
@@ -268,11 +296,7 @@ describe('on DESIGN.md s scales', () => {
         </Section>
       </View>,
     );
-    const allowed = new Set<number>([
-      ...Object.values(space),
-      designNumber(/Row padding is (\d+) vertical/),
-      designNumber(/\*\*Padding:\*\* (\d+)dp/),
-    ]);
+    const allowed = new Set<number>([...Object.values(space), DESIGN_ROW.vertical, DESIGN_ROW.sides, DESIGN_ROW.inset]);
     const holder = find(view.toJSON() as Json, n => n.props.testID === 'furniture');
     const sections = (holder?.children ?? []) as Json[];
     expect(sections).toHaveLength(2);

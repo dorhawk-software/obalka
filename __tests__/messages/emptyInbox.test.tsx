@@ -29,12 +29,12 @@ describe('when the app last looked', () => {
     [13, 0, 'Naposledy dnes ve 13:00'],
     [20, 0, 'Naposledy dnes ve 20:00'],
     [22, 10, 'Naposledy dnes ve 22:10'],
-    [1, 0, 'Naposledy dnes v 01:00'],
-    [9, 5, 'Naposledy dnes v 09:05'],
-    [10, 0, 'Naposledy dnes v 10:00'],
-    [11, 0, 'Naposledy dnes v 11:00'],
-    [15, 0, 'Naposledy dnes v 15:00'],
-    [19, 0, 'Naposledy dnes v 19:00'],
+    [1, 0, 'Naposledy dnes v\u00A001:00'],
+    [9, 5, 'Naposledy dnes v\u00A009:05'],
+    [10, 0, 'Naposledy dnes v\u00A010:00'],
+    [11, 0, 'Naposledy dnes v\u00A011:00'],
+    [15, 0, 'Naposledy dnes v\u00A015:00'],
+    [19, 0, 'Naposledy dnes v\u00A019:00'],
   ])('says %i:%i with the preposition Czech gives that hour', (h, m, said) => {
     expect(freshnessText(at(h, m), EVENING)).toBe(said);
   });

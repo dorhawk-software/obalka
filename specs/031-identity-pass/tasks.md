@@ -151,10 +151,19 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 
 ### Settings and the rest
 
-- [ ] I43 `SettingsScreen` (appearance, language with flags, lock, attachments and Wi-Fi, scan and how,
+- [x] I43 `SettingsScreen` (appearance, language with flags, lock, attachments and Wi-Fi, scan and how,
   diagnostics and Debug, backup, About: version, what's new, FAQ, licences, privacy, source) - **D**
-  (cards, icons in wells: Zámek, Archiv, Přenos, Upozornění, Nastavení). R3 shows it.
+  (cards, icons in wells: Zámek, Archiv, Přenos, Upozornění, Nastavení). R3 shows it. Fixed 2026-11-13
+  as R13 draws it (Cards B): cards are sheets with no border; rows 52 / 10 / 14 / 12; wells 40; dividers
+  14, or 66 above the Wi-Fi row and "Jak to funguje"; radios a blue ring with a 12 dot; flags 22×15;
+  the section label 18 above and 8 under (the first 16). Walked on Obalka_Demo light and dark, cs and en,
+  each card cropped at full resolution beside the board's render: rows 139 px both. Found on the walk:
+  the dimmed Wi-Fi switch faded child by child on Android, so the blue track showed through the knob;
+  the row now fades as one picture, as the board's CSS does. Roundings: none needed, every value is a
+  step. Left as it is: Android draws Public Sans about 2.5% wider than Chrome (the same font file
+  measures the same in Chrome), so a line can wrap one word earlier than on the board ("chyby:").
 - [ ] I44 FAQ entries and the delivery legend - **D** (cards; the legend's state glyphs follow I33).
+  2026-11-13: the cards are sheets now (Card), walked dark; the line ticks with R13's rest.
 - [ ] I45 `BackupScreen` - **X** for the key and QR: a slip on the security tint (R6). The rest:
   - [ ] I45.1 Backup: the toggle (loading skeleton), last, never, a running stage with its count and
     progress bar, verify, back up now - **N**: R9.
@@ -258,11 +267,15 @@ surface below changes too, and the owner has seen none of them in the identity. 
 
 ### Typesetting (found while drawing round 1)
 
-- [ ] I82 Czech one-letter prepositions and conjunctions (v, k, s, z, o, u, a, i) end a line today
+- [x] I82 Czech one-letter prepositions and conjunctions (v, k, s, z, o, u, a, i) end a line today
   ("nastavení v / tomto telefonu", "až o / ně požádáte") - **X**: a no-break space after them in the cs
-  strings, held by a test over `strings.ts`. The canvas boards already set it.
-- [ ] I83 A number and its unit break apart ("4,2 / MB" under Záloha) - **X**: `formatBytes` and the
-  size strings join them with a no-break space.
+  strings, held by a test over `strings.ts`. The canvas boards already set it. Fixed 2026-11-13: `t()`
+  typesets every Czech string after its values are filled in (`typesetCs`, src/i18n/typeset.ts), and the
+  FAQ and the in-app changelog do the same; `__tests__/i18n/typeset.test.tsx` reads every cs key, the
+  FAQ and a release, proven red with each one turned off. Captured: "v telefonu", "o ně" hold together.
+- [x] I83 A number and its unit break apart ("4,2 / MB" under Záloha) - **X**: `formatBytes` and the
+  size strings join them with a no-break space. Fixed 2026-11-13: one `formatBytes` (there were five;
+  the debug screen's wrote "4.0 MB"), the decimal comma and a no-break space everywhere.
 
 ### Every dialog, by its title (22, equal to the code)
 
@@ -296,15 +309,18 @@ and both languages when built.
 
 All **N** unless a board shows them; R9 shows the ones no agreed board has.
 
-- [ ] I106 `Toggle` (48 x 28, disabled .6, not animated).
+- [x] I106 `Toggle` (48 x 28, disabled .6, not animated). Matches R13 2026-11-13: the off track `hs`
+  (#DCD2BF / #4A4236) with its inset ring; inside a dimmed row it takes the row's .55 alone (`rowDims`).
 - [ ] I107 `SegmentedControl` (height 34, 200 ms slide, the unseen dot) - inbox board shows it on blue;
   the backup and sign-in uses are on paper.
-- [ ] I108 `OptionGroup` radios (check 140 ms).
+- [x] I108 `OptionGroup` radios (check 140 ms). Matches R13 2026-11-13: one card, rows 52, a 22 ring
+  (2, `hs`), picked a blue ring with a 12 blue dot growing in over 140 ms; no tint.
 - [ ] I109 Buttons: primary, outline, link, danger; busy and blocked (warning haptic, shake).
 - [ ] I110 Text fields: rest, focus, error, the password eye, the dark keyboard.
-- [x] I111 `ScreenHeader` (min 54, back 44, two-line title, slot, hairline). Fixed 2026-11-13: no
-  hairline - every board ends the bar at its `surfaceAlt` tone (the owner's catch on search); DESIGN.md
-  says so. Walked on search and add-a-box, light and dark.
+- [x] I111 `ScreenHeader` (min 54, back 44, two-line title, slot, hairline). Fixed 2026-11-13: the
+  hairline stays (every board draws it inline on its header), but the archive search ends at its tone
+  (`hairline={false}`, R4 - the owner's catch). 561d039 took it off every screen after reading only
+  the boards' shared `.hdr` class; put back the same day. Walked on search and add-a-box, light and dark.
 - [ ] I112 `ProgressBar` (6 px, determinate) and `WaitingBar`; MessageDetail draws its own copy of the
   bar - **D**: one drawing (visual-craft, "One object, one drawing").
 - [ ] I113 `Skeleton` rows.
@@ -635,4 +651,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
 - [ ] T050 impeccable critique of the built app (two isolated reviewers), fixes, re-audit with the owner.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
   families and weights, each component's anatomy and the rejected variants.
+  The sync-back, where the build is right and the board is not (collected as they are found):
+  - R4: the creases run past the round corners and the sealed flap leaves a blue rim at the top; the
+    code clips both to the front (the owner's catch, 2026-11-13). No results has no board: it takes
+    the hint's archive pose.
+  - R5 switcher: the alert badge and "· Poslední známý stav" after a box's state (I-line above).
 - [ ] T052 Delete `docs/engineering/identity-pass.md` in the last commit.

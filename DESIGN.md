@@ -29,7 +29,7 @@ colors:
   success: "#2E7D52"
   danger: "#B5362F"
   warning-ink: "#8C6100"
-  track-off: "#CFC4AE"
+  track-off: "#DCD2BF"
   track-off-edge: "#8E7F62"
   snackbar-bg: "#211B12"
   snackbar-ink: "#FBF6EA"
@@ -440,8 +440,8 @@ A single column, capped and centred. `ContentColumn` limits content to **720dp**
 take anything wider - the answer print has used for centuries, and the reason a tablet or an unfolded
 foldable does not get inbox rows a thousand pixels wide. On a phone the cap never binds.
 
-Screen structure is invariant: a **54dp header bar** on `surface-alt` below the safe-area inset, its
-tone the only edge (no hairline under it: every 031 board draws it so, the owner's catch 2026-11-13);
+Screen structure is invariant: a **54dp header bar** on `surface-alt` below the safe-area inset, with
+a 1px hairline under it (the archive search alone ends at its tone: its field is its own well, 031 R4);
 then content on `paper`; then, where the screen has one primary action, a
 FAB 22dp above the safe-area bottom. Header top padding and content bottom padding both come from
 hooks (`useHeaderTop`, `useContentBottom`) that derive from the real insets - never a hardcoded
@@ -449,7 +449,7 @@ guess, which is what put content under the gesture bar on every device that has 
 
 **Spacing rhythm:** 2 / 4 / 6 / 8 / 10 / 12 / 13 / 14 / 16 / 18 / 24, and 28 / 36 / 60 for full-screen moments. The gutter is 18 on list rows and
 message content, 16 on settings-shaped scroll content (`inset`). Row padding is 13 vertical (`row`), 18
-horizontal. 24 (`section`) is the space before the next section. Full-screen moments - Welcome, Lock,
+horizontal (list rows; card rows are under Components › Cards). 24 (`section`) is the space before the next section. Full-screen moments - Welcome, Lock,
 sign-in progress, empty states, the send result - have three larger steps of their own: 28 (`loose`)
 between their parts, 36 (`hero`) around them, and 60 (`empty`) above an empty state. Until 2026-10-04 (spec 028) the scale
 stopped at 18 and lacked 13 and 16, so screens typed them - and typed 20 and 22 for the section step
@@ -482,9 +482,9 @@ most load-bearing idea in the system: a new surface asks "which tonal level am I
 shadow do I get".
 
 Where tone alone cannot separate two planes - `surface-alt` on `paper` measures 1.06:1, which is
-nothing - a **1px hairline** finishes the job where an edge is needed: a list-row divider, a card
-boundary. The header bar is the exception the design makes: its tone against the paper is its edge. That is not a fallback; it is the second half of the
-mechanism.
+nothing - a **1px hairline** finishes the job. Every header bar's bottom edge (but the search's) and
+every row divider is a hairline; a resting card is a sheet with weight instead (Cards B). That is not
+a fallback; it is the second half of the mechanism.
 
 ### Shadow vocabulary
 
@@ -509,7 +509,7 @@ Shadow is reserved for objects that float, plus a few brand moments:
 
 - **`sheet`** (`0 1px 2px rgba(33,27,18,.08), 0 8px 16px -10px rgba(33,27,18,.28)`; dark: a faint
   `rgba(255,255,255,.04)` edge and `0 8px 16px -10px rgba(0,0,0,.7)`): every resting card, with no
-  hairline (Cards B, agreed 2026-11-12). It replaces the card's hairline when the cards are built.
+  hairline (Cards B, agreed 2026-11-12, built with R13): `Card` draws it in place of the old border.
 - **`envelope`** (`0 22px 34px -26px rgba(20,32,60,.7)`) and **`envelopeHeader`**
   (`0 18px 30px -22px rgba(20,32,60,.6)`): an envelope on the paper, and the inbox header.
 - **`letter`** (`0 -6px 14px -10px`), **`window`** (an inset, `inset 0 2px 4px -1px`),
@@ -585,19 +585,31 @@ moves without being asked.
 - A chip states a fact the app knows. It never states a legal conclusion the app inferred.
 
 ### Cards / containers
-- **Corner:** 14dp. **Background:** `surface`. **Border:** 1px `hairline`.
-- **Shadow:** none. Cards are flat; see Elevation.
+- **Corner:** 14dp. **Background:** `surface`. **Border:** none.
+- **Shadow:** `sheet` - a resting card is a sheet with weight, not an outlined box (031 Cards B, board
+  R3, agreed 2026-11-12). Until 031 cards were flat with a 1px `hairline` border.
 - **Padding:** 14dp, 18dp for message content.
+- **Rows:** a card row is at least 52dp tall, 10dp above and below, 14dp at the sides, 12dp between what
+  it holds; title Public Sans SemiBold 14/20 in ink, what it does under it in muted 13/17. Rows of one
+  card are parted by a 1px `hairline` inset 14dp, or 66dp above a row that starts its words past a well
+  (the Wi-Fi row under automatic downloads, "Jak to funguje"), so the line starts where its words do
+  (`CardRow`, `RowDivider`).
+- **Well:** a row may lead with its glyph in a 40dp well - 12dp corner, `sunken`, the offset glyph at
+  24dp in ink (`Well`).
 
 ### Settings sections
 - **Label:** Public Sans Bold 12, uppercase, 0.4 letter-spacing, `faint-ink` - the design's settings
   section label (`specs/009-visual-redesign/design-system.md` §2), drawn by `Section` above the cards of
   every settings-shaped screen. It is one of the 12-tier overrides counted under Typography, and it is
   the design's value, not a near miss of the Label step.
+- **Spacing:** the cards sit 8dp under the label (`base`) and the next section 18dp under the last card
+  (`gutter`); the first label sits 16dp under the header (boards R3, R13). Until 031 the 009 port drew 9
+  and 22, off the scale.
 
 ### Inputs
 - **Style:** `surface` fill, 1px `hairline-strong` border, 14dp radius, 50dp tall (the search field:
-  12dp radius, 44dp, a `paper` fill and a `hairline` border).
+  12dp radius, 44dp, a `paper` fill, no border, and the search glyph at 18dp in muted ink before the
+  words - board R4).
 - **Focus:** border shifts to `brand-blue` at 1.5px. No glow.
 - **Keyboard:** `keyboardAppearance` follows the *app's* theme, not the OS's - injected once in
   `theme/ui.tsx`, because a bright keyboard under a dark UI is the same defect class as a mismatched

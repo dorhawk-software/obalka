@@ -1,32 +1,31 @@
-// The grouped-settings furniture: an uppercase section label above bordered cards, and the row title
-// used inside them (009 §06). Extracted when the backup screen appeared - two screens drawing the
-// same pattern from two copies is exactly how the numbers drift (constitution V).
+// The grouped-settings furniture: an uppercase section label above cards, the rows inside them and
+// their parts. Extracted when the backup screen appeared - two screens drawing the same pattern from
+// two copies is exactly how the numbers drift (constitution V).
 //
-// Every spacing here is a DESIGN.md step or a value the design gives this pattern, named below.
-// `__tests__/app/settingsFurniture.test.tsx` reads the values DESIGN.md records back from it.
+// Drawn as boards R3 and R13 draw it (031, Cards B, agreed 2026-11-12): a card is a sheet with weight
+// and no line around it; a row is at least 52 tall, 10 above and below and 14 at the sides; rows of one
+// card are parted by a hairline inset 14 (66 above a row whose words start past a well, so the line
+// starts where they do); a row may lead with its glyph in a 40 sunken well.
+//
+// Every spacing here is a DESIGN.md step. `__tests__/app/settingsFurniture.test.tsx` reads the values
+// DESIGN.md records back from it.
 
 import type { ReactNode } from 'react';
 import { XStack, YStack } from '../../theme/ui';
-import { Body, Overline } from '../../theme/Typography';
+import { Caption, Overline, Small } from '../../theme/Typography';
 import { useTheme } from '../../theme/ThemeProvider';
+import { OffsetIcon, type OffsetGlyphName } from '../../theme/offsetIcons';
 import { space } from '../../theme/spacing';
 
-/** A row's vertical padding: DESIGN.md › Layout, "Row padding is 13 vertical" - the `row` step since 028. */
-const ROW_PADDING_VERTICAL = space.row;
+/** A card row: DESIGN.md › Cards, "at least 52dp tall, 10dp above and below". */
+export const CARD_ROW = { minHeight: 52, paddingVertical: space.md, paddingHorizontal: space.xl } as const;
+
+/** Where a row's words start when it leads with a well: 14 + the 40 well + the 12 gap. */
+export const WELL_INSET = space.xl + 40 + space.lg;
 
 /**
- * A section's card sits 9 under its label, and the next section 22 under its last card: the design's
- * values, as the 009 port of the design drew them. Neither is a spacing step, and neither is a near miss
- * of one to round: DESIGN.md and `specs/009-visual-redesign/design-system.md` record no other number for
- * this pattern, and a value the design draws is not changed to fit a scale. A pass on 2026-09-15 moved
- * them to the `base` and `gutter` steps for being off the scale, which moved every section on the
- * Settings, Backup, Transfer and Debug screens; they were put back the same day.
- */
-const SECTION_GAP = 9;
-const SECTION_MARGIN_BOTTOM = 22;
-
-/**
- * A grouped-settings section: an uppercase faint label above its card(s).
+ * A grouped-settings section: an uppercase faint label, its card(s) 8 under it, and the next section
+ * 18 under the last card (boards R3, R13).
  *
  * `icon` is optional and decorative - it sits beside the label to make a long screen scannable, and
  * carries no meaning the label does not already carry (a screen reader hears the label alone).
@@ -41,16 +40,16 @@ export function Section({
   readonly children: ReactNode;
 }) {
   return (
-    <YStack marginBottom={SECTION_MARGIN_BOTTOM} gap={SECTION_GAP}>
+    <YStack marginBottom={space.gutter} gap={space.base}>
       <XStack alignItems="center" gap={space.sm} marginLeft={space.xs}>
         {icon ? (
           <YStack accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {icon}
           </YStack>
         ) : null}
-        <Overline
-          accessibilityRole="header"
-        >
+        {/* The row's width, not its own measure: Android measured "ZABEZPEČENÍ" a letter short and cut
+            the Í (practices, "Text takes its container's width"). */}
+        <Overline accessibilityRole="header" flex={1}>
           {label}
         </Overline>
       </XStack>
@@ -60,9 +59,8 @@ export function Section({
 }
 
 /**
- * A settings-card row title - 15/600 (design). The SemiBold FACE has to be named: Public Sans is
- * 4-style grouped, so `fontWeight="600"` alone can't reach it from the Regular family (RN would render
- * 400). Same metrics on every card row (constitution V).
+ * A card row's title - 14/600 in ink (the boards' `sm`). The SemiBold face is picked from the weight
+ * by the role (Typography.tsx). Same metrics on every card row (constitution V).
  */
 export function RowTitle({
   children,
@@ -73,56 +71,105 @@ export function RowTitle({
 }) {
   const theme = useTheme();
   return (
-    <Body fontWeight="600"
-      flex={flex}
-      color={theme.text}
-    >
+    <Small fontWeight="600" flex={flex} color={theme.text}>
       {children}
-    </Body>
+    </Small>
   );
 }
 
-/** The bordered card every settings row sits in - the app's one card, now in the theme (spec 028). */
+/** A row's words: its title, and under it what it does in muted 13/17 (the boards' `lbl`). */
+export function RowText({ title, subtitle }: { readonly title: string; readonly subtitle?: string | null }) {
+  const theme = useTheme();
+  return (
+    <YStack flex={1} minWidth={0} gap={space.hair}>
+      <RowTitle>{title}</RowTitle>
+      {subtitle ? <Caption color={theme.textMuted}>{subtitle}</Caption> : null}
+    </YStack>
+  );
+}
+
+/** A row's glyph in its well: 40, the `lg` corner, sunken, the offset glyph at 24 in ink. */
+export function Well({ name }: { readonly name: OffsetGlyphName }) {
+  const theme = useTheme();
+  return (
+    <YStack
+      width={40}
+      height={40}
+      borderRadius={12}
+      alignItems="center"
+      justifyContent="center"
+      flexShrink={0}
+      backgroundColor={theme.surfaceSunken}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
+      <OffsetIcon name={name} size={24} color={theme.text} />
+    </YStack>
+  );
+}
+
+/** The cards every settings row sits in - the app's one card, in the theme (spec 028). */
 export { Card } from '../../theme/Card';
 
 /**
- * A row inside a card: hairline-separated from the next one (design). Padded 13 above and below, as
- * DESIGN.md pads a row, and 14 at the sides, which is DESIGN.md's card padding and the `xl` step.
+ * A row inside a card, with the hairline under it unless it is the `last`. The line starts at 14, or
+ * at 66 when the row under it starts its words past a well (`dividerInset={WELL_INSET}`). A row that
+ * belongs to the well-led row above it (`indent`) starts its words there too; `dimmed` greys the
+ * whole row while it cannot be used. Rows without `onPress` are plain and take no press treatment.
  */
 export function CardRow({
   children,
   last,
   onPress,
   accessibilityLabel,
+  dividerInset = space.xl,
+  indent = false,
+  dimmed = false,
   testID,
 }: {
   readonly children: ReactNode;
   readonly last: boolean;
   readonly onPress?: () => void;
   readonly accessibilityLabel?: string;
+  readonly dividerInset?: number;
+  readonly indent?: boolean;
+  readonly dimmed?: boolean;
   readonly testID?: string;
 }) {
   const theme = useTheme();
   return (
-    <XStack
-      alignItems="center"
-      justifyContent="space-between"
-      gap={space.md}
-      paddingVertical={ROW_PADDING_VERTICAL}
-      paddingHorizontal={space.xl}
-      borderBottomWidth={last ? 0 : 1}
-      borderBottomColor={theme.border}
-      testID={testID}
-      {...(onPress
-        ? {
-            onPress,
-            accessibilityRole: 'button' as const,
-            accessibilityLabel,
-            pressStyle: { backgroundColor: theme.surfaceAlt },
-          }
-        : null)}
-    >
-      {children}
-    </XStack>
+    <>
+      <XStack
+        alignItems="center"
+        justifyContent="space-between"
+        gap={space.lg}
+        minHeight={CARD_ROW.minHeight}
+        paddingVertical={CARD_ROW.paddingVertical}
+        paddingHorizontal={CARD_ROW.paddingHorizontal}
+        paddingLeft={indent ? WELL_INSET : CARD_ROW.paddingHorizontal}
+        opacity={dimmed ? 0.55 : 1}
+        // Faded as one picture, as the board's CSS opacity fades it: Android otherwise fades each child
+        // on its own, and the switch's blue track showed through its white knob (031 R13, dark walk).
+        needsOffscreenAlphaCompositing={dimmed}
+        testID={testID}
+        {...(onPress
+          ? {
+              onPress,
+              accessibilityRole: 'button' as const,
+              accessibilityLabel,
+              pressStyle: { backgroundColor: theme.surfaceAlt },
+            }
+          : null)}
+      >
+        {children}
+      </XStack>
+      {last ? null : <RowDivider inset={dividerInset} />}
+    </>
   );
+}
+
+/** The hairline between two rows of one card, inset from the left (boards R3, R13). */
+export function RowDivider({ inset = space.xl }: { readonly inset?: number }) {
+  const theme = useTheme();
+  return <YStack height={1} marginLeft={inset} backgroundColor={theme.border} />;
 }

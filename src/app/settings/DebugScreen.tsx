@@ -26,7 +26,7 @@ import { Dialog } from '../../theme/Dialog';
 import { useTheme } from '../../theme/ThemeProvider';
 import { space } from '../../theme/spacing';
 import { type as typeScale } from '../../theme/typeScale';
-import { plural, t } from '../../i18n/strings';
+import { formatBytes, plural, t } from '../../i18n/strings';
 import { haptics } from '../../services/haptics';
 import { SubScreen } from './SubScreen';
 import { Card, CardRow, RowTitle, Section } from './SettingsSection';
@@ -54,16 +54,6 @@ import { useCloseOnBackground } from '../useCloseOnBackground';
 
 const MIB = 1024 * 1024;
 
-/** kB / MB, because "1483264 B" tells the user nothing about whether it will send by e-mail. */
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-  if (bytes < MIB) {
-    return `${Math.round(bytes / 1024)} kB`;
-  }
-  return `${(bytes / MIB).toFixed(1)} MB`;
-}
 
 /** The status line while recording: "Zaznamenává se · 2 záznamy · 1 kB". */
 export function recordingCounter(entries: number, bytes: number): string {
@@ -92,7 +82,7 @@ export function recordingCounterReserve(): string {
   const counted = t(`debug.recording.entries.${plural(Number(RESERVE_NUMBER))}`, {
     n: RESERVE_NUMBER,
   });
-  return `${t('debug.recording')} · ${counted} · ${RESERVE_NUMBER} MB`;
+  return `${t('debug.recording')} · ${counted} · ${RESERVE_NUMBER}\u00A0MB`;
 }
 
 /** A caption's line box at the default text size: the Caption role, DESIGN.md 13/17. */

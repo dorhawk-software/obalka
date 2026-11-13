@@ -132,7 +132,7 @@ it('says when ISDS took it, with the preposition Czech gives that hour', () => {
   expect(sentBody(SENT_AT)).toBe(
     'ISDS ji přijalo 11.11.2026 ve 14:02. Až ji adresát otevře, doručenka se doplní sama.',
   );
-  expect(sentBody(new Date(2026, 10, 11, 9, 5).getTime())).toMatch(/^ISDS ji přijalo 11\.11\.2026 v 09:05\./);
+  expect(sentBody(new Date(2026, 10, 11, 9, 5).getTime())).toMatch(/^ISDS ji přijalo 11\.11\.2026 v\u00A009:05\./);
   setActiveLocale('en');
   expect(sentBody(SENT_AT)).toMatch(/^ISDS accepted it on 11\.11\.2026 at 14:02\./);
 });

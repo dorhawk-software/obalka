@@ -100,6 +100,7 @@ export function SearchScreen({
       {/* The design's one header bar, with the search field where a title would be. */}
       <ScreenHeader
         onBack={onBack}
+        hairline={false}
         content={
           <XStack
             flex={1}

@@ -20,6 +20,7 @@ import { SettingsProvider } from '../../src/app/settings/SettingsProvider';
 import { LANGUAGES } from '../../src/app/settings/languages';
 import { settingsStore } from '../../src/features/accounts/deps';
 import { STRINGS_FOR_TEST, setActiveLocale } from '../../src/i18n/strings';
+import { typesetCs } from '../../src/i18n/typeset';
 
 jest.mock('../../src/theme/icons', () => {
   const actual = jest.requireActual('../../src/theme/icons');
@@ -87,7 +88,7 @@ describe('the way to an archive that is somewhere else', () => {
     const button = view.getByTestId('welcome-restore');
 
     expect(button.props.accessibilityRole).toBe('button');
-    expect(button.props.accessibilityLabel).toBe(cs['welcome.restore']);
+    expect(button.props.accessibilityLabel).toBe(typesetCs(cs['welcome.restore']));
     expect(within(button).getByTestId('icon-backup', HIDDEN)).toBeTruthy();
     expect(within(button).getByText(cs['welcome.restore'], HIDDEN)).toBeTruthy();
 
@@ -130,7 +131,7 @@ describe('the way to an archive that is somewhere else', () => {
       <Welcome onAddBox={() => {}} onOpenFaq={() => {}} onRestore={() => {}} canTransfer={false} />,
     );
     const button = view.getByTestId('welcome-restore');
-    expect(button.props.accessibilityLabel).toBe(cs['welcome.restore.backupOnly']);
+    expect(button.props.accessibilityLabel).toBe(typesetCs(cs['welcome.restore.backupOnly']));
     expect(within(button).getByText(cs['welcome.restore.backupOnly'], HIDDEN)).toBeTruthy();
     expect(view.queryByText(cs['welcome.restore'], HIDDEN)).toBeNull();
     // The same glyph fits a backup alone.

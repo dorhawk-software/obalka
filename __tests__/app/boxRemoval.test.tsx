@@ -24,6 +24,12 @@ import { t } from '../../src/i18n/strings';
 import * as telemetry from '../../src/services/telemetry/telemetry';
 import type { DataBoxAccount, MessageEnvelope } from '../../src/services/isds/types';
 
+/**
+ * A sentence as `toHaveTextContent` reads it: the matcher folds a no-break space into a plain one, and
+ * Czech `t()` strings hold their one-letter words with one (031 I82).
+ */
+const shown = (said: string) => new RegExp(said.replace(/\u00A0/g, ' '));
+
 /** The fake database and Keychain behind the shell. */
 const mockWorld = {
   accounts: [] as DataBoxAccount[],
@@ -312,7 +318,7 @@ describe('a box removal that does not finish', () => {
     await removeFromSwitcher(view, 'b');
 
     await waitFor(() => expect(view.getByTestId('removeFailed')).toBeTruthy());
-    expect(view.getByTestId('removeFailed')).toHaveTextContent(new RegExp(t('box.removeFailed.kept')));
+    expect(view.getByTestId('removeFailed')).toHaveTextContent(shown(t('box.removeFailed.kept')));
     // Named, because the switcher it was removed from has closed.
     expect(view.getByTestId('removeFailed')).toHaveTextContent(/Beta/);
     // A box the app still lists keeps everything held for it.
@@ -336,7 +342,7 @@ describe('a box removal that does not finish', () => {
 
     await waitFor(() => expect(view.getByTestId('removeFailed')).toBeTruthy());
     expect(view.getByTestId('removeFailed')).toHaveTextContent(
-      new RegExp(t('box.removeFailed.incomplete')),
+      shown(t('box.removeFailed.incomplete')),
     );
     // Nothing can reach the box any more, so the rest of it still went.
     expect(mockWorld.purged).toEqual(['archive:a', 'reminders:a', 'scan:a']);
@@ -360,7 +366,7 @@ describe('a box removal that does not finish', () => {
 
     await waitFor(() => expect(view.getByTestId('welcome')).toBeTruthy());
     expect(view.getByTestId('removeFailed')).toHaveTextContent(
-      new RegExp(t('box.removeFailed.incomplete')),
+      shown(t('box.removeFailed.incomplete')),
     );
     // No box is left, so the lock went with it - the failed archive does not keep it armed.
     expect(mockWorld.lockResets).toBe(1);
@@ -471,7 +477,7 @@ describe('the notice and the background', () => {
 
     await act(async () => emitAppState('active'));
     expect(view.getByTestId('removeFailed')).toHaveTextContent(/Beta/);
-    expect(view.getByTestId('removeFailed')).toHaveTextContent(new RegExp(t('box.removeFailed.kept')));
+    expect(view.getByTestId('removeFailed')).toHaveTextContent(shown(t('box.removeFailed.kept')));
   });
 
   it('shows a removal that settled while the app was in the background once the app is back', async () => {
@@ -491,7 +497,7 @@ describe('the notice and the background', () => {
     await act(async () => emitAppState('active'));
     expect(view.getByTestId('removeFailed')).toHaveTextContent(/Beta/);
     expect(view.getByTestId('removeFailed')).toHaveTextContent(
-      new RegExp(t('box.removeFailed.incomplete')),
+      shown(t('box.removeFailed.incomplete')),
     );
     // The list followed what happened meanwhile: Beta is gone.
     await act(async () => {
@@ -636,7 +642,7 @@ describe('when the accounts table will not read after a row went', () => {
 
     await waitFor(() => expect(view.getByTestId('removeFailed')).toBeTruthy());
     expect(view.getByTestId('removeFailed')).toHaveTextContent(
-      new RegExp(t('box.removeFailed.incomplete')),
+      shown(t('box.removeFailed.incomplete')),
     );
     await act(async () => {
       fireEvent.press(view.getByTestId('removeFailedClose'));
@@ -667,7 +673,7 @@ describe('two removals that do not finish', () => {
     await settle();
     expect(view.getByTestId('removeFailed')).toHaveTextContent(/Alfa/);
     expect(view.getByTestId('removeFailed')).toHaveTextContent(
-      new RegExp(t('box.removeFailed.incomplete')),
+      shown(t('box.removeFailed.incomplete')),
     );
 
     await act(async () => {
@@ -675,7 +681,7 @@ describe('two removals that do not finish', () => {
     });
     await waitFor(() => expect(view.getByTestId('removeFailed')).toHaveTextContent(/Beta/));
     expect(view.getByTestId('removeFailed')).toHaveTextContent(
-      new RegExp(t('box.removeFailed.kept')),
+      shown(t('box.removeFailed.kept')),
     );
 
     // Closing is not a second removal: a box still listed keeps everything, and Odebrat with it.

@@ -8,7 +8,8 @@ import { YStack } from '../../theme/ui';
 import { Label, Subheading } from '../../theme/Typography';
 import { useTheme } from '../../theme/ThemeProvider';
 import { space } from '../../theme/spacing';
-import { t } from '../../i18n/strings';
+import { getActiveLocale, t } from '../../i18n/strings';
+import { typesetFor } from '../../i18n/typeset';
 import {
   CHANGE_KINDS,
   type ChangelogEntry,
@@ -55,6 +56,8 @@ export function ReleaseChanges({
 
 function ChangeRow({ entry, last }: { readonly entry: ChangelogEntry; readonly last: boolean }) {
   const theme = useTheme();
+  // The language `t()` is speaking: this content is written per language and shown in the same one.
+  const locale = getActiveLocale();
   return (
     <YStack
       gap={space.xs}
@@ -63,10 +66,10 @@ function ChangeRow({ entry, last }: { readonly entry: ChangelogEntry; readonly l
       borderBottomWidth={last ? 0 : 1}
       borderBottomColor={theme.border}
     >
-      <RowTitle>{entry.lead}</RowTitle>
+      <RowTitle>{typesetFor(locale, entry.lead)}</RowTitle>
       {entry.body ? (
         <Label fontWeight="400" color={theme.bodyText}>
-          {entry.body}
+          {typesetFor(locale, entry.body)}
         </Label>
       ) : null}
     </YStack>

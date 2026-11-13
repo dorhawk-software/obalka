@@ -48,6 +48,24 @@ it('draws the field as a paper well with the search glyph first, and no outline'
   expect(StyleSheet.flatten(input.props.style).fontFamily).toBe(fonts.bodyRegular);
 });
 
+it('ends its header bar at its tone, with no line under it (the one board that draws none)', async () => {
+  const view = await open();
+  const lines: unknown[] = [];
+  const walk = (n: unknown) => {
+    if (!n || typeof n !== 'object') {
+      return;
+    }
+    const node = n as { props: { style?: unknown }; children: unknown[] | null };
+    const flat = (StyleSheet.flatten(node.props.style as never) ?? {}) as Record<string, unknown>;
+    if (flat.height === 1 && flat.backgroundColor === lightTheme.border) {
+      lines.push(node);
+    }
+    (node.children ?? []).forEach(walk);
+  };
+  walk(view.toJSON());
+  expect(lines).toEqual([]);
+});
+
 it('shows the stack of envelopes before anything is typed', async () => {
   const view = await open();
   expect(view.getByTestId('searchHint')).toBeTruthy();

@@ -1,9 +1,9 @@
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useState } from 'react';
 import { ScreenHeader } from '../../theme/ScreenHeader';
 import { Linking } from 'react-native';
 import { useContentBottom } from '../../theme/useContentBottom';
 import { ScrollView, XStack, YStack } from '../../theme/ui';
-import { Body, Caption, Label, Meta, Overline, Small, Value } from '../../theme/Typography';
+import { Small, SmallStrong } from '../../theme/Typography';
 import { useTheme } from '../../theme/ThemeProvider';
 import type { FaqId } from '../../content/faq';
 import { OptionGroup } from '../../theme/OptionGroup';
@@ -26,7 +26,7 @@ import {
 } from '../appInfo';
 import { useSettings, type ThemeMode } from './SettingsProvider';
 import { LanguageChoice } from './LanguageChoice';
-import { Card } from '../../theme/Card';
+import { Card, CardRow, RowText, RowTitle, Section, WELL_INSET, Well } from './SettingsSection';
 import { useCloseOnBackground } from '../useCloseOnBackground';
 
 const THEME_MODES: ThemeMode[] = ['light', 'dark', 'system'];
@@ -42,8 +42,9 @@ function openExternal(url: string): void {
 }
 
 /**
- * App settings: appearance (theme mode), language, security (app-lock), help and the build version - laid out as the redesign's grouped cards (uppercase section
- * labels + bordered cards with radio rows / toggles), 009 §06.
+ * App settings: appearance (theme mode), language, security (app-lock), attachments, the scan,
+ * diagnostics, backup and About - grouped cards under uppercase section labels, as boards R3 and R13
+ * draw them (031).
  *
  * There is no background-sync section and no notifications section (014): the app performs no ISDS
  * call the user did not ask for, so there is nothing to schedule and nothing that could notify. The
@@ -158,10 +159,12 @@ export function SettingsScreen({
       <ScrollView
         contentContainerStyle={{
           paddingHorizontal: 16,
-          paddingTop: 18,
+          paddingTop: 16,
           paddingBottom: contentBottom,
         }}
       >
+        {/* Boards R3 and R13 (031, Cards B): every section a card with weight, a row's glyph in its
+            well, the rows of one card parted by an inset hairline. */}
         <Section label={t('settings.appearance')}>
           <OptionGroup
             value={themeMode}
@@ -179,63 +182,46 @@ export function SettingsScreen({
         </Section>
 
         <Section label={t('settings.security')}>
-          <Card flexDirection="row"
-            alignItems="center"
-            gap={12}
-            paddingVertical={13}
-            paddingHorizontal={14}
-          >
-            <YStack flex={1}>
-              <RowTitle>{t('settings.lock')}</RowTitle>
-              <Meta
-                color={theme.textFaint}
-              >
-                {t('settings.lock.desc')}
-              </Meta>
-            </YStack>
-            <Toggle
-              value={appLock}
-              onChange={onToggleLock}
-              label={t('settings.lock')}
-              disabled={lockBusy}
-              testID="lock-toggle"
-            />
+          <Card>
+            <CardRow last>
+              <Well name="lock" />
+              <RowText title={t('settings.lock')} subtitle={t('settings.lock.desc')} />
+              <Toggle
+                value={appLock}
+                onChange={onToggleLock}
+                label={t('settings.lock')}
+                disabled={lockBusy}
+                testID="lock-toggle"
+              />
+            </CardRow>
           </Card>
         </Section>
 
-        {/* 026 US4. Off until asked. The Wi-Fi row is always drawn - disabled while the switch above
-            is off - so turning the switch on moves nothing (constitution V). */}
+        {/* 026 US4. Off until asked. The Wi-Fi row is always drawn - dimmed while the switch above is
+            off - so turning the switch on moves nothing (constitution V). */}
         <Section label={t('settings.attachments')}>
-          <Card
-            overflow="hidden"
-          >
-            <AboutRow last={false}>
-              <YStack flex={1}>
-                <RowTitle>{t('settings.autoDownload.title')}</RowTitle>
-                <Meta color={theme.textFaint}>
-                  {t(
-                    !autoDownload.on
-                      ? 'settings.autoDownload.desc.off'
-                      : autoDownload.since != null
-                      ? 'settings.autoDownload.desc.new'
-                      : 'settings.autoDownload.desc.all',
-                  )}
-                </Meta>
-              </YStack>
+          <Card>
+            <CardRow last={false} dividerInset={WELL_INSET}>
+              <Well name="download" />
+              <RowText
+                title={t('settings.autoDownload.title')}
+                subtitle={t(
+                  !autoDownload.on
+                    ? 'settings.autoDownload.desc.off'
+                    : autoDownload.since != null
+                    ? 'settings.autoDownload.desc.new'
+                    : 'settings.autoDownload.desc.all',
+                )}
+              />
               <Toggle
                 value={autoDownload.on}
                 onChange={onToggleAutoDownload}
                 label={t('settings.autoDownload.title')}
                 testID="auto-download-toggle"
               />
-            </AboutRow>
-            <AboutRow last>
-              <YStack flex={1} opacity={autoDownload.on ? 1 : 0.55}>
-                <RowTitle>{t('settings.autoDownload.wifi')}</RowTitle>
-                <Meta color={theme.textFaint}>
-                  {t('settings.autoDownload.wifi.desc')}
-                </Meta>
-              </YStack>
+            </CardRow>
+            <CardRow last indent dimmed={!autoDownload.on}>
+              <RowText title={t('settings.autoDownload.wifi')} subtitle={t('settings.autoDownload.wifi.desc')} />
               <Toggle
                 value={autoDownload.wifiOnly}
                 onChange={next => {
@@ -244,188 +230,129 @@ export function SettingsScreen({
                 }}
                 label={t('settings.autoDownload.wifi')}
                 disabled={!autoDownload.on}
+                rowDims
                 testID="auto-download-wifi-toggle"
               />
-            </AboutRow>
+            </CardRow>
           </Card>
         </Section>
 
         {/* 010 US3. Off until asked, and the description says plainly what the scan does and does not
             do - it reads the document on the phone, and its answer is a suggestion to check, never a
-            deadline the app asserts. */}
+            deadline the app asserts. The switch is OFF by default, and the FAQ says so out loud: while
+            off, the app does not read document contents at all. */}
         <Section label={t('settings.scan')}>
-          <Card flexDirection="row"
-            alignItems="center"
-            gap={12}
-            paddingVertical={12}
-            paddingHorizontal={14}
-          >
-            <YStack flex={1}>
-              <RowTitle>{t('settings.scan.title')}</RowTitle>
-              <Meta
-                color={theme.textFaint}
-              >
-                {/* The switch is OFF by default, and the FAQ says so out loud: while off, the app
-                    does not read document contents at all. A row that describes the scan as
-                    happening, next to a switch that has never been turned on, contradicts it. */}
-                {t(scanAttachments ? 'settings.scan.desc' : 'settings.scan.desc.off')}
-              </Meta>
-            </YStack>
-            <Toggle
-              value={scanAttachments}
-              onChange={setScanAttachments}
-              label={t('settings.scan.title')}
-              testID="scan-toggle"
-            />
+          <Card>
+            <CardRow last={false} dividerInset={WELL_INSET}>
+              <Well name="deadline" />
+              <RowText
+                title={t('settings.scan.title')}
+                subtitle={t(scanAttachments ? 'settings.scan.desc' : 'settings.scan.desc.off')}
+              />
+              <Toggle
+                value={scanAttachments}
+                onChange={setScanAttachments}
+                label={t('settings.scan.title')}
+                testID="scan-toggle"
+              />
+            </CardRow>
+            {/* The detail - which library, which words it keys on, what it refuses to do - lives in
+                the FAQ, one tap away, on the card under the switch it explains. */}
+            <XStack
+              minHeight={48}
+              paddingLeft={WELL_INSET}
+              paddingRight={14}
+              alignItems="center"
+              gap={10}
+              onPress={() => onOpenFaq('attachmentScan')}
+              pressStyle={{ backgroundColor: theme.surfaceAlt }}
+              accessibilityRole="link"
+              accessibilityLabel={t('settings.scan.how')}
+              testID="scan-how"
+            >
+              <HelpIcon size={18} color={theme.blue} />
+              <SmallStrong flex={1} color={theme.blue}>
+                {t('settings.scan.how')}
+              </SmallStrong>
+              <ChevronRightIcon size={18} color={theme.textMuted} />
+            </XStack>
           </Card>
-          {/* The detail - which library, which words it keys on, what it refuses to do - lives in the
-              FAQ, one tap away. It does not belong beside a switch: a row long enough to be complete
-              is a row nobody reads, and this is a decision about letting an app read legal mail, so
-              the full account has to exist SOMEWHERE and be easy to reach. */}
-          <XStack
-            marginTop={8}
-            paddingVertical={10}
-            paddingHorizontal={14}
-            alignItems="center"
-            gap={8}
-            onPress={() => onOpenFaq('attachmentScan')}
-            pressStyle={{ opacity: 0.7 }}
-            accessibilityRole="link"
-            accessibilityLabel={t('settings.scan.how')}
-            testID="scan-how"
-          >
-            <HelpIcon size={15} color={theme.blue} />
-            <Label flex={1} color={theme.blue}>
-              {t('settings.scan.how')}
-            </Label>
-            <ChevronRightIcon size={16} color={theme.blue} />
-          </XStack>
         </Section>
 
         {/* Diagnostics. Placed after the scan toggle on purpose - they are the same KIND of decision
-            (what this app is allowed to do with your data) and belong next to each other rather than
-            buried under About. The description is concrete about what leaves and what cannot,
-            because "helps us improve the app" is the sentence this app does not write. */}
+            (what this app is allowed to do with your data). The description is concrete about what
+            leaves and what cannot, because "helps us improve the app" is the sentence this app does not
+            write. Under it, debug mode (023), which answers the same question differently: an error
+            report is automatic and stripped to almost nothing; a debug bundle is a file you make
+            deliberately, can read, and hand over yourself. */}
         <Section label={t('settings.diagnostics')}>
-          <Card flexDirection="row"
-            alignItems="center"
-            gap={12}
-            paddingVertical={12}
-            paddingHorizontal={14}
-          >
-            <YStack flex={1}>
-              <RowTitle>{t('settings.telemetry.title')}</RowTitle>
-              <Meta
-                color={theme.textFaint}
-              >
-                {t(
-                  telemetry
-                    ? 'settings.telemetry.desc'
-                    : 'settings.telemetry.desc.off',
-                )}
-              </Meta>
-            </YStack>
-            <Toggle
-              value={telemetry === true}
-              onChange={setTelemetry}
-              label={t('settings.telemetry.title')}
-              testID="telemetry-toggle"
-            />
-          </Card>
-
-          {/* 023, under the error-report toggle because it answers the same question differently.
-              An error report is automatic and stripped to almost nothing; a debug bundle is a file
-              you make deliberately, can read, and hand over yourself. Someone who has just read
-              what telemetry may send is exactly the person who should find this next. */}
-          <Card
-            marginTop={10}
-            overflow="hidden"
-          >
-            <AboutRow last onPress={onOpenDebug}>
-              <YStack flex={1}>
-                <RowTitle>{t('settings.debug')}</RowTitle>
-                <Meta
-                  color={theme.textFaint}
-                >
-                  {t('settings.debug.row.desc')}
-                </Meta>
-              </YStack>
-              {/* This row OPENS a screen, so it carries the same mark as every other row that
-                  does. It was the one exception, which read as "this one does something else"
-                  to anyone scanning the column of chevrons down the right-hand edge. */}
-              <ChevronRightIcon size={18} color={theme.textFaint} />
-            </AboutRow>
+          <Card>
+            <CardRow last={false}>
+              <Well name="bell" />
+              <RowText
+                title={t('settings.telemetry.title')}
+                subtitle={t(telemetry ? 'settings.telemetry.desc' : 'settings.telemetry.desc.off')}
+              />
+              <Toggle
+                value={telemetry === true}
+                onChange={setTelemetry}
+                label={t('settings.telemetry.title')}
+                testID="telemetry-toggle"
+              />
+            </CardRow>
+            <CardRow last onPress={onOpenDebug}>
+              <Well name="settings" />
+              <RowText title={t('settings.debug')} subtitle={t('settings.debug.row.desc')} />
+              <ChevronRightIcon size={18} color={theme.textMuted} />
+            </CardRow>
           </Card>
         </Section>
 
         {/* 006. A row rather than a card of controls: backup has a password to reveal, a restore
             list and a scope statement, and cramming those beside the theme picker would bury all
-            three. The row carries its state so "am I backed up?" is answerable without opening it. */}
+            three. */}
         <Section label={t('backup')}>
-          <Card
-            overflow="hidden"
-          >
-            <AboutRow last onPress={onOpenBackup}>
-              <YStack flex={1}>
-                <RowTitle>{t('backup.toggle')}</RowTitle>
-                <Meta
-                  color={theme.textFaint}
-                >
-                  {t('backup.row.desc')}
-                </Meta>
-              </YStack>
-              <ChevronRightIcon size={18} color={theme.textFaint} />
-            </AboutRow>
+          <Card>
+            <CardRow last onPress={onOpenBackup}>
+              <Well name="archive" />
+              <RowText title={t('backup.toggle')} subtitle={t('backup.row.desc')} />
+              <ChevronRightIcon size={18} color={theme.textMuted} />
+            </CardRow>
           </Card>
         </Section>
 
-        {/* One card, six rows, hairline-separated (design). The version row is a VALUE row; the rest
-            navigate - the privacy-policy and source-code rows leave the app, so they carry the
-            external-link mark rather than a chevron. */}
+        {/* The version row is a VALUE row; the rest navigate - the privacy-policy and source-code rows
+            leave the app, so they carry the external-link mark rather than a chevron. */}
         <Section label={t('settings.about')}>
-          <Card
-            overflow="hidden"
-          >
-            <AboutRow last={false}>
-              <RowTitle>{t('settings.version')}</RowTitle>
-              <Value color={theme.textFaint}>{APP_VERSION}</Value>
-            </AboutRow>
+          <Card>
+            <CardRow last={false}>
+              <RowTitle flex={1}>{t('settings.version')}</RowTitle>
+              <Small color={theme.textMuted}>{APP_VERSION}</Small>
+            </CardRow>
             {/* Under the version it describes (029): what changed in it and before it. */}
-            <AboutRow last={false} onPress={onOpenChangelog}>
-              <RowTitle>{t('settings.whatsNew')}</RowTitle>
-              <ChevronRightIcon size={18} color={theme.textFaint} />
-            </AboutRow>
-            <AboutRow last={false} onPress={() => onOpenFaq()}>
-              <RowTitle>{t('settings.faq')}</RowTitle>
-              <ChevronRightIcon size={18} color={theme.textFaint} />
-            </AboutRow>
-            <AboutRow last={false} onPress={onOpenLicences}>
-              <RowTitle>{t('settings.licences')}</RowTitle>
-              <ChevronRightIcon size={18} color={theme.textFaint} />
-            </AboutRow>
-            {/* The policy in the app's language (2026-09-24). No URL beside it, unlike the source-code
-                row: the address is the repository's again, and the title is already long. */}
-            <AboutRow last={false} onPress={() => openExternal(privacyPolicyUrl(locale))}>
-              <RowTitle>{t('settings.privacy')}</RowTitle>
-              <XStack alignItems="center" gap={8} flexShrink={0}>
-                <ExternalLinkIcon size={17} color={theme.textFaint} />
-              </XStack>
-            </AboutRow>
-            <AboutRow last onPress={() => openExternal(REPOSITORY_URL)}>
-              <RowTitle>{t('settings.sourceCode')}</RowTitle>
-              {/* `AboutRow` is space-between, and NEITHER side could shrink - so at a large font
-                  scale this pair simply grew past the card, clipping the URL mid-word and pushing
-                  the external-link mark off the edge entirely. The mark is the part that says where
-                  the row goes, so it is the last thing that should be allowed to leave: the URL
-                  ellipsises instead. `minWidth={0}` is what lets a flex child shrink below its
-                  content at all; without it `flexShrink` does nothing here. */}
-              <XStack alignItems="center" gap={8} flexShrink={1} minWidth={0}>
-                <Caption color={theme.textFaint} numberOfLines={1} flexShrink={1}>
-                  {REPOSITORY_LABEL}
-                </Caption>
-                <ExternalLinkIcon size={17} color={theme.textFaint} />
-              </XStack>
-            </AboutRow>
+            <CardRow last={false} onPress={onOpenChangelog}>
+              <RowTitle flex={1}>{t('settings.whatsNew')}</RowTitle>
+              <ChevronRightIcon size={18} color={theme.textMuted} />
+            </CardRow>
+            <CardRow last={false} onPress={() => onOpenFaq()}>
+              <RowTitle flex={1}>{t('settings.faq')}</RowTitle>
+              <ChevronRightIcon size={18} color={theme.textMuted} />
+            </CardRow>
+            <CardRow last={false} onPress={onOpenLicences}>
+              <RowTitle flex={1}>{t('settings.licences')}</RowTitle>
+              <ChevronRightIcon size={18} color={theme.textMuted} />
+            </CardRow>
+            {/* The policy in the app's language (2026-09-24). */}
+            <CardRow last={false} onPress={() => openExternal(privacyPolicyUrl(locale))}>
+              <RowTitle flex={1}>{t('settings.privacy')}</RowTitle>
+              <ExternalLinkIcon size={17} color={theme.textMuted} />
+            </CardRow>
+            {/* The address under the title (R13), where a large font wraps it instead of pushing the
+                external-link mark off the card. */}
+            <CardRow last onPress={() => openExternal(REPOSITORY_URL)}>
+              <RowText title={t('settings.sourceCode')} subtitle={REPOSITORY_LABEL} />
+              <ExternalLinkIcon size={17} color={theme.textMuted} />
+            </CardRow>
           </Card>
         </Section>
       </ScrollView>
@@ -515,72 +442,3 @@ export function SettingsScreen({
     </YStack>
   );
 }
-
-/**
- * A settings-card row title - 15/600 (design). The SemiBold FACE has to be named: Public Sans is
- * 4-style grouped, so `fontWeight="600"` alone can't reach it from the Regular family (RN would render
- * 400). Same metrics on every card row (constitution V).
- */
-function RowTitle({ children, flex }: { readonly children: ReactNode; readonly flex?: number }) {
-  const theme = useTheme();
-  return (
-    <Body fontWeight="600"
-      flex={flex}
-      color={theme.text}
-    >
-      {children}
-    </Body>
-  );
-}
-
-/** A grouped-settings section: an uppercase faint label above its card(s). */
-/**
- * A row inside the `O aplikaci` card - 13/14 padding with a hairline under every row but the last
- * (design). Rows without `onPress` are plain value rows and take no press treatment or button role.
- */
-function AboutRow({
-  children,
-  last,
-  onPress,
-}: {
-  readonly children: ReactNode;
-  readonly last: boolean;
-  readonly onPress?: () => void;
-}) {
-  const theme = useTheme();
-  return (
-    <XStack
-      alignItems="center"
-      justifyContent="space-between"
-      gap={10}
-      paddingVertical={13}
-      paddingHorizontal={14}
-      borderBottomWidth={last ? 0 : 1}
-      borderBottomColor={theme.border}
-      {...(onPress
-        ? {
-            onPress,
-            accessibilityRole: 'button' as const,
-            pressStyle: { backgroundColor: theme.surfaceAlt },
-          }
-        : null)}
-    >
-      {children}
-    </XStack>
-  );
-}
-
-function Section({ label, children }: { readonly label: string; readonly children: ReactNode }) {
-  return (
-    <YStack marginBottom={24} gap={10}>
-      <Overline
-        accessibilityRole="header"
-        marginLeft={4}
-      >
-        {label}
-      </Overline>
-      {children}
-    </YStack>
-  );
-}
-

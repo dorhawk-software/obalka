@@ -16,6 +16,7 @@ import { chipTone } from '../../theme/chipTone';
 import { DeliveryStateIcon } from '../../features/messages/screens/DeliveryStateIcon';
 import type { MessageStateKind } from '../../features/messages/state/messageState';
 import { t } from '../../i18n/strings';
+import { typesetFor } from '../../i18n/typeset';
 import { useLocale } from './SettingsProvider';
 import { SubScreen } from './SubScreen';
 import { DebugRecordingFrame } from '../DebugRecordingStrip';
@@ -150,7 +151,7 @@ function FaqContent({ onBack, focus }: FaqScreenProps) {
               testID={`faq-${id}`}
             >
               <BodyStrong flex={1} color={theme.text}>
-                {entry.question}
+                {typesetFor(locale, entry.question)}
               </BodyStrong>
               {/* Fixed box: the +/− swap must not change the row's height (Principle V). */}
               <XStack
@@ -174,7 +175,7 @@ function FaqContent({ onBack, focus }: FaqScreenProps) {
                     key={i}
                     color={theme.bodyText}
                   >
-                    {paragraph}
+                    {typesetFor(locale, paragraph)}
                   </Small>
                 ))}
                 {id === FAQ_LEGEND_ID ? <DeliveryLegend /> : null}
@@ -205,7 +206,7 @@ function FaqContent({ onBack, focus }: FaqScreenProps) {
             <InfoIcon size={16} color={theme.textFaint} />
           </LineIcon>
           <Meta flex={1} color={theme.textFaint}>
-            {FAQ_DISCLAIMER[locale]}
+            {typesetFor(locale, FAQ_DISCLAIMER[locale])}
           </Meta>
         </XStack>
       {renderGroup('isds')}

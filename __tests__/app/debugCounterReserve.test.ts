@@ -95,8 +95,8 @@ describe('the recording counter s reserve', () => {
 
   it('holds the counter s largest figures, not only the widest glyphs', () => {
     // The reserve is built from what the recorder can reach; these are the far ends it was built for.
-    expect(recordingCounter(MAX_ENTRIES, MAX_BYTES)).toBe('Zaznamenává se · 4000 záznamů · 4.0 MB');
-    expect(recordingCounter(3888, 1024 * 1024 - 1)).toBe('Zaznamenává se · 3888 záznamů · 1024 kB');
+    expect(recordingCounter(MAX_ENTRIES, MAX_BYTES)).toBe('Zaznamenává se · 4000 záznamů · 4,0\u00A0MB');
+    expect(recordingCounter(3888, 1024 * 1024 - 1)).toBe('Zaznamenává se · 3888 záznamů · 1024\u00A0kB');
     expect(plural(Number(words(recordingCounterReserve())[3]))).toBe('many');
   });
 

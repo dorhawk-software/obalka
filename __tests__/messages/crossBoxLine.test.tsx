@@ -304,7 +304,7 @@ describe('the line', () => {
     const { view } = await mount([dueIn(4)]);
     await waitFor(() => view.getByTestId('crossBoxLine'));
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'V ostatních schránkách připomínka za 4 dny',
+      'V\u00A0ostatních schránkách připomínka za 4 dny',
     );
   });
 
@@ -321,11 +321,11 @@ describe('the line', () => {
     const boxes = [dueIn(1)];
     const view = await render(tree(boxes, onPress, NOW));
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'V ostatních schránkách připomínka zítra',
+      'V\u00A0ostatních schránkách připomínka zítra',
     );
     await view.rerender(tree(boxes, onPress, on(1)));
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'V ostatních schránkách připomínka dnes',
+      'V\u00A0ostatních schránkách připomínka dnes',
     );
   });
 
@@ -343,13 +343,13 @@ describe('the line', () => {
 
     await view.rerender(tree([box({ unread: 2, refreshing: true })], onPress));
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'V ostatních schránkách 2 nepřečtené · načítá se…',
+      'V\u00A0ostatních schránkách 2 nepřečtené · načítá se…',
     );
     expect(shape()).toEqual(before);
 
     await view.rerender(tree([box({ unread: 2 })], onPress));
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'V ostatních schránkách 2 nepřečtené',
+      'V\u00A0ostatních schránkách 2 nepřečtené',
     );
     expect(shape()).toEqual(before);
   });
@@ -413,7 +413,7 @@ describe('fitting the line (2026-09-15)', () => {
     unreachable({ boxId: 'b', unread: 2 }),
     unreachable({ boxId: 'c', unread: 1 }),
   ];
-  const WHOLE = 'V ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · 2 nenačtené';
+  const WHOLE = 'V\u00A0ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · 2 nenačtené';
 
   it('shows every clause when all of them fit', async () => {
     const { view } = await mount(reported());
@@ -426,7 +426,7 @@ describe('fitting the line (2026-09-15)', () => {
   });
 
   it('shows the first two whole and counts the one left out', async () => {
-    const two = 'V ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · +1';
+    const two = 'V\u00A0ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · +1';
     // Room for the two and their count, and not for all three.
     const { view } = await mount(reported());
     await lay(view, { room: sixWide(two) + 2 });
@@ -437,7 +437,7 @@ describe('fitting the line (2026-09-15)', () => {
   });
 
   it('shows only the first when that is all that fits, and counts the rest', async () => {
-    const first = 'V ostatních schránkách 1 doručeno fikcí · +2';
+    const first = 'V\u00A0ostatních schránkách 1 doručeno fikcí · +2';
     const { view } = await mount(reported());
     await lay(view, { room: sixWide(first) + 2 });
     expect(drawn(view)).toBe(first);
@@ -450,14 +450,14 @@ describe('fitting the line (2026-09-15)', () => {
       box({ boxId: 'b', unread: 3, fiction: 1, refreshing: true }),
       unreachable({ boxId: 'c', unread: 1 }),
     ]);
-    const onlyOverdue = 'V ostatních schránkách 1 prošlá připomínka · +6';
+    const onlyOverdue = 'V\u00A0ostatních schránkách 1 prošlá připomínka · +6';
     await lay(everything.view, { room: sixWide(onlyOverdue) + 2 });
     expect(drawn(everything.view)).toBe(onlyOverdue);
   });
 
   it('shortens its prefix before it cuts the news (031)', async () => {
     // Seen on a 411 dp phone: the board's "V ostatních schránkách" left "naposledy 2 nepřečt…".
-    const long = 'V ostatních schránkách 1 doručeno fikcí · +2';
+    const long = 'V\u00A0ostatních schránkách 1 doručeno fikcí · +2';
     const { view } = await mount(reported());
     await lay(view, { room: sixWide(long) + 2 });
     expect(drawn(view)).toBe(long);
@@ -506,7 +506,7 @@ describe('fitting the line (2026-09-15)', () => {
     const { view } = await mount(reported());
     await lay(view, { room: sixWide(WHOLE) });
     expect(drawn(view)).toBe(
-      'V ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · +1',
+      'V\u00A0ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · +1',
     );
     await lay(view, { room: sixWide(WHOLE) + 1.5 });
     expect(drawn(view)).toBe(WHOLE);
@@ -522,7 +522,7 @@ describe('fitting the line (2026-09-15)', () => {
     expectOneLine(view);
 
     // The room alone decides nothing: the words have to be measured too.
-    const two = 'V ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · +1';
+    const two = 'V\u00A0ostatních schránkách 1 doručeno fikcí · naposledy 3 nepřečtené · +1';
     await fireEvent(view.getByTestId('crossBoxSlot'), 'layout', layout(sixWide(two) + 2));
     expect(summary()).toHaveStyle({ opacity: 0 });
 
@@ -541,7 +541,7 @@ describe('fitting the line (2026-09-15)', () => {
     // A larger text size: native lays the same words out wider, and fewer of them fit.
     const eightWide = (text: string) => text.length * 8;
     await lay(view, { font: eightWide });
-    expect(drawn(view)).toBe('V ostatních schránkách 1 doručeno fikcí · +2');
+    expect(drawn(view)).toBe('V\u00A0ostatních schránkách 1 doručeno fikcí · +2');
 
     // Turned to landscape: more room, and all of it fits again.
     await lay(view, { room: 800, font: eightWide });
@@ -564,8 +564,8 @@ describe('fitting the line (2026-09-15)', () => {
     await lay(view, { room: 500 });
     // What assistive technology can reach does not include the column at all...
     expect(view.queryByTestId('crossBoxMeasure')).toBeNull();
-    expect(view.queryAllByText('V ostatních schránkách 1 doručeno fikcí')).toHaveLength(0);
-    expect(view.getAllByText('V ostatních schránkách 1 doručeno fikcí', HIDDEN)).toHaveLength(1);
+    expect(view.queryAllByText('V\u00A0ostatních schránkách 1 doručeno fikcí')).toHaveLength(0);
+    expect(view.getAllByText('V\u00A0ostatních schránkách 1 doručeno fikcí', HIDDEN)).toHaveLength(1);
     const column = view.getByTestId('crossBoxMeasure', HIDDEN);
     expect(column.props.accessibilityElementsHidden).toBe(true); // iOS
     expect(column.props.importantForAccessibility).toBe('no-hide-descendants'); // Android
@@ -599,7 +599,7 @@ describe('fifteen boxes (031: words on the paper, no dots)', () => {
     await waitFor(() => view.getByTestId('crossBoxLine'));
     expect(view.queryByTestId('crossBoxDots')).toBeNull();
     expect(view.getByTestId('crossBoxSummary')).toHaveTextContent(
-      'V ostatních schránkách 30 nepřečtených',
+      'V\u00A0ostatních schránkách 30 nepřečtených',
     );
   });
 });
@@ -648,5 +648,5 @@ it('reads the nearest deadline to a screen reader too', async () => {
   const { view } = await mount([dueIn(1)]);
   await waitFor(() => view.getByTestId('crossBoxLine'));
   const label = view.getByTestId('crossBoxLine').props.accessibilityLabel as string;
-  expect(label).toContain('V ostatních schránkách připomínka zítra');
+  expect(label).toContain('V\u00A0ostatních schránkách připomínka zítra');
 });

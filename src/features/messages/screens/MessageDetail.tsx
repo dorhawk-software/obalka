@@ -27,7 +27,7 @@ import { useContentBottom } from '../../../theme/useContentBottom';
 // - freezing touches across the WHOLE detail screen. gesture-handler uses native recognisers, no stuck
 // responder.
 import { TestEnvBanner } from '../../../app/TestEnvBanner';
-import { plural, t } from '../../../i18n/strings';
+import { formatBytes, plural, t } from '../../../i18n/strings';
 import { reauthKey } from '../../accounts/state/reauthCopy';
 import {
   type DataBoxAccount,
@@ -59,7 +59,7 @@ import { DottedRail } from '../../../theme/DottedRail';
 import type { ScanSuggestion } from '../../../services/scan/attachmentScan';
 import type { Reminder } from '../state/reminders';
 import { DeliveryStateIcon } from './DeliveryStateIcon';
-import { AttachmentRow, formatBytes } from './AttachmentRow';
+import { AttachmentRow } from './AttachmentRow';
 import { AddressLines } from './AddressLines';
 import { DeliveryRecordSlip } from './DeliveryRecord';
 import { DetailBand, useTuck } from './DetailBand';

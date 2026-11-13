@@ -229,7 +229,7 @@ describe('choosing which backup goes (026 US3)', () => {
     });
     expect(view.getByText(t('backup.docs.chip.all'))).toBeTruthy();
     expect(view.getByText(t('backup.docs.chip.none'))).toBeTruthy();
-    expect(view.getByText(new RegExp(t('backup.docs.missing.few', { n: 3 })))).toBeTruthy();
+    expect(view.getByText(new RegExp(t('backup.docs.missing.few', { n: 3 }).replace(/\u00A0/g, ' ')))).toBeTruthy();
   });
 
   it('sends the one chosen, and says which it is under the phrase', async () => {
@@ -814,7 +814,7 @@ describe('counts both phones can be read against (US1 scenarios 1 and 3)', () =>
     expect(view.getByTestId('transfer-contents').props.children).toBe(
       t('transfer.phrase.contents', {
         what: '3 schránky, 19 zpráv, 9 příloh',
-        size: '2,3 MB',
+        size: '2,3\u00A0MB',
       }),
     );
     await view.unmount();
@@ -827,7 +827,7 @@ describe('counts both phones can be read against (US1 scenarios 1 and 3)', () =>
     });
     await waitFor(() => expect(again.getByTestId('transfer-contents')).toBeTruthy());
     expect(again.getByTestId('transfer-contents').props.children).toBe(
-      t('transfer.phrase.size', { size: '2,3 MB' }),
+      t('transfer.phrase.size', { size: '2,3\u00A0MB' }),
     );
   });
 

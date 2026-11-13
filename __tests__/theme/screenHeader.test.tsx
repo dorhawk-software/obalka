@@ -108,15 +108,23 @@ describe('ScreenHeader', () => {
     expect(view.queryByText('Nastavení')).toBeNull();
   });
 
-  it('ends at its own tone, with no hairline under it (031 boards, the owner\'s catch 2026-11-13)', async () => {
-    // Every board draws the bar as surfaceAlt over the paper and nothing more; the line the code drew
-    // under it was spotted on the search screen beside its board.
-    const view = await wrap(<ScreenHeader title="Nastavení" onBack={() => {}} />);
-    const root = view.toJSON() as { children: { props: { style?: unknown } }[] };
-    const lines = root.children.filter(c => {
+  // Every board draws a hairline under the bar, but the archive search: its field is its own well
+  // and the bar ends at its tone (031 R4). The owner caught the search's line beside its board
+  // (2026-11-13); the line came off every screen for a day, wrongly, before the boards were re-read.
+  const lines = (root: unknown) =>
+    (root as { children: { props: { style?: unknown } }[] }).children.filter(c => {
       const flat = (StyleSheet.flatten(c.props.style as never) ?? {}) as { height?: number };
       return flat.height === 1;
     });
-    expect(lines).toEqual([]);
+
+  it('draws the hairline under the bar', async () => {
+    const view = await wrap(<ScreenHeader title="Nastavení" onBack={() => {}} />);
+    expect(lines(view.toJSON())).toHaveLength(1);
   });
+
+  it('leaves it out where the board does: the search', async () => {
+    const view = await wrap(<ScreenHeader hairline={false} onBack={() => {}} content={<View />} />);
+    expect(lines(view.toJSON())).toEqual([]);
+  });
+
 });

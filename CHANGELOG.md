@@ -66,10 +66,16 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   dnem a dvěma řádky textu; synchronizaci ukazuje tenký pruh pod upozorněními, který nic neposune.
 - **Když není co ukázat, obálka ukáže proč.** Odeslané bez zpráv mají obálku s prázdnou známkou,
   schránka, která se nenačetla, obálku zalepenou, schránka čekající na přihlášení prázdné okénko a
-  hledání stoh obálek. Pole hledání má lupu a horní lišta obrazovek už pod sebou nemá čáru.
+  hledání stoh obálek. Pole hledání má lupu a lišta nad hledáním končí bez čáry.
+- **Karty jsou listy papíru, které mají váhu.** Leží na papíře s měkkým stínem a bez rámečku. V
+  Nastavení má každá volba svou značku v jamce a vybraná možnost modrý kroužek s tečkou; vypnutý
+  přepínač je teplý jako papír.
 
 ### Opraveno
 
+- **Jednopísmenná slova nezůstávají na konci řádku.** "v", "k", "s", "o" a další jdou na nový řádek se
+  slovem za sebou a číslo se nerozdělí od jednotky ("4,2 MB"), v nastavení, nápovědě i v Co je nového.
+  Režim ladění píše velikost s desetinnou čárkou.
 - **Prázdná schránka ukáže prázdnou obálku, i když v ostatních schránkách něco čeká.** Dřív byl pod
   řádkem o ostatních schránkách jen prázdný papír.
 - **Co píšete do polí, je písmem aplikace.** Na Androidu pole psala systémovým písmem.

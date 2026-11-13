@@ -22,6 +22,7 @@ export function Toggle({
   onChange,
   label,
   disabled,
+  rowDims = false,
   testID,
 }: {
   readonly value: boolean;
@@ -29,6 +30,12 @@ export function Toggle({
   /** What this switch controls, as the screen reader should announce it. */
   readonly label: string;
   readonly disabled?: boolean;
+  /**
+   * The row it sits in already greys itself while it cannot be used (`CardRow dimmed`): the switch
+   * then takes the row's 0.55 alone, not its own 0.6 on top - twice, it went pale with a grey knob
+   * beside the board's (031 R13).
+   */
+  readonly rowDims?: boolean;
   readonly testID?: string;
 }) {
   const theme = useTheme();
@@ -49,7 +56,7 @@ export function Toggle({
       // survives; Material 3's own unselected switch carries the same outline.
       borderWidth={value ? 0 : 1}
       borderColor={value ? 'transparent' : theme.trackOffBorder}
-      opacity={disabled ? 0.6 : 1}
+      opacity={disabled && !rowDims ? 0.6 : 1}
       // 28 tall is the design's switch, not the target a finger gets: the slop takes it to 48 without
       // touching a pixel of it.
       hitSlop={touchSlop({ width: 48, height: 28 })}

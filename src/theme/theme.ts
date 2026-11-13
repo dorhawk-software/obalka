@@ -60,7 +60,7 @@ export interface Theme {
   /** Draft marker (compose draft tile) - the design's violet, also a sender-avatar hue. */
   violet: string;
   violetSoft: string;
-  /** Switch OFF track (design `trackOff`); the ON track is `blue`. */
+  /** Switch OFF track: the boards' `hairline-strong` in both themes (031 R3, R13, R14); ON is `blue`. */
   trackOff: string;
   /**
    * Hairline around the switch's OFF track.
@@ -228,7 +228,7 @@ export const lightTheme: Theme = {
   goldBorder: '#EAD9A8',
   violet: '#5A4CA8',
   violetSoft: '#E7E6F6',
-  trackOff: '#CFC4AE',
+  trackOff: '#DCD2BF',
   trackOffBorder: '#8E7F62', // 3.63:1 on surface/surfaceAlt - the OFF switch's only boundary
   goldInk: '#A87400', // 3.40:1 on every ground - rings/inks the gold that has to be seen
   success: '#2E7D52',
@@ -312,7 +312,7 @@ export const darkTheme: Theme = {
   violet: '#B0A4EE', // brightened for the warm-dark base (AA on violetSoft)
   violetSoft: '#2C2545', // derived tinted-dark violet surface
   trackOff: '#4A4236', // design dark `trackOff`
-  trackOffBorder: '#877B67', // 3.66:1 on surface/surfaceAlt
+  trackOffBorder: '#8E7F62', // the boards' edge in both themes; 3.97:1 on surface
   goldInk: '#E8A100', // = `gold`: it already measures 6.26:1 here, so every ring draws nothing
   success: '#57B484',
   danger: '#E27A73',

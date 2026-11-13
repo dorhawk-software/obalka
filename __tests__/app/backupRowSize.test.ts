@@ -23,13 +23,13 @@ describe('the size on a backup row', () => {
       backupSizeText(
         manifest({ tiers: { metadata: true, documents: true }, documentBytes: 150 * 1024 }),
       ),
-    ).toBe(t('backup.size.documents', { size: '14 kB', docSize: '150 kB' }));
+    ).toBe(t('backup.size.documents', { size: '14\u00A0kB', docSize: '150\u00A0kB' }));
   });
 
   it('is the archive alone for a backup without attachments, or with none stored', () => {
-    expect(backupSizeText(manifest({}))).toBe('14 kB');
+    expect(backupSizeText(manifest({}))).toBe('14\u00A0kB');
     expect(
       backupSizeText(manifest({ tiers: { metadata: true, documents: true }, documentBytes: 0 })),
-    ).toBe('14 kB');
+    ).toBe('14\u00A0kB');
   });
 });

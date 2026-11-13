@@ -286,3 +286,9 @@ they wait for their own work. The owner decided "not now" on 2026-11-12.
   boundary at the root with a fallback screen that offers to start again, reported only with consent;
   the screen gets a board on the canvas first. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
   I139)
+- **Android sets Public Sans about 2.5% wider than the boards (2026-11-13, left as it is).** The same
+  font file measures the same in Chrome (207.98 against 207.70 px for one line), so the difference is
+  Android's text layout, not the app's. A line on a phone can therefore wrap one word earlier than on
+  its board ("chyby:" in Settings › Diagnostika). Decided to leave it: tightening letter-spacing per
+  platform would draw every other line narrower than the design, and the walks compare everything
+  else at full resolution. ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I43)

@@ -48,7 +48,7 @@ import { SwipeableRow } from '../../../theme/SwipeableRow';
 // gesture-handler Pressable for the inline trash so it coordinates with the row's swipe/tap gestures.
 import { Pressable as GHPressable } from 'react-native-gesture-handler';
 import { useSnackbar } from '../../../app/Snackbar';
-import { t } from '../../../i18n/strings';
+import { formatBytes, t } from '../../../i18n/strings';
 import { reauthKey } from '../../accounts/state/reauthCopy';
 import { portalUrl } from '../../../services/isds/endpoints';
 import type {
@@ -98,19 +98,6 @@ function newDraftId(): string {
 const SEARCH_DEBOUNCE_MS = 400;
 const MIN_SEARCH_CHARS = 2;
 
-/**
- * B / kB / MB with the Czech decimal comma, as the detail, backup and transfer screens write sizes.
- * It now also fills sentences ("Načítání 1,5 MB z 3,0 MB"), where "1.5 MB" read as a typo.
- */
-function formatBytes(n: number): string {
-  if (n >= 1024 * 1024) {
-    return `${(n / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`;
-  }
-  if (n >= 1024) {
-    return `${Math.round(n / 1024)} kB`;
-  }
-  return `${n} B`;
-}
 
 export interface ComposeScreenProps {
   /** The sender (027). Changing it keeps the draft: recipient, subject, text and attachments. */

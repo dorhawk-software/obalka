@@ -75,9 +75,9 @@ describe('counted phrases', () => {
     expect(pruneBody(7, 5)).toContain('smaže 7 nejstarších záloh');
     expect(pruneBody(1, 1)).toContain('smaže 1 nejstarší záloha');
     // And the held backups that stay beside them (2026-09-15), with a verb of their own.
-    expect(pruneBody(1, 1, 1)).toContain(' Záloha s přílohami, které se nepodařilo obnovit, zůstane také.');
-    expect(pruneBody(1, 1, 3)).toContain(' 3 zálohy s přílohami, které se nepodařilo obnovit, zůstanou také.');
-    expect(pruneBody(1, 1, 5)).toContain(' 5 záloh s přílohami, které se nepodařilo obnovit, zůstane také.');
+    expect(pruneBody(1, 1, 1)).toContain(' Záloha s\u00A0přílohami, které se nepodařilo obnovit, zůstane také.');
+    expect(pruneBody(1, 1, 3)).toContain(' 3 zálohy s\u00A0přílohami, které se nepodařilo obnovit, zůstanou také.');
+    expect(pruneBody(1, 1, 5)).toContain(' 5 záloh s\u00A0přílohami, které se nepodařilo obnovit, zůstane také.');
     expect(pruneBody(3, 2)).not.toContain('také');
   });
 
@@ -112,10 +112,10 @@ describe('counted phrases', () => {
 
   it('agrees in the sentence a verify ends with (2026-09-24)', () => {
     // One fixed sentence with bare numbers read "1 schránky, 1 zpráv" for a backup of one box.
-    expect(verifyText({ accounts: 1, messages: 1 })).toBe('Záloha je v pořádku: 1 schránka, 1 zpráva.');
-    expect(verifyText({ accounts: 3, messages: 4 })).toBe('Záloha je v pořádku: 3 schránky, 4 zprávy.');
+    expect(verifyText({ accounts: 1, messages: 1 })).toBe('Záloha je v\u00A0pořádku: 1 schránka, 1 zpráva.');
+    expect(verifyText({ accounts: 3, messages: 4 })).toBe('Záloha je v\u00A0pořádku: 3 schránky, 4 zprávy.');
     expect(verifyText({ accounts: 5, messages: 19 })).toBe(
-      'Záloha je v pořádku: 5 schránek, 19 zpráv.',
+      'Záloha je v\u00A0pořádku: 5 schránek, 19 zpráv.',
     );
   });
 

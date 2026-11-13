@@ -23,7 +23,7 @@ import { ProgressBar, WaitingBar } from '../../theme/ProgressBar';
 import { QrCode } from '../../theme/QrCode';
 import { useTheme } from '../../theme/ThemeProvider';
 import { BackupIcon, CameraIcon, CloseIcon, ShieldKeyIcon } from '../../theme/icons';
-import { plural, t } from '../../i18n/strings';
+import { formatBytes, plural, t } from '../../i18n/strings';
 import { haptics } from '../../services/haptics';
 import { SubScreen } from './SubScreen';
 import { Card, CardRow, RowTitle, Section } from './SettingsSection';
@@ -64,7 +64,7 @@ import {
   documentsChipText,
   documentsMissingText,
 } from './BackupDocumentsChip';
-import { TransferDialogs, formatBytes, formatDateTime } from './TransferDialogs';
+import { TransferDialogs, formatDateTime } from './TransferDialogs';
 
 /** Which of the three honest things to say about the route (FR-007). */
 export function routeKey(relayed: boolean | null): string {
