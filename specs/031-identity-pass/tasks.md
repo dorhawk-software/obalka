@@ -80,7 +80,9 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 
 - [ ] I14 Inbox header, one box (avatar 36, name, identity line, search, segmented) - **D**: board
   "Inbox - the envelope front" (flap band, window switcher, segmented on blue).
-- [ ] I15 Inbox header, all boxes (Layers tile, subtitle) - **X**: R5.
+- [x] I15 Inbox header, all boxes (Layers tile, subtitle) - **X**: R5. Fixed 2026-11-13: `BoxStackTile`, the
+  boxes' envelopes fanned (3 and 8 degrees, the board's 10 corner rounded to 11), the count on the
+  front one; "Sloučený archiv · 3 schránky", no unread count (the board's).
 - [ ] I16 Inbox strips: reauth, password expiry, unified missing, stale, offline - **X**: not drawn under
   the envelope header. R5.
 - [ ] I17 Attention block and its rows - **D**: board Inbox (sheets with the second envelope's edge,
@@ -173,7 +175,11 @@ surface below changes too, and the owner has seen none of them in the identity. 
   ignores Reduce Motion (I73). R9. Each use is a line, I84-I105.
 - [ ] I53 `BottomSheet` (Language, What's new, Term picker, Sender) - **D**: the grabber, the sheet's
   surface and shadow from Cards B. R9.
-- [ ] I54 Box switcher sheet, `BoxRow`, `UnifiedRow` - **D** (avatar, Schránky glyph). R5 shows it.
+- [x] I54 Box switcher sheet, `BoxRow`, `UnifiedRow` - **D** (avatar, Schránky glyph). R5 shows it. Fixed
+  2026-11-13: envelope tiles at 40, the merged entry's fanned tile (no summed badge), the check in gold
+  ink, the add row filled (sunken, 52, radius 12), the offset settings glyph. Kept against the board,
+  both from the owner's own reports: the alert mark on a broken box's tile and "· Poslední známý
+  stav" after its state; for the canvas's sync-back.
 - [ ] I55 Box overflow menu (rename, change password, remove) - **D**: the menu's surface. R9.
 - [ ] I56 `AliasEditor` (avatar preview, colour swatches) - **D** (avatar). R9.
 - [ ] I57 `TermPicker` - **D** (icons: Připomínka). R9.

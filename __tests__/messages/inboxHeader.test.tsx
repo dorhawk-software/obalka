@@ -41,7 +41,11 @@ const ACCOUNT = {
 
 function header(
   isDark: boolean,
-  over: Partial<{ folder: MessageFolder; sentNews: number; unifiedCount: number | null }> = {},
+  over: Partial<{
+    folder: MessageFolder;
+    sentNews: number;
+    unified: { count: number; colors: string[] } | null;
+  }> = {},
 ) {
   const calls = { switcher: 0, search: 0, folder: [] as MessageFolder[] };
   const view = render(
@@ -49,8 +53,7 @@ function header(
       <AppThemeProvider isDark={isDark}>
         <InboxHeader
           account={ACCOUNT}
-          unifiedCount={over.unifiedCount ?? null}
-          unreadShown={0}
+          unified={over.unified ?? null}
           isTestBox={false}
           folder={over.folder ?? 'received'}
           onFolder={f => calls.folder.push(f)}
@@ -129,11 +132,16 @@ describe.each([
     expect(style(v.getByTestId('messagesFolder-sent-dot')).backgroundColor).toBe(theme.flap);
   });
 
-  it('keeps the merged view out of the envelope tile: it is not one identity', async () => {
-    const { view } = header(isDark, { unifiedCount: 3 });
-    const all = nodes((await view).toJSON());
-    expect(all.some(n => n.type === 'RNSVGPath' && JSON.stringify(n.props.stroke) === brush(theme.envelopeFold))).toBe(
-      false,
-    );
+  it('shows all boxes as their envelopes fanned, the count on the front one (R5)', async () => {
+    const colors = ['#2563A6', '#12706A', '#5A4CA8'];
+    const v = await header(isDark, { unified: { count: 3, colors } }).view;
+    const tile = v.getByTestId('boxStackTile', { includeHiddenElements: true });
+    const stack = nodes(v.toJSON()).find(n => n.props.testID === 'boxStackTile');
+    const fills = nodes(stack).map(n => style(n).backgroundColor);
+    for (const color of colors) {
+      expect(fills).toContain(color);
+    }
+    expect(tile).toHaveTextContent('3');
+    expect(v.getByText('Sloučený archiv · 3 schránky')).toBeTruthy();
   });
 });

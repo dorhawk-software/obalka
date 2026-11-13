@@ -8,7 +8,7 @@ import { BodyStrong, Meta } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { fonts } from '../../../theme/typeScale';
 import { AlertIcon, CheckIcon } from '../../../theme/icons';
-import { Avatar } from '../../../theme/Avatar';
+import { EnvelopeTile } from '../../../theme/objects/Envelope';
 import { BoxOverflowMenu } from './BoxOverflowMenu';
 import { BoxIdentityLine } from './BoxIdentityLine';
 import { plural, t } from '../../../i18n/strings';
@@ -132,11 +132,8 @@ export function BoxRow({
       >
         {/* Design: the unread count OVERLAYS the avatar's top-right corner (not an inline pill). */}
         <YStack position="relative">
-          <Avatar
-            name={account.alias ?? account.label}
-            color={boxColor(account)}
-            size={42}
-          />
+          {/* The box's envelope, as in the inbox's window (031 R5). */}
+          <EnvelopeTile name={account.alias ?? account.label} color={boxColor(account)} size={40} />
           {unread > 0 ? (
             <XStack
               position="absolute"
@@ -238,7 +235,8 @@ export function BoxRow({
             </Meta>
           ) : null}
         </YStack>
-        {active ? <CheckIcon size={20} color={theme.gold} /> : null}
+        {/* In gold ink: the flap's gold itself does not show on the paper (031 R5). */}
+        {active ? <CheckIcon size={20} color={theme.goldInk} /> : null}
       </XStack>
       <BoxOverflowMenu
         account={account}

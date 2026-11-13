@@ -8,10 +8,10 @@ import { XStack, YStack } from '../../../theme/ui';
 import { Caption, Heading } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { SegmentedControl } from '../../../theme/SegmentedControl';
-import { ChevronDownIcon, LayersIcon } from '../../../theme/icons';
+import { ChevronDownIcon } from '../../../theme/icons';
 import { OffsetIcon } from '../../../theme/offsetIcons';
 import { Window } from '../../../theme/objects/Window';
-import { EnvelopeTile } from '../../../theme/objects/Envelope';
+import { BoxStackTile, EnvelopeTile } from '../../../theme/objects/Envelope';
 import { objectShadow } from '../../../theme/depth';
 import { envelopeShape } from '../../../theme/print';
 import { boxColor } from '../../../theme/boxColor';
@@ -36,8 +36,7 @@ export function headerFlapPath(width: number, height: number): string {
 
 export function InboxHeader({
   account,
-  unifiedCount,
-  unreadShown,
+  unified,
   isTestBox,
   folder,
   onFolder,
@@ -46,10 +45,9 @@ export function InboxHeader({
   onSearch,
 }: {
   readonly account: DataBoxAccount;
-  /** How many boxes the merged view merges; null in one box's inbox. */
-  readonly unifiedCount: number | null;
-  /** The merged view's unread count, held across reloads (MessageList). */
-  readonly unreadShown: number;
+  /** The boxes the merged view merges - how many, and their colours in the switcher's order; null in
+   * one box's inbox. */
+  readonly unified: { readonly count: number; readonly colors: readonly string[] } | null;
   readonly isTestBox: boolean;
   readonly folder: MessageFolder;
   readonly onFolder: (folder: MessageFolder) => void;
@@ -64,7 +62,6 @@ export function InboxHeader({
   // to meet it.
   const windowTop = useHeaderTop() + space.xs;
   const flap = envelopeShape.headerFlap;
-  const unified = unifiedCount != null;
   const name = unified ? t('unified.title') : account.alias ?? account.label;
   return (
     <View
@@ -115,20 +112,7 @@ export function InboxHeader({
             }}
           >
             {unified ? (
-              // An OUTLINED tile with a glyph, never an envelope: a merged view is not an identity.
-              // The merged header's own design is R5's.
-              <YStack
-                width={40}
-                height={40}
-                borderRadius={11}
-                borderWidth={1}
-                borderColor={theme.borderStrong}
-                backgroundColor={theme.surface}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <LayersIcon size={18} color={theme.textMuted} />
-              </YStack>
+              <BoxStackTile colors={unified.colors} count={unified.count} />
             ) : (
               <EnvelopeTile name={name} color={boxColor(account)} size={40} />
             )}
@@ -148,12 +132,7 @@ export function InboxHeader({
               </XStack>
               {unified ? (
                 <Caption fontWeight="400" color={theme.textMuted} numberOfLines={1}>
-                  {[
-                    t(`unified.subtitle.${plural(unifiedCount)}`, { n: unifiedCount }),
-                    unreadShown > 0 ? t(`attn.unread.${plural(unreadShown)}`, { n: unreadShown }) : null,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
+                  {`${t('unified.kind')} · ${t(`unified.subtitle.${plural(unified.count)}`, { n: unified.count })}`}
                 </Caption>
               ) : (
                 <BoxIdentityLine account={account} inWindow />

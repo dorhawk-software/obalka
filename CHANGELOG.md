@@ -56,6 +56,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Odeslané zprávy jsou v knize zpráv po dnech jako přijaté.** Vpravo stojí, kdy zprávu ISDS
   dodalo nebo kdy byla doručena, s poštovním razítkem; rozepsané koncepty jsou list nad seznamem. Ve
   všech schránkách nese zpráva jen zkratku své schránky, aby se vešel odesílatel i adresát.
+- **Všechny schránky ukazují obálky schránek vějířem.** V záhlaví i v přepínači leží obálky
+  sloučených schránek přes sebe, na přední je jejich počet; schránky v přepínači mají svou obálku a
+  přidání schránky je plné tlačítko.
 
 ### Opraveno
 

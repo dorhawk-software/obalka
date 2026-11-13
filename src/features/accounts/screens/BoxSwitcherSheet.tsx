@@ -16,14 +16,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { sheetWidth } from '../../../theme/ContentColumn';
-import { Body, Heading, SmallStrong } from '../../../theme/Typography';
+import { BodyStrong, Heading, Small } from '../../../theme/Typography';
 import { XStack, YStack } from '../../../theme/ui';
+import { boxColor } from '../../../theme/boxColor';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useScrim } from '../../../theme/useScrim';
 import { SheetDismissGesture } from '../../../theme/SheetDismissGesture';
 import { raised } from '../../../theme/depth';
-import { DashedOutline } from '../../../theme/DashedOutline';
-import { PlusIcon, SettingsIcon } from '../../../theme/icons';
+import { PlusIcon } from '../../../theme/icons';
+import { OffsetIcon } from '../../../theme/offsetIcons';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 import { haptics } from '../../../services/haptics';
 import { t } from '../../../i18n/strings';
@@ -167,10 +168,7 @@ export function BoxSwitcherSheet({
                   {unifiedAvailable(accounts.length) ? (
                     <UnifiedRow
                       boxCount={accounts.length}
-                      unreadTotal={accounts.reduce(
-                        (n, a) => n + (a.unreadCount ?? 0),
-                        0,
-                      )}
+                      colors={accounts.map(boxColor)}
                       active={unified}
                       onPress={() => {
                         if (unified) {
@@ -206,18 +204,17 @@ export function BoxSwitcherSheet({
                   ))}
                 </ScrollView>
 
-                {/* Design: full-width, 1.5px DASHED bds, radius 14, padding 13, gap 9, margin-top 6.
-                    RN can't draw a dashed border with a borderRadius on Android, so the outline is an
-                    SVG (DashedOutline) - otherwise it silently renders solid. */}
+                {/* A filled shape, the outline gone (031 board R5, agreed 2026-11-12): minimum 52, radius
+                    12, the sunken paper, the plus and the words in ink. */}
                 <XStack
-                  position="relative"
                   marginTop={6}
+                  minHeight={52}
                   alignItems="center"
                   justifyContent="center"
-                  gap={10}
-                  padding={13}
-                  borderRadius={14}
-                  pressStyle={{ backgroundColor: theme.goldSoft }}
+                  gap={8}
+                  borderRadius={12}
+                  backgroundColor={theme.surfaceSunken}
+                  pressStyle={{ opacity: 0.65 }}
                   onPress={() => {
                     haptics.light();
                     onClose();
@@ -227,11 +224,8 @@ export function BoxSwitcherSheet({
                   accessibilityLabel={t('home.addBox')}
                   testID="switcherAddBox"
                 >
-                  <DashedOutline radius={14} color={theme.borderStrong} />
-                  <PlusIcon size={19} color={theme.warningInk} />
-                  <SmallStrong color={theme.warningInk}>
-                    {t('home.addBox')}
-                  </SmallStrong>
+                  <PlusIcon size={18} color={theme.text} />
+                  <BodyStrong>{t('home.addBox')}</BodyStrong>
                 </XStack>
 
                 {/* Design: 1px bd, margin 14px 6px. */}
@@ -259,10 +253,10 @@ export function BoxSwitcherSheet({
                   accessibilityLabel={t('settings.title')}
                   testID="switcherSettings"
                 >
-                  <SettingsIcon size={21} color={theme.textMuted} />
-                  <Body flex={1} fontWeight="600">
+                  <OffsetIcon name="settings" size={22} color={theme.text} />
+                  <Small flex={1} fontWeight="600">
                     {t('settings.title')}
-                  </Body>
+                  </Small>
                 </XStack>
               </YStack>
             </Pressable>

@@ -1,4 +1,4 @@
-import { render, fireEvent, act } from '@testing-library/react-native';
+import { render, fireEvent, act, within } from '@testing-library/react-native';
 import { TamaguiProvider } from 'tamagui';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { tamaguiConfig } from '../../tamagui.config';
@@ -286,18 +286,15 @@ describe('the merged-view entry', () => {
     expect(row).toHaveTextContent(/3/);
   });
 
-  it('sums unread across every box, in the badge a box row uses for its own', async () => {
+  it('shows the boxes it merges as their envelopes fanned, with no badge of its own (R5)', async () => {
+    // 031 board R5, agreed 2026-11-12: each box row carries its unread count; the entry does not sum
+    // them, and its mark is the boxes' envelopes rather than a glyph.
     const { view } = await renderSheet({
       accounts: [account('a', { unreadCount: 2 }), account('b', { unreadCount: 3 })],
     });
-    expect(view.getByTestId('unifiedUnread')).toHaveTextContent('5');
-  });
-
-  it('caps the badge the way a box row caps its own', async () => {
-    const { view } = await renderSheet({
-      accounts: [account('a', { unreadCount: 120 }), account('b')],
-    });
-    expect(view.getByTestId('unifiedUnread')).toHaveTextContent('99+');
+    const row = view.getByTestId('switchUnified');
+    expect(within(row).getByTestId('boxStackTile', { includeHiddenElements: true })).toHaveTextContent('2');
+    expect(view.queryByTestId('unifiedUnread')).toBeNull();
   });
 
   it('enters the merged view, and no box is shown active while it is on', async () => {

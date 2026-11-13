@@ -66,6 +66,9 @@ What changed in each Obálka release, written for the people using it. The newes
 - **Sent messages are in the day-by-day register, like received ones.** On the right is when ISDS
   delivered the message or when it was accepted, with a postmark; drafts are one sheet above the list.
   In all boxes a message carries only its box's initials, so the sender or recipient fits beside it.
+- **All boxes shows the boxes' envelopes fanned out.** In the header and in the switcher the merged
+  boxes' envelopes lie over each other with their count on the front one; each box in the switcher
+  has its envelope, and adding a box is a filled button.
 
 ### Fixed
 

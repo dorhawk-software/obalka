@@ -162,6 +162,53 @@ export function EnvelopeTile({
   );
 }
 
+/** Where the boxes behind the front one lie, nearest first (board R5: 3 and 8 degrees, up and right). */
+const STACK_FAN = [
+  { left: 5, top: 0, rotate: '3deg' },
+  { left: 10, top: -3, rotate: '8deg' },
+] as const;
+
+/**
+ * All boxes at once (031 I15/I54, board R5): the boxes' own envelopes fanned, the first in front with
+ * how many there are on it. 46 x 40 in the inbox's window and in the switcher. Never one envelope:
+ * a merged view is not an identity, so it shows the identities it merges.
+ */
+export function BoxStackTile({ colors, count }: { readonly colors: readonly string[]; readonly count: number }) {
+  const theme = useTheme();
+  const [front = theme.envelope, ...behind] = colors;
+  return (
+    <View
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      testID="boxStackTile"
+      style={{ width: 46, height: 40 }}
+    >
+      {behind
+        .slice(0, STACK_FAN.length)
+        .map((color, i) => ({ color, at: STACK_FAN[i] }))
+        .reverse()
+        .map(({ color, at }) => (
+          <View
+            key={at.rotate}
+            style={{
+              position: 'absolute',
+              left: at.left,
+              top: at.top,
+              width: 34,
+              height: 34,
+              borderRadius: envelopeTile.radius,
+              backgroundColor: color,
+              transform: [{ rotate: at.rotate }],
+            }}
+          />
+        ))}
+      <View style={{ position: 'absolute', left: 0, top: 4 }}>
+        <EnvelopeTile name={String(count)} color={front} size={36} />
+      </View>
+    </View>
+  );
+}
+
 /**
  * The open envelope of the empty inbox (board Empty): nothing in it but its lining. One drawing at
  * 220 x 196, its shadow a filter so it follows the flap's point.

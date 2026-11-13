@@ -71,13 +71,13 @@ import {
   remindersController,
 } from '../../accounts/deps';
 import {
-  isUnread,
   needsSignIn,
   type MessagesOutcome,
 } from '../state/messagesController';
 import type { BoxAttention } from '../state/crossBox';
 import { CrossBoxLine, crossBoxSummary } from './CrossBoxLine';
 import { InboxHeader } from './InboxHeader';
+import { boxColor } from '../../../theme/boxColor';
 import { AttentionHead, AttentionSheet, RegisterRow, SectionHead, freshnessText } from './InboxRows';
 import { DraftsEntry, SentRegisterRow } from './SentRows';
 import type { TileRect } from './EnvelopeFlight';
@@ -799,29 +799,11 @@ export function MessageList({
   // app wordmark + a global search button, then a BOX-SWITCHER button (active box avatar + name + ▾)
   // that opens the switcher sheet, then the Přijaté|Odeslané segment and a CONSTANT-HEIGHT sync line.
   // No back chevron - this is the navigator root, not a pushed per-box screen.
-  // Counted from the rows that are actually on screen, never from `account.unreadCount`. The two
-  // disagreed on the device - a gold dot on row one under a header claiming nothing was unread -
-  // because the record is only rewritten by a successful sync while the dots read envelope state.
-  //
-  // Held between loads (2026-10-03): while the list reloads, or on the Sent tab, there are no received
-  // rows to count, and reading that as zero made the count blink out and back. The last count stands
-  // until a new one is known, and is dropped only when the box or the merged set changes.
-  const unreadHeld = useRef<{ key: string; n: number }>({ key: '', n: 0 });
-  const unreadKey = unifiedKey ?? account.boxId;
-  if (state.status === 'loaded' && state.folder === 'received') {
-    unreadHeld.current = {
-      key: unreadKey,
-      n: state.messages.reduce((n, m) => n + (isUnread(m.state) ? 1 : 0), 0),
-    };
-  }
-  const unreadShown = unreadHeld.current.key === unreadKey ? unreadHeld.current.n : 0;
-
   const header = (
     <YStack>
       <InboxHeader
         account={account}
-        unifiedCount={unified ? unified.accounts.length : null}
-        unreadShown={unreadShown}
+        unified={unified ? { count: unified.accounts.length, colors: unified.accounts.map(boxColor) } : null}
         isTestBox={isTestBox}
         folder={folder}
         onFolder={setFolder}
