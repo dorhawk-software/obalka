@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-import { textSlop } from '../../../theme/touchTarget';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { useEffect, useRef } from 'react';
 import { Linking } from 'react-native';
@@ -10,9 +8,8 @@ import { WaitingBar } from '../../../theme/ProgressBar';
 import { WaitingEnvelope } from '../../../theme/objects/WaitingEnvelope';
 import { PressScale } from '../../../theme/PressScale';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { chipTone } from '../../../theme/chipTone';
 import { t } from '../../../i18n/strings';
-import { ExternalLinkIcon, InfoIcon } from '../../../theme/icons';
+import { ExternalLinkIcon } from '../../../theme/icons';
 import { Card } from '../../../theme/Card';
 import { Well } from '../../../theme/Well';
 import { NeutralButton } from '../../../theme/NeutralButton';
@@ -30,7 +27,6 @@ import type {
 } from '../../../services/isds/types';
 import { portalUrl } from '../../../services/isds/endpoints';
 import type { Credentials } from '../state/loginController';
-import { LineIcon } from '../../../theme/LineIcon';
 
 export interface LoginFlowProps {
   readonly deps: UseLoginControllerDeps;
@@ -238,17 +234,29 @@ function LoginFlowSteps({
     case 'awaitingMobileKey':
       return <MobileKeyWaiting status={state.mkStatus} loginName={lastLogin.current} onCancel={cancel} />;
     case 'error':
-      // A password login that smells like a missing SMS code. The design puts the recovery INLINE on
-      // the credentials form ("Máte SMS kód?") instead of on its own screen - the form is itself the
-      // "edit credentials" affordance the old detour offered. Re-auth has no form to fall back to
-      // here, so it keeps the standalone suggestion.
+      // A password login that smells like a missing SMS code. R11 puts the recovery INLINE, a sheet
+      // under the password field, on adding a box and on signing in again alike: the form is itself
+      // the way to edit what was typed, and the same element in the same place keeps it typed.
       if (state.suggestOtp) {
         return reauth ? (
-          <OtpSuggestion
-            onUseSms={() => retryWithOtpMethod('otp_totp')}
-            onOpenPortal={() => openPortal(reauth.host)}
-            onEdit={retry}
-          />
+        <ReauthForm
+          account={reauth}
+          refusedAt={reauthRefusedAt}
+          loading={busy}
+          suggestOtp
+          onUseSms={() => retryWithOtpMethod('otp_totp')}
+          onBack={onBack ?? (() => {})}
+          onOpenPortal={() => openPortal(reauth.host)}
+          onSubmit={(password, method) =>
+            startLogin({
+              loginName: reauth.loginName,
+              password,
+              method,
+              host: reauth.host,
+              reauth: true,
+            })
+          }
+        />
         ) : (
           <AddBoxForm
             onSubmit={startLogin}
@@ -282,22 +290,6 @@ function LoginFlowSteps({
 /** The Data Boxes portal for `host`, in the OS browser. A failure to open it is inert, never a crash. */
 function openPortal(host: Host): void {
   void Linking.openURL(portalUrl(host)).catch(() => {});
-}
-
-function Centered({ children, testID }: { readonly children: ReactNode; readonly testID: string }) {
-  const theme = useTheme();
-  return (
-    <YStack
-      flex={1}
-      backgroundColor={theme.bg}
-      alignItems="center"
-      justifyContent="center"
-      padding="$4"
-      gap="$3"
-      testID={testID}>
-      {children}
-    </YStack>
-  );
 }
 
 /**
@@ -474,74 +466,5 @@ function SignInError({ messageKey, onRetry }: { readonly messageKey: string; rea
         <NeutralButton compact inline label={t('login.retry')} onPress={onRetry} testID="retry" />
       </YStack>
     </YStack>
-  );
-}
-
-/**
- * Shown when a username+password login was rejected and the box likely requires a one-time code.
- * Guides the user to the OTP methods, reusing the credentials they already entered.
- */
-function OtpSuggestion({
-  onUseSms,
-  onOpenPortal,
-  onEdit,
-}: {
-  readonly onUseSms: () => void;
-  /** Where an expired password is changed - the refusal may be one (030 US1). */
-  readonly onOpenPortal: () => void;
-  readonly onEdit: () => void;
-}) {
-  const theme = useTheme();
-  const info = chipTone('info', theme);
-  return (
-    <Centered testID="otpSuggestion">
-      <YStack width="100%" maxWidth={360} gap={14}>
-        {/* Blue info card with the SMS-method link (the existing one-time-code recovery). */}
-        <XStack
-          backgroundColor={info.bg}
-          borderRadius={14}
-          padding={14}
-          gap={12}
-          alignItems="flex-start">
-          <LineIcon role="body">
-            <InfoIcon size={20} color={info.accent} />
-          </LineIcon>
-          <YStack flex={1} gap={8}>
-            <Body color={theme.text}>{t('login.otpSuggested.hint')}</Body>
-            <XStack
-              alignSelf="flex-start"
-              hitSlop={textSlop('bodyStrong')}
-              pressStyle={{ opacity: 0.6 }}
-              onPress={onUseSms}
-              accessibilityRole="button"
-              accessibilityLabel={t('login.otpSuggested.useSms')}
-              testID="useSms">
-              <BodyStrong color={info.accent}>
-                {t('login.otpSuggested.useSms')} →
-              </BodyStrong>
-            </XStack>
-            <XStack
-              alignSelf="flex-start"
-              hitSlop={textSlop('bodyStrong')}
-              pressStyle={{ opacity: 0.6 }}
-              onPress={onOpenPortal}
-              accessibilityRole="link"
-              accessibilityLabel={t('pwd.action')}
-              testID="refusedPortal">
-              <BodyStrong color={info.accent}>{t('pwd.action')} →</BodyStrong>
-            </XStack>
-          </YStack>
-        </XStack>
-        <Button
-          chromeless
-          alignSelf="center"
-          color={theme.textMuted}
-          fontWeight="700"
-          onPress={onEdit}
-          testID="editCreds">
-          {t('login.otpSuggested.checkPassword')}
-        </Button>
-      </YStack>
-    </Centered>
   );
 }

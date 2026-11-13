@@ -10,15 +10,17 @@ import { Input, Spinner, XStack, YStack } from '../../../theme/ui';
 import { PressScale } from '../../../theme/PressScale';
 import { OptionGroup } from '../../../theme/OptionGroup';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
-import { BodyStrong, Label, Small } from '../../../theme/Typography';
+import { BodyStrong, Label, Small, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { t } from '../../../i18n/strings';
 import { hasNoSession, storedReauthKey } from '../state/reauthCopy';
 import { refusedForExpiredPassword } from '../state/passwordExpiry';
-import { EyeIcon, LockIcon } from '../../../theme/icons';
-import { Avatar } from '../../../theme/Avatar';
-import { chipTone } from '../../../theme/chipTone';
+import { EyeIcon } from '../../../theme/icons';
+import { OffsetIcon } from '../../../theme/offsetIcons';
+import { EnvelopeTile } from '../../../theme/objects/Envelope';
+import { Card } from '../../../theme/Card';
 import { textSlop, touchSlop } from '../../../theme/touchTarget';
+import { RefusedSuggestion } from './RefusedSuggestion';
 import { BoxIdentityLine } from './BoxIdentityLine';
 import type { AuthMethod, DataBoxAccount } from '../../../services/isds/types';
 import { boxColor } from '../../../theme/boxColor';
@@ -46,6 +48,8 @@ export function ReauthForm({
   onOpenPortal,
   loading = false,
   refusedAt,
+  suggestOtp = false,
+  onUseSms,
 }: {
   readonly account: DataBoxAccount;
   readonly onSubmit: (password: string, method: AuthMethod) => void;
@@ -60,6 +64,13 @@ export function ReauthForm({
   readonly loading?: boolean;
   /** When ISDS refused this box, if the screen was opened from that refusal (the inbox strip). */
   readonly refusedAt?: number;
+  /**
+   * ISDS refused the password and the box may want an SMS code too: the form stays, with what was
+   * typed, and R11's suggestion sheet sits under the field - as on adding a box.
+   */
+  readonly suggestOtp?: boolean;
+  /** Sign in again with the SMS-code method, reusing the password typed. */
+  readonly onUseSms?: () => void;
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -76,8 +87,6 @@ export function ReauthForm({
   const [judgedAt] = useState(() => refusedAt ?? Date.now());
   const passwordExpired =
     hasNoSession(account) && refusedForExpiredPassword(account, judgedAt);
-  // The same blue text link the login error screen uses for the same hand-off.
-  const info = chipTone('info', theme);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [method, setMethod] = useState<AuthMethod>(
@@ -118,13 +127,15 @@ export function ReauthForm({
           adjustKeyboardInsets={false}
           contentContainerStyle={{
             paddingHorizontal: 16,
-            paddingTop: 24,
+            paddingTop: 16,
             paddingBottom: 24,
           }}
         >
-        <YStack gap={18}>
-          <YStack gap={8}>
-            <Small fontWeight="500" color={theme.textMuted}>
+        {/* Board R11 (agreed 2026-11-12): why, with the way to the portal; the box as a sheet; the
+            methods as the one sheet of choices; the field. */}
+        <YStack gap={14}>
+          <YStack gap={6}>
+            <Small color={theme.bodyText}>
               {t(
                 storedReauthKey(
                   account,
@@ -144,41 +155,46 @@ export function ReauthForm({
             {hasNoSession(account) ? (
               <XStack
                 alignSelf="flex-start"
-                hitSlop={textSlop('bodyStrong')}
+                hitSlop={textSlop('smallStrong')}
                 pressStyle={{ opacity: 0.6 }}
                 onPress={onOpenPortal}
                 accessibilityRole="link"
                 accessibilityLabel={t('pwd.action')}
                 testID={passwordExpired ? 'reauthPortal' : 'reauthPortalCredentials'}
               >
-                <BodyStrong color={info.accent}>{t('pwd.action')} →</BodyStrong>
+                <SmallStrong color={theme.blue}>{t('pwd.action')} →</SmallStrong>
               </XStack>
             ) : null}
           </YStack>
 
-          {/* Which box is being re-authenticated (name + identity line) - locked, non-editable. */}
-          <XStack
-            backgroundColor={theme.surface}
-            borderWidth={1}
-            borderColor={theme.border}
-            borderRadius={16}
-            padding={14}
+          {/* Which box is being signed in again - fixed, not editable: its own envelope at 46 with
+              R11's 13 corner, the name, the identity line, and the lock. */}
+          <Card
+            flexDirection="row"
+            paddingVertical={12}
+            paddingHorizontal={14}
             gap={12}
             alignItems="center"
+            testID="reauthBox"
           >
-            <Avatar
+            <EnvelopeTile
               name={account.alias ?? account.label}
               color={boxColor(account)}
               size={46}
+              radius={13}
+              box
+              testID="envelopeTile"
             />
-            <YStack flex={1} minWidth={0} gap={2}>
-              <BodyStrong color={theme.text} numberOfLines={1}>
+            <YStack flex={1} minWidth={0}>
+              <SmallStrong color={theme.text} numberOfLines={1}>
                 {account.alias ?? account.label}
-              </BodyStrong>
-              <BoxIdentityLine account={account} />
+              </SmallStrong>
+              <BoxIdentityLine account={account} inWindow fontWeight="500" />
             </YStack>
-            <LockIcon size={17} color={theme.textFaint} />
-          </XStack>
+            <YStack testID="reauthLock">
+              <OffsetIcon name="lock" size={20} color={theme.textMuted} />
+            </YStack>
+          </Card>
 
           {/* The sign-in method - the add-box step's one sheet of choices (R11; a box's method can
               have changed on the portal, so re-auth is where it gets corrected). */}
@@ -194,16 +210,17 @@ export function ReauthForm({
           />
 
           <YStack gap={8}>
-            <Label>
+            <Label color={theme.textMuted}>
               {isMobileKey ? t('login.commCode') : t('login.password')}
             </Label>
             <YStack position="relative">
               <Input
                 ref={passwordRef}
                 {...inputProps}
-                // Typed text stops before the show-password button: its inset, its width, and a gap.
-                  paddingRight={EYE_RIGHT + EYE_W + space.xs}
-                secureTextEntry={!showPassword}
+                // Typed text stops before the show-password button: its inset, its width, and a gap. The
+                // communication code has none and shows as typed (R11, as on adding a box).
+                paddingRight={isMobileKey ? inputProps.paddingHorizontal : EYE_RIGHT + EYE_W + space.xs}
+                secureTextEntry={!isMobileKey && !showPassword}
                 // Standard secure-field hints (iOS uses its own secure keyboard + Keychain autofill).
                 textContentType={isMobileKey ? 'none' : 'password'}
                 autoComplete={isMobileKey ? 'off' : 'current-password'}
@@ -219,38 +236,40 @@ export function ReauthForm({
                 }
                 testID="password"
               />
-              <XStack
-                position="absolute"
-                right={EYE_RIGHT}
-                top={0}
-                bottom={0}
-                width={EYE_W}
-                alignItems="center"
-                justifyContent="center"
-                // As tall as the input it sits in (top/bottom 0), which already clears the floor;
-                // only its width is short.
-                hitSlop={touchSlop({ width: EYE_W, height: inputProps.height })}
-                pressStyle={{ opacity: 0.6 }}
-                onPress={() => setShowPassword(v => !v)}
-                accessibilityRole="button"
-                accessibilityLabel={t(
-                  showPassword ? 'login.password.hide' : 'login.password.show',
-                )}
-                testID="togglePassword"
-              >
-                <EyeIcon size={20} color={theme.textFaint} off={showPassword} />
-              </XStack>
+              {isMobileKey ? null : (
+                <XStack
+                  position="absolute"
+                  right={EYE_RIGHT}
+                  top={0}
+                  bottom={0}
+                  width={EYE_W}
+                  alignItems="center"
+                  justifyContent="center"
+                  // As tall as the input it sits in (top/bottom 0), which already clears the floor;
+                  // only its width is short.
+                  hitSlop={touchSlop({ width: EYE_W, height: inputProps.height })}
+                  pressStyle={{ opacity: 0.6 }}
+                  onPress={() => setShowPassword(v => !v)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t(
+                    showPassword ? 'login.password.hide' : 'login.password.show',
+                  )}
+                  testID="togglePassword"
+                >
+                  <EyeIcon size={20} color={theme.textFaint} off={showPassword} />
+                </XStack>
+              )}
             </YStack>
           </YStack>
 
+          {suggestOtp && onUseSms ? <RefusedSuggestion onUseSms={onUseSms} onOpenPortal={onOpenPortal} /> : null}
         </YStack>
       </KeyboardAwareScrollView>
 
-      {/* Pinned submit footer (design §3); the KeyboardAvoidingView above lifts it over the IME. */}
+      {/* Pinned submit footer (R11): a surfaceAlt bar, tone and no hairline. The KeyboardAvoidingView
+          above lifts it over the IME. */}
       <YStack
         backgroundColor={theme.surfaceAlt}
-        borderTopWidth={1}
-        borderTopColor={theme.border}
         paddingHorizontal={16}
         paddingTop={12}
         paddingBottom={insets.bottom + 12}

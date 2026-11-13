@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Signing in again looks like adding a box.** The box is a sheet with its own envelope and a lock.
+  When ISDS refuses the password, the form and what you typed stay, with the reasons and two links
+  in a sheet under the field.
 - **Every message in Needs attention rests on the same edge.** Only messages delivered by fiction
   had it, and they looked like a pile of several; the tag says how a message was delivered.
 - **The sign-in fields are calmer.** A small tag names the method, the field labels are muted, and

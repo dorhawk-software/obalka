@@ -135,12 +135,6 @@ const cs: Record<string, string> = {
   'login.method.label.password': 'Přihlášení heslem',
   'login.method.label.otp_totp': 'Přihlášení přes SMS kód',
   'login.method.label.mobile_key': 'Přihlášení Mobilním klíčem',
-  'login.otpSuggested.hint':
-    'ISDS přihlášení jménem a heslem odmítlo. Heslo se mohlo změnit nebo mu vypršela platnost - ' +
-    'vypršelé heslo změňte v portálu ISDS. Pokud máte u této schránky zapnuté přihlašování ' +
-    'jednorázovým kódem z SMS, přihlaste se pomocí SMS kódu.',
-  'login.otpSuggested.useSms': 'Přihlásit pomocí SMS kódu',
-  'login.otpSuggested.checkPassword': 'Upravit jméno nebo heslo',
   'login.signedIn': 'Přihlášeno',
   'common.back': 'Zpět',
   'common.cancel': 'Zrušit',
@@ -1096,7 +1090,7 @@ const en: Record<string, string> = {
   'login.method.mobile_key.desc':
     'A communication code from the portal; approve sign-in in the Mobile Key app.',
   'login.commCode': 'Communication code',
-  'login.commCode.placeholder': 'Generated code from the portal (not your password)',
+  'login.commCode.placeholder': 'Code from the portal (not your password)',
   'login.mobileKey.help':
     'First activate Mobile Key and generate a communication code in the ISDS Client Portal (Settings → Login options). After submitting, approve the sign-in in the Mobile Key app.',
   'login.mobileKey.title': 'Confirm sign-in in the Mobile Key app',
@@ -1127,12 +1121,6 @@ const en: Record<string, string> = {
   'login.method.label.password': 'Sign in with password',
   'login.method.label.otp_totp': 'Sign in with SMS code',
   'login.method.label.mobile_key': 'Sign in with Mobile Key',
-  'login.otpSuggested.hint':
-    'ISDS refused the name and password. The password may have been changed or has expired - ' +
-    'change an expired one in the ISDS portal. If this box has SMS one-time-code sign-in ' +
-    'enabled, sign in using an SMS code.',
-  'login.otpSuggested.useSms': 'Sign in with an SMS code',
-  'login.otpSuggested.checkPassword': 'Edit name or password',
   'login.signedIn': 'Signed in',
   'common.back': 'Back',
   'common.cancel': 'Cancel',

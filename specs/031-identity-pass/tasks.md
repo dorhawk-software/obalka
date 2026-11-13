@@ -80,7 +80,7 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     glyph in a well, the `subheading` title, the `caption` reasons and two links. Roundings: the
     fields' 15 side padding stays 16. The links are a 44 row each, not the board's 2 apart, so
     neither covers the other (a sync-back item). Walked light, dark and in English (forced on,
-    reverted). Still open: re-auth's `OtpSuggestion` (with I12), and the busy spinner (I76).
+    reverted). Re-auth's `OtpSuggestion` went with I12; still open: the busy spinner (I76).
 - [x] I09 `OtpForm` (code field, sending/sent notice, resend, blocked) - **N**. Fixed 2026-11-13
   to R8: the Display title at the left, the notice on a blue tone strip with its bell, the field's
   label, eight digit boxes over one hidden field (digits only, eight at most, a paste trimmed), Confirm
@@ -107,9 +107,18 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   envelope's 120 from the top to 60 and its 32 at the sides to 36; R11's 46 / 13 / 14 button to the
   neutral 48 / 14 / 15. Walked both, light, dark and in English (forced on, reverted).
   `OtpSuggestion` (re-auth only) is R11's "After a refusal" sheet: it moves to I08.2.
-- [ ] I12 `ReauthForm` (avatar, method cards, field) - **D** (avatar, icons: Zámek). The method cards
-  are the add-box step's one sheet since 2026-11-13 (walked light); the box's envelope tile, the lock
-  glyph and the sheet's 12/14 padding are still to do.
+- [x] I12 `ReauthForm` (avatar, method cards, field) - **D** (avatar, icons: Zámek). The method cards
+  are the add-box step's one sheet since 2026-11-13. Fixed 2026-11-13 to R11:
+  - The intro is `small` in body ink with the `smallStrong` link under it, and 14 between the groups.
+  - The box is a card, 12/14, holding its own envelope at 46 (R11's 13 corner, the box's 13
+    monogram), the name, the identity line, and the offset lock at 20 in muted ink.
+  - The field label is muted, the communication code has no eye, and the footer has no hairline.
+  - A refused password keeps the form, and what was typed, with the add-box step's suggestion sheet
+    under the field: `RefusedSuggestion`, one sheet for both. The centred `OtpSuggestion` and its
+    three strings are gone.
+  Walked light, dark, the sheet forced on, and Mobile Key in English. The English walk found the
+  unmasked code's placeholder wrapping onto a clipped second line (a regression from I08.2). It now
+  reads "Code from the portal (not your password)", and a test holds it to 40 characters.
 - [ ] I13 `ChangePasswordForm` (avatar 46, three fields, ten rules and the history rule, busy) - **D**
   (avatar, icons).
   - [ ] I13.1 Its error banner: wrong password (with the portal), refused, network, timeout, not

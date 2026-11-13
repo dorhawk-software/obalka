@@ -6,7 +6,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AddBoxForm } from '../../src/features/accounts/screens/AddBoxForm';
-import { t } from '../../src/i18n/strings';
+import { STRINGS_FOR_TEST, t } from '../../src/i18n/strings';
 
 function form() {
   return render(
@@ -51,5 +51,16 @@ describe('the fields step (R11)', () => {
     await fireEvent.press(view.getByTestId('continue'));
     expect(view.getByTestId('password')).toHaveProp('secureTextEntry', false);
     expect(view.queryByTestId('togglePassword')).toBeNull();
+  });
+});
+
+// Seen on the emulator (2026-11-13): unmasked, the English "Generated code from the portal (not your
+// password)" wrapped onto a second, clipped line of the 50 field. A placeholder is one line of a
+// 347-wide field at 15: 40 characters, the Czech's 37 with room.
+describe('the communication code placeholder', () => {
+  it('fits one line of the field in each language', () => {
+    for (const lang of ['cs', 'en'] as const) {
+      expect(STRINGS_FOR_TEST[lang]['login.commCode.placeholder'].length).toBeLessThanOrEqual(40);
+    }
   });
 });

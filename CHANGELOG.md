@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Přihlásit znovu vypadá jako přidání schránky.** Schránka je list s vlastní obálkou a zámkem. Když
+  ISDS heslo odmítne, formulář i napsané heslo zůstanou a pod polem je list s důvody a dvěma odkazy.
 - **Všechny zprávy, které vyžadují pozornost, leží na stejném okraji.** Dřív ho měly jen zprávy
   doručené fikcí a vypadaly jako hromádka více zpráv; jak byla zpráva doručena, říká štítek.
 - **Přihlašovací pole jsou klidnější.** Způsob přihlášení označuje malý štítek, popisky polí jsou

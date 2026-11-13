@@ -8,8 +8,8 @@ import type { TextInput } from 'react-native';
 import { PressScale } from '../../../theme/PressScale';
 import { SegmentedControl } from '../../../theme/SegmentedControl';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
-import { BodyStrong, Caption, Heading, Label, Meta, SmallStrong, Subheading } from '../../../theme/Typography';
-import { Well } from '../../../theme/Well';
+import { BodyStrong, Caption, Heading, Label, Meta, SmallStrong } from '../../../theme/Typography';
+import { RefusedSuggestion } from './RefusedSuggestion';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { t } from '../../../i18n/strings';
 import type { AuthMethod, Host } from '../../../services/isds/types';
@@ -19,7 +19,6 @@ import {
   EyeIcon,
   HelpIcon,
   InfoIcon,
-  SmartphoneIcon,
 } from '../../../theme/icons';
 import { Card } from '../../../theme/Card';
 import { OptionGroup } from '../../../theme/OptionGroup';
@@ -355,50 +354,8 @@ export function AddBoxForm({
             {/* A rejected password login that smells like "this box also wants a one-time code": the
                 design keeps the user ON the form and offers the SMS method from an inline card, so the
                 already-typed name/password stay visible and editable (no full-screen detour). */}
-            {/* A refused password that may want an SMS code too (R11 "After a refusal"): the fields stay
-                on screen and editable, and the sheet under them names the three reasons with a way out
-                of each. The board sets the two links 2 apart; two 44 targets cannot be, so each is its
-                own 44 row and the block is pulled up to keep the first line where the board has it. */}
             {suggestOtp && onUseSms ? (
-              <Card padding={14} paddingBottom={2} testID="otpSuggestion">
-                <XStack gap={12} alignItems="flex-start">
-                  <Well>
-                    <SmartphoneIcon size={22} color={theme.text} />
-                  </Well>
-                  <YStack flex={1} gap={4}>
-                    <Subheading accessibilityRole="header">{t('login.otpSuggest.title')}</Subheading>
-                    <Caption color={theme.bodyText}>{t('login.otpSuggest.sub')}</Caption>
-                    <YStack marginTop={-6}>
-                      <XStack
-                        alignSelf="flex-start"
-                        minHeight={44}
-                        alignItems="center"
-                        pressStyle={{ opacity: 0.6 }}
-                        onPress={onUseSms}
-                        accessibilityRole="button"
-                        accessibilityLabel={t('login.otpSuggest.btn')}
-                        testID="useSms"
-                      >
-                        <SmallStrong color={theme.blue}>{t('login.otpSuggest.btn')} →</SmallStrong>
-                      </XStack>
-                      {onOpenPortal ? (
-                        <XStack
-                          alignSelf="flex-start"
-                          minHeight={44}
-                          alignItems="center"
-                          pressStyle={{ opacity: 0.6 }}
-                          onPress={() => onOpenPortal(host)}
-                          accessibilityRole="link"
-                          accessibilityLabel={t('pwd.action')}
-                          testID="refusedPortal"
-                        >
-                          <SmallStrong color={theme.blue}>{t('pwd.action')} →</SmallStrong>
-                        </XStack>
-                      ) : null}
-                    </YStack>
-                  </YStack>
-                </XStack>
-              </Card>
+              <RefusedSuggestion onUseSms={onUseSms} onOpenPortal={onOpenPortal ? () => onOpenPortal(host) : undefined} />
             ) : null}
 
             <YStack gap={8}>

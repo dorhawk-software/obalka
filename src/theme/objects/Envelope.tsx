@@ -81,16 +81,27 @@ export function EnvelopeTile({
   color,
   sealed = false,
   size = 42,
+  box = false,
+  radius,
+  testID,
 }: {
   readonly name: string | null | undefined;
   readonly color: string;
   readonly sealed?: boolean;
-  /** 42 for a sender in a list, 40 for a box, 24 beside a sender in the register. */
+  /** 42 for a sender in a list, 40 for a box, 46 for the box being signed in again, 24 beside a sender in the register. */
   readonly size?: number;
+  /**
+   * A box's own tile: the box monogram (13) at any size. R11 draws the box signed in again at 46 with
+   * the box's 13, not the sender tile's 15.
+   */
+  readonly box?: boolean;
+  /** The corner, where a board draws a bigger tile with its own (R11: 13 at 46); the tile's 11 otherwise. */
+  readonly radius?: number;
+  readonly testID?: string;
 }) {
   const theme = useTheme();
   const t = envelopeTile;
-  const large = size >= 42;
+  const large = size >= 42 && !box;
   if (size < t.smallBelow) {
     // The register's small tile (InboxA): too small for a flap or a fold to read, so plain, the
     // monogram centred. A read row's sender; the attention sheets carry the sealed ones.
@@ -124,12 +135,13 @@ export function EnvelopeTile({
   }
   return (
     <View
+      testID={testID}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
       style={{
         width: size,
         height: size,
-        borderRadius: t.radius,
+        borderRadius: radius ?? t.radius,
         backgroundColor: color,
         overflow: 'hidden',
         alignItems: 'center',
