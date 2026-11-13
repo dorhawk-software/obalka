@@ -89,6 +89,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Text na tlačítkách bez rámečku je v písmu aplikace.** Třeba Zrušit, Poslat SMS znovu nebo Koupit
+  kredit se na Androidu kreslily systémovým písmem.
 - **Přehyby obálky vedou až do rohů.** Na obálce zprávy končily čáry kus před okrajem.
 - **Nedoručitelná odeslaná zpráva to v Odeslaných říká čitelně.** Slovo „Nedoručitelné“ bylo světlým
   písmem na světlém papíře, skoro neviditelné; teď je tmavé jako ostatní text.

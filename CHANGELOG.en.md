@@ -102,6 +102,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **Words on the plain buttons are in the app's typeface.** Cancel, Resend SMS or Buy credit, for
+  example, were drawn in the system's on Android.
 - **The envelope's folds run all the way to its corners.** On a message's envelope the lines stopped
   short of the edge.
 - **An undeliverable sent message says so legibly in Sent.** "Undeliverable" was light type on light

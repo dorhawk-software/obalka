@@ -8,6 +8,7 @@
 // TODO(tamagui-types): remove the `any` casts after resolving the config typing on a real build.
 
 import { forwardRef, type ComponentType } from 'react';
+import { Text as RNText } from 'react-native';
 import { useTheme } from './ThemeProvider';
 import { fonts } from './typeScale';
 import {
@@ -86,6 +87,43 @@ const ThemedInput = forwardRef<unknown, any>(function ThemedInputField(props, re
 });
 ThemedInput.displayName = 'Input';
 
+/**
+ * A button's words in the body face at their weight. Tamagui's Button sets no face, so its label fell
+ * back to the system's (Roboto on Android): the field's fault above, found again on the SMS code's
+ * resend link against board R8 (031, 2026-11-13). Handing Tamagui the face did not hold on Android -
+ * its label resolves the face from its own font tokens by weight, so the walk still showed Roboto
+ * while the test passed - so the button draws its words itself, in React Native's Text, the face
+ * picked by the weight (Android has no synthetic bold for a named face). An explicit `fontFamily`
+ * still wins; a label with no size takes the body's 15.
+ */
+const BODY_FACE: Readonly<Record<string, string>> = {
+  '800': fonts.bodyBold,
+  '700': fonts.bodyBold,
+  '600': fonts.bodySemiBold,
+  '500': fonts.bodyMedium,
+};
+const BaseButton = TButton as unknown as ComponentType<any>;
+
+const ThemedButton = forwardRef<unknown, any>(function ThemedButtonControl(props, ref) {
+  const { children, fontFamily, fontWeight, fontSize, color, textAlign, letterSpacing, ...rest } = props;
+  if (typeof children !== 'string') {
+    return <BaseButton ref={ref} {...props} />;
+  }
+  const face = fontFamily ?? BODY_FACE[fontWeight == null ? '' : String(fontWeight)] ?? fonts.bodyRegular;
+  const size: number = fontSize ?? 15;
+  // The type scale's own ratio (14 → 20, 15 → 21): a bare line box cuts the top of a capital's
+  // accent on iOS ("Ů", `inkClipping.ts`).
+  const lineHeight = Math.ceil(size * 1.4);
+  return (
+    <BaseButton ref={ref} {...rest} noTextWrap>
+      <RNText style={{ fontFamily: face, fontSize: size, lineHeight, color, textAlign, letterSpacing }}>
+        {children}
+      </RNText>
+    </BaseButton>
+  );
+});
+ThemedButton.displayName = 'Button';
+
 export const YStack = pressable(TYStack as unknown as ComponentType<any>, 'YStack');
 export const XStack = pressable(TXStack as unknown as ComponentType<any>, 'XStack');
 export const Text = TText as unknown as ComponentType<any>;
@@ -93,6 +131,6 @@ export const Paragraph = TParagraph as unknown as ComponentType<any>;
 export const ScrollView = TScrollView as unknown as ComponentType<any>;
 export const H2 = TH2 as unknown as ComponentType<any>;
 export const H3 = TH3 as unknown as ComponentType<any>;
-export const Button = TButton as unknown as ComponentType<any>;
+export const Button = ThemedButton as unknown as ComponentType<any>;
 export const Input = ThemedInput as unknown as ComponentType<any>;
 export const Spinner = TSpinner as unknown as ComponentType<any>;
