@@ -478,7 +478,13 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     the haptic stays. Walked on Obalka_Demo, both ways. On Android Reanimated dropped the last frames
     of a `transform`, leaving the envelope 44-75 short of its place, so the rise animates `top` and the
     end is rendered as plain values; and a worklet that called an app function crashed the screen,
-    which `__tests__/lint/worklets.test.ts` now refuses everywhere.
+    which `__tests__/lint/worklets.test.ts` now refuses everywhere. Re-done 2026-11-13, found by the
+    T036 capture: the plain end values did not hold - Reanimated's commit hook re-applied its last
+    (short) frame over them, so the envelope ended about 40 low on the title and the words stayed
+    pale. The moment now runs on core Animated, one clock 0 to 1 on the native driver (460 ms, 140
+    with Reduce Motion) with each movement a stretch of it (`theme/motionClock.ts`, shared with the
+    opening), its styles left on at their end. Walked on Obalka_Demo: the envelope in its Sent-board
+    place, the words at full strength.
   - I69 unlocking, done 2026-11-12: on the first unlock since launch the seal splits with a light tick
     (`haptics.light`), each half tilting 14 and dropping 6 as it fades in 180 ms; the flap turns 180 on
     its fold (perspective 600) in 260 ms, starting halfway through the break - eased out, the halves

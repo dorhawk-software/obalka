@@ -4,15 +4,17 @@
 // action; "Ukázat v Odeslaných" opens the message in the sent folder.
 
 import { useEffect, useRef, useState } from 'react';
-import { ScrollView, useWindowDimensions, View, type LayoutChangeEvent } from 'react-native';
-import Animated, {
+import {
+  Animated,
   Easing,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withDelay,
-  withTiming,
-} from 'react-native-reanimated';
+  ScrollView,
+  useWindowDimensions,
+  View,
+  type LayoutChangeEvent,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { XStack, YStack } from '../../../theme/ui';
 import { Body, BodyStrong, Caption, Hero, Label, Meta, Overline, Subheading, Tag, Title } from '../../../theme/Typography';
@@ -26,6 +28,7 @@ import { Stamp } from '../../../theme/objects/Stamp';
 import { Slip } from '../../../theme/objects/Slip';
 import { Window } from '../../../theme/objects/Window';
 import { RecordRing, type RecordRingKind } from '../../../theme/objects/RecordRing';
+import { easedStretch } from '../../../theme/motionClock';
 import { t } from '../../../i18n/strings';
 import { haptics } from '../../../services/haptics';
 import type { DataBoxAccount, Recipient } from '../../../services/isds/types';
@@ -62,15 +65,39 @@ export function sendMoment(reduceMotion: boolean) {
   } as const;
 }
 
-/** When the sending moment is over, from the landing: the screen then holds its end state plainly. */
+/** How long the sending moment runs from the landing: the length of its one clock. */
 export function sendMomentEnd(m: ReturnType<typeof sendMoment>): number {
   return Math.max(m.landMs, m.landMs + m.riseMs, m.restDelayMs + m.restMs);
 }
 
-/** The moment's end, as plain values (`settled` in `SentResult`). */
-const SETTLED_ENVELOPE = { opacity: 1, top: 0 } as const;
-const SETTLED_POSTMARK = { opacity: 1, transform: [{ scale: 1 }] };
-const SETTLED_REST = { opacity: 1 } as const;
+type MotionStyle = Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
+
+/**
+ * The moment's styles, made once from its one clock (`motionClock.ts`): the landing, the rise and the
+ * words coming in are stretches of it. They stay on at their end once it has run: taking a
+ * native-driven style off a view failed Fabric's prop assertion on Android (031 I67).
+ */
+function useSendClock(reduceMotion: boolean) {
+  return useState(() => {
+    const m = sendMoment(reduceMotion);
+    const totalMs = sendMomentEnd(m);
+    const clock = new Animated.Value(0);
+    const land = clock.interpolate(easedStretch(0, m.landMs, totalMs));
+    // What is left of the rise, 1 to 0, times how far below its place the envelope starts.
+    const rising = easedStretch(m.landMs, m.riseMs, totalMs);
+    const left = m.riseMs > 0 ? clock.interpolate({ ...rising, outputRange: rising.outputRange.map(v => 1 - v) }) : new Animated.Value(0);
+    const distance = new Animated.Value(0);
+    /** Hidden until its first layout says where the middle of the screen is from it. */
+    const shown = new Animated.Value(reduceMotion ? 1 : 0);
+    const envelope: MotionStyle = { opacity: shown, transform: [{ translateY: Animated.multiply(distance, left) }] };
+    const postmark: MotionStyle = {
+      opacity: m.landFades ? land : 1,
+      transform: [{ scale: land.interpolate({ inputRange: [0, 1], outputRange: [m.landScale, 1] }) }],
+    };
+    const rest: MotionStyle = { opacity: clock.interpolate(easedStretch(m.restDelayMs, m.restMs, totalMs)) };
+    return { m, totalMs, clock, distance, shown, envelope, postmark, rest };
+  })[0];
+}
 
 /** "ISDS ji přijalo 11.11.2026 ve 14:02. …", with the preposition Czech gives that hour. */
 export function sentBody(sentAt: number): string {
@@ -137,7 +164,7 @@ function SentEnvelope({
   readonly paidCzk: number | null;
   /** The postmark has landed: it is struck, and the stamp cancelled. */
   readonly landed: boolean;
-  readonly postmarkStyle: ReturnType<typeof useAnimatedStyle> | typeof SETTLED_POSTMARK;
+  readonly postmarkStyle: MotionStyle;
 }) {
   const theme = useTheme();
   const time = dateAndTime(sentAt)[1];
@@ -305,27 +332,19 @@ export function SentResult({
   const { height: screenHeight } = useWindowDimensions();
   const reduceMotion = useReducedMotion();
   const [landed, setLanded] = useState(false);
-  /**
-   * The moment is over. Its end is then rendered with plain values: on Android, Reanimated moves
-   * `transform` and `opacity` outside React and dropped the last frames, leaving the envelope 44-75
-   * short of its place (2026-11-12, Obalka_Demo); what React commits itself always lands.
-   */
-  const [settled, setSettled] = useState(false);
-  const land = useSharedValue(0);
-  /** How far below its place the envelope still is; it starts in the middle of the screen. */
-  const rise = useSharedValue(0);
-  /** The envelope is hidden until its first layout says where the middle of the screen is from it. */
-  const placed = useSharedValue(reduceMotion ? 1 : 0);
-  const rest = useSharedValue(0);
+  const motion = useSendClock(reduceMotion);
   const started = useRef(false);
+  const measured = useRef(false);
 
   const onEnvelopeLayout = (e: LayoutChangeEvent) => {
-    if (placed.value === 1) {
+    if (measured.current) {
       return;
     }
+    measured.current = true;
     const { y, height } = e.nativeEvent.layout;
-    rise.value = started.current ? 0 : Math.max(0, screenHeight / 2 - (y + height / 2));
-    placed.value = 1;
+    // It starts in the middle of the screen, unless the moment has begun without it.
+    motion.distance.setValue(started.current ? 0 : Math.max(0, screenHeight / 2 - (y + height / 2)));
+    motion.shown.setValue(1);
   };
 
   // The moment plays once, when ISDS has accepted the message and this screen appears.
@@ -333,40 +352,19 @@ export function SentResult({
     if (started.current) {
       return;
     }
-    const m = sendMoment(reduceMotion);
     const timer = setTimeout(() => {
       started.current = true;
       setLanded(true);
       haptics.stamp();
-      land.value = withTiming(1, { duration: m.landMs, easing: Easing.out(Easing.cubic) });
-      rise.value = withDelay(m.landMs, withTiming(0, { duration: m.riseMs, easing: Easing.out(Easing.cubic) }));
-      rest.value = withDelay(m.restDelayMs, withTiming(1, { duration: m.restMs, easing: Easing.out(Easing.cubic) }));
-    }, m.beatMs);
+      Animated.timing(motion.clock, {
+        toValue: 1,
+        duration: motion.totalMs,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }).start();
+    }, motion.m.beatMs);
     return () => clearTimeout(timer);
-  }, [reduceMotion, land, rise, rest]);
-
-  // Its own effect, keyed on the landing alone, so nothing else re-running can cancel the end.
-  useEffect(() => {
-    if (!landed) {
-      return;
-    }
-    const end = setTimeout(() => setSettled(true), sendMomentEnd(sendMoment(reduceMotion)));
-    return () => clearTimeout(end);
-  }, [landed, reduceMotion]);
-
-  // Plain numbers for the worklet: it runs on the UI thread, where `sendMoment` does not exist (a call to
-  // it from there crashed the screen on Android, 2026-11-12).
-  const { landFades, landScale } = sendMoment(reduceMotion);
-  const postmarkStyle = useAnimatedStyle(() => ({
-    opacity: landFades ? land.value : 1,
-    transform: [{ scale: landScale + (1 - landScale) * land.value }],
-  }));
-  const envelopeStyle = useAnimatedStyle(() => ({
-    opacity: placed.value,
-    // `top`, not a translate: it goes through layout, so its last frame is never dropped (above).
-    top: rise.value,
-  }));
-  const restStyle = useAnimatedStyle(() => ({ opacity: rest.value }));
+  }, [motion]);
 
   return (
     <ScrollView
@@ -382,19 +380,19 @@ export function SentResult({
       {/* Above the words: it rises over them into its place. */}
       {/* Measured by a plain view: the animated one only moves. */}
       <View style={{ zIndex: 1 }} onLayout={onEnvelopeLayout}>
-        <Animated.View style={settled ? SETTLED_ENVELOPE : envelopeStyle}>
+        <Animated.View style={motion.envelope} testID="sentEnvelope">
           <SentEnvelope
             account={account}
             recipient={recipient}
             sentAt={sentAt}
             paidCzk={paidCzk}
             landed={landed}
-            postmarkStyle={settled ? SETTLED_POSTMARK : postmarkStyle}
+            postmarkStyle={motion.postmark}
           />
         </Animated.View>
       </View>
       <Animated.View
-        style={[{ flexGrow: 1, alignSelf: 'stretch', alignItems: 'center' }, settled ? SETTLED_REST : restStyle]}
+        style={[{ flexGrow: 1, alignSelf: 'stretch', alignItems: 'center' }, motion.rest]}
       >
         {/* The words stretch to the column and centre themselves: a centred box measured to its own
             words loses the last one on Android (practices, mobile/lifecycle.md). */}

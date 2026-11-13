@@ -11,6 +11,9 @@ import { Animated, Easing, View, type StyleProp, type ViewStyle } from 'react-na
 import { useReducedMotion } from 'react-native-reanimated';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { envelopeShape } from '../../../theme/print';
+import { easedStretch } from '../../../theme/motionClock';
+
+export { easedStretch };
 
 /** Where the tapped row's sender tile was, in window points, how it looked, and when it was tapped. */
 export interface TileRect {
@@ -59,21 +62,6 @@ export function openingMoment(flies: boolean, reduceMotion: boolean) {
   const sheetMs = reduceMotion ? 0 : 280;
   const sheetAtMs = Math.round(flightMs * 0.6);
   return { flightMs, sheetAtMs, sheetMs, totalMs: Math.max(flightMs, sheetAtMs + sheetMs), sheetRise: 24 };
-}
-
-/**
- * The stretch from `startMs` to `startMs + ms` of one clock running 0 to 1 over `totalMs`, eased out
- * (cubic) as points the native driver joins with straight lines - it takes no easing function.
- */
-export function easedStretch(startMs: number, ms: number, totalMs: number, steps = 8) {
-  const inputRange: number[] = [];
-  const outputRange: number[] = [];
-  for (let k = 0; k <= steps; k += 1) {
-    const f = k / steps;
-    inputRange.push((startMs + f * ms) / totalMs);
-    outputRange.push(1 - (1 - f) ** 3);
-  }
-  return { inputRange, outputRange, extrapolate: 'clamp' as const };
 }
 
 interface Rect {

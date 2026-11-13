@@ -6,7 +6,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import RNHaptic from 'react-native-haptic-feedback';
 import { useReducedMotion } from 'react-native-reanimated';
-import { processColor } from 'react-native';
+import { Animated, processColor } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
@@ -204,16 +204,57 @@ describe('the sending moment (board Motion 2)', () => {
     expect(trigger.mock.calls.map(c => c[0])).toEqual(['impactHeavy']);
   });
 
-  it('ends in plain values React commits itself: everything in place, whole and at full strength', async () => {
+  // On Android, Reanimated dropped the moment's last frames and then kept them over the plain values
+  // React committed at its end: the envelope stopped 40 low on the title and the words stayed pale
+  // (Obalka_Demo, 2026-11-13). One clock on the native driver draws every frame and ends where told.
+  it('runs on one clock on the native driver', async () => {
+    const timing = jest.spyOn(Animated, 'timing');
+    try {
+      const view = await mount();
+      await waitFor(() => expect(view.getByTestId('sentPostmark', { includeHiddenElements: true })).toBeTruthy());
+      expect(timing).toHaveBeenCalledTimes(1);
+      expect(timing.mock.calls[0][1]).toMatchObject({ toValue: 1, duration: 460, useNativeDriver: true });
+    } finally {
+      timing.mockRestore();
+    }
+  });
+
+  it('ends with everything in place, whole and at full strength, its styles left on at their end', async () => {
     expect(sendMomentEnd(sendMoment(false))).toBe(460);
+    // Jest has no native driver to run the clock: it is run to its end at once.
+    const timing = jest.spyOn(Animated, 'timing').mockImplementation(
+      (value, config) =>
+        ({
+          start: (done?: Animated.EndCallback) => {
+            (value as Animated.Value).setValue(config.toValue as number);
+            done?.({ finished: true });
+          },
+          stop: () => {},
+          reset: () => {},
+        }) as Animated.CompositeAnimation,
+    );
     const view = await mount();
+    await layOut(view);
     const flat = (st: unknown): Record<string, unknown> =>
       Array.isArray(st) ? Object.assign({}, ...st.map(flat)) : ((st ?? {}) as Record<string, unknown>);
     await waitFor(
       () => expect(flat(view.getByTestId('sentPostmark', { includeHiddenElements: true }).props.style).transform).toEqual([{ scale: 1 }]),
       { timeout: 2000 },
     );
-    expect(flat(view.getByText('Zpráva odeslána').parent?.parent?.props.style).opacity ?? 1).toBe(1);
+    const opacityAbove = (node: ReturnType<typeof view.getByText> | null): unknown => {
+      for (let n = node; n; n = n.parent) {
+        const o = flat(n.props.style).opacity;
+        if (o !== undefined) {
+          return o;
+        }
+      }
+      return undefined;
+    };
+    expect(opacityAbove(view.getByText('Zpráva odeslána'))).toBe(1);
+    const envelope = flat(view.getByTestId('sentEnvelope', { includeHiddenElements: true }).props.style);
+    expect(envelope.opacity).toBe(1);
+    expect(envelope.transform).toEqual([{ translateY: 0 }]);
+    timing.mockRestore();
   });
 
   it('lands at 1.06 in 140 ms and rises in 320, ease-out; with Reduce Motion only crossfades', () => {
