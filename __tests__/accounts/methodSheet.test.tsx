@@ -35,3 +35,21 @@ describe('the method step (R11)', () => {
     expect(view.queryByTestId('env-help')).toBeNull();
   });
 });
+
+describe('the fields step (R11)', () => {
+  it('names the method in a chip, and masks a password behind the eye', async () => {
+    const view = await form();
+    await fireEvent.press(view.getByTestId('continue'));
+    expect(view.getByTestId('methodChip')).toHaveTextContent(t('login.method.label.password'));
+    expect(view.getByTestId('password')).toHaveProp('secureTextEntry', true);
+    expect(view.getByTestId('togglePassword')).toBeOnTheScreen();
+  });
+
+  it('shows the Mobile Key communication code as typed, with no eye', async () => {
+    const view = await form();
+    await fireEvent.press(view.getByTestId('method-mobile_key'));
+    await fireEvent.press(view.getByTestId('continue'));
+    expect(view.getByTestId('password')).toHaveProp('secureTextEntry', false);
+    expect(view.queryByTestId('togglePassword')).toBeNull();
+  });
+});

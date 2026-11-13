@@ -8,9 +8,9 @@ import type { TextInput } from 'react-native';
 import { PressScale } from '../../../theme/PressScale';
 import { SegmentedControl } from '../../../theme/SegmentedControl';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
-import { BodyStrong, Caption, Heading, Label, Meta, SmallStrong } from '../../../theme/Typography';
+import { BodyStrong, Caption, Heading, Label, Meta, SmallStrong, Subheading } from '../../../theme/Typography';
+import { Well } from '../../../theme/Well';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { chipTone } from '../../../theme/chipTone';
 import { t } from '../../../i18n/strings';
 import type { AuthMethod, Host } from '../../../services/isds/types';
 import { Credentials } from '../state/loginController';
@@ -23,7 +23,6 @@ import {
 } from '../../../theme/icons';
 import { Card } from '../../../theme/Card';
 import { OptionGroup } from '../../../theme/OptionGroup';
-import { LineIcon } from '../../../theme/LineIcon';
 import { space } from '../../../theme/spacing';
 
 // Every sign-in method the app supports: name and password, an SMS code, and Mobile Key.
@@ -101,7 +100,6 @@ export function AddBoxForm({
     : t('login.needPassword');
   const focusBlocking = () =>
     (loginName.trim().length === 0 ? loginRef : passwordRef).current?.focus();
-  const info = chipTone('info', theme);
 
   // Paper inputs (design §3): card fill, strong hairline, radius 14, 50px tall.
   const inputProps = {
@@ -159,9 +157,8 @@ export function AddBoxForm({
           adjustKeyboardInsets={false}
           contentContainerStyle={{
             paddingHorizontal: 16,
-            // R11 starts the method step 20 down, rounded to 18; the credentials step keeps 24 until
-            // I08.2 moves it to its board.
-            paddingTop: step === 'method' ? 18 : 24,
+            // R11 starts the method step 20 down, rounded to 18, and the fields 16 down.
+            paddingTop: step === 'method' ? 18 : 16,
             paddingBottom: 24,
           }}
         >
@@ -251,25 +248,28 @@ export function AddBoxForm({
             </YStack>
           </YStack>
         ) : (
-          <YStack gap={16}>
-            {/* Which sign-in method these credentials are for (the choice from step 1) - the design's
-                13/600 brand-blue method label ("Přihlášení heslem" / "…přes SMS kód" / "…Mobilním klíčem").
-                Only METHODS reach this step, and each has a `login.method.label.*` string. */}
+          <YStack gap={14}>
+            {/* Which method these fields are for (step 1's choice): R11's chip, as small as its words,
+                the info glyph and the label in the dark brand blue on the soft one. Only METHODS reach
+                this step, and each has a `login.method.label.*` string. */}
             <XStack
+              alignSelf="flex-start"
               alignItems="center"
-              gap={10}
-              marginBottom={4}
-              backgroundColor={info.bg}
-              borderRadius={12}
-              paddingHorizontal={13}
-              paddingVertical={12}
+              gap={6}
+              backgroundColor={theme.blueSoft}
+              borderRadius={8}
+              paddingTop={4}
+              paddingBottom={4}
+              paddingLeft={8}
+              paddingRight={10}
+              testID="methodChip"
             >
-              <InfoIcon size={18} color={info.accent} />
-              <Label color={info.fg}>{t(`login.method.label.${method}`)}</Label>
+              <InfoIcon size={15} color={theme.blueDark} />
+              <Label color={theme.blueDark}>{t(`login.method.label.${method}`)}</Label>
             </XStack>
 
             <YStack gap={8}>
-              <Label>{t('login.loginName')}</Label>
+              <Label color={theme.textMuted}>{t('login.loginName')}</Label>
               <Input
                 ref={loginRef}
                 {...inputProps}
@@ -286,7 +286,7 @@ export function AddBoxForm({
             </YStack>
 
             <YStack gap={8}>
-              <Label>
+              <Label color={theme.textMuted}>
                 {isMobileKey ? t('login.commCode') : t('login.password')}
               </Label>
               <YStack position="relative">
@@ -294,8 +294,11 @@ export function AddBoxForm({
                   ref={passwordRef}
                   {...inputProps}
                   // Typed text stops before the show-password button: its inset, its width, and a gap.
-                  paddingRight={EYE_RIGHT + EYE_W + space.xs}
-                  secureTextEntry={!showPassword}
+                  // The communication code has no button (R11): a one-off token from the portal, shown
+                  // as typed so a pasted one can be checked, and useless without the Mobile Key's own
+                  // approval.
+                  paddingRight={isMobileKey ? inputProps.paddingHorizontal : EYE_RIGHT + EYE_W + space.xs}
+                  secureTextEntry={!isMobileKey && !showPassword}
                   // Mark it a real password field so iOS uses its standard secure keyboard (a
                   // third-party keyboard is correctly blocked here for security) and offers Keychain
                   // autofill; the Mobile Key comm code is a one-off token, so it opts out.
@@ -313,31 +316,33 @@ export function AddBoxForm({
                   }
                   testID="password"
                 />
-                <XStack
-                  position="absolute"
-                  right={EYE_RIGHT}
-                  top={0}
-                  bottom={0}
-                  width={EYE_W}
-                  alignItems="center"
-                  justifyContent="center"
-                  // As tall as the input it sits in (top/bottom 0), which already clears the floor;
-                  // only its width is short.
-                  hitSlop={touchSlop({ width: EYE_W, height: inputProps.height })}
-                  pressStyle={{ opacity: 0.6 }}
-                  onPress={() => setShowPassword(v => !v)}
-                  accessibilityRole="button"
-                  accessibilityLabel={t(
-                    showPassword ? 'login.password.hide' : 'login.password.show',
-                  )}
-                  testID="togglePassword"
-                >
-                  <EyeIcon
-                    size={20}
-                    color={theme.textFaint}
-                    off={showPassword}
-                  />
-                </XStack>
+                {isMobileKey ? null : (
+                  <XStack
+                    position="absolute"
+                    right={EYE_RIGHT}
+                    top={0}
+                    bottom={0}
+                    width={EYE_W}
+                    alignItems="center"
+                    justifyContent="center"
+                    // As tall as the input it sits in (top/bottom 0), which already clears the floor;
+                    // only its width is short.
+                    hitSlop={touchSlop({ width: EYE_W, height: inputProps.height })}
+                    pressStyle={{ opacity: 0.6 }}
+                    onPress={() => setShowPassword(v => !v)}
+                    accessibilityRole="button"
+                    accessibilityLabel={t(
+                      showPassword ? 'login.password.hide' : 'login.password.show',
+                    )}
+                    testID="togglePassword"
+                  >
+                    <EyeIcon
+                      size={20}
+                      color={theme.textFaint}
+                      off={showPassword}
+                    />
+                  </XStack>
+                )}
               </YStack>
               {/* Only Mobile Key gets a helper line (design) - the password/SMS fields speak for themselves. */}
               {isMobileKey ? (
@@ -350,67 +355,56 @@ export function AddBoxForm({
             {/* A rejected password login that smells like "this box also wants a one-time code": the
                 design keeps the user ON the form and offers the SMS method from an inline card, so the
                 already-typed name/password stay visible and editable (no full-screen detour). */}
+            {/* A refused password that may want an SMS code too (R11 "After a refusal"): the fields stay
+                on screen and editable, and the sheet under them names the three reasons with a way out
+                of each. The board sets the two links 2 apart; two 44 targets cannot be, so each is its
+                own 44 row and the block is pulled up to keep the first line where the board has it. */}
             {suggestOtp && onUseSms ? (
-              <XStack
-                backgroundColor={info.bg}
-                borderWidth={1}
-                borderColor={info.border ?? info.accent}
-                borderRadius={14}
-                paddingHorizontal={14}
-                paddingVertical={13}
-                gap={12}
-                alignItems="flex-start"
-                testID="otpSuggestion"
-              >
-                <LineIcon role="label">
-                  <SmartphoneIcon size={20} color={info.accent} />
-                </LineIcon>
-                <YStack flex={1}>
-                  <Label fontWeight="700" color={theme.text}>
-                    {t('login.otpSuggest.title')}
-                  </Label>
-                  <Meta marginTop={2}>
-                    {t('login.otpSuggest.sub')}
-                  </Meta>
-                  <XStack
-                    alignSelf="flex-start"
-                    marginTop={8}
-                    hitSlop={textSlop('bodyStrong', { fontSize: 13 })}
-                    pressStyle={{ opacity: 0.6 }}
-                    onPress={onUseSms}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('login.otpSuggest.btn')}
-                    testID="useSms"
-                  >
-                    <Label fontWeight="700" color={info.accent}>
-                      {t('login.otpSuggest.btn')} →
-                    </Label>
-                  </XStack>
-                  {onOpenPortal ? (
-                    <XStack
-                      alignSelf="flex-start"
-                      marginTop={8}
-                      hitSlop={textSlop('bodyStrong', { fontSize: 13 })}
-                      pressStyle={{ opacity: 0.6 }}
-                      onPress={() => onOpenPortal(host)}
-                      accessibilityRole="link"
-                      accessibilityLabel={t('pwd.action')}
-                      testID="refusedPortal"
-                    >
-                      <Label fontWeight="700" color={info.accent}>
-                        {t('pwd.action')} →
-                      </Label>
-                    </XStack>
-                  ) : null}
-                </YStack>
-              </XStack>
+              <Card padding={14} paddingBottom={2} testID="otpSuggestion">
+                <XStack gap={12} alignItems="flex-start">
+                  <Well>
+                    <SmartphoneIcon size={22} color={theme.text} />
+                  </Well>
+                  <YStack flex={1} gap={4}>
+                    <Subheading accessibilityRole="header">{t('login.otpSuggest.title')}</Subheading>
+                    <Caption color={theme.bodyText}>{t('login.otpSuggest.sub')}</Caption>
+                    <YStack marginTop={-6}>
+                      <XStack
+                        alignSelf="flex-start"
+                        minHeight={44}
+                        alignItems="center"
+                        pressStyle={{ opacity: 0.6 }}
+                        onPress={onUseSms}
+                        accessibilityRole="button"
+                        accessibilityLabel={t('login.otpSuggest.btn')}
+                        testID="useSms"
+                      >
+                        <SmallStrong color={theme.blue}>{t('login.otpSuggest.btn')} →</SmallStrong>
+                      </XStack>
+                      {onOpenPortal ? (
+                        <XStack
+                          alignSelf="flex-start"
+                          minHeight={44}
+                          alignItems="center"
+                          pressStyle={{ opacity: 0.6 }}
+                          onPress={() => onOpenPortal(host)}
+                          accessibilityRole="link"
+                          accessibilityLabel={t('pwd.action')}
+                          testID="refusedPortal"
+                        >
+                          <SmallStrong color={theme.blue}>{t('pwd.action')} →</SmallStrong>
+                        </XStack>
+                      ) : null}
+                    </YStack>
+                  </YStack>
+                </XStack>
+              </Card>
             ) : null}
 
             <YStack gap={8}>
-              {/* Two runs (design): the name in the field-label tone, "(volitelné)" a shade fainter. */}
-              <Label>
-                {t('alias.title')}{' '}
-                <Caption color={theme.textFaint}>{t('common.optional')}</Caption>
+              {/* One run in the field labels' muted tone (R11). */}
+              <Label color={theme.textMuted}>
+                {t('alias.title')} {t('common.optional')}
               </Label>
               <Input
                 {...inputProps}

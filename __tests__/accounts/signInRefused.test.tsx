@@ -14,9 +14,15 @@ import { InMemorySecureStore } from '../../src/services/secureStore/secureStore'
 import type { LoginErrorCode } from '../../src/services/isds/types';
 import { t } from '../../src/i18n/strings';
 
-function refusing(code: LoginErrorCode): LoginAuthService {
+function refusing(code: LoginErrorCode, suggestOtp = false): LoginAuthService {
   return {
-    beginLogin: async () => ({ kind: 'error', code, recoverable: true, messageKey: `login.error.${code}` }),
+    beginLogin: async () => ({
+      kind: 'error',
+      code,
+      recoverable: true,
+      messageKey: `login.error.${code}`,
+      ...(suggestOtp ? { suggestOtp } : {}),
+    }),
     submitOtp: async () => ({ kind: 'needsOtpSms' }),
     resendSms: async () => ({ kind: 'needsOtpSms' }),
     mobileKeyLogin: async () => ({ kind: 'error', code, recoverable: true, messageKey: `login.error.${code}` }),
@@ -24,9 +30,9 @@ function refusing(code: LoginErrorCode): LoginAuthService {
   };
 }
 
-async function signInRefusedWith(code: LoginErrorCode) {
+async function signInRefusedWith(code: LoginErrorCode, method: 'otp_totp' | 'password' = 'otp_totp') {
   const deps = {
-    authService: refusing(code),
+    authService: refusing(code, method === 'password'),
     accountsController: new AccountsController({
       accounts: new InMemoryAccountsStore(),
       secureStore: new InMemorySecureStore(),
@@ -39,7 +45,7 @@ async function signInRefusedWith(code: LoginErrorCode) {
     </TamaguiProvider>,
   );
   // The SMS method: a refused password there is not a hint to try SMS, it is a refusal.
-  await fireEvent.press(view.getByTestId('method-otp_totp'));
+  await fireEvent.press(view.getByTestId(`method-${method}`));
   await fireEvent.press(view.getByTestId('continue'));
   await fireEvent.changeText(await view.findByTestId('loginName'), 'k8tw2e');
   await fireEvent.changeText(view.getByTestId('password'), 'heslo');
@@ -78,5 +84,20 @@ describe('a sign-in error (R11)', () => {
     expect(view.getByTestId('retry')).toHaveTextContent(t('login.retry'));
     expect(view.queryByTestId('openPortal')).toBeNull();
     expect(view.queryByTestId('signInRefused')).toBeNull();
+  });
+});
+
+describe('after a refused password (R11)', () => {
+  it('keeps the fields and offers the SMS code and the portal from one sheet', async () => {
+    const view = await signInRefusedWith('invalidCredentials', 'password');
+    const sheet = await view.findByTestId('otpSuggestion');
+    expect(within(sheet).getByText(t('login.otpSuggest.title'))).toBeOnTheScreen();
+    expect(within(sheet).getByText(t('login.otpSuggest.sub'))).toBeOnTheScreen();
+    expect(view.getByTestId('loginName')).toHaveProp('value', 'k8tw2e');
+    // Two links, one under the other: each is a whole 44 row, so neither's target covers the other.
+    for (const id of ['useSms', 'refusedPortal']) {
+      expect(view.getByTestId(id)).toHaveStyle({ minHeight: 44 });
+      expect(view.getByTestId(id).props.hitSlop).toBeUndefined();
+    }
   });
 });

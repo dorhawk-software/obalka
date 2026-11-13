@@ -71,9 +71,16 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     the label; the help link blue at the left with its glyph; the footer tone with no hairline.
     Roundings: the rows' 56 and 11 to the group's 52 and 10; the step's 20 top to 18. Walked light,
     dark and in English, closed and open, a method picked.
-  - [ ] I08.2 Credentials step: method chip, login name, password or code with the eye, Mobile Key
+  - [x] I08.2 Credentials step: method chip, login name, password or code with the eye, Mobile Key
     help, the OTP suggestion (and re-auth's `OtpSuggestion`, from I11), alias, submit, busy, blocked
-    (login name, password).
+    (login name, password). Fixed 2026-11-13 to R11 on the add-box step: the method is a chip as
+    small as its words (blue-dark on blue-soft, the info glyph at 15), the field labels muted, 14
+    between the groups and 16 at the top, the alias label one muted run. The communication code has
+    no eye and shows as typed (R11). After a refused password the suggestion is a sheet: the phone
+    glyph in a well, the `subheading` title, the `caption` reasons and two links. Roundings: the
+    fields' 15 side padding stays 16. The links are a 44 row each, not the board's 2 apart, so
+    neither covers the other (a sync-back item). Walked light, dark and in English (forced on,
+    reverted). Still open: re-auth's `OtpSuggestion` (with I12), and the busy spinner (I76).
 - [x] I09 `OtpForm` (code field, sending/sent notice, resend, blocked) - **N**. Fixed 2026-11-13
   to R8: the Display title at the left, the notice on a blue tone strip with its bell, the field's
   label, eight digit boxes over one hidden field (digits only, eight at most, a paste trimmed), Confirm
@@ -759,6 +766,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R8 launch: a 4 bar; DESIGN.md has one waiting bar, 6, built.
   - R11 Pokročilé open: no Nápověda under the sheet; the build keeps the link on both states.
   - R11 environment: the "i" beside Prostředí is a mark; the help is always open under the switch.
+  - R11 After a refusal: the two links 2 apart; two 44 targets cannot be, so the build sets each in
+    its own 44 row. The phone also drops the alias field and Nápověda; the build keeps both.
+  - R11 fields: no Nápověda under them; the build keeps it, help before sign-in (019).
   - R6 draws no hidden key: the build shows the warning and one 52 button.
   - R6 and R10 draw section labels with no icon; the code keeps them until R10 drops them all.
   - R7 sent: the stamp prints the cost; the archive has none, so the build's is blank (not-now.md).

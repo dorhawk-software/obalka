@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The sign-in fields are calmer.** A small tag names the method, the field labels are muted, and
+  the Mobile Key communication code shows as you type it. When ISDS refuses the password, a sheet
+  under the fields lists the reasons with two links.
 - **When ISDS refuses the sign-in, one card with a lock says so.** Edit the name or password returns
   to the filled-in fields, not to the choice of method, and a link leads to the ISDS portal. Other
   errors show the sealed envelope, the reason and Try again.

@@ -20,6 +20,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Přihlašovací pole jsou klidnější.** Způsob přihlášení označuje malý štítek, popisky polí jsou
+  tlumené a komunikační kód Mobilního klíče je vidět, jak ho píšete. Když ISDS heslo odmítne, je pod
+  poli list s důvody a dvěma odkazy.
 - **Když ISDS přihlášení odmítne, řekne to jedna karta se zámkem.** Upravit jméno nebo heslo vrátí
   vyplněná pole, ne volbu způsobu přihlášení, a odkaz vede do portálu ISDS. Jiné chyby ukazují
   zalepenou obálku, důvod a Zkusit znovu.
