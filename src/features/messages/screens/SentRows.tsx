@@ -29,6 +29,7 @@ import { rowDate } from '../state/groupByDate';
 import { sentRowLabel } from '../state/rowLabel';
 import { BoxPill, boxName } from './BoxPill';
 import { weekdayShort } from './InboxRows';
+import { partyName } from '../state/partyName';
 
 /** What the end of a sent row says: a certified state with its date, the stop, or nothing. */
 export type SentRowState =
@@ -83,7 +84,8 @@ export const SentRegisterRow = memo(function SentRegisterRowView({
 }) {
   const theme = useTheme();
   const onPress = useCallback(() => onOpen(message.id, folder), [onOpen, message.id, folder]);
-  const recipient = message.recipient || '—';
+  // The name alone: the legal form ISDS appends waits for the detail (`partyName`).
+  const recipient = partyName(message.recipient).name || '—';
   const subject = message.subject || t('messages.noSubject');
   const delivered = message.deliveryTime;
   const state = sentRowState(message, now);

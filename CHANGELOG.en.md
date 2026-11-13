@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The name first, then the kind of box.** "Ondřej Šimon - podnikající fyzická osoba" is now
+  "Ondřej Šimon" on the envelope with a quieter "PFO · ID …" under it; tap it to spell the kind out. Lists
+  and search show the name alone.
 - **The top of the inbox is the front of an envelope.** The box's name is in the envelope's window
   under the gold flap; tap the window to switch boxes, with search beside it and Received and Sent
   below.

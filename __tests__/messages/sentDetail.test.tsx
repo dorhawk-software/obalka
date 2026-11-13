@@ -13,11 +13,12 @@ const AT = new Date(2026, 9, 26, 21, 5).getTime();
 let mockState = 4;
 let mockSyncedAt: number | null = AT;
 let mockMissing = false;
+let mockSender = 'Jan Novák';
 
 const mockEnvelope = (): MessageEnvelope => ({
   id: '1787306585',
   subject: 'Přiznání',
-  sender: 'Jan Novák',
+  sender: mockSender,
   senderAddress: null,
   recipient: 'Finanční úřad',
   recipientAddress: 'Masarykova 1, 602 00 Brno',
@@ -99,6 +100,7 @@ afterEach(() => {
   mockState = 4;
   mockSyncedAt = AT;
   mockMissing = false;
+  mockSender = 'Jan Novák';
 });
 
 describe('a sent message (R7)', () => {
@@ -107,7 +109,7 @@ describe('a sent message (R7)', () => {
     await waitFor(() => view.getByTestId('detailEnvelope'));
     expect(view.getByText(t('detail.header.sent'))).toBeTruthy();
     expect(view.getByTestId('detailSender')).toHaveTextContent('Jan Novák');
-    expect(view.getByText(t('send.sent.record.id', { id: 'box1' }))).toBeTruthy();
+    expect(view.getByTestId('detailSenderForm')).toHaveTextContent(/ID box1$/);
     expect(view.getByTestId('detailRecipient')).toHaveTextContent('Finanční úřad');
     expect(view.getByText(' · fu4x2ab')).toBeTruthy();
     expect(view.getByText(/Masarykova 1/)).toBeTruthy();
@@ -172,7 +174,32 @@ describe('a message the archive does not hold (I31)', () => {
     // The header still says what the screen is.
     expect(view.getByText(t('detail.header.sent'))).toBeTruthy();
     expect(view.getByTestId('retry')).toHaveTextContent(t('detail.error.back'));
-    fireEvent.press(view.getByTestId('retry'));
+    await fireEvent.press(view.getByTestId('retry'));
     expect(onBack).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('a name and its legal form (the owner, 2026-11-13)', () => {
+  // ISDS's "Ondřej Šimon - podnikající fyzická osoba" ran three lines in the sender's 120 on the owner's
+  // test box, the form as loud as the name.
+  it('leads with the name and puts the form, short, on the quieter line with the ID', async () => {
+    mockSender = 'Jan Novák - podnikající fyzická osoba';
+    const view = await open();
+    await waitFor(() => view.getByTestId('detailEnvelope'));
+    expect(view.getByTestId('detailSender')).toHaveTextContent('Jan Novák', { exact: true });
+    const note = view.getByTestId('detailSenderForm');
+    expect(note).toHaveTextContent('FO · ID box1', { exact: true });
+    // A screen reader hears it whole; a tap writes it out.
+    expect(note.props.accessibilityLabel).toBe(`${t('send.dbType.FO')}, ID box1`);
+    await fireEvent.press(note);
+    expect(view.getByTestId('detailSenderForm')).toHaveTextContent(`${t('send.dbType.FO')} · ID box1`, { exact: true });
+  });
+
+  it('says the form of a received message s sender under their name', async () => {
+    mockSender = 'Jan Novák - podnikající fyzická osoba';
+    const view = await open('received');
+    await waitFor(() => view.getByTestId('detailEnvelope'));
+    expect(view.getByTestId('detailSender')).toHaveTextContent('Jan Novák', { exact: true });
+    expect(view.getByTestId('detailSenderForm')).toHaveTextContent('PFO', { exact: true });
   });
 });

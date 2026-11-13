@@ -20,6 +20,7 @@ import { space } from '../../../theme/spacing';
 import { useOnScreen } from '../../../theme/useOnScreen';
 import { t } from '../../../i18n/strings';
 import type { DataBoxAccount, MessageEnvelope } from '../../../services/isds/types';
+import { partyName } from '../state/partyName';
 
 /** The band's height under the status bar, and how far of scrolling it takes to come in. */
 export const BAND_HEIGHT = 54;
@@ -144,7 +145,7 @@ export function DetailBand({
             <YStack flex={1} minWidth={0}>
               <Overline color={theme.envelopeInkSoft}>{t('detail.from')}</Overline>
               <Subheading color={theme.onSolid} numberOfLines={1} testID="bandSender">
-                {envelope.sender || '—'}
+                {partyName(envelope.sender).name || '—'}
               </Subheading>
             </YStack>
             <Window
@@ -159,7 +160,7 @@ export function DetailBand({
               }}
             >
               <Subheading numberOfLines={1} testID="bandRecipient">
-                {envelope.recipient || (account.alias ?? account.label)}
+                {partyName(envelope.recipient).name || (account.alias ?? account.label)}
               </Subheading>
             </Window>
           </Animated.View>

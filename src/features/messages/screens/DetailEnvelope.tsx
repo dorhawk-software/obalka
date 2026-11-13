@@ -8,8 +8,8 @@
 // corner cancelled by the postmark ISDS struck. The archive does not know what a send cost - ISDS lists
 // no price - so the stamp is blank where the board prints "ZDARMA 0 Kč" (not-now.md).
 
-import { useRef } from 'react';
-import { Animated, View, type LayoutChangeEvent } from 'react-native';
+import { useRef, useState } from 'react';
+import { Animated, Pressable, View, type LayoutChangeEvent } from 'react-native';
 import { XStack, YStack } from '../../../theme/ui';
 import { Caption, Display, Heading, Overline, Subheading } from '../../../theme/Typography';
 import { Stamp } from '../../../theme/objects/Stamp';
@@ -20,7 +20,10 @@ import { Postmark } from '../../../theme/objects/Postmark';
 import { Window } from '../../../theme/objects/Window';
 import { objectShadow } from '../../../theme/depth';
 import { t, plural } from '../../../i18n/strings';
-import type { DataBoxAccount, MessageEnvelope } from '../../../services/isds/types';
+import type { BoxType, DataBoxAccount, MessageEnvelope } from '../../../services/isds/types';
+import { boxTypeLabel, boxTypeShort } from '../../accounts/state/boxType';
+import { partyName } from '../state/partyName';
+import { textSlop } from '../../../theme/touchTarget';
 import { FlyingTile, useOpening, type TileRect } from './EnvelopeFlight';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -34,6 +37,54 @@ export function dayMonth(epochMs: number): string {
 function hourMinute(epochMs: number): string {
   const d = new Date(epochMs);
   return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/**
+ * The quieter line by a name (the owner, 2026-11-13): the box's legal form short - "PFO" - then what
+ * follows it, an ID. A tap writes the form out in full and a screen reader always hears it in full: it
+ * ranks below the name, it is not taken away.
+ */
+function FormNote({
+  form,
+  after,
+  lead = '',
+  color,
+  fontWeight,
+  testID,
+}: {
+  readonly form: BoxType | null;
+  readonly after: string | null;
+  /** What joins it to the name when it runs on the name's line (" · "). */
+  readonly lead?: string;
+  readonly color: string;
+  readonly fontWeight?: '400';
+  readonly testID?: string;
+}) {
+  const [full, setFull] = useState(false);
+  const shown = [form ? (full ? boxTypeLabel(form) : boxTypeShort(form)) : null, after].filter(
+    (part): part is string => part != null,
+  );
+  if (shown.length === 0) {
+    return null;
+  }
+  const line = (
+    <Caption fontWeight={fontWeight} color={color} testID={form ? undefined : testID}>
+      {lead + shown.join(' · ')}
+    </Caption>
+  );
+  if (!form) {
+    return line;
+  }
+  return (
+    <Pressable
+      onPress={() => setFull(was => !was)}
+      hitSlop={textSlop('caption')}
+      accessibilityLabel={[boxTypeLabel(form), after].filter(part => part != null).join(', ')}
+      testID={testID}
+    >
+      {line}
+    </Pressable>
+  );
 }
 
 /** The sent envelope's stamp: the board's 84, its blank face 64 by 70. */
@@ -97,7 +148,10 @@ export function DetailEnvelope({
   const theme = useTheme();
   const opening = useOpening(openedFrom);
   const delivered = envelope.deliveryTime;
-  const recipient = envelope.recipient || (sent ? '—' : (account.alias ?? account.label));
+  // Names lead; the legal form ISDS appends to them goes to the quieter line (`FormNote`).
+  const sender = partyName(envelope.sender);
+  const addressee = partyName(envelope.recipient);
+  const recipient = addressee.name || (sent ? '—' : (account.alias ?? account.label));
   const recipientId = envelope.recipientBoxId ?? (sent ? null : account.boxId);
   // The envelope's frame inside this, and this one's place in the content: its bottom is the sum.
   const at = useRef({ root: null as number | null, envelope: null as number | null });
@@ -148,18 +202,29 @@ export function DetailEnvelope({
               <YStack maxWidth={120} gap={2}>
                 <Overline color={theme.envelopeInkSoft}>{t('detail.from')}</Overline>
                 <Subheading color={theme.onSolid} testID="detailSender">
-                  {envelope.sender || (account.alias ?? account.label)}
+                  {sender.name || account.label}
                 </Subheading>
-                <Caption fontWeight="400" color={theme.envelopeInkSoft}>
-                  {t('send.sent.record.id', { id: account.boxId })}
-                </Caption>
+                <FormNote
+                  form={account.dbType ?? sender.form}
+                  after={t('send.sent.record.id', { id: account.boxId })}
+                  color={theme.envelopeInkSoft}
+                  fontWeight="400"
+                  testID="detailSenderForm"
+                />
               </YStack>
             ) : (
             <YStack maxWidth={212} gap={2}>
               <Overline color={theme.envelopeInkSoft}>{t('detail.from')}</Overline>
               <Heading color={theme.onSolid} testID="detailSender">
-                {envelope.sender || '—'}
+                {sender.name || '—'}
               </Heading>
+              <FormNote
+                form={sender.form}
+                after={null}
+                color={theme.envelopeInkSoft}
+                fontWeight="400"
+                testID="detailSenderForm"
+              />
               {envelope.senderAddress ? (
                 <Caption fontWeight="400" color={theme.envelopeInkSoft} numberOfLines={2}>
                   {envelope.senderAddress}
@@ -197,7 +262,7 @@ export function DetailEnvelope({
               <Overline color={theme.textMuted}>{t('detail.to')}</Overline>
               <XStack alignItems="baseline" flexWrap="wrap">
                 <Subheading testID="detailRecipient">{recipient}</Subheading>
-                {recipientId ? <Caption color={theme.textMuted}>{` · ${recipientId}`}</Caption> : null}
+                <FormNote lead=" · " form={addressee.form} after={recipientId} color={theme.textMuted} />
               </XStack>
               {/* Which of the namesakes it went to, confirmed after the fact (015 US3). */}
               {sent ? <AddressLines address={envelope.recipientAddress} marginTop={2} /> : null}

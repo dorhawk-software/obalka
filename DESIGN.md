@@ -360,6 +360,14 @@ and tracking belong to the role, and `obalka/role-typography` reports a screen t
 
 ### Named Rules
 
+**The Ranked Facts Rule** (the owner, 2026-11-13). Text that carries different facts is ranked, not
+run together: what a person looks for leads, what can wait goes quieter, short, or behind a tap, and
+nothing is dropped - a screen reader hears it whole. ISDS writes a self-employed holder as "Ondřej
+Šimon - podnikající fyzická osoba"; the envelope prints "Ondřej Šimon" over a Caption "PFO · ID
+c57mi5x", which a tap spells out (`partyName`, `FormNote`), and a row prints the name alone. The
+address follows the same rule the other way round: the town line is bold because it is what tells
+three Jan Nováks apart (`AddressLines`, 015).
+
 **The Face-Per-Weight Rule.** Both families ship as 4-style groups, so Medium / SemiBold / ExtraBold
 are *separate families* that `fontFamily + fontWeight` cannot reach. Overriding a weight must switch
 the face. `Typography.tsx` resolves this centrally; a screen that sets `fontWeight` by hand gets the

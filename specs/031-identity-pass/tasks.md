@@ -129,6 +129,12 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   then `SentRecordSlip` (the message's ID, rings of 30, "zatím ne", the state's age, why it stopped,
   erased or vault as lines under the steps; a stop is a cross in `danger`); the band tucks it as a
   received one (R15). The header says "Odeslaná zpráva". Walked light and dark beside R7.
+  - [x] I30.1 A name before its legal form (the owner, 2026-11-13, on the test box): ISDS's "Ondřej
+    Šimon - podnikající fyzická osoba" ran three lines in the sent sender's 120. `partyName` splits
+    the suffix ISDS appends (only the one seen, so a name's own dash stays); the envelope leads with
+    the name and puts the form short with the ID on the quieter line ("PFO · ID c57mi5x", the owner's
+    pick), in full on a tap and to a screen reader; rows, the band and search show the name alone.
+    Walked on the owner's test box, light and dark, tapped open.
 - [x] I31 Detail loading skeleton and error - **X**: R7. Built 2026-11-13: the skeleton takes the
   envelope, the sheet and the slip; the title is the screen's from the first frame. Captured
   2026-11-13 through the demo probe, light and dark: the skeleton as built; the error was red words

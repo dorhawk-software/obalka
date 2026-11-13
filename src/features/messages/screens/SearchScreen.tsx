@@ -26,6 +26,7 @@ import type {
 import { messagesController } from '../../accounts/deps';
 import { BoxPill } from './BoxPill';
 import { OffsetIcon } from '../../../theme/offsetIcons';
+import { partyName } from '../state/partyName';
 
 
 
@@ -255,6 +256,8 @@ function ResultRow({
 }) {
   const theme = useTheme();
   const { envelope } = hit;
+  // The name alone: the legal form ISDS appends waits for the detail (`partyName`).
+  const party = partyName(envelope.sender).name;
   const boxName = account?.alias ?? account?.label;
   return (
     <XStack
@@ -271,14 +274,14 @@ function ResultRow({
       // answer says WHICH box, and that fact is a pill a screen reader would otherwise read last and
       // loose, if at all.
       accessibilityLabel={searchRowLabel({
-        party: envelope.sender || '—',
+        party: party || '—',
         subject: envelope.subject || t('messages.noSubject'),
         date: rowDate(envelope.deliveryTime, Date.now()),
         box: boxName ?? hit.boxId,
       })}
       testID={`result-${hit.boxId}-${envelope.id}`}
     >
-      <Avatar name={envelope.sender} size={38} />
+      <Avatar name={party} size={38} />
       <YStack flex={1}>
         <XStack alignItems="center" gap={8}>
           <Value fontWeight="700"
@@ -287,7 +290,7 @@ function ResultRow({
             color={theme.text}
             numberOfLines={1}
           >
-            {envelope.sender || '—'}
+            {party || '—'}
           </Value>
           <Meta fontWeight="400"
             color={theme.textFaint}

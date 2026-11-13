@@ -29,6 +29,7 @@ import { attentionRowLabel, receivedRowLabel, termChipLabel } from '../state/row
 import { formatTermDate } from './TermPicker';
 import { BoxPill, boxName } from './BoxPill';
 import { openFromTile, type TileRect } from './EnvelopeFlight';
+import { partyName } from '../state/partyName';
 
 /** Localized date-section header (a fixed bucket, or "Month Year" for older groups). */
 export function sectionTitle(label: DateSectionLabel): string {
@@ -134,7 +135,7 @@ export const AttentionSheet = memo(function AttentionSheetView({
   readonly boxAccount?: DataBoxAccount;
 }) {
   const tile = useRef<View>(null);
-  const tileColor = avatarColor(message.sender || '—');
+  const tileColor = avatarColor(partyName(message.sender).name || '—');
   const onPress = useCallback(
     () => openFromTile(tile.current, { color: tileColor, radius: 11 }, from => onOpen(message.id, folder, from)),
     [onOpen, message.id, folder, tileColor],
@@ -144,7 +145,8 @@ export const AttentionSheet = memo(function AttentionSheetView({
   const servedAt = servedByFiction(message);
   const termDate =
     entry != null && (entry.reason === 'reminder' || entry.reason === 'estimate') ? entry.date : null;
-  const sender = message.sender || '—';
+  // The name alone: the legal form ISDS appends waits for the detail (`partyName`).
+  const sender = partyName(message.sender).name || '—';
   const subject = message.subject || t('messages.noSubject');
   const unread = isUnread(message.state);
   // The pill's two halves, kept as parts so the spoken label cannot say less than the pill shows.
@@ -318,13 +320,14 @@ export const RegisterRow = memo(function RegisterRowView({
   readonly boxAccount?: DataBoxAccount;
 }) {
   const tile = useRef<View>(null);
-  const tileColor = avatarColor(message.sender || '—');
+  const tileColor = avatarColor(partyName(message.sender).name || '—');
   const onPress = useCallback(
     () => openFromTile(tile.current, { color: tileColor, radius: 7 }, from => onOpen(message.id, folder, from)),
     [onOpen, message.id, folder, tileColor],
   );
   const theme = useTheme();
-  const sender = message.sender || '—';
+  // The name alone: the legal form ISDS appends waits for the detail (`partyName`).
+  const sender = partyName(message.sender).name || '—';
   const subject = message.subject || t('messages.noSubject');
   const delivered = message.deliveryTime;
   return (
