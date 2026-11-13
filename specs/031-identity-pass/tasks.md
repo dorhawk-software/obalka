@@ -64,8 +64,13 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 - [ ] I06 `TelemetryConsent` (first run after the first box; two cards, two buttons) - **D** (cards).
 - [ ] I07 `BackupScreen` first run (restore) - see I45.
 - [ ] I08 `AddBoxForm` - **D** (cards); the busy spinner is R8.
-  - [ ] I08.1 Method step: three radio cards, Advanced (chevron, no animation), environment segmented,
-    the "i" help, FAQ link, Continue.
+  - [x] I08.1 Method step: three radio cards, Advanced (chevron, no animation), environment segmented,
+    the "i" help, FAQ link, Continue. Fixed 2026-11-13 to R11 (the owner asked): the methods are one
+    `OptionGroup` sheet, a row each, the radio on the right, as Settings' Vzhled; Pokročilé a 13/700
+    muted line; the environment sheet keeps its help open under the switch, the "i" a mark beside
+    the label; the help link blue at the left with its glyph; the footer tone with no hairline.
+    Roundings: the rows' 56 and 11 to the group's 52 and 10; the step's 20 top to 18. Walked light,
+    dark and in English, closed and open, a method picked.
   - [ ] I08.2 Credentials step: method chip, login name, password or code with the eye, Mobile Key
     help, the OTP suggestion, alias, submit, busy, blocked (login name, password).
 - [x] I09 `OtpForm` (code field, sending/sent notice, resend, blocked) - **N**. Fixed 2026-11-13
@@ -74,7 +79,7 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   dimmed until all eight are in, the resend a blue link. The boxes share the column's width (the
   owner, over the board's 34s); eight digits confirmed on the owner's own messages. Roundings: the
   boxes' 10 corner to 11, the digit's 17 to the 20 `code` role, Confirm's 16 to 15. Walked light,
-  dark, empty, part and whole (forced on, reverted); the walk found the Android group-opacity fade
+  dark, in English, empty, part and whole (forced on, reverted); the walk found the Android group-opacity fade
   and the system face on every Button.
 - [ ] I09.1 Android's SMS User Consent sheet over the code field (the system's) - **N**: seen in place.
 - [x] I10 Mobile Key waiting (brand tile 84, phone glyph, pulse ring loop 1800 ms) - **X**: a generic
@@ -86,7 +91,9 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   The walk found the envelope's folds stopping the padding short of the corners, on every envelope:
   fixed in e519006.
 - [ ] I11 Sign-in `ErrorView` and `OtpSuggestion` (retry with `depth.sm`) - **D** (cards); R8.
-- [ ] I12 `ReauthForm` (avatar, method cards, field) - **D** (avatar, icons: Zámek).
+- [ ] I12 `ReauthForm` (avatar, method cards, field) - **D** (avatar, icons: Zámek). The method cards
+  are the add-box step's one sheet since 2026-11-13 (walked light); the box's envelope tile, the lock
+  glyph and the sheet's 12/14 padding are still to do.
 - [ ] I13 `ChangePasswordForm` (avatar 46, three fields, ten rules and the history rule, busy) - **D**
   (avatar, icons).
   - [ ] I13.1 Its error banner: wrong password (with the portal), refused, network, timeout, not
@@ -739,6 +746,8 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R8 puts the route above cancel; constitution V keeps the line that appears late last, built.
   - R8 SMS code: the boxes are 34 wide from the left; the owner wants them across the column, built.
   - R8 launch: a 4 bar; DESIGN.md has one waiting bar, 6, built.
+  - R11 Pokročilé open: no Nápověda under the sheet; the build keeps the link on both states.
+  - R11 environment: the "i" beside Prostředí is a mark; the help is always open under the switch.
   - R6 draws no hidden key: the build shows the warning and one 52 button.
   - R6 and R10 draw section labels with no icon; the code keeps them until R10 drops them all.
   - R7 sent: the stamp prints the cost; the archive has none, so the build's is blank (not-now.md).

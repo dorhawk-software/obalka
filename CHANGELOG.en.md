@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The sign-in methods are one sheet with the choice on the right, as in Settings.** When adding a
+  box and when signing in again. The environment's help stays open under the switch.
 - **The SMS code goes into eight boxes, one for each digit.** The field takes digits only, eight at
   most, even from a paste with spaces, and Confirm waits for the whole code. A blue strip says it was
   sent.

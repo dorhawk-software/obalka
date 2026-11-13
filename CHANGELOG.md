@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Způsoby přihlášení jsou jeden list s výběrem vpravo, jako v Nastavení.** Při přidání schránky
+  i při novém přihlášení. Nápověda k prostředí zůstává pod přepínačem otevřená.
 - **Kód z SMS se píše do osmi políček, jedno na každou číslici.** Pole přijme jen číslice, nejvýš
   osm, i když kód vložíte s mezerami. Potvrdit jde až celý kód. Že kód přišel, říká modrý pruh.
 - **Při spuštění čeká pod logem jeden tenký pruh místo točícího se kolečka.** Když se schránky

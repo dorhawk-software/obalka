@@ -3,12 +3,12 @@ import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { textSlop, touchSlop } from '../../../theme/touchTarget';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Input, Paragraph, Spinner, Text, XStack, YStack } from '../../../theme/ui';
+import { Input, Spinner, XStack, YStack } from '../../../theme/ui';
 import type { TextInput } from 'react-native';
 import { PressScale } from '../../../theme/PressScale';
 import { SegmentedControl } from '../../../theme/SegmentedControl';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
-import { BodyStrong, Caption, Heading, Label, Meta, SmallStrong, Value } from '../../../theme/Typography';
+import { BodyStrong, Caption, Heading, Label, Meta, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { chipTone } from '../../../theme/chipTone';
 import { t } from '../../../i18n/strings';
@@ -22,6 +22,7 @@ import {
   SmartphoneIcon,
 } from '../../../theme/icons';
 import { Card } from '../../../theme/Card';
+import { OptionGroup } from '../../../theme/OptionGroup';
 import { LineIcon } from '../../../theme/LineIcon';
 import { space } from '../../../theme/spacing';
 
@@ -34,9 +35,9 @@ const ENVIRONMENTS: Host[] = ['production', 'czebox'];
 const EYE_W = 40;
 /** How far in from the field's right edge the show-password button sits. */
 const EYE_RIGHT = space.xs;
-/** The help link's padding: generous above, where it parts from the form, tight below. */
+/** The help link's padding (R11): the column's 14 and its own 6 above, 6 below. */
 const FAQ_PAD_TOP = 20;
-const FAQ_PAD_BOTTOM = 4;
+const FAQ_PAD_BOTTOM = 6;
 
 /**
  * Add a data box. A method-first, two-step wizard: STEP 1 picks the sign-in method (the choice that
@@ -78,7 +79,6 @@ export function AddBoxForm({
   const [method, setMethod] = useState<AuthMethod>('password');
   const [host, setHost] = useState<Host>('production');
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [showEnvHelp, setShowEnvHelp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [alias, setAlias] = useState('');
   const isMobileKey = method === 'mobile_key';
@@ -152,87 +152,49 @@ export function AddBoxForm({
           adjustKeyboardInsets={false}
           contentContainerStyle={{
             paddingHorizontal: 16,
-            paddingTop: 24,
+            // R11 starts the method step 20 down, rounded to 18; the credentials step keeps 24 until
+            // I08.2 moves it to its board.
+            paddingTop: step === 'method' ? 18 : 24,
             paddingBottom: 24,
           }}
         >
         {step === 'method' ? (
-          <YStack gap={18}>
-            <YStack>
-              <Heading marginBottom={6}>{t('login.method.choose')}</Heading>
-              <Caption marginBottom={18}>
-                {t('login.method.chooseSub')}
-              </Caption>
-              <YStack gap={12}>
-                {METHODS.map(m => {
-                  const selected = method === m;
-                  return (
-                    <PressScale
-                      key={m}
-                      fullWidth
-                      onPress={() => selectMethod(m)}
-                      accessibilityLabel={t(`login.method.${m}.name`)}
-                      testID={`method-${m}`}
-                    >
-                      <XStack
-                        alignItems="center"
-                        gap={13}
-                        padding={16}
-                        backgroundColor={selected ? theme.blueSoft : theme.surface}
-                        borderWidth={selected ? 1.5 : 1}
-                        borderColor={selected ? theme.blue : theme.border}
-                        borderRadius={14}
-                      >
-                        {/* Radio: empty ring resting, filled blue dot when selected. */}
-                        <YStack
-                          width={22}
-                          height={22}
-                          borderRadius={999}
-                          borderWidth={selected ? 0 : 2}
-                          borderColor={theme.borderStrong}
-                          backgroundColor={selected ? theme.blue : 'transparent'}
-                          alignItems="center"
-                          justifyContent="center"
-                        >
-                          {selected ? (
-                            <YStack
-                              width={9}
-                              height={9}
-                              borderRadius={999}
-                              backgroundColor={theme.onBlue}
-                            />
-                          ) : null}
-                        </YStack>
-                        <YStack flex={1} gap={2}>
-                          <BodyStrong>
-                            {t(`login.method.${m}.name`)}
-                          </BodyStrong>
-                          <Caption color={theme.textMuted}>
-                            {t(`login.method.${m}.desc`)}
-                          </Caption>
-                        </YStack>
-                      </XStack>
-                    </PressScale>
-                  );
-                })}
-              </YStack>
+          <YStack gap={14}>
+            {/* Board R11 (agreed 2026-11-12): the question and its line, then the methods as one
+                sheet, a row each, the radio on the right - the anatomy of Settings' Vzhled. */}
+            <YStack gap={4}>
+              <Heading>{t('login.method.choose')}</Heading>
+              <Caption>{t('login.method.chooseSub')}</Caption>
             </YStack>
+            <OptionGroup
+              options={METHODS.map(m => ({
+                value: m,
+                label: t(`login.method.${m}.name`),
+                description: t(`login.method.${m}.desc`),
+              }))}
+              value={method}
+              onChange={selectMethod}
+              testIDPrefix="method"
+            />
 
             {/* Advanced: the ISDS environment. Tucked away - almost everyone uses production. */}
-            <YStack gap={10}>
+            <YStack gap={14}>
               <XStack
+                alignSelf="flex-start"
                 alignItems="center"
                 gap={6}
-                hitSlop={textSlop('bodyStrong', { fontSize: 14 })}
+                paddingVertical={4}
+                paddingHorizontal={2}
+                hitSlop={textSlop('label', { paddingTop: 4, paddingBottom: 4 })}
                 pressStyle={{ opacity: 0.6 }}
                 onPress={() => setShowAdvanced(v => !v)}
                 accessibilityRole="button"
                 accessibilityLabel={t('login.advanced')}
                 testID="advancedToggle"
               >
-                <SmallStrong color={theme.textMuted}>
+                <Label fontWeight="700" color={theme.textMuted}>
                   {t('login.advanced')}
-                </SmallStrong>
+                </Label>
                 {/* ▾ collapsed / ▴ expanded (design) - one glyph, flipped. */}
                 <YStack rotate={showAdvanced ? '180deg' : '0deg'}>
                   <ChevronDownIcon size={16} color={theme.textMuted} />
@@ -244,38 +206,10 @@ export function AddBoxForm({
                   padding={14}
                   gap={10}
                 >
+                  {/* The glyph marks the help under the switch, which stays open (R11). */}
                   <XStack alignItems="center" gap={6}>
-                    <Label>{t('login.environment')}</Label>
-                    <XStack
-                      width={18}
-                      height={18}
-                      borderRadius={999}
-                      borderWidth={1.5}
-                      borderColor={theme.textMuted}
-                      alignItems="center"
-                      justifyContent="center"
-                      // Was `hitSlop={10}`, which put this 18pt "?" at a 38pt target - under the
-                      // 48 both platforms ask for. Derived now, so it cannot drift again.
-                      hitSlop={touchSlop({ width: 18, height: 18 })}
-                      pressStyle={{ opacity: 0.6 }}
-                      onPress={() => setShowEnvHelp(v => !v)}
-                      accessibilityRole="button"
-                      accessibilityLabel={t('login.environment.helpA11y')}
-                      testID="env-help"
-                    >
-                      <Text
-                        fontSize={12}
-                        fontWeight="800"
-                        color={theme.textMuted}
-                        // 15 on iOS: it clips ink to the line box, and the system font's own line at
-                        // 12 is 14.3 (src/theme/inkClipping.ts). Android paints past the line and keeps
-                        // the design's 14, which it measures in whole pixels - 15 would be a different
-                        // box and move the glyph in the 18pt dot. Centred in it on both.
-                        lineHeight={Platform.OS === 'ios' ? 15 : 14}
-                      >
-                        i
-                      </Text>
-                    </XStack>
+                    <Label color={theme.textMuted}>{t('login.environment')}</Label>
+                    <InfoIcon size={16} color={theme.textFaint} />
                   </XStack>
                   <SegmentedControl
                     segments={ENVIRONMENTS.map(env => ({
@@ -286,41 +220,25 @@ export function AddBoxForm({
                     onChange={setHost}
                     testID="env"
                   />
-                  {showEnvHelp ? (
-                    <YStack gap={8}>
-                      <Paragraph
-                        fontSize={13}
-                        lineHeight={18}
-                        color={theme.textMuted}
-                      >
-                        <Text fontSize={13} fontWeight="800" color={theme.text}>
-                          {t('login.env.production')}
-                        </Text>{' '}
-                        {t('login.environment.help.production')}
-                      </Paragraph>
-                      <Paragraph
-                        fontSize={13}
-                        lineHeight={18}
-                        color={theme.textMuted}
-                      >
-                        <Text fontSize={13} fontWeight="800" color={theme.text}>
-                          {t('login.env.czebox')}
-                        </Text>{' '}
-                        {t('login.environment.help.czebox')}
-                      </Paragraph>
-                      <Paragraph
-                        fontSize={13}
-                        lineHeight={18}
-                        color={theme.textMuted}
-                      >
-                        {t('login.environment.help.recommend')}{' '}
-                        <Text fontSize={13} fontWeight="800" color={theme.text}>
-                          {t('login.env.production')}
-                        </Text>
-                        .
-                      </Paragraph>
-                    </YStack>
-                  ) : null}
+                  <Meta color={theme.textMuted}>
+                    <Meta fontWeight="700" color={theme.textMuted}>
+                      {t('login.env.production')}
+                    </Meta>{' '}
+                    {t('login.environment.help.production')}
+                  </Meta>
+                  <Meta color={theme.textMuted}>
+                    <Meta fontWeight="700" color={theme.textMuted}>
+                      {t('login.env.czebox')}
+                    </Meta>{' '}
+                    {t('login.environment.help.czebox')}
+                  </Meta>
+                  <Meta color={theme.textMuted}>
+                    {t('login.environment.help.recommend')}{' '}
+                    <Meta fontWeight="700" color={theme.textMuted}>
+                      {t('login.env.production')}
+                    </Meta>
+                    .
+                  </Meta>
                 </Card>
               ) : null}
             </YStack>
@@ -504,39 +422,30 @@ export function AddBoxForm({
             and the action. Returning restores this form with whatever was typed still in place. */}
         {onOpenFaq ? (
           <XStack
-            alignSelf="center"
+            alignSelf="flex-start"
             alignItems="center"
-            justifyContent="center"
             gap={6}
             paddingTop={FAQ_PAD_TOP}
             paddingBottom={FAQ_PAD_BOTTOM}
-            // The dense 14pt label (its line box matches the 16pt icon beside it) plus the padding
-            // actually drawn, so the target follows the type scale rather than a typed number.
-            hitSlop={textSlop('label', {
-              fontSize: 14,
-              dense: true,
-              paddingTop: FAQ_PAD_TOP,
-              paddingBottom: FAQ_PAD_BOTTOM,
-            })}
+            paddingHorizontal={2}
+            // The 14/20 line plus the padding actually drawn, so the target follows the type scale.
+            hitSlop={textSlop('smallStrong', { paddingTop: FAQ_PAD_TOP, paddingBottom: FAQ_PAD_BOTTOM })}
             onPress={onOpenFaq}
             pressStyle={{ opacity: 0.5 }}
             accessibilityRole="button"
             testID="login-faq"
           >
-            <HelpIcon size={16} color={theme.textMuted} />
-            <Value dense color={theme.textMuted}>
-              {t('faq.help')}
-            </Value>
+            {/* R11: the link in blue at the left, under the form, with the help glyph. */}
+            <HelpIcon size={18} color={theme.blue} />
+            <SmallStrong color={theme.blue}>{t('faq.help')}</SmallStrong>
           </XStack>
         ) : null}
       </KeyboardAwareScrollView>
 
-      {/* Pinned action footer (design §3): a surfaceAlt bar + top hairline. Continue on the method
+      {/* Pinned action footer (R11): a surfaceAlt bar, tone and no hairline. Continue on the method
           step, Submit on the credentials step. The KeyboardAvoidingView above lifts it over the IME. */}
       <YStack
           backgroundColor={theme.surfaceAlt}
-          borderTopWidth={1}
-          borderTopColor={theme.border}
           paddingHorizontal={16}
           paddingTop={12}
           paddingBottom={insets.bottom + 12}

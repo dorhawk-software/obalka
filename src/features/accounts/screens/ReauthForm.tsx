@@ -8,8 +8,9 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Input, Spinner, XStack, YStack } from '../../../theme/ui';
 import { PressScale } from '../../../theme/PressScale';
+import { OptionGroup } from '../../../theme/OptionGroup';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
-import { BodyStrong, Label, Meta, Small, Value } from '../../../theme/Typography';
+import { BodyStrong, Label, Small } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { t } from '../../../i18n/strings';
 import { hasNoSession, storedReauthKey } from '../state/reauthCopy';
@@ -179,65 +180,18 @@ export function ReauthForm({
             <LockIcon size={17} color={theme.textFaint} />
           </XStack>
 
-          {/* The sign-in method - the same radio cards as the add-box step (a box's method can have
-              changed on the portal, so re-auth is where it gets corrected). */}
-          <YStack gap={10}>
-            {METHODS.map(m => {
-              const selected = method === m;
-              return (
-                <PressScale
-                  key={m}
-                  fullWidth
-                  onPress={() => setMethod(m)}
-                  accessibilityLabel={t(`login.method.${m}.name`)}
-                  testID={`reauth-method-${m}`}
-                >
-                  <XStack
-                    alignItems="center"
-                    gap={12}
-                    paddingVertical={13}
-                    paddingHorizontal={14}
-                    backgroundColor={selected ? theme.blueSoft : theme.surface}
-                    borderWidth={selected ? 1.5 : 1}
-                    borderColor={selected ? theme.blue : theme.border}
-                    borderRadius={14}
-                  >
-                    {/* Radio: empty ring resting, filled blue disc + white dot when selected. */}
-                    <YStack
-                      width={22}
-                      height={22}
-                      borderRadius={999}
-                      borderWidth={selected ? 0 : 2}
-                      borderColor={theme.borderStrong}
-                      backgroundColor={selected ? theme.blue : theme.surface}
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      {selected ? (
-                        <YStack
-                          width={8}
-                          height={8}
-                          borderRadius={999}
-                          backgroundColor={theme.onBlue}
-                        />
-                      ) : null}
-                    </YStack>
-                    <YStack flex={1} minWidth={0}>
-                      <Value fontWeight="700">
-                        {t(`login.method.${m}.name`)}
-                      </Value>
-                      <Meta
-                        marginTop={2}
-                        color={theme.textMuted}
-                      >
-                        {t(`login.method.${m}.desc`)}
-                      </Meta>
-                    </YStack>
-                  </XStack>
-                </PressScale>
-              );
-            })}
-          </YStack>
+          {/* The sign-in method - the add-box step's one sheet of choices (R11; a box's method can
+              have changed on the portal, so re-auth is where it gets corrected). */}
+          <OptionGroup
+            options={METHODS.map(m => ({
+              value: m,
+              label: t(`login.method.${m}.name`),
+              description: t(`login.method.${m}.desc`),
+            }))}
+            value={method}
+            onChange={setMethod}
+            testIDPrefix="reauth-method"
+          />
 
           <YStack gap={8}>
             <Label>

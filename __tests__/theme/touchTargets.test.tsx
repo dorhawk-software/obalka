@@ -315,10 +315,10 @@ describe('the show-password toggle', () => {
 });
 
 describe('the help links', () => {
-  const expectLinkTarget = (link: Host, padding: [number, number]) => {
+  const expectLinkTarget = (link: Host, padding: [number, number], line = DENSE_14) => {
     const slop = link.props.hitSlop as Slop;
     // The slop was computed from the type scale's model of this line; the render has to agree.
-    expect(lineOf(link)).toBe(DENSE_14);
+    expect(lineOf(link)).toBe(line);
     expect([px(link, 'paddingTop'), px(link, 'paddingBottom')]).toEqual(padding);
     const height = lineOf(link) + px(link, 'paddingTop') + px(link, 'paddingBottom');
     expect(height + slop.top + slop.bottom).toBe(Math.max(height, MIN_TARGET));
@@ -333,10 +333,10 @@ describe('the help links', () => {
     expect(slop.left + slop.right).toBe(0);
   });
 
-  it('on the add-box form: a dense line padded 20 above and 4 below reaches the target', async () => {
+  it('on the add-box form: a 20 line padded 20 above and 6 below reaches the target (R11)', async () => {
     const view = await wrap(
       <AddBoxForm onSubmit={() => {}} onBack={() => {}} onOpenFaq={() => {}} />,
     );
-    expectLinkTarget(view.getByTestId('login-faq'), [20, 4]);
+    expectLinkTarget(view.getByTestId('login-faq'), [20, 6], 20);
   });
 });
