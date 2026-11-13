@@ -7,7 +7,8 @@ import { act } from 'react';
 import { useReducedMotion } from 'react-native-reanimated';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
-import { WaitingBar } from '../../src/theme/ProgressBar';
+import { ProgressBar, WaitingBar } from '../../src/theme/ProgressBar';
+import { lightTheme } from '../../src/theme/theme';
 
 const bar = () =>
   render(
@@ -35,6 +36,20 @@ describe('WaitingBar', () => {
     const view = await bar();
     const style = [view.getByTestId('waiting').props.style].flat(Infinity);
     expect(Object.assign({}, ...style)).toMatchObject({ height: 6 });
+  });
+
+  // Every board (R6, R8, R10, R14) lays the bar in the sunken surface, `--sk`; the code had the off
+  // switch's darker track, which read as a second, heavier line on the R6 walk (2026-11-13).
+  it('lies in the sunken surface, as the determinate bar does', async () => {
+    const view = await bar();
+    const counting = render(
+      <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
+        <ProgressBar fraction={0.4} testID="counting" />
+      </TamaguiProvider>,
+    );
+    const fill = (style: unknown) => Object.assign({}, ...[style].flat(Infinity)).backgroundColor;
+    expect(fill(view.getByTestId('waiting').props.style)).toBe(lightTheme.surfaceSunken);
+    expect(fill((await counting).getByTestId('counting').props.style)).toBe(lightTheme.surfaceSunken);
   });
 
   it('says it is busy without claiming a fraction', async () => {

@@ -1,11 +1,15 @@
 // The recovery key, drawn as a scannable QR with the Obálka mark in the middle (006 T012a).
 //
-// Two things here are NOT theme-aware, deliberately:
+// Drawn as board R6 draws it (031, agreed 2026-11-12): ink modules on a `#FFFDF8` plate with the 8
+// corner, and the logo in its own blue and gold over the middle, its tile filling the omitted modules.
 //
-//   * The code is always dark-on-light. Some scanners read inverted codes and some do not, and a
-//     backup key that scans on one phone and not another is worse than one that ignores dark mode.
-//   * The mark is black and white. A colour logo in the middle of a QR is a scanning risk for no
-//     gain - the mark is recognisable by shape.
+// The code is NOT theme-aware, deliberately: always dark-on-light. Some scanners read inverted codes
+// and some do not, and a backup key that scans on one phone and not another is worse than one that
+// ignores dark mode. The mark's colour cannot hurt the scan: the modules under it are not there.
+//
+// One difference from the board, on purpose: the board's plate leaves 10 dp around its code, under
+// two modules; this keeps the standard four-module quiet zone, because below it scanners start to
+// miss the code. The plate is the board's size; the code inside it is that much smaller.
 //
 // The middle modules are OMITTED rather than covered, so nothing shows through at the plate's edge.
 // Level H reconstructs them; `__tests__/backup/keyQr.test.ts` decodes a code with a LARGER hole than
@@ -21,8 +25,13 @@ const HOLE_MODULES = 7;
 /** Quiet zone, in modules. Four is the standard minimum; below it, scanners start to miss the code. */
 const QUIET = 4;
 
-const DARK = '#111111';
-const LIGHT = '#FFFFFF';
+// The board's ink and paper, fixed in both themes (about 16:1).
+const DARK = '#211B12';
+const LIGHT = '#FFFDF8';
+
+/** The logo's tile inside its 1024 viewBox (ObalkaMark): where it starts and how wide it is. */
+const TILE_FROM = 142.2 / 1024;
+const TILE_SPAN = (883.5 - 142.2) / 1024;
 
 /**
  * One `Path` for every dark module, as rectangle subpaths.
@@ -65,13 +74,18 @@ export function QrCode({
 }) {
   const matrix = qrMatrix(value);
   const span = matrix.length + QUIET * 2;
-  // The plate is a shade larger than the hole so no module touches the mark.
-  const plate = (HOLE_MODULES + 0.6) * (size / span);
+  const unit = size / span;
+  // The mark's tile covers exactly the omitted modules, as the board's plate does.
+  const hole = HOLE_MODULES * unit;
+  const holeAt = (Math.floor((matrix.length - HOLE_MODULES) / 2) + QUIET) * unit;
+  const mark = hole / TILE_SPAN;
+  const markAt = holeAt - TILE_FROM * mark;
   return (
     <YStack
       width={size}
       height={size}
-      borderRadius={12}
+      borderRadius={8}
+      overflow="hidden"
       backgroundColor={LIGHT}
       alignItems="center"
       justifyContent="center"
@@ -84,15 +98,8 @@ export function QrCode({
         <Rect width={span} height={span} fill={LIGHT} />
         <Path d={qrPathData(matrix, HOLE_MODULES)} fill={DARK} />
       </Svg>
-      <YStack
-        position="absolute"
-        width={plate}
-        height={plate}
-        alignItems="center"
-        justifyContent="center"
-        backgroundColor={LIGHT}
-      >
-        <ObalkaMark size={plate} body={DARK} flap={LIGHT} />
+      <YStack position="absolute" left={markAt} top={markAt} testID={testID ? `${testID}-mark` : undefined}>
+        <ObalkaMark size={mark} />
       </YStack>
     </YStack>
   );

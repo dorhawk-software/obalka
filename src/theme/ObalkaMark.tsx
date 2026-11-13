@@ -1,11 +1,10 @@
 // The "Obálka" mark, drawn with colours we can choose (006).
 //
 // `assets/logo.svg` is the brand mark and is imported directly everywhere it appears in ITS colours.
-// This file exists for the one place that needs it in other colours: the middle of the recovery-key
-// QR code, which has to be black on white to stay scannable. react-native-svg-transformer bakes the
-// fills from the file, so a colourable version means the paths live here - and `__tests__/theme/
-// obalkaMark.test.ts` fails if they ever stop matching `assets/logo.svg`, which is the only real risk
-// of keeping a second copy.
+// This copy is the mark sized by its tile: the middle of the QR codes (QrCode) lays the tile over the
+// omitted modules, which needs the paths' own geometry. It was black and white there until 031; board
+// R6 draws it in the brand's blue and gold. `__tests__/theme/obalkaMark.test.ts` fails if these paths
+// ever stop matching `assets/logo.svg`, the one risk of keeping them twice.
 
 import Svg, { Path } from 'react-native-svg';
 

@@ -5,7 +5,7 @@
 // cannot read is shown with its reason rather than hidden.
 
 import { useState } from 'react';
-import { act, fireEvent, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, waitFor, within } from '@testing-library/react-native';
 import { BackupAuthError } from '../../src/services/backup/envelope';
 import { PortableFormatError } from '../../src/services/backup/portable';
 import { fakeController, KEY, manifest, mount, wrap } from '../helpers/backupScreenHarness';
@@ -169,6 +169,66 @@ describe('BackupScreen', () => {
       fireEvent(view.getByTestId('backup-qr-toggle'), 'press');
     });
     expect(view.getByTestId('backup-qr')).toBeTruthy();
+  });
+
+  it('puts the shown password and its QR on one slip, and the warning and buttons under it (031 R6)', async () => {
+    const fake = fakeController({ enabled: true, last: manifest(1_000) });
+    const view = await mount(fake);
+    // Hidden, there is no slip: only the warning and one button.
+    expect(view.queryByTestId('backup-key-slip')).toBeNull();
+    expect(view.getByText(t('backup.key.desc'))).toBeTruthy();
+    // The button's face: 52 alone, as R14 draws a neutral button; 48 once it is one of R6's pair.
+    const face = (id: string) =>
+      (function height(n: unknown): unknown {
+        const node = n as { props: { style?: unknown }; children?: unknown[] };
+        const style = Object.assign({}, ...[node.props.style].flat(Infinity).filter(Boolean));
+        if (style.minHeight !== undefined) {
+          return style.minHeight;
+        }
+        for (const c of node.children ?? []) {
+          const hit = typeof c === 'object' ? height(c) : undefined;
+          if (hit !== undefined) {
+            return hit;
+          }
+        }
+        return undefined;
+      })(view.getByTestId(id));
+    expect(face('backup-reveal')).toBe(52);
+
+    await act(async () => {
+      fireEvent(view.getByTestId('backup-reveal'), 'press');
+    });
+    await waitFor(() => expect(view.getByTestId('backup-key-slip')).toBeTruthy());
+    expect(face('backup-reveal')).toBe(48);
+    expect(face('backup-qr-toggle')).toBe(48);
+    await act(async () => {
+      fireEvent(view.getByTestId('backup-qr-toggle'), 'press');
+    });
+    // A slip on the security tint, not a plain box: the tint's pattern is drawn inside it.
+    const panel = (function find(n: unknown): unknown {
+      if (!n || typeof n !== 'object') {
+        return null;
+      }
+      const node = n as { props: { testID?: string }; children: unknown[] | null };
+      if (node.props.testID === 'backup-key-slip') {
+        return node;
+      }
+      for (const c of Array.isArray(n) ? n : (node.children ?? [])) {
+        const hit = find(c);
+        if (hit) {
+          return hit;
+        }
+      }
+      return null;
+    })(view.toJSON());
+    expect(JSON.stringify(panel)).toContain('"tint"');
+    const slip = within(view.getByTestId('backup-key-slip'));
+    expect(slip.getByTestId('backup-key')).toHaveTextContent(KEY);
+    expect(slip.getByTestId('backup-qr')).toBeTruthy();
+    expect(slip.getByText(t('backup.key.qr.hint'))).toBeTruthy();
+    // The warning and the buttons are not on the slip: it holds the record, nothing else.
+    expect(slip.queryByText(t('backup.key.desc'))).toBeNull();
+    expect(slip.queryByTestId('backup-reveal')).toBeNull();
   });
 
   it('lists a backup it cannot read, with the reason', async () => {

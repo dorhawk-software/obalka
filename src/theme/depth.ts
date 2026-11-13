@@ -113,8 +113,9 @@ const OBJECT_FILTERS: Record<'light' | 'dark', Record<ObjectFilter, string | und
     openEnvelope: 'drop-shadow(0px 16px 22px rgba(33,50,90,0.22))',
   },
   dark: {
-    // Only the 1 px edge at night, which the Slip draws.
-    slip: undefined,
+    // A soft black shadow and no edge at night (boards R6 and R7, agreed 2026-11-12; the older
+    // DetailDark board drew only a 1 px edge, and is on 031's sync-back list).
+    slip: 'drop-shadow(0px 4px 10px rgba(0,0,0,0.35))',
     stamp: 'drop-shadow(0px 6px 10px rgba(20,32,60,0.18))',
     stampOnEnvelope: 'drop-shadow(0px 3px 5px rgba(9,30,64,0.35))',
     stampFab: 'drop-shadow(0px 8px 14px rgba(184,128,0,0.38))',

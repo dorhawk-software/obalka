@@ -15,10 +15,13 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { BackHandler, type DimensionValue } from 'react-native';
 import { XStack, YStack, Input } from '../../theme/ui';
-import { BodyStrong, Caption, Code, Label, Meta, Small, SmallStrong } from '../../theme/Typography';
+import { BodyStrong, Caption, Label, Meta, Small, SmallStrong } from '../../theme/Typography';
 import { PressScale } from '../../theme/PressScale';
 import { Toggle } from '../../theme/Toggle';
 import { QrCode } from '../../theme/QrCode';
+import { NeutralButton } from '../../theme/NeutralButton';
+import { SecureSlip, SlipCode } from '../../theme/objects/SecureSlip';
+import { space } from '../../theme/spacing';
 import { ProgressBar } from '../../theme/ProgressBar';
 import { Skeleton } from '../../theme/Skeleton';
 import { Dialog, type DialogAction } from '../../theme/Dialog';
@@ -1844,84 +1847,59 @@ export function BackupScreen({
             label={t('backup.key')}
             icon={<ShieldKeyIcon size={13} color={theme.textFaint} />}
           >
-            <Card>
-              <CardRow last={false}>
-                <Label fontWeight="400"
-                  flex={1}
-                  color={theme.textMuted}
-                >
-                  {t('backup.key.desc')}
-                </Label>
-              </CardRow>
+            {/* Board R6: once shown, the key is a slip on the security tint - a record you keep - with
+                its QR on the same slip; the warning and the two buttons sit under it. Hidden, the
+                warning and one button are all there is (derived; R6 draws only the shown state). */}
+            <YStack gap={10}>
               {revealed ? (
-                <CardRow last={false}>
+                <SecureSlip testID="backup-key-slip">
                   {/* Big and widely spaced: this gets copied onto paper by hand, and the groups of
-                    four are what make that possible. No monospace face is bundled, so the spacing
-                    does the work the font would. */}
-                  <Code
-                    flex={1}
-                    selectable
-                    testID="backup-key"
-                  >
-                    {revealed}
-                  </Code>
-                </CardRow>
+                      four are what make that possible. No monospace face is bundled, so the spacing
+                      does the work the font would. */}
+                  <SlipCode parts={revealed.split('-')} accessibilityLabel={revealed} testID="backup-key" />
+                  {showQr ? (
+                    <YStack alignItems="center">
+                      <QrCode
+                        value={encodeKeyQr(revealed)}
+                        size={170}
+                        accessibilityLabel={t('backup.key.qr.label')}
+                        testID="backup-qr"
+                      />
+                    </YStack>
+                  ) : null}
+                  {showQr ? (
+                    <Caption color={theme.textMuted} textAlign="center">
+                      {t('backup.key.qr.hint')}
+                    </Caption>
+                  ) : null}
+                </SecureSlip>
               ) : null}
-              <CardRow
-                last={!revealed}
-                onPress={onReveal}
-                accessibilityLabel={
-                  revealed ? t('backup.key.hide') : t('backup.key.show')
-                }
-                testID="backup-reveal"
-              >
-                <Small fontWeight="600"
-                  flex={1}
-                  color={theme.blue}
-                >
-                  {busy === 'reveal'
-                    ? t('backup.working')
-                    : revealed
-                    ? t('backup.key.hide')
-                    : t('backup.key.show')}
-                </Small>
-                <ChevronRightIcon size={16} color={theme.blue} />
-              </CardRow>
-              {revealed ? (
-                <CardRow
-                  last
-                  onPress={() => setShowQr(v => !v)}
-                  accessibilityLabel={
-                    showQr ? t('backup.key.qr.hide') : t('backup.key.qr')
-                  }
-                  testID="backup-qr-toggle"
-                >
-                  <Small fontWeight="600"
-                    flex={1}
-                    color={theme.blue}
-                  >
-                    {showQr ? t('backup.key.qr.hide') : t('backup.key.qr')}
-                  </Small>
-                  <ChevronRightIcon size={16} color={theme.blue} />
-                </CardRow>
-              ) : null}
-            </Card>
-            {revealed && showQr ? (
-              <YStack alignItems="center" gap={10} paddingVertical={14}>
-                <QrCode
-                  value={encodeKeyQr(revealed)}
-                  size={240}
-                  accessibilityLabel={t('backup.key.qr.label')}
-                  testID="backup-qr"
-                />
-                <Meta
-                  color={theme.textFaint}
-                  textAlign="center"
-                >
-                  {t('backup.key.qr.hint')}
-                </Meta>
-              </YStack>
-            ) : null}
+              <Caption color={theme.textMuted} marginHorizontal={space.xs}>
+                {t('backup.key.desc')}
+              </Caption>
+              <XStack gap={space.base}>
+                <YStack flex={1}>
+                  <NeutralButton
+                    compact={revealed !== null}
+                    label={
+                      busy === 'reveal' ? t('backup.working') : revealed ? t('backup.key.hide') : t('backup.key.show')
+                    }
+                    onPress={onReveal}
+                    testID="backup-reveal"
+                  />
+                </YStack>
+                {revealed ? (
+                  <YStack flex={1}>
+                    <NeutralButton
+                      compact
+                      label={showQr ? t('backup.key.qr.hide') : t('backup.key.qr')}
+                      onPress={() => setShowQr(v => !v)}
+                      testID="backup-qr-toggle"
+                    />
+                  </YStack>
+                ) : null}
+              </XStack>
+            </YStack>
           </Section>
         ) : null}
 

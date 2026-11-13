@@ -119,7 +119,8 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 - [ ] I26 Freshness line at the list's end - **D**: board Empty ("Naposledy dnes ve 14:02").
 - [x] I27 Drafts entry above the list - **X**: R5. Fixed 2026-11-13: one sheet (`DraftsEntry`), the draft
   glyph in a 36 well.
-- [ ] I28 Compose FAB (gold extended, pencil) - **D**: the blank stamp, board Inbox.
+- [ ] I28 Compose FAB (gold extended, pencil) - **D**: the blank stamp, board Inbox. Its stamp draws a
+  frame late on a cold start (I107).
 - [ ] I29 Message detail, received - **D**: boards "Message - the envelope it came in" and "Message - dark".
 - [ ] I30 Message detail, sent (recipient card, delivery timeline) - **X**: R7.
 - [ ] I31 Detail loading skeleton and error - **X**: R7.
@@ -165,6 +166,11 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 - [ ] I44 FAQ entries and the delivery legend - **D** (cards; the legend's state glyphs follow I33).
   2026-11-13: the cards are sheets now (Card), walked dark; the line ticks with R13's rest.
 - [ ] I45 `BackupScreen` - **X** for the key and QR: a slip on the security tint (R6). The rest:
+  - [x] I45.0 The key and its QR - **X**: R6. Fixed 2026-11-13: `SecureSlip` (the surface-alt panel,
+    radius 16, the tint measured to it) holds the key three groups and two in `code` 20/28, the QR plate
+    and its hint; the warning and the pair of sunken buttons (48, radius 14) under it, one button at
+    52 while hidden. Walked light and dark beside R6: matches but for the 4-module quiet zone, the full
+    logo for the board's simplified plate, the label icon (R10) and the known text width.
   - [ ] I45.1 Backup: the toggle (loading skeleton), last, never, a running stage with its count and
     progress bar, verify, back up now - **N**: R9.
   - [ ] I45.2 Scope: documents toggle, measuring, the mode chip, auto, where, how - **N**: R9.
@@ -175,6 +181,11 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   - [ ] I45.6 File export and import; restored, notice, error; Continue - **N**: R9.
   - [ ] I45.7 First run (restore only, its own snackbars) - **N**: R9.
 - [ ] I46 `TransferScreen` - **X** for the code phrase and QR: a slip (R6). The rest:
+  - [x] I46.0 The phrase and its QR - **X**: R6. Fixed 2026-11-13: the same slip with the overline,
+    the phrase three words and two with faint dashes (the board's 22 rounded to the `code` 20), the
+    hint, the backup's two meta lines and the QR at 195; the stage, the bar, keep-open, the cancel link
+    and the route as plain lines under it (R8's 10 between, the route last). Walked light while
+    connecting beside R6.
   - [ ] I46.1 Not available here (the card) - **N**: R9.
   - [ ] I46.2 Send: pick a backup (none: a link to create one), the option group, the note, send -
     **N**: R9.
@@ -312,7 +323,8 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 - [x] I106 `Toggle` (48 x 28, disabled .6, not animated). Matches R13 2026-11-13: the off track `hs`
   (#DCD2BF / #4A4236) with its inset ring; inside a dimmed row it takes the row's .55 alone (`rowDims`).
 - [ ] I107 `SegmentedControl` (height 34, 200 ms slide, the unseen dot) - inbox board shows it on blue;
-  the backup and sign-in uses are on paper.
+  the backup and sign-in uses are on paper. Seen 2026-11-13: on a cold start the selected tab's fill
+  draws a frame after the labels (it waits for the first layout); the FAB's stamp the same (I28).
 - [x] I108 `OptionGroup` radios (check 140 ms). Matches R13 2026-11-13: one card, rows 52, a 22 ring
   (2, `hs`), picked a blue ring with a 12 blue dot growing in over 140 ms; no tint.
 - [ ] I109 Buttons: primary, outline, link, danger; busy and blocked (warning haptic, shake).
@@ -322,7 +334,9 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   (`hairline={false}`, R4 - the owner's catch). 561d039 took it off every screen after reading only
   the boards' shared `.hdr` class; put back the same day. Walked on search and add-a-box, light and dark.
 - [ ] I112 `ProgressBar` (6 px, determinate) and `WaitingBar`; MessageDetail draws its own copy of the
-  bar - **D**: one drawing (visual-craft, "One object, one drawing").
+  bar - **D**: one drawing (visual-craft, "One object, one drawing"). 2026-11-13, R6 walk: both
+  tracks are the sunken surface (`--sk` on every board), not the off switch's darker track; the copy
+  in MessageDetail is left for R7.
 - [ ] I113 `Skeleton` rows.
 - [x] I114 `EmptyState` and the hero glyphs (I79). Deleted 2026-11-13 with I79: `EmptyObject` draws
   every empty state.
@@ -331,7 +345,8 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 - [ ] I117 Chips and tags: every `chipTone` (fiction red and amber, user blue, cost free and paid, the
   four delivery states, info, danger soft, estimate soft, stop), the test tag, the box pill, the
   documents chip, the saved badge.
-- [ ] I118 `QrCode` with the Obálka plate.
+- [x] I118 `QrCode` with the Obálka plate. Fixed 2026-11-13 (R6): ink #211B12 on #FFFDF8, radius 8,
+  the logo in its own colours with its tile exactly over the seven omitted modules (a test holds it).
 - [ ] I119 Flags (cs, en) in the language picker and sheet.
 - [ ] I120 `BoxPill`, `CrossBoxLine` (dots, +N), `DeliveryStateIcon` (sent, delivered, accepted or
   fiction, stop).
@@ -656,4 +671,11 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     code clips both to the front (the owner's catch, 2026-11-13). No results has no board: it takes
     the hint's archive pose.
   - R5 switcher: the alert badge and "· Poslední známý stav" after a box's state (I-line above).
+  - DetailDark draws the dark slip with a 1 px edge; R6 and R7 (newer) a shadow and no edge, built.
+  - R6 QR: a 1.7-module quiet zone; the code keeps the 4 a scanner needs. Its plate is a simplified
+    blue tile with a gold triangle; the code draws the logo itself.
+  - R6 transfer: 22 under the label and 12/8/4 in the waiting block; R8 (newer) 10, built.
+  - R8 puts the route above cancel; constitution V keeps the line that appears late last, built.
+  - R6 draws no hidden key: the build shows the warning and one 52 button.
+  - R6 and R10 draw section labels with no icon; the code keeps them until R10 drops them all.
 - [ ] T052 Delete `docs/engineering/identity-pass.md` in the last commit.

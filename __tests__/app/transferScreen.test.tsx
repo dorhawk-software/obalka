@@ -66,10 +66,11 @@ describe('saying where the mail went (FR-007)', () => {
 });
 
 describe('a route line that does not move what is under it (constitution V)', () => {
-  it('sits under the card, after the cancel row, so its growing moves nothing', async () => {
+  it('sits last, after the cancel link, so its growing moves nothing', async () => {
     // The route is known only part-way through, and the relayed sentence is several lines where
     // "working it out" is one. Inside the card it moved the cancel row under a thumb; the fix was a
-    // reserved height, which read as an empty line under the short sentence (025 T027).
+    // reserved height, which read as an empty line under the short sentence (025 T027). Since 031 R6
+    // the steady "keep it open" line sits above the cancel link, as the board draws it; it never grows.
     const { controller, state } = fake();
     state.receiveHangs = true;
     state.receiveQuiet = true;
@@ -80,8 +81,8 @@ describe('a route line that does not move what is under it (constitution V)', ()
     );
     expect(view.queryByTestId('transfer-route-reserve', { includeHiddenElements: true })).toBeNull();
     const ids = collectTestIds(view.toJSON());
-    expect(ids.indexOf('transfer-cancel')).toBeLessThan(ids.indexOf('transfer-keep-open'));
-    expect(ids.indexOf('transfer-keep-open')).toBeLessThan(ids.indexOf('transfer-route'));
+    expect(ids.indexOf('transfer-keep-open')).toBeLessThan(ids.indexOf('transfer-cancel'));
+    expect(ids.indexOf('transfer-cancel')).toBeLessThan(ids.indexOf('transfer-route'));
     expect(ids[ids.length - 1]).toBe('transfer-route');
 
     await act(async () => {

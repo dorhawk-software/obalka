@@ -93,7 +93,7 @@ describe('obalka/radius-steps', () => {
       {
         code: '<X borderTopLeftRadius={9} />',
         filename: SCREEN,
-        errors: [{ message: /borderTopLeftRadius=9 is not one of DESIGN\.md's radius steps[\s\S]*Fix: use the step for what this is - 8 \(chips and status pills\); or 11 \(list-row tiles[\s\S]*concentric\(outer, gap\)/ }],
+        errors: [{ message: /borderTopLeftRadius=9 is not one of DESIGN\.md's radius steps[\s\S]*Fix: use the step for what this is - 8 \(chips and status pills, the QR code's plate\); or 11 \(list-row tiles[\s\S]*concentric\(outer, gap\)/ }],
       },
     ],
   });

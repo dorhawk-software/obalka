@@ -18,7 +18,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import { XStack, YStack, Input } from '../../theme/ui';
-import { Code, Label, Meta } from '../../theme/Typography';
+import { Caption, Label, Meta, Overline, Small, SmallStrong } from '../../theme/Typography';
+import { SecureSlip, SlipCode } from '../../theme/objects/SecureSlip';
 import { ProgressBar, WaitingBar } from '../../theme/ProgressBar';
 import { QrCode } from '../../theme/QrCode';
 import { useTheme } from '../../theme/ThemeProvider';
@@ -812,47 +813,26 @@ export function TransferScreen({
             label={t('transfer')}
             icon={<BackupIcon size={13} color={theme.textFaint} />}
           >
-            <Card>
-              {/* The phrase, as large and as widely spaced as the recovery key: this gets read
-                  across a table, and how it LOOKS is the difference between typing it correctly
-                  and not. */}
+            {/* Boards R6 (the phrase) and R8 (a run): the phrase is a slip on the security tint, and
+                the run is plain lines under it - the stage, one bar, what to keep doing, the way to
+                stop. No card: a card around a run read as one more setting. */}
+            <YStack gap={10}>
               {phrase ? (
-                <CardRow last={false}>
-                  <YStack flex={1} gap={4}>
-                    <RowTitle>{t('transfer.phrase.title')}</RowTitle>
-                    {/* Word by word, wrapping BETWEEN words and never inside one.
-                        One `Text` broke "ostrov" into "ostr" / "ov" on the device: the phrase has no
-                        spaces, so the text engine treats it as a single word and breaks it wherever
-                        the line runs out. Shrinking the type only postpones that - the longest
-                        phrase this list can produce is about 46 characters. Splitting it is the only
-                        fix that holds, and it reads better besides. */}
-                    <XStack
-                      flexWrap="wrap"
-                      alignItems="center"
-                      rowGap={2}
-                      accessibilityLabel={phrase}
-                      testID="transfer-phrase"
-                    >
-                      {phrase.split('-').map((part, i, parts) => (
-                        // A DASH, because that is the character the phrase actually contains. A
-                        // middle dot looked tidier and was a lie: it is not on any keyboard. Set
-                        // tight against the word before it, as it is typed: with space around it the
-                        // phrase read as "8END - harfa - ...", and nobody could tell whether those
-                        // spaces were part of it (025 T027). The hint under it says the rest.
-                        <Code key={part + String(i)}>
-                          {part}
-                          {i < parts.length - 1 ? (
-                            <Code color={theme.textFaint}>-</Code>
-                          ) : null}
-                        </Code>
-                      ))}
-                    </XStack>
-                    <Meta color={theme.textFaint} testID="transfer-phrase-hint">
-                      {t('transfer.phrase.hint')}
-                    </Meta>
+                <SecureSlip testID="transfer-slip">
+                  <Overline color={theme.textMuted}>{t('transfer.phrase.title')}</Overline>
+                  {/* Word by word, wrapping BETWEEN words and never inside one: one `Text` broke
+                      "ostrov" into "ostr" / "ov" on the device, because a phrase without spaces is one
+                      word to the text engine. A DASH between them, because that is the character the
+                      phrase contains - a middle dot is on no keyboard - set tight, as it is typed,
+                      and faint (025 T027). The hint under it says the rest. */}
+                  <SlipCode parts={phrase.split('-')} faintDashes accessibilityLabel={phrase} testID="transfer-phrase" />
+                  <Caption color={theme.textMuted} textAlign="center" testID="transfer-phrase-hint">
+                    {t('transfer.phrase.hint')}
+                  </Caption>
+                  <YStack>
                     {/* Which backup this is (026 US3): the one chosen, never a newer one in its place. */}
                     {sendingManifest ? (
-                      <Meta color={theme.textFaint} testID="transfer-which">
+                      <Meta color={theme.textFaint} textAlign="center" testID="transfer-which">
                         {t('transfer.phrase.which', {
                           when: formatDateTime(sendingManifest.createdAt),
                           what: documentsChipText(sendingManifest),
@@ -860,113 +840,72 @@ export function TransferScreen({
                       </Meta>
                     ) : null}
                     {/* US1 scenario 1: what is about to go, counted, before a byte of it moves. */}
-                    <Meta color={theme.textFaint} testID="transfer-contents">
+                    <Meta color={theme.textFaint} textAlign="center" testID="transfer-contents">
                       {contentsText(contents, sizeBytes)}
                     </Meta>
-                    {/* The phrase is longer than the recovery key it replaces, and typing it is the
-                        last piece of friction this feature exists to remove. The text stays: the
-                        phone doing the scanning may be the one with a broken camera, and a code
-                        nobody can read by eye is a dead end. */}
-                    <YStack alignItems="center" paddingTop={6}>
-                      <QrCode
-                        value={encodeTransferQr(phrase)}
-                        size={200}
-                        testID="transfer-qr"
-                        accessibilityLabel={t('transfer.phrase.title')}
-                      />
-                    </YStack>
                   </YStack>
-                </CardRow>
+                  {/* The text stays beside the code: the phone doing the scanning may be the one with
+                      a broken camera, and a code nobody can read by eye is a dead end. */}
+                  <YStack alignItems="center">
+                    <QrCode
+                      value={encodeTransferQr(phrase)}
+                      size={195}
+                      testID="transfer-qr"
+                      accessibilityLabel={t('transfer.phrase.title')}
+                    />
+                  </YStack>
+                </SecureSlip>
               ) : null}
 
-              {/* ONE row for the whole in-flight state: what it is doing, how far it has got, and
-                  where the bytes are going. They were three separate CardRows and the middle one
-                  carried a gap and a reserved bar the others did not, so the three lines sat on
-                  three different rhythms - which is the hand-tuning the ui-guide exists to stop.
-                  One block, one padding, one gap from the scale. */}
-              <CardRow last={saving}>
-                <YStack flex={1} gap={6}>
-                  <Label fontWeight="400" color={theme.textMuted} testID="transfer-stage">
-                    {/* "Waiting for the other phone" is only true once there IS a phrase to type.
-                        Before that the app is still packing, and the walk measured 25 seconds of it
-                        on an archive with nine documents. A receive has nothing to pack: it is
-                        connecting from the first frame, and said "Getting ready to send" (T027).
-                        Once it has arrived it says so, under the question about saving it. */}
-                    {saving
-                      ? t('transfer.stage.applying')
-                      : got
-                      ? t('transfer.stage.received')
-                      : progress?.stage === 'preparing' && progress.total > 0
-                      ? t('transfer.stage.preparing.count', {
-                          done: String(progress.sent),
-                          total: String(progress.total),
-                        })
-                      : progress && progress.stage !== 'preparing'
-                      ? t(`transfer.stage.${progress.stage}`)
-                      : phrase
-                      ? t('transfer.phrase.waiting')
-                      : mode === 'receiving'
-                      ? t('transfer.stage.connecting')
-                      : t('transfer.stage.preparing')}
-                  </Label>
-                  {/* Always a bar in the same place: counting when there is something to count,
-                      travelling when there is not (025 T027), full once it has all arrived. An empty
-                      reserved line here read as a margin under the stage twice the one above it. */}
-                  {saving ? (
-                    applyProgress ? (
-                      <ProgressBar
-                        fraction={applyProgress.fraction}
-                        label={t('transfer.stage.applying')}
-                        testID="transfer-progress"
-                      />
-                    ) : (
-                      <WaitingBar label={t('transfer.stage.applying')} testID="transfer-waiting" />
-                    )
-                  ) : got ? (
-                    <ProgressBar
-                      fraction={1}
-                      label={t('transfer.stage.received')}
-                      testID="transfer-progress"
-                    />
-                  ) : progress && progress.total > 0 ? (
-                    <ProgressBar
-                      fraction={progress.sent / progress.total}
-                      label={t(`transfer.stage.${progress.stage}`)}
-                      now={progress.sent}
-                      total={progress.total}
-                      testID="transfer-progress"
-                    />
-                  ) : (
-                    <WaitingBar label={t('transfer.phrase.waiting')} testID="transfer-waiting" />
-                  )}
-                </YStack>
-              </CardRow>
-
-              {/* No cancel while it saves (025 review, 2026-09-15). The row used to stay, and pressing
-                  it put the screen back to idle while the save carried on - so the next receive
-                  swept the files the save was still reading. */}
-              {saving ? null : (
-                <CardRow
-                  last
-                  onPress={() => stopRun(cancel)}
-                  accessibilityLabel={t('transfer.cancel')}
-                  testID="transfer-cancel"
-                >
-                  <XStack alignItems="center" gap={8} flex={1}>
-                    <CloseIcon size={15} color={theme.danger} />
-                    <Label flex={1} color={theme.danger}>
-                      {t('transfer.cancel')}
-                    </Label>
-                  </XStack>
-                </CardRow>
+              <Small fontWeight="600" color={theme.text} testID="transfer-stage">
+                {/* "Waiting for the other phone" is only true once there IS a phrase to type. Before
+                    that the app is still packing, and the walk measured 25 seconds of it on an
+                    archive with nine documents. A receive has nothing to pack: it is connecting from
+                    the first frame, and said "Getting ready to send" (T027). Once it has arrived it
+                    says so, under the question about saving it. */}
+                {saving
+                  ? t('transfer.stage.applying')
+                  : got
+                  ? t('transfer.stage.received')
+                  : progress?.stage === 'preparing' && progress.total > 0
+                  ? t('transfer.stage.preparing.count', {
+                      done: String(progress.sent),
+                      total: String(progress.total),
+                    })
+                  : progress && progress.stage !== 'preparing'
+                  ? t(`transfer.stage.${progress.stage}`)
+                  : phrase
+                  ? t('transfer.phrase.waiting')
+                  : mode === 'receiving'
+                  ? t('transfer.stage.connecting')
+                  : t('transfer.stage.preparing')}
+              </Small>
+              {/* Always a bar in the same place: counting when there is something to count,
+                  travelling when there is not (025 T027), full once it has all arrived. */}
+              {saving ? (
+                applyProgress ? (
+                  <ProgressBar
+                    fraction={applyProgress.fraction}
+                    label={t('transfer.stage.applying')}
+                    testID="transfer-progress"
+                  />
+                ) : (
+                  <WaitingBar label={t('transfer.stage.applying')} testID="transfer-waiting" />
+                )
+              ) : got ? (
+                <ProgressBar fraction={1} label={t('transfer.stage.received')} testID="transfer-progress" />
+              ) : progress && progress.total > 0 ? (
+                <ProgressBar
+                  fraction={progress.sent / progress.total}
+                  label={t(`transfer.stage.${progress.stage}`)}
+                  now={progress.sent}
+                  total={progress.total}
+                  testID="transfer-progress"
+                />
+              ) : (
+                <WaitingBar label={t('transfer.phrase.waiting')} testID="transfer-waiting" />
               )}
-            </Card>
-            {/* Under the card, last on the screen while a run is up. FR-007's route is known only
-                part-way through and its sentence grows then, from one line to four. Inside the card
-                it moved the cancel row under a thumb, so it used to hold the longest sentence's
-                height from the first frame - which read as an empty line under the short one
-                (025 T027). Here, growing moves nothing at all (constitution V). */}
-            <YStack gap={4} marginHorizontal={4} paddingTop={8}>
+
               {/* FR-014: leaving the app or locking the phone stops the transfer, and no app can
                   forbid either. So it is said before, not only after. */}
               {saving ? null : (
@@ -974,17 +913,36 @@ export function TransferScreen({
                   {t('transfer.keepOpen')}
                 </Meta>
               )}
-              {/* While it saves nothing is on the network, so there is no route to state - and no
-                  cancel row, so this place says why there is none. */}
-              <Meta
-                color={theme.textFaint}
-                testID={saving ? 'transfer-applying-note' : 'transfer-route'}
-              >
+
+              {/* No cancel while it saves (025 review, 2026-09-15). The row used to stay, and pressing
+                  it put the screen back to idle while the save carried on - so the next receive
+                  swept the files the save was still reading. */}
+              {saving ? null : (
+                <XStack
+                  alignSelf="flex-start"
+                  alignItems="center"
+                  gap={6}
+                  minHeight={44}
+                  paddingHorizontal={4}
+                  onPress={() => stopRun(cancel)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('transfer.cancel')}
+                  testID="transfer-cancel"
+                >
+                  <CloseIcon size={18} color={theme.danger} />
+                  <SmallStrong color={theme.danger}>{t('transfer.cancel')}</SmallStrong>
+                </XStack>
+              )}
+
+              {/* Last on the screen while a run is up. FR-007's route is known only part-way through
+                  and its sentence grows then, from one line to four; above the cancel link it would
+                  move the link under a thumb (constitution V). R8 draws it above; that board is on
+                  031's sync-back list. While it saves nothing is on the network, so there is no
+                  route to state - and no cancel, so this place says why there is none. */}
+              <Meta color={theme.textFaint} testID={saving ? 'transfer-applying-note' : 'transfer-route'}>
                 {/* The route seen, not only the last event's: `progress` is cleared once what
                     arrived is on screen, and the line under the question said "working it out". */}
-                {saving
-                  ? t('transfer.applying.note')
-                  : routeText(progress?.relayed ?? routeSeen.current)}
+                {saving ? t('transfer.applying.note') : routeText(progress?.relayed ?? routeSeen.current)}
               </Meta>
             </YStack>
           </Section>

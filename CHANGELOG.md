@@ -70,6 +70,10 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Karty jsou listy papíru, které mají váhu.** Leží na papíře s měkkým stínem a bez rámečku. V
   Nastavení má každá volba svou značku v jamce a vybraná možnost modrý kroužek s tečkou; vypnutý
   přepínač je teplý jako papír.
+- **Heslo k záloze a kód přenosu jsou lístky na vzoru obálky.** Heslo i kód stojí na lístku větším
+  písmem ve dvou řádcích a QR kód je na papíře s logem Obálky v jeho barvách; varování a tlačítka
+  jsou pod lístkem. Během přenosu jsou pod ním jen řádky: co se děje, pruh, Zrušit přenos a nakonec,
+  kudy přenos jde. Pruh průběhu leží v papíře jemněji.
 
 ### Opraveno
 

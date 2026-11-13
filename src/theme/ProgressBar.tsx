@@ -6,6 +6,9 @@
 //
 // It also announces itself. A screen-reader user gets "12 of 40" from `accessibilityValue` rather
 // than a decorative view they cannot read; the same numbers the sighted label shows.
+//
+// The track is the sunken surface, as every board draws it (`--sk`, 031 R6/R8/R10/R14), 6 tall with
+// the 3 ends; until 2026-11-13 it was the off switch's darker track.
 
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, type LayoutChangeEvent } from 'react-native';
@@ -35,7 +38,7 @@ export function ProgressBar({
     <YStack
       height={6}
       borderRadius={3}
-      backgroundColor={theme.trackOff}
+      backgroundColor={theme.surfaceSunken}
       overflow="hidden"
       accessible
       accessibilityRole="progressbar"
@@ -92,7 +95,7 @@ export function WaitingBar({ label, testID }: { readonly label?: string; readonl
     <YStack
       height={6}
       borderRadius={3}
-      backgroundColor={theme.trackOff}
+      backgroundColor={theme.surfaceSunken}
       overflow="hidden"
       onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}
       accessible

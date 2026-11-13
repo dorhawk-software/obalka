@@ -24,7 +24,7 @@
 //   meta       - row dates, chips, detail lines (12)            [Public Sans]
 //   tag        - the label inside a coloured pill (11)          [Public Sans]
 //   overline   - an uppercase section label (12, tracked)       [Public Sans]
-//   code       - a recovery key, a transfer code phrase (17)    [Public Sans]
+//   code       - a recovery key, a transfer code phrase (20)    [Public Sans]
 //   subheading - a month header, a card's own title (15)        [Bricolage Grotesque]
 //   hero       - the Welcome title (34)                         [Bricolage Grotesque]
 //   numeral    - the attention count (44)                       [Bricolage Grotesque]
@@ -95,7 +95,7 @@ export const type: Record<TextRole, TypeStyle> = {
   meta: { fontSize: 12, lineHeight: 16, fontWeight: '500', fontFamily: fonts.bodyMedium },
   tag: { fontSize: 11, lineHeight: 14, fontWeight: '700', letterSpacing: 0.3, fontFamily: fonts.bodyBold },
   overline: { fontSize: 12, lineHeight: 16, fontWeight: '700', letterSpacing: 0.4, fontFamily: fonts.bodyBold, textTransform: 'uppercase' },
-  code: { fontSize: 17, lineHeight: 24, fontWeight: '600', letterSpacing: 1.5, fontFamily: fonts.bodySemiBold },
+  code: { fontSize: 20, lineHeight: 28, fontWeight: '600', letterSpacing: 1.5, fontFamily: fonts.bodySemiBold },
   subheading: { fontSize: 15, lineHeight: 19, fontWeight: '700', letterSpacing: 0, fontFamily: fonts.displayBold },
   hero: { fontSize: 34, lineHeight: 41, fontWeight: '800', letterSpacing: -1, fontFamily: fonts.displayXBold },
   numeral: { fontSize: 44, lineHeight: 36, fontWeight: '800', letterSpacing: -2, fontFamily: fonts.displayXBold },

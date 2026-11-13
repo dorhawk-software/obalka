@@ -37,6 +37,11 @@ function nodes(root: unknown): Node[] {
 const brush = (color: string) => JSON.stringify({ type: 0, payload: processColor(color) });
 const filled = (all: Node[], color: string) => all.filter(n => JSON.stringify(n.props.fill) === brush(color));
 const stroked = (all: Node[], color: string) => all.filter(n => JSON.stringify(n.props.stroke) === brush(color));
+/** The size an Svg is drawn at. */
+const flatSize = (n: Node | undefined) => {
+  const st = (StyleSheet.flatten(n?.props.style as never) ?? {}) as Record<string, unknown>;
+  return { width: n?.props.bbWidth ?? st.width, height: n?.props.bbHeight ?? st.height };
+};
 const style = (n: Node) => (StyleSheet.flatten(n.props.style as never) ?? {}) as Record<string, unknown>;
 
 /** Renders in a theme and, like the device, lays the root out at `size`. */
@@ -154,7 +159,7 @@ describe.each([
   });
 
   describe('the slip', () => {
-    it('is the surface, with its 1 pt border edge drawn as the same shape one point lower', async () => {
+    it('is the surface; in light its 1 pt border edge is the same shape one point lower, at night none', async () => {
       const { all } = await draw(
         <Slip>
           <Text>Doručenka</Text>
@@ -163,10 +168,11 @@ describe.each([
         { width: 200, height: 90 },
       );
       expect(filled(all(), theme.surface).length).toBe(1);
+      // At night the boards draw no edge, only the soft shadow (R6, R7).
       const edge = filled(all(), theme.border);
-      expect(edge.length).toBe(1);
+      expect(edge.length).toBe(isDark ? 0 : 1);
       const lowered = all().find(n => JSON.stringify(n.props.matrix) === JSON.stringify([1, 0, 0, 1, 0, 1]));
-      expect(lowered).toBeDefined();
+      expect(lowered === undefined).toBe(isDark);
       expect(style(all()[0]).filter).toBe(objectFilter(theme.name, 'slip'));
     });
   });
@@ -216,6 +222,13 @@ describe.each([
     it('fades towards the middle behind the lock', async () => {
       const { all } = await draw(<SecurityTint vignette />, isDark);
       expect(all().some(n => n.type === 'RNSVGMask')).toBe(true);
+    });
+
+    it('covers what it was laid out to, not the size its parent had when it first drew (031 R6)', async () => {
+      // A slip's panel grows when its QR appears; at "100%" the Svg kept the first height on Android.
+      const { all } = await draw(<SecurityTint />, isDark, { width: 320, height: 540 });
+      const svg = all().find(n => n.type === 'RNSVGSvgView');
+      expect(flatSize(svg)).toEqual({ width: 320, height: 540 });
     });
   });
 

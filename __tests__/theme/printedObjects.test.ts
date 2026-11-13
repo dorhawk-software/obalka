@@ -22,8 +22,10 @@ describe('object shadows', () => {
     expect(objectFilter('dark', kind)).toMatch(/^drop-shadow\(/);
   });
 
-  it('lets a slip cast no shadow at night: its 1 pt edge is drawn, not filtered', () => {
-    expect(objectFilter('dark', 'slip')).toBeUndefined();
+  it('lets a slip cast a soft black shadow at night, as boards R6 and R7 draw it', () => {
+    // Until 031 R6 the night slip had only its 1 pt edge (the older DetailDark board); every board
+    // agreed on 2026-11-12 draws this shadow and no edge.
+    expect(objectFilter('dark', 'slip')).toBe('drop-shadow(0px 4px 10px rgba(0,0,0,0.35))');
   });
 
   it('casts a resting sheet\'s shadow below it, never a bevel on top (paper lies on the screen)', () => {

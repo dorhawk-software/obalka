@@ -81,6 +81,11 @@ What changed in each Obálka release, written for the people using it. The newes
 - **Cards are sheets of paper with weight.** They lie on the paper with a soft shadow and no outline. In
   Settings each option has its mark in a well, the chosen one a blue ring with a dot, and a switch that
   is off is warm like paper.
+- **The backup password and the transfer code are slips on the envelope's pattern.** The password and
+  the code stand on the slip in larger type on two lines, and the QR code is on paper with the Obálka
+  logo in its own colours; the warning and the buttons are under the slip. During a transfer only
+  lines follow it: what is happening, the bar, Cancel transfer and, last, which way the transfer goes.
+  The progress bar lies in the paper more softly.
 
 ### Fixed
 

@@ -105,9 +105,9 @@ typography:
     letterSpacing: "0.4px"
   code:
     fontFamily: "PublicSans-SemiBold, Public Sans, system-ui, sans-serif"
-    fontSize: "17px"
+    fontSize: "20px"
     fontWeight: 600
-    lineHeight: "24px"
+    lineHeight: "28px"
     letterSpacing: "1.5px"
   subheading:
     fontFamily: "BricolageGrotesque-Bold, Bricolage Grotesque, system-ui, sans-serif"
@@ -267,7 +267,7 @@ A warm paper ramp with two accents - a brand blue that acts, and a gold that not
 - **Surface** (`#FFFDF8` / `#2A251E`): the enclosed sheet - cards, inputs, raised rows.
 - **Surface Alt** (`#FBF6EA` / `#221E18`): bars, headers, sheets and dialogs.
 - **Surface Sunken** (`#F2EADB` / `#322C24`): recessed panels - the segmented track, icon-button
-  wells. The one surface that goes *down*.
+  wells, the progress and waiting bar's track (6 tall, 3 ends; 031 R6). The one surface that goes *down*.
 - **Hairline** (`#ECE3D2` / `#3A332A`): every resting edge in the app.
 - **Hairline Strong** (`#DCD2BF` / `#4A4236`): input borders and emphasis edges.
 - **Ink** (`#211B12` / `#F2ECE0`), **Body Ink** (`#3F392E` / `#D8D0C2`), **Muted Ink**
@@ -340,8 +340,9 @@ Sans holds them.
 - **Tag** (Public Sans Bold, 11/14, +0.3): the short label inside a coloured pill. Never a sentence.
 - **Overline** (Public Sans Bold, 12/16, +0.4, uppercase): the label above a group - settings sections,
   "Komu", "Doručenka".
-- **Code** (Public Sans SemiBold, 17/24, +1.5): a recovery key, a transfer code phrase - text read out
-  and copied.
+- **Code** (Public Sans SemiBold, 20/28, +1.5): a recovery key, a transfer code phrase - text read out
+  and copied, on its slip (board R6, which sets the key at 20 and the phrase at 22; one role takes
+  both at 20). Until 031 it was 17/24.
 - **Subheading** (Bricolage Bold, 15/19): a month header in a list, a card's own title.
 - **Hero** (Bricolage ExtraBold, 34/41, −1): the Welcome title, and nothing else.
 - **Numeral** (Bricolage ExtraBold, 44/36, −2): the attention group's count. Its line is shorter than
@@ -529,13 +530,13 @@ Radii are **fixed steps, not a ratio**. A 38dp avatar and a 52dp avatar do not g
 corners; they get 11 and 14, because those are the steps.
 
 ```
-8   chips and status pills
+8   chips and status pills, the QR code's plate
 11  list-row tiles and avatars (36–42dp), the segmented track
 12  the search field, the scan-suggestion buttons, menu and switcher rows, inset panels
 13  in-content buttons (download or re-download attachments, add an attachment, the list's retry),
     attachment and draft rows, the recipient card
 14  cards, form inputs, dialog and form buttons, the 52dp detail avatar  ← most-used radius in the app
-16  the Welcome and Lock primary buttons
+16  the Welcome and Lock primary buttons, the tinted panel a slip lies on
 20  dialog container
 24  bottom sheets (top corners only)
 999 fully round - switch track, unread dot, icon buttons, radio marks
