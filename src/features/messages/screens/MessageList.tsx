@@ -13,7 +13,8 @@ import {
   SectionList,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Button, YStack } from '../../../theme/ui';
+import { YStack } from '../../../theme/ui';
+import { NeutralButton } from '../../../theme/NeutralButton';
 import { Caption } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Fab, useFabClearance } from '../../../theme/Fab';
@@ -897,21 +898,7 @@ export function MessageList({
           object={<EnvelopePose pose="sealed" />}
           title={t('messages.error.loadTitle')}
           body={t(state.messageKey !== 'messages.error.load' ? state.messageKey : 'messages.error.loadSub')}
-          action={
-            <Button
-              minHeight={52}
-              borderRadius={14}
-              paddingHorizontal={24}
-              backgroundColor={theme.surfaceSunken}
-              color={theme.text}
-              fontSize={16}
-              fontWeight="700"
-              onPress={onPullRefresh}
-              testID="retry"
-            >
-              {t('messages.retry')}
-            </Button>
-          }
+          action={<NeutralButton inline label={t('messages.retry')} onPress={onPullRefresh} testID="retry" />}
           testID="listError"
         />
       </ScrollView>

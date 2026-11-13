@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { touchSlop } from '../../../theme/touchTarget';
 import { Animated } from 'react-native';
-import { Paragraph, XStack, YStack } from '../../../theme/ui';
+import { XStack, YStack } from '../../../theme/ui';
 import { PressScale } from '../../../theme/PressScale';
 import { Skeleton } from '../../../theme/Skeleton';
 import { attachmentFileStore } from '../../../services/files/attachmentFileStore';
@@ -64,6 +64,8 @@ import {
 import { Card } from '../../../theme/Card';
 import { Well } from '../../../theme/Well';
 import { NeutralButton } from '../../../theme/NeutralButton';
+import { EmptyObject } from '../../../theme/EmptyObject';
+import { EnvelopePose } from '../../../theme/objects/Envelope';
 import { OffsetIcon } from '../../../theme/offsetIcons';
 
 type State =
@@ -257,7 +259,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
         });
       }
     } else {
-      setState({ status: 'error', messageKey: 'detail.error.load' });
+      setState({ status: 'error', messageKey: 'detail.error.body' });
     }
     // `boxId` re-creates this for a different box; the rest of the account is read from the ref.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -460,21 +462,16 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
     return (
       <YStack flex={1} backgroundColor={theme.bg}>
         {renderHeader(title)}
-        <YStack
-          flex={1}
-          alignItems="center"
-          justifyContent="center"
-          padding="$4"
-          gap="$3"
-        >
-          <Paragraph color={theme.danger} textAlign="center">
-            {t(state.messageKey)}
-          </Paragraph>
-          {/* The neutral button (R14): sunken tone, not an outline. */}
-          <YStack width="100%" maxWidth={280}>
-            <NeutralButton label={t('common.back')} onPress={onBack} testID="retry" />
-          </YStack>
-        </YStack>
+        {/* A failed list's anatomy (031 R4): the envelope sealed - nothing came out - the words and one
+            way on. The detail reads only this phone's archive, so it says it found nothing there and
+            sends you back to the list, rather than "download" and "try again" over a back button. */}
+        <EmptyObject
+          object={<EnvelopePose pose="sealed" />}
+          title={t('detail.error.title')}
+          body={t(state.messageKey)}
+          action={<NeutralButton inline label={t('detail.error.back')} onPress={onBack} testID="retry" />}
+          testID="detailError"
+        />
       </YStack>
     );
   }

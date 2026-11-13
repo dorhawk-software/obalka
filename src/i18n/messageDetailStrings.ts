@@ -100,7 +100,9 @@ export const cs: Record<string, string> = {
   'detail.original.refused': 'ISDS podepsaný originál teď nevydal. Zkuste to znovu později.',
   'detail.original.writeFailed': 'Podepsaný originál se nepodařilo uložit do zařízení.',
   'detail.original.openError': 'Podepsaný originál se nepodařilo otevřít ani uložit.',
-  'detail.error.load': 'Zprávu se nepodařilo stáhnout. Zkuste to znovu.',
+  'detail.error.title': 'Zprávu se nepodařilo otevřít',
+  'detail.error.body': 'V archivu v tomto telefonu ji aplikace nenašla. Vraťte se na seznam a otevřete ji znovu.',
+  'detail.error.back': 'Zpět na seznam',
   'detail.error.offline':
     'Tato zpráva ještě nebyla stažena a nyní ji nelze získat (jste offline nebo je potřeba se znovu přihlásit).',
   'detail.offline': 'Offline – zobrazeno z uloženého archivu.',
@@ -202,7 +204,9 @@ export const en: Record<string, string> = {
   'detail.original.refused': 'ISDS did not release the signed original just now. Please try again later.',
   'detail.original.writeFailed': 'The signed original could not be saved on this device.',
   'detail.original.openError': 'The signed original could not be opened or saved.',
-  'detail.error.load': 'The message could not be downloaded. Please try again.',
+  'detail.error.title': 'Couldn’t open the message',
+  'detail.error.body': 'The app didn’t find it in this phone’s archive. Go back to the list and open it again.',
+  'detail.error.back': 'Back to the list',
   'detail.error.offline':
     'This message has not been downloaded yet and can’t be fetched now (you are offline or need to sign in again).',
   'detail.offline': 'Offline. Shown from the saved archive.',

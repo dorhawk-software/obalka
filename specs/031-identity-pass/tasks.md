@@ -129,9 +129,23 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   then `SentRecordSlip` (the message's ID, rings of 30, "zatím ne", the state's age, why it stopped,
   erased or vault as lines under the steps; a stop is a cross in `danger`); the band tucks it as a
   received one (R15). The header says "Odeslaná zpráva". Walked light and dark beside R7.
-- [ ] I31 Detail loading skeleton and error - **X**: R7. Built 2026-11-13: the skeleton takes the
-  envelope, the sheet and the slip; the title is the screen's from the first frame; the error's way
-  back is the sunken neutral button. Not yet captured on a device (a demo message loads at once).
+- [x] I31 Detail loading skeleton and error - **X**: R7. Built 2026-11-13: the skeleton takes the
+  envelope, the sheet and the slip; the title is the screen's from the first frame. Captured
+  2026-11-13 through the demo probe, light and dark: the skeleton as built; the error was red words
+  saying "stáhnout" and "zkuste to znovu" over a back button, mid-screen - it is now the failed
+  list's anatomy (R4): the envelope sealed, "Zprávu se nepodařilo otevřít", that the phone's archive
+  does not hold it, and "Zpět na seznam" on the inline neutral button (`detailError`); walked in
+  Czech and English. The failed list's retry is the same button now (its 16 px label rounds to the
+  15 `bodyStrong`).
+  - [x] I31.1 Demo states to walk them (owner, 2026-11-13: add them to the demo data): a sent message
+    undeliverable (the cross and the reason), one served by fiction, one still on its way; and a way
+    to see the skeleton and the error, which no stored message reaches. Built 2026-11-13: three sent
+    messages on p7wq2bs; the seed tops up an archive that holds only the demo boxes (by message ID,
+    nothing wiped) and refuses any other box; `DEMO_DETAIL_PROBE` (`slow` / `missing`) holds or
+    empties the detail's read in a dev build with `DEMO_DATA`. Both committed off, guarded by
+    `__tests__/dev/demoData.test.ts` (red with `DEMO_DATA` on). Walked light and dark: the three
+    details as R7's slip draws them, and the undeliverable row, whose "Nedoručitelné" was the stop
+    chip's paper on the paper - invisible - and is now the stop's ink.
 - [ ] I32 Fiction banner - **D**: board Message (gold band with "Připomenout").
 - [ ] I33 Delivery record (Doručenka card, dotted rail) - **D**: the slip, board Message.
 - [ ] I34 Term card, "alerts off" line, deadline suggestion (scan) - **X**: not on a board. R7.
@@ -147,6 +161,8 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   sides, the Badge label in ink taking the row's width (dark cut "prostředí" off before), no glyph or
   hairline; StatusStrip lost its `test` tone. Walked light and dark by forcing it on (no czebox box on
   the demo), reverted.
+  - [ ] I37.1 Walk it in place, under a czebox box the owner signs in on Obalka_Demo (owner,
+    2026-11-13): the header straight under the strip, no second status-bar gap.
 - [ ] I38 Compose - **X**: the envelope you are sending (R2, agreed A).
   - [ ] I38.1 Sender gate (no box can send; dimmed placeholders).
   - [ ] I38.2 Sender card and the change; recipient card, its type and the change.
@@ -680,6 +696,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
 ## Phase 6: Build round 1 and round 2; Phase 7: close
 
 - [ ] T050 impeccable critique of the built app (two isolated reviewers), fixes, re-audit with the owner.
+  Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
+  fiction reads as a pile - more messages than one - though the owner likes it; keep it, or mark
+  fiction another way.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
   families and weights, each component's anatomy and the rejected variants.
   The sync-back, where the build is right and the board is not (collected as they are found):
@@ -702,4 +721,7 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R7 not downloaded: no line under the card; the build keeps what the download does (it saves the
     message, and does not deliver it).
   - R7 download glyph plane at .28 white; the build takes `envelope-plane` (.2), the same blue under it.
+  Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
+  sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
+  download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).
 - [ ] T052 Delete `docs/engineering/identity-pass.md` in the last commit.

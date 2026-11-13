@@ -82,6 +82,10 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Nedoručitelná odeslaná zpráva to v Odeslaných říká čitelně.** Slovo „Nedoručitelné“ bylo světlým
+  písmem na světlém papíře, skoro neviditelné; teď je tmavé jako ostatní text.
+- **Zpráva, kterou aplikace v telefonu nenajde, ukáže zalepenou obálku a cestu zpět.** Dřív byla na
+  prázdné obrazovce jen červená věta „Zkuste to znovu“ nad tlačítkem Zpět.
 - **Jednopísmenná slova nezůstávají na konci řádku.** "v", "k", "s", "o" a další jdou na nový řádek se
   slovem za sebou a číslo se nerozdělí od jednotky ("4,2 MB"), v nastavení, nápovědě i v Co je nového.
   Režim ladění píše velikost s desetinnou čárkou.

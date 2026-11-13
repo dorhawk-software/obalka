@@ -95,7 +95,8 @@ export const SentRegisterRow = memo(function SentRegisterRowView({
         : state.kind === 'fiction'
           ? chipTone('statusFiction', theme).fg
           : state.kind === 'stop'
-            ? chipTone('statusStop', theme).fg
+            ? // The stop's ink: its chip's `fg` is the paper printed on the ink pill, which the row has not.
+              chipTone('statusStop', theme).accent
             : theme.textMuted;
   const countdown = sentFictionCountdown(message, now);
   const countdownInk = countdown ? chipTone(fictionCountdownTone(countdown.daysRemaining), theme).fg : theme.textMuted;

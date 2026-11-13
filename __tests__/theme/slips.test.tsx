@@ -150,3 +150,18 @@ describe('the neutral button', () => {
     expect(flat(label).color).toBe(lightTheme.text);
   });
 });
+
+describe('the neutral button under a failed state (R4)', () => {
+  it('is as wide as its words with 24 at each side, the same 52 sunken face', async () => {
+    // The column's width inside a centred state is no width at all: the label drew off-centre (the
+    // detail's error on Obalka_Demo, 2026-11-13).
+    const view = await themed(<NeutralButton inline label="Zkusit znovu" onPress={() => {}} testID="inline" />);
+    const root = view.toJSON() as unknown as Json;
+    const face = flat(nodes(byId(root, 'inline'), n => flat(n).minHeight !== undefined)[0]);
+    expect(face).toEqual(
+      expect.objectContaining({ minHeight: 52, paddingLeft: 24, paddingRight: 24, backgroundColor: lightTheme.surfaceSunken }),
+    );
+    expect(face.width).toBeUndefined();
+    expect(flat(view.getByTestId('inline')).width).toBeUndefined();
+  });
+});

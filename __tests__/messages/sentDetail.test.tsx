@@ -2,7 +2,7 @@
 // box, to them in the window, the stamp cancelled by the postmark - over the slip that fills in as ISDS
 // reports the steps. Seen on Obalka_Demo before the build: the old subject, Komu card and timeline.
 
-import { render, waitFor, within } from '@testing-library/react-native';
+import { fireEvent, render, waitFor, within } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
@@ -12,6 +12,7 @@ import type { DataBoxAccount, MessageEnvelope } from '../../src/services/isds/ty
 const AT = new Date(2026, 9, 26, 21, 5).getTime();
 let mockState = 4;
 let mockSyncedAt: number | null = AT;
+let mockMissing = false;
 
 const mockEnvelope = (): MessageEnvelope => ({
   id: '1787306585',
@@ -29,7 +30,7 @@ const mockEnvelope = (): MessageEnvelope => ({
 
 jest.mock('../../src/features/accounts/deps', () => ({
   messagesController: {
-    getCachedEnvelope: jest.fn(async () => mockEnvelope()),
+    getCachedEnvelope: jest.fn(async () => (mockMissing ? null : mockEnvelope())),
     getCachedSyncedAt: jest.fn(async () => mockSyncedAt),
     getCachedDetail: jest.fn(async () => null),
     markRead: jest.fn(async () => false),
@@ -84,21 +85,20 @@ const account: DataBoxAccount = {
   updatedAt: 1,
 };
 
-const open = (folder: 'sent' | 'received' = 'sent') =>
+const open = (folder: 'sent' | 'received' = 'sent', onBack: () => void = () => {}) =>
   render(
     <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
-      <MessageDetail account={account} messageId="1787306585" folder={folder} onBack={() => {}} />
+      <MessageDetail account={account} messageId="1787306585" folder={folder} onBack={onBack} />
     </TamaguiProvider>,
   );
 
 const flat = (node: { props: { style?: unknown } }) =>
   (StyleSheet.flatten(node.props.style as never) ?? {}) as Record<string, unknown>;
 
-
-
 afterEach(() => {
   mockState = 4;
   mockSyncedAt = AT;
+  mockMissing = false;
 });
 
 describe('a sent message (R7)', () => {
@@ -155,5 +155,24 @@ describe('the rows under a message (R7)', () => {
       node = n.parent;
     }
     expect(inCard).toBe(true);
+  });
+});
+
+describe('a message the archive does not hold (I31)', () => {
+  it('is a failed state: the envelope sealed, what happened, and the one way on, which is back', async () => {
+    // Before: red words in the middle of the screen saying "download" and "try again" over a button
+    // that went back (the I31.1 walk on Obalka_Demo, 2026-11-13). The detail reads only the archive.
+    mockMissing = true;
+    const onBack = jest.fn();
+    const view = await open('sent', onBack);
+    await waitFor(() => view.getByTestId('detailError'));
+    expect(view.getByTestId('envelopePose-sealed', { includeHiddenElements: true })).toBeTruthy();
+    expect(view.getByText(t('detail.error.title'))).toBeTruthy();
+    expect(view.getByText(t('detail.error.body'))).toBeTruthy();
+    // The header still says what the screen is.
+    expect(view.getByText(t('detail.header.sent'))).toBeTruthy();
+    expect(view.getByTestId('retry')).toHaveTextContent(t('detail.error.back'));
+    fireEvent.press(view.getByTestId('retry'));
+    expect(onBack).toHaveBeenCalledTimes(1);
   });
 });

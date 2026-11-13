@@ -94,6 +94,10 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **An undeliverable sent message says so legibly in Sent.** "Undeliverable" was light type on light
+  paper, almost invisible; it is now dark like the rest of the text.
+- **A message the app can't find on the phone shows a sealed envelope and the way back.** Before, an
+  empty screen showed only a red "Please try again" over a Back button.
 - **One-letter Czech words no longer end a line.** "v", "k", "s", "o" and the others move to the next
   line with the word after them, and a number stays with its unit ("4,2 MB"), in Settings, help and
   What's new. Debug mode writes a size with the decimal comma.

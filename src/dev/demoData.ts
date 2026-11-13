@@ -8,12 +8,14 @@
 // unless `DEMO_DATA` is flipped by hand. It writes into the same encrypted archive the real app
 // uses, so running it on a device that holds real boxes would add fictional mail beside them.
 //
-// To retake the screenshots: set `DEMO_DATA = true`, run the app on a CLEAN emulator (the seed
-// refuses if any box already exists), capture, then set it back to false.
+// To retake the screenshots: set `DEMO_DATA = true`, run the app on a CLEAN emulator, capture, then set
+// it back to false. On an emulator that holds only these demo boxes the seed tops up: it adds the demo
+// messages that are not there yet and leaves everything else (031 I31.1). Any other box and it refuses.
 
 import { SqliteAccountsStore } from '../services/db/sqliteAccountsStore';
 import { SqliteMessagesStore } from '../services/db/messagesStore';
 import { MESSAGE_STATE_READ } from '../services/isds/types';
+import { MESSAGE_STATE } from '../features/messages/state/messageState';
 import { isUnread } from '../features/messages/state/messagesController';
 import { attachmentFileStore } from '../services/files/attachmentFileStore';
 import type {
@@ -25,6 +27,34 @@ import type {
 
 /** Flip by hand to seed. Never true on a branch that gets pushed. */
 export const DEMO_DATA = false;
+
+/** What `DEMO_DETAIL_PROBE` does to every message the detail opens. */
+export type DetailProbe = 'slow' | 'missing';
+
+/**
+ * Flip by hand, with `DEMO_DATA`, to walk the message detail's passing states (031 I31), which no
+ * stored message reaches: `slow` holds the read `DEMO_SLOW_MS` so the skeleton stays up, `missing`
+ * then finds nothing, which is the error screen. Never anything but null on a pushed branch.
+ */
+export const DEMO_DETAIL_PROBE = null as DetailProbe | null;
+
+/** How long the probe holds the detail's read. */
+export const DEMO_SLOW_MS = 4_000;
+
+/**
+ * The probe, as the detail's read meets it: holds `DEMO_SLOW_MS` when one is set, then says whether
+ * the message is to be found missing. Off - no wait, false - in anything but a dev build seeding demo.
+ */
+export async function demoDetailProbe(
+  probe: DetailProbe | null = DEMO_DETAIL_PROBE,
+  on: boolean = __DEV__ && DEMO_DATA,
+): Promise<boolean> {
+  if (!on || probe == null) {
+    return false;
+  }
+  await new Promise(resolve => setTimeout(resolve, DEMO_SLOW_MS));
+  return probe === 'missing';
+}
 
 const DAY = 86_400_000;
 
@@ -126,6 +156,20 @@ const received = (
   };
 };
 
+/**
+ * Where a sent message got to: `accepted` (the default, the recipient signed in two hours later),
+ * `delivered` (in their box, not yet opened), `fiction` (served ten days on, nobody signed in) or
+ * `undeliverable` (ISDS could not deliver it) - the slip draws each differently (031 R7).
+ */
+type SentFate = 'accepted' | 'delivered' | 'fiction' | 'undeliverable';
+
+const SENT_STATE: Readonly<Record<SentFate, number>> = {
+  accepted: MESSAGE_STATE_READ,
+  delivered: MESSAGE_STATE.delivered,
+  fiction: MESSAGE_STATE.servedByFiction,
+  undeliverable: MESSAGE_STATE.undeliverable,
+};
+
 const sent = (
   id: string,
   subject: string,
@@ -133,6 +177,7 @@ const sent = (
   recipientBoxId: string,
   daysAgo: number,
   attachmentKb = 0,
+  fate: SentFate = 'accepted',
 ): MessageEnvelope => ({
   id,
   subject,
@@ -142,8 +187,13 @@ const sent = (
   recipientAddress: null,
   recipientBoxId,
   deliveryTime: NOW - daysAgo * DAY,
-  acceptanceTime: NOW - daysAgo * DAY + 2 * 3_600_000,
-  state: MESSAGE_STATE_READ,
+  acceptanceTime:
+    fate === 'accepted'
+      ? NOW - daysAgo * DAY + 2 * 3_600_000
+      : fate === 'fiction'
+        ? NOW - daysAgo * DAY + 10 * DAY
+        : null,
+  state: SENT_STATE[fate],
   attachmentSize: attachmentKb,
   openedAt: null,
 });
@@ -291,6 +341,10 @@ export const DEMO_SENT: Readonly<Record<string, readonly MessageEnvelope[]>> = {
   p7wq2bs: [
     sent('s1a9b2c3', 'Odpověď na výzvu č. j. 4821/26/2001-52523', 'Finanční úřad pro hlavní město Prahu', 'wx8aq3f', 3, 640),
     sent('s2b0c3d4', 'Doplnění podání ve věci sp. zn. 42 C 118/2026', 'Obvodní soud pro Prahu 2', 'ry2mk7d', 21, 1_280),
+    // The other ends a sent message's slip can draw (031 I31.1).
+    sent('s4d2e5f6', 'Žádost o součinnost při kontrole', 'Městský úřad Říčany', 'mu7rc4k', 1, 210, 'delivered'),
+    sent('s5e3f6a7', 'Výpověď nájmu nebytových prostor', 'Jana Procházková', 'nb6ht2w', 34, 180, 'fiction'),
+    sent('s6f4a7b8', 'Oznámení o změně sídla', 'Stavební družstvo Lípa v likvidaci', 'zq5lw8m', 9, 95, 'undeliverable'),
   ],
   c3zt8vn: [
     sent('s3c1d4e5', 'Žádost o vydání kolaudačního souhlasu', 'Magistrát hlavního města Prahy', 'ab4cd5e', 14, 4_210),
@@ -350,9 +404,46 @@ function demoFileName(subject: string): string {
 }
 
 /**
+ * What the seed may do on a device holding `existing` boxes: write the whole archive on an empty one,
+ * top up one that holds only the demo boxes, and refuse anything else - mixing invented mail into a
+ * real box is the one thing it must never do.
+ */
+export function seedMode(existing: readonly Pick<DataBoxAccount, 'id'>[]): 'fresh' | 'topUp' | 'refuse' {
+  if (existing.length === 0) {
+    return 'fresh';
+  }
+  const demo = new Set(DEMO_ACCOUNTS.map(a => a.id));
+  return existing.every(a => demo.has(a.id)) ? 'topUp' : 'refuse';
+}
+
+/** The demo messages a box does not hold yet, by ID: a top-up adds these and touches nothing else. */
+export function missingDemo(
+  held: ReadonlySet<string>,
+  envelopes: readonly MessageEnvelope[],
+): MessageEnvelope[] {
+  return envelopes.filter(e => !held.has(e.id));
+}
+
+/** Add the demo messages a demo-only archive is missing; what is there (reads, backups) stays. */
+async function topUpDemoArchive(messages: SqliteMessagesStore): Promise<void> {
+  for (const [folder, byBox] of [
+    ['received', DEMO_RECEIVED],
+    ['sent', DEMO_SENT],
+  ] as const) {
+    for (const [boxId, envelopes] of Object.entries(byBox)) {
+      const held = new Set((await messages.getList(boxId, folder)).envelopes.map(e => e.id));
+      const add = missingDemo(held, envelopes);
+      if (add.length > 0) {
+        await messages.cacheList(boxId, folder, add, NOW - 4 * 60_000);
+      }
+    }
+  }
+}
+
+/**
  * Write the fictional archive.
  *
- * Refuses on a device that already has a box, because the alternative is quietly mixing invented
+ * Refuses on a device that holds any box but these, because the alternative is quietly mixing invented
  * mail into somebody's real one. Returns false when it declined, so a caller can say so.
  */
 export async function seedDemoArchive(): Promise<boolean> {
@@ -362,9 +453,13 @@ export async function seedDemoArchive(): Promise<boolean> {
   const accounts = new SqliteAccountsStore();
   const messages = new SqliteMessagesStore();
 
-  const existing = await accounts.list();
-  if (existing.length > 0) {
+  const mode = seedMode(await accounts.list());
+  if (mode === 'refuse') {
     return false;
+  }
+  if (mode === 'topUp') {
+    await topUpDemoArchive(messages);
+    return true;
   }
 
   for (const acc of DEMO_ACCOUNTS) {

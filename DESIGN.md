@@ -167,10 +167,10 @@ components:
     rounded: "{rounded.card}"
     height: "48px"
   button-neutral:
-    backgroundColor: "{colors.surface}"
+    backgroundColor: "{colors.surface-sunken}"
     textColor: "{colors.ink}"
     rounded: "{rounded.card}"
-    height: "48px"
+    height: "52px"
   fab:
     backgroundColor: "{colors.flap}"
     textColor: "{colors.on-gold}"
@@ -569,7 +569,10 @@ moves without being asked.
   form footer. Blue fills only in-content actions: downloading attachments, accepting a scan
   suggestion.
 - **Danger:** `danger` fill, `on-blue` ink. Used only where something is destroyed.
-- **Neutral:** `surface` fill with a `hairline-strong` border and `ink` text.
+- **Neutral** (`NeutralButton`, R6/R14/R4): `surface-sunken` fill, no border - tone, not an outline -
+  and an `ink` label in `bodyStrong`. 52 alone across its column; 48 for two side by side
+  (`compact`); under a failed state's words it is as wide as its label with 24 at each side
+  (`inline`), as the failed list and a message the archive does not hold both draw it.
 - **Press:** scale to 0.97 over 90ms, timing curve, native driver. A dip, not a bop.
 - **Busy vs blocked:** a *busy* button (action already running) swallows the press - the spinner is
   the answer. A *blocked* button (a requirement unmet) still receives the press and answers with a

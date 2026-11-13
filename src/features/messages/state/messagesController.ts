@@ -52,7 +52,7 @@ import {
   type SignedOriginal,
   type SyncFailure,
 } from '../../../services/isds/types';
-import { DEMO_DATA } from '../../../dev/demoData';
+import { DEMO_DATA, demoDetailProbe } from '../../../dev/demoData';
 import { mustChangePassword } from '../../accounts/state/passwordExpiry';
 import { signedOriginalAvailability } from './signedOriginal';
 import { BoxGoneError, type BoxWork } from './boxWork';
@@ -508,11 +508,9 @@ export class MessagesController {
   }
 
   /** A single cached envelope - the detail screen renders from this without downloading attachments. */
-  getCachedEnvelope(
-    boxId: string,
-    messageId: string,
-  ): Promise<MessageEnvelope | null> {
-    return this.deps.messagesStore.getEnvelope(boxId, messageId);
+  async getCachedEnvelope(boxId: string, messageId: string): Promise<MessageEnvelope | null> {
+    // The detail's passing states, on the demo archive only (031 I31.1): a dev build, flipped by hand.
+    return (await demoDetailProbe()) ? null : this.deps.messagesStore.getEnvelope(boxId, messageId);
   }
 
   /**
