@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **When ISDS refuses the sign-in, one card with a lock says so.** Edit the name or password returns
+  to the filled-in fields, not to the choice of method, and a link leads to the ISDS portal. Other
+  errors show the sealed envelope, the reason and Try again.
 - **The sign-in methods are one sheet with the choice on the right, as in Settings.** When adding a
   box and when signing in again. The environment's help stays open under the switch.
 - **The SMS code goes into eight boxes, one for each digit.** The field takes digits only, eight at

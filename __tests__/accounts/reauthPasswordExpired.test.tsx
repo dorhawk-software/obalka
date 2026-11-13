@@ -147,7 +147,7 @@ describe('signing in again to a box whose password expired', () => {
     const view = await reauthScreen(Date.now() - DAY);
     await signInWith(view, 'old');
 
-    await waitFor(() => expect(view.getByTestId('error')).toBeTruthy());
+    await waitFor(() => expect(view.getByTestId('signInRefused')).toBeTruthy());
     expect(view.getByText(t('login.error.passwordChangeRequired'))).toBeTruthy();
     await act(async () => {
       fireEvent.press(view.getByTestId('openPortal'));
@@ -164,7 +164,7 @@ describe('signing in again to a box whose password expired', () => {
     expect(view.queryByTestId('reauthPortal')).toBeNull();
     await signInWith(view, 'wrong');
 
-    await waitFor(() => expect(view.getByTestId('error')).toBeTruthy());
+    await waitFor(() => expect(view.getByTestId('signInRefused')).toBeTruthy());
     expect(view.getByText(t('login.error.invalidCredentials'))).toBeTruthy();
     expect(view.queryByTestId('openPortal')).toBeNull();
   });

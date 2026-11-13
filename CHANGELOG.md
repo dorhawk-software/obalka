@@ -20,6 +20,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Když ISDS přihlášení odmítne, řekne to jedna karta se zámkem.** Upravit jméno nebo heslo vrátí
+  vyplněná pole, ne volbu způsobu přihlášení, a odkaz vede do portálu ISDS. Jiné chyby ukazují
+  zalepenou obálku, důvod a Zkusit znovu.
 - **Způsoby přihlášení jsou jeden list s výběrem vpravo, jako v Nastavení.** Při přidání schránky
   i při novém přihlášení. Nápověda k prostředí zůstává pod přepínačem otevřená.
 - **Kód z SMS se píše do osmi políček, jedno na každou číslici.** Pole přijme jen číslice, nejvýš

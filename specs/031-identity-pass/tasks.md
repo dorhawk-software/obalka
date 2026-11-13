@@ -72,7 +72,8 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     Roundings: the rows' 56 and 11 to the group's 52 and 10; the step's 20 top to 18. Walked light,
     dark and in English, closed and open, a method picked.
   - [ ] I08.2 Credentials step: method chip, login name, password or code with the eye, Mobile Key
-    help, the OTP suggestion, alias, submit, busy, blocked (login name, password).
+    help, the OTP suggestion (and re-auth's `OtpSuggestion`, from I11), alias, submit, busy, blocked
+    (login name, password).
 - [x] I09 `OtpForm` (code field, sending/sent notice, resend, blocked) - **N**. Fixed 2026-11-13
   to R8: the Display title at the left, the notice on a blue tone strip with its bell, the field's
   label, eight digit boxes over one hidden field (digits only, eight at most, a paste trimmed), Confirm
@@ -90,7 +91,15 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   the window's 9 and its gap 1 to 10 and 2. Walked light, dark and in English (forced on, reverted).
   The walk found the envelope's folds stopping the padding short of the corners, on every envelope:
   fixed in e519006.
-- [ ] I11 Sign-in `ErrorView` and `OtpSuggestion` (retry with `depth.sm`) - **D** (cards); R8.
+- [x] I11 Sign-in `ErrorView` and `OtpSuggestion` (retry with `depth.sm`) - **D** (cards); R8.
+  Fixed 2026-11-13, `ErrorView` split in two. A refusal (wrong name or password, expired password) is
+  R8's card on the flow's own header: the lock in its well, the `heading` title, the `small` body,
+  the 48 "Upravit jméno nebo heslo" and "Změnit v portálu" with the external-link arrow. Any other
+  failure is R11's sealed envelope, the danger `body` 600 reason and the compact neutral Zkusit znovu.
+  Both ways back now land on the fields as they were sent, not on the method choice. Roundings: the
+  envelope's 120 from the top to 60 and its 32 at the sides to 36; R11's 46 / 13 / 14 button to the
+  neutral 48 / 14 / 15. Walked both, light, dark and in English (forced on, reverted).
+  `OtpSuggestion` (re-auth only) is R11's "After a refusal" sheet: it moves to I08.2.
 - [ ] I12 `ReauthForm` (avatar, method cards, field) - **D** (avatar, icons: Zámek). The method cards
   are the add-box step's one sheet since 2026-11-13 (walked light); the box's envelope tile, the lock
   glyph and the sheet's 12/14 padding are still to do.
@@ -729,6 +738,8 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
 ## Phase 6: Build round 1 and round 2; Phase 7: close
 
 - [ ] T050 impeccable critique of the built app (two isolated reviewers), fixes, re-audit with the owner.
+  Raised in I11: R8's refusal card repeats its title as the first words of its body ("ISDS
+  přihlášení odmítlo: …"), built as drawn; the error string could lose them.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction reads as a pile - more messages than one - though the owner likes it; keep it, or mark
   fiction another way.

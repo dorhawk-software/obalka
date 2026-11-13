@@ -4,16 +4,19 @@ import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { useEffect, useRef } from 'react';
 import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button, Paragraph, XStack, YStack } from '../../../theme/ui';
-import { Body, BodyStrong, Label, Small, Title } from '../../../theme/Typography';
+import { Button, XStack, YStack } from '../../../theme/ui';
+import { Body, BodyStrong, Heading, Label, Small, SmallStrong, Title } from '../../../theme/Typography';
 import { WaitingBar } from '../../../theme/ProgressBar';
 import { WaitingEnvelope } from '../../../theme/objects/WaitingEnvelope';
 import { PressScale } from '../../../theme/PressScale';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { chipTone } from '../../../theme/chipTone';
-import { depth } from '../../../theme/depth';
 import { t } from '../../../i18n/strings';
-import { InfoIcon } from '../../../theme/icons';
+import { ExternalLinkIcon, InfoIcon } from '../../../theme/icons';
+import { Card } from '../../../theme/Card';
+import { Well } from '../../../theme/Well';
+import { NeutralButton } from '../../../theme/NeutralButton';
+import { EnvelopePose } from '../../../theme/objects/Envelope';
 import { UseLoginControllerDeps, useLoginController } from '../state/useLoginController';
 import { AddBoxForm } from './AddBoxForm';
 import { OtpForm } from './OtpForm';
@@ -127,8 +130,11 @@ function LoginFlowSteps({
   const lastHost = useRef<Host | null>(reauth?.host ?? null);
   /** The login name the request went out for: the waiting envelope's window shows it (R8). */
   const lastLogin = useRef<string>(reauth?.loginName ?? '');
+  /** What the last attempt sent: coming back to the form after it lands on the filled fields. */
+  const lastInput = useRef<Credentials | null>(null);
   const startLogin = (input: Credentials): Promise<void> => {
     beginOtp(input.method);
+    lastInput.current = input;
     lastHost.current = input.host;
     lastLogin.current = input.loginName;
     return start(input);
@@ -161,8 +167,12 @@ function LoginFlowSteps({
   const busy = state.status === 'authenticating' || state.status === 'signedIn';
   // 001 FR-009: the fix for an expired password is on the portal, so the screen that says so offers
   // the way there - for the environment the refused sign-in went to.
+  // A wrong name or password may be an expired one too, as the refusal itself says; a re-auth knows the
+  // box's date, and a refusal while it is still ahead is not that (ReauthForm).
+  const refused =
+    state.status === 'error' && (state.code === 'passwordChangeRequired' || state.code === 'invalidCredentials');
   const portalHost =
-    state.status === 'error' && state.code === 'passwordChangeRequired'
+    state.status === 'error' && (state.code === 'passwordChangeRequired' || (refused && !reauth))
       ? lastHost.current
       : null;
 
@@ -209,6 +219,7 @@ function LoginFlowSteps({
         <AddBoxForm
           onSubmit={startLogin}
           onBack={onBack}
+          initial={lastInput.current}
           loading={busy}
           onOpenFaq={onOpenFaq}
         />
@@ -242,6 +253,7 @@ function LoginFlowSteps({
           <AddBoxForm
             onSubmit={startLogin}
             onBack={onBack}
+            initial={lastInput.current}
             loading={busy}
             suggestOtp
             onUseSms={() => retryWithOtpMethod('otp_totp')}
@@ -250,15 +262,18 @@ function LoginFlowSteps({
           />
         );
       }
-      return (
-        <ErrorView
+      return refused ? (
+        <SignInRefused
+          title={reauth ? t('reauth.title') : t('login.title')}
           messageKey={state.messageKey}
-          onRetry={retry}
+          onEdit={retry}
           onOpenPortal={portalHost ? () => openPortal(portalHost) : undefined}
         />
+      ) : (
+        <SignInError messageKey={state.messageKey} onRetry={retry} />
       );
     case 'reauthRequired':
-      return <ErrorView messageKey="login.error.serverFault" onRetry={retry} />;
+      return <SignInError messageKey="login.error.serverFault" onRetry={retry} />;
     default:
       return null;
   }
@@ -355,52 +370,110 @@ function MobileKeyWaiting({
     </YStack>
   );
 }
-function ErrorView({
+/**
+ * ISDS refused the sign-in: the name, the password, or its expiry (031 board R8, agreed 2026-11-12).
+ * One card on the flow's own page: the lock in its well, what ISDS said, the way back to the fields
+ * and - where the fix may be there - the portal. Before: red centred words over a shadowed button.
+ */
+function SignInRefused({
+  title,
   messageKey,
-  onRetry,
+  onEdit,
   onOpenPortal,
 }: {
+  /** The flow's own name, so the header says where the person still is. */
+  readonly title: string;
   readonly messageKey: string;
-  readonly onRetry: () => void;
-  /** Offered when the fix is on the ISDS portal - an expired password (001 FR-009). */
+  readonly onEdit: () => void;
+  /** Offered when the fix may be on the ISDS portal - an expired password (001 FR-009). */
   readonly onOpenPortal?: () => void;
 }) {
   const theme = useTheme();
-  const info = chipTone('info', theme);
   return (
-    <Centered testID="error">
-      <Paragraph color={theme.danger} textAlign="center">
+    <YStack flex={1} backgroundColor={theme.bg}>
+      <ScreenHeader title={title} onBack={onEdit} />
+      <YStack paddingTop={16} paddingHorizontal={16}>
+        <Card padding={16} gap={10} testID="signInRefused">
+          <XStack gap={12} alignItems="flex-start">
+            <Well name="lock" />
+            <YStack flex={1} gap={4}>
+              <Heading accessibilityRole="header">{t('login.refused.title')}</Heading>
+              <Small color={theme.bodyText}>{t(messageKey)}</Small>
+            </YStack>
+          </XStack>
+          <PressScale fullWidth onPress={onEdit} accessibilityLabel={t('login.refused.edit')} testID="retry">
+            <XStack
+              width="100%"
+              minHeight={48}
+              borderRadius={14}
+              paddingHorizontal={12}
+              backgroundColor={theme.text}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <BodyStrong color={theme.surfaceAlt} textAlign="center">
+                {t('login.refused.edit')}
+              </BodyStrong>
+            </XStack>
+          </PressScale>
+          {onOpenPortal ? (
+            // A hand-off to the browser, not the card's main action: the password is changed there,
+            // then the fields are tried again.
+            <XStack
+              alignSelf="flex-start"
+              minHeight={44}
+              paddingHorizontal={4}
+              gap={6}
+              alignItems="center"
+              pressStyle={{ opacity: 0.6 }}
+              onPress={onOpenPortal}
+              accessibilityRole="link"
+              accessibilityLabel={t('pwd.action')}
+              testID="openPortal"
+            >
+              <SmallStrong color={theme.blue}>{t('pwd.action')}</SmallStrong>
+              <ExternalLinkIcon size={16} color={theme.blue} />
+            </XStack>
+          ) : null}
+        </Card>
+      </YStack>
+    </YStack>
+  );
+}
+
+/**
+ * Where the flow cannot go on for any other reason - the network, a timeout, ISDS itself (031 board
+ * R11, agreed 2026-11-12): the sealed envelope of the list's agreed "could not load", the reason, and
+ * Zkusit znovu. The board's 120 above the envelope rounds to 60, the top of the scale, and its 32 at the sides to 36; its 46 / 13 / 14
+ * button is the neutral button's compact 48 / 14 / 15.
+ */
+function SignInError({ messageKey, onRetry }: { readonly messageKey: string; readonly onRetry: () => void }) {
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  return (
+    <YStack
+      flex={1}
+      backgroundColor={theme.bg}
+      alignItems="center"
+      paddingTop={insets.top + 60}
+      paddingHorizontal={36}
+      testID="signInError"
+    >
+      <EnvelopePose pose="sealed" />
+      <Body
+        alignSelf="stretch"
+        fontWeight="600"
+        color={theme.danger}
+        textAlign="center"
+        marginTop={36}
+        textBreakStrategy="balanced"
+      >
         {t(messageKey)}
-      </Paragraph>
-      {onOpenPortal ? (
-        // The same blue text link as the SMS suggestion's: a hand-off to the browser rather than the
-        // screen's main button, which stays "try again" for when the password has been changed.
-        <XStack
-          hitSlop={textSlop('bodyStrong')}
-          pressStyle={{ opacity: 0.6 }}
-          onPress={onOpenPortal}
-          accessibilityRole="link"
-          accessibilityLabel={t('pwd.action')}
-          testID="openPortal">
-          <BodyStrong color={info.accent}>{t('pwd.action')} →</BodyStrong>
-        </XStack>
-      ) : null}
-      <PressScale
-        onPress={onRetry}
-        accessibilityLabel={t('login.retry')}
-        testID="retry">
-        <XStack
-          minHeight={48}
-          borderRadius={14}
-          paddingHorizontal={28}
-          backgroundColor={theme.text}
-          alignItems="center"
-          justifyContent="center"
-          style={{ boxShadow: depth.sm }}>
-          <BodyStrong color={theme.surfaceAlt}>{t('login.retry')}</BodyStrong>
-        </XStack>
-      </PressScale>
-    </Centered>
+      </Body>
+      <YStack marginTop={24}>
+        <NeutralButton compact inline label={t('login.retry')} onPress={onRetry} testID="retry" />
+      </YStack>
+    </YStack>
   );
 }
 

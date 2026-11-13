@@ -53,6 +53,7 @@ export function AddBoxForm({
   onUseSms,
   onOpenFaq,
   onOpenPortal,
+  initial = null,
 }: {
   readonly onSubmit: (creds: Credentials) => void;
   readonly onBack?: () => void;
@@ -70,17 +71,23 @@ export function AddBoxForm({
   readonly onUseSms?: () => void;
   /** The ISDS portal of an environment - where an expired password is changed (030 US1). */
   readonly onOpenPortal?: (host: Host) => void;
+  /**
+   * What the last attempt sent, when the flow comes back here after it: the refusal's "Upravit jméno
+   * nebo heslo", Zkusit znovu, a cancelled wait. The form opens on the fields, filled, instead of the
+   * method choice the person already made.
+   */
+  readonly initial?: Credentials | null;
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const [step, setStep] = useState<'method' | 'credentials'>('method');
-  const [loginName, setLoginName] = useState('');
-  const [password, setPassword] = useState('');
-  const [method, setMethod] = useState<AuthMethod>('password');
-  const [host, setHost] = useState<Host>('production');
+  const [step, setStep] = useState<'method' | 'credentials'>(initial ? 'credentials' : 'method');
+  const [loginName, setLoginName] = useState(initial?.loginName ?? '');
+  const [password, setPassword] = useState(initial?.password ?? '');
+  const [method, setMethod] = useState<AuthMethod>(initial?.method ?? 'password');
+  const [host, setHost] = useState<Host>(initial?.host ?? 'production');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [alias, setAlias] = useState('');
+  const [alias, setAlias] = useState(initial?.alias ?? '');
   const isMobileKey = method === 'mobile_key';
   const canSubmit = loginName.trim().length > 0 && password.length > 0;
   // 019: focus whichever field is actually missing - the login name if it is empty, otherwise the
