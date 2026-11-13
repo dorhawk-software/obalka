@@ -85,6 +85,7 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Přehyby obálky vedou až do rohů.** Na obálce zprávy končily čáry kus před okrajem.
 - **Nedoručitelná odeslaná zpráva to v Odeslaných říká čitelně.** Slovo „Nedoručitelné“ bylo světlým
   písmem na světlém papíře, skoro neviditelné; teď je tmavé jako ostatní text.
 - **Zpráva, kterou aplikace v telefonu nenajde, ukáže zalepenou obálku a cestu zpět.** Dřív byla na

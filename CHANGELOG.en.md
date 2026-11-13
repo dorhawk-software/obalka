@@ -97,6 +97,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **The envelope's folds run all the way to its corners.** On a message's envelope the lines stopped
+  short of the edge.
 - **An undeliverable sent message says so legibly in Sent.** "Undeliverable" was light type on light
   paper, almost invisible; it is now dark like the rest of the text.
 - **A message the app can't find on the phone shows a sealed envelope and the way back.** Before, an

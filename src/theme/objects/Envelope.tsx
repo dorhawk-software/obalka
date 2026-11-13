@@ -37,24 +37,32 @@ export function Envelope({
         style,
       ]}
     >
-      <Svg
-        width="100%"
-        height="100%"
-        viewBox={`0 0 ${c.width} ${c.height}`}
-        preserveAspectRatio="none"
+      {/* The folds' own layer, filling the whole envelope. A percentage size straight on the drawing
+          resolved against the padded content box, and the folds stopped the padding short of the
+          corners (the owner, R8 walk, 2026-11-13). */}
+      <View
         style={StyleSheet.absoluteFill}
         pointerEvents="none"
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       >
-        <Path
-          d={c.d}
-          stroke={theme.envelopeCrease}
-          strokeWidth={c.stroke}
-          fill="none"
-          vectorEffect="non-scaling-stroke"
-        />
-      </Svg>
+        <Svg
+          width="100%"
+          height="100%"
+          viewBox={`0 0 ${c.width} ${c.height}`}
+          preserveAspectRatio="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
+          <Path
+            d={c.d}
+            stroke={theme.envelopeCrease}
+            strokeWidth={c.stroke}
+            fill="none"
+            vectorEffect="non-scaling-stroke"
+          />
+        </Svg>
+      </View>
       {children}
     </View>
   );
