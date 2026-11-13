@@ -293,7 +293,7 @@ edge) follows the appearance. `contrast.test.ts` holds both halves of that sente
 mark; `gold-ink` draws the attention numeral. The compose button is a stamp in the flap's gold, an
 object rather than a mark (docs/printed-objects.md). The gold chip tones
 (`statusFiction`, `fikceAmber`, `costPaid`) mean delivery by fiction or a paid send, which is why a
-decorative glyph is never gold (016). Soft gold carries the test banner and pill, the paid-cost card
+decorative glyph is never gold (016). Soft gold carries the test pill, the paid-cost card
 and the paid-send confirmation, the missing-attachments notice, and the pressed add-box row in the
 box switcher. Beyond that, gold appears only in fixed artwork (the logo's flap, the lock's keyhole),
 as the envelope's own `flap` (the printed objects, 031) and as `gold-bright` on the snackbar's
@@ -630,19 +630,24 @@ moves without being asked.
 
 ### Status strips
 - **One component:** `StatusStrip` (`src/theme/StatusStrip.tsx`) - the full-width strip above a
-  screen's header that states a condition the whole screen is under. Two use it: the *Testovací
-  prostředí* banner on the message detail, and Debug mode's *Režim ladění zaznamenává* on every screen
-  but the Debug screen. A third strip belongs in this component, not in a copy of it: the recording
-  strip began as a copy of the banner and kept its off-scale numbers with it (5 padding, a 7 gap, a
-  12/15 label), until both moved here on 2026-09-15.
+  screen's header that states a condition the whole screen is under: Debug mode's *Režim ladění
+  zaznamenává* on every screen but the Debug screen. Another chrome strip belongs in this component,
+  not in a copy of it: the recording strip began as a copy of the test banner and kept its off-scale
+  numbers with it (5 padding, a 7 gap, a 12/15 label), until both moved here on 2026-09-15.
+- **The test banner is printed matter** (031 R7, agreed 2026-11-12): *Testovací prostředí* on the
+  message detail of a czebox box is the airmail strip (`objects/AirmailStrip`) - stripes of the
+  envelope's blue, paper, the flap's gold and paper at 135 degrees (9/5/9/5), 6dp of them above and
+  below a `surface` band at least 28dp tall with 16dp sides and the Badge label in `ink`, no glyph and
+  no hairline; the status bar above it is `surface-alt`. It clears the status bar and hands the header
+  a spent inset, as a strip does. Until 031 it was the soft-gold strip with a flask.
 - **Metrics:** 6dp vertical and 14dp horizontal padding, an 8dp gap, 14dp glyphs, the Badge label
   (13/16) and a 1px hairline below. Every strip reserves the same 28dp row at the default text size -
   a `minHeight`, so a larger text size still grows it. A strip that is a button is also at least 48dp
   tall counting the status-bar inset it clears; on a phone with a status bar the inset already pays
   for that, so its row is the same as every other strip's.
-- **Tones:** `test` - `testBg` fill, `testFg` ink, `testBd` hairline; `chrome` - `surface-alt` fill,
-  `ink`, `hairline`, and a `muted-ink` chevron when the strip opens something. Both label pairs are
-  measured in `contrast.test.ts`, read from the component's own tone table.
+- **Tone:** `chrome` - `surface-alt` fill, `ink`, `hairline`, and a `muted-ink` chevron when the strip
+  opens something; its label pair is measured in `contrast.test.ts`, read from the component's own
+  tone table. (The `test` tone went with the soft-gold banner in 031.)
 - **Placement:** normal flow, never an overlay. The strip clears the status bar itself and the
   screen under it is handed a spent top inset. It never appears or disappears on the screen in front
   of the person: the banner is fixed by the box, and the recording strip changes only while the Debug

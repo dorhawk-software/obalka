@@ -1,6 +1,6 @@
-// The strip across the top of a screen that states a condition the whole screen is under: the message
-// lives on the czebox TEST system (`TestEnvBanner`), or Debug mode is recording (`DebugRecordingStrip`,
-// 023 FR-007).
+// The strip across the top of a screen that states a condition the whole screen is under: Debug mode is
+// recording (`DebugRecordingStrip`, 023 FR-007). The test banner drew from it until 031 R7 made it the
+// airmail strip (`TestEnvBanner`, `objects/AirmailStrip`), a printed object with its own metrics.
 //
 // ONE COMPONENT, BECAUSE THERE WERE TWO COPIES. The recording strip was written as a copy of the test
 // banner so that two strips in the same place would share their numbers - and the numbers it copied
@@ -46,11 +46,10 @@ export const STATUS_STRIP_GLYPH = 14;
 export const STATUS_STRIP_ROW = 2 * STATUS_STRIP_PADDING_VERTICAL + typeScale.badge.lineHeight;
 
 /**
- * `test` - the czebox environment, in its dedicated soft-gold tokens (009 §6).
  * `chrome` - part of the app's own furniture: the header's `surfaceAlt` with a hairline under it, so
  * it reads as chrome rather than as an alert.
  */
-export type StatusStripTone = 'test' | 'chrome';
+export type StatusStripTone = 'chrome';
 
 export interface StatusStripColors {
   readonly background: string;
@@ -64,15 +63,7 @@ export interface StatusStripColors {
  * The colours a tone paints. Exported so `__tests__/theme/contrast.test.ts` measures the pairs a strip
  * actually draws rather than a transcription of them.
  */
-export function statusStripColors(tone: StatusStripTone, theme: Theme): StatusStripColors {
-  if (tone === 'test') {
-    return {
-      background: theme.testBg,
-      ink: theme.testFg,
-      edge: theme.testBd,
-      chevron: theme.testFg,
-    };
-  }
+export function statusStripColors(_tone: StatusStripTone, theme: Theme): StatusStripColors {
   return {
     background: theme.surfaceAlt,
     ink: theme.text,

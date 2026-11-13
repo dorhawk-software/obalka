@@ -1,23 +1,17 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { touchSlop } from '../../../theme/touchTarget';
 import { Animated } from 'react-native';
-import { Button, Paragraph, XStack, YStack } from '../../../theme/ui';
+import { Paragraph, XStack, YStack } from '../../../theme/ui';
 import { PressScale } from '../../../theme/PressScale';
 import { Skeleton } from '../../../theme/Skeleton';
-import { Avatar } from '../../../theme/Avatar';
-import { chipTone } from '../../../theme/chipTone';
 import { attachmentFileStore } from '../../../services/files/attachmentFileStore';
-import { Body, BodyStrong, Caption, Display, Heading, Label, Meta, Overline, Small, SmallStrong, Tag, Value } from '../../../theme/Typography';
+import { Body, BodyStrong, Caption, Heading, Label, Meta, Small, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   AlertIcon,
   ChevronLeftIcon,
-  ContentErasedIcon,
   DownloadIcon,
   FileXIcon,
-  MailIcon,
-  VaultIcon,
-  TimerIcon,
   ChevronRightIcon,
 } from '../../../theme/icons';
 import { useHeaderTop } from '../../../theme/useHeaderTop';
@@ -50,18 +44,14 @@ import {
   MESSAGE_STATE_SERVED,
   messageStatus,
   stopReasonKey,
-  type MessageStateKind,
 } from '../state/messageState';
 import { TermPicker, formatTermDate } from './TermPicker';
 import { DeadlineSuggestionCard } from './DeadlineSuggestion';
 import { AlertsOffLine, useReminderAlerts } from './ReminderAlerts';
-import { DottedRail } from '../../../theme/DottedRail';
 import type { ScanSuggestion } from '../../../services/scan/attachmentScan';
 import type { Reminder } from '../state/reminders';
-import { DeliveryStateIcon } from './DeliveryStateIcon';
 import { AttachmentRow } from './AttachmentRow';
-import { AddressLines } from './AddressLines';
-import { DeliveryRecordSlip } from './DeliveryRecord';
+import { DeliveryRecordSlip, SentRecordSlip, type SentStep } from './DeliveryRecord';
 import { DetailBand, useTuck } from './DetailBand';
 import { DetailEnvelope } from './DetailEnvelope';
 import { TileAtRest, type TileRect } from './EnvelopeFlight';
@@ -72,6 +62,9 @@ import {
   mergeSameTimeHead,
 } from '../state/deliveryRecord';
 import { Card } from '../../../theme/Card';
+import { Well } from '../../../theme/Well';
+import { NeutralButton } from '../../../theme/NeutralButton';
+import { OffsetIcon } from '../../../theme/offsetIcons';
 
 type State =
   | { status: 'loading' }
@@ -451,12 +444,13 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
     </>
   );
 
-  const boxName = account.alias ?? account.label;
+  // The bar names what this is from the first frame, loading or not (031 R7).
+  const title = t(folder === 'sent' ? 'detail.header.sent' : 'detail.header.received');
 
   if (state.status === 'loading') {
     return (
       <YStack flex={1} backgroundColor={theme.bg}>
-        {renderHeader(boxName)}
+        {renderHeader(title)}
         {openedFrom ? <TileAtRest from={openedFrom} /> : <DetailSkeleton />}
       </YStack>
     );
@@ -465,7 +459,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
   if (state.status === 'error') {
     return (
       <YStack flex={1} backgroundColor={theme.bg}>
-        {renderHeader(boxName)}
+        {renderHeader(title)}
         <YStack
           flex={1}
           alignItems="center"
@@ -476,20 +470,10 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
           <Paragraph color={theme.danger} textAlign="center">
             {t(state.messageKey)}
           </Paragraph>
-          <Button
-            minHeight={48}
-            borderRadius={14}
-            paddingHorizontal={28}
-            backgroundColor={theme.surface}
-            borderWidth={1}
-            borderColor={theme.borderStrong}
-            color={theme.text}
-            fontWeight="700"
-            onPress={onBack}
-            testID="retry"
-          >
-            {t('common.back')}
-          </Button>
+          {/* The neutral button (R14): sunken tone, not an outline. */}
+          <YStack width="100%" maxWidth={280}>
+            <NeutralButton label={t('common.back')} onPress={onBack} testID="retry" />
+          </YStack>
         </YStack>
       </YStack>
     );
@@ -497,8 +481,6 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
 
   const { envelope, attachments, unavailable, incomplete, original } = state;
   const isSent = folder === 'sent';
-  // The counterparty the message is "with" - recipient for sent, sender for received.
-  const party = isSent ? envelope.recipient ?? '—' : envelope.sender;
   // Offer re-download when any attachment is unusable: a deleted file (missingAtt) OR one with no
   // local file at all (couldn't be decoded/saved) - a fresh download may recover it.
   const anyBlocked =
@@ -526,7 +508,6 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
 
   // The message's state, shared with the list so the two screens can never disagree.
   const status = messageStatus(envelope.state);
-  const statusTone = chipTone(status.tone, theme);
 
   // Received: a message ALREADY served by fiction → an attention banner. Not a countdown; see
   // `fikce.ts` for why the received side can never have one.
@@ -542,16 +523,11 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
   //     greyed out, because a greyed-out step reads as "still coming" when nothing is coming, and a
   //     `stopWhy` paragraph below explains what to do instead.
   // ISDS gives no timestamp for the stop itself: that step shows an em-dash, not another step's time.
-  const steps: {
-    kind: MessageStateKind;
-    labelKey: string;
-    time: number | null | undefined;
-    done: boolean;
-    noteKey?: string;
-  }[] = [
+  const steps: (SentStep & { noteKey?: string })[] = [
     {
       kind: 'sent',
-      labelKey: 'messages.status.sent',
+      labelKey: 'send.sent.step.sent',
+      noteKey: 'send.sent.step.sent.note',
       time: envelope.deliveryTime,
       done: true,
     },
@@ -567,7 +543,8 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
   } else {
     steps.push({
       kind: 'delivered',
-      labelKey: 'detail.delivered',
+      labelKey: 'send.sent.step.delivered',
+      noteKey: 'send.sent.step.delivered.note',
       time: envelope.deliveryTime,
       done: envelope.state >= MESSAGE_STATE_DELIVERED,
     });
@@ -580,12 +557,17 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
       });
     } else {
       const byFiction = status.kind === 'fiction';
+      const served = envelope.state >= MESSAGE_STATE_SERVED;
       steps.push({
         kind: byFiction ? 'fiction' : 'accepted',
-        labelKey: byFiction ? 'status.byFiction' : 'detail.accepted',
+        labelKey: byFiction ? 'send.sent.step.fiction' : 'send.sent.step.accepted',
         time: envelope.acceptanceTime,
-        done: envelope.state >= MESSAGE_STATE_SERVED,
-        noteKey: byFiction ? 'status.byFiction.note' : undefined,
+        done: served,
+        noteKey: byFiction
+          ? 'send.sent.step.fiction.note'
+          : served
+            ? 'send.sent.step.accepted.done'
+            : 'send.sent.step.accepted.note',
       });
     }
   }
@@ -722,75 +704,36 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
   return (
     <YStack flex={1} backgroundColor={theme.bg}>
       {/* Received (031): the header names what this is, and the envelope says who it is from. */}
-      {renderHeader(isSent ? party : t('detail.header.received'), isSent ? null : (
+      {renderHeader(title, (
         <DetailBand top={headerTop} envelope={envelope} account={account} tuck={tuck} onBack={onBack} />
       ))}
       <Animated.ScrollView onScroll={tuck.onScroll} scrollEventThrottle={16} testID="detailScroll"
         contentContainerStyle={{ paddingBottom: contentBottom }}>
         {banner}
-        {!isSent ? (
-          <DetailEnvelope
-            envelope={envelope}
-            account={account}
-            attachmentCount={attachments ? attachments.length : null}
-            openedFrom={openedFrom}
-            onBottom={tuck.onEnvelopeBottom}
-          />
-        ) : null}
-        <YStack paddingHorizontal={isSent ? 24 : 16} paddingTop={isSent ? 24 : 0}>
-          {/* Bricolage subject - the loud line (design detail subject ≈ 25). Received messages carry
-              theirs on the sheet sliding out of the envelope above. */}
-          {isSent ? (
-            <Display fontWeight="700">{envelope.subject || t('detail.noSubject')}</Display>
-          ) : null}
-
-          {/* Identity card: a "postmark" for received (sender + delivered/accepted), a "Komu" card for
-              sent (recipient + box ID). */}
-          {isSent ? (
-            <YStack
-              marginTop={24}
-              backgroundColor={theme.surface}
-              borderWidth={1}
-              borderColor={theme.border}
-              borderRadius={16}
-              padding={16}
-            >
-              <XStack gap={14} alignItems="flex-start">
-                <Avatar name={party} size={52} />
-                <YStack flex={1} minWidth={0}>
-                  <Tag
-                    textTransform="uppercase"
-                    color={theme.textFaint}
-                  >
-                    {t('detail.to')}
-                  </Tag>
-                  <BodyStrong color={theme.text} marginTop={2}>
-                    {envelope.recipient ?? '—'}
-                  </BodyStrong>
-                  {/* Who this actually went to (015 US3). Already in the archive - no ISDS call. */}
-                  <AddressLines address={envelope.recipientAddress} marginTop={4} />
-                  {envelope.recipientBoxId ? (
-                    <Caption
-                      color={theme.textFaint}
-                      numberOfLines={1}
-                      marginTop={8}
-                    >
-                      {'ID ' + envelope.recipientBoxId}
-                    </Caption>
-                  ) : null}
-                </YStack>
-              </XStack>
-            </YStack>
-          ) : null}
-
+        <DetailEnvelope
+          envelope={envelope}
+          account={account}
+          sent={isSent}
+          attachmentCount={attachments ? attachments.length : null}
+          openedFrom={openedFrom}
+          onBottom={tuck.onEnvelopeBottom}
+        />
+        <YStack paddingHorizontal={16}>
           {/* Received: the delivery record, the slip under the envelope - the message's own legal
               receipt, never a sub-detail of the sender. */}
-          {!isSent ? <DeliveryRecordSlip record={deliveryRecord(envelope, formatDateTime)} /> : null}
+          {/* Sent (R7): the Sent board's slip, filled in as ISDS reports the steps. */}
+          {isSent ? (
+            <SentRecordSlip
+              messageId={messageId}
+              steps={sentSteps}
+              stateAsOf={stateAsOf != null ? formatDateTime(stateAsOf) : null}
+              stopWhyKey={stopWhyKey ?? null}
+              annotation={status.annotation ?? null}
+            />
+          ) : (
+            <DeliveryRecordSlip record={deliveryRecord(envelope, formatDateTime)} />
+          )}
 
-          {/* Sent: the delivery timeline. Each step is its own state glyph on a left rail, joined to
-              the next by a dotted connector, so the three ISDS moments read as one progression rather
-              than three unrelated rows. A step that has not happened yet is drawn in `borderStrong` -
-              still occupying its full height, so the card never resizes as a message advances. */}
           {/* The user's deadline. Received only, and above the delivery status because it is the one
               thing on this screen the user can DO something about - everything below reports what
               ISDS did. */}
@@ -798,33 +741,35 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
             // The card carries the border so the "notifications are off" line can sit inside it,
             // under the row it is about. Without that line the card draws exactly what the row drew
             // on its own: the same border, radius, padding and height.
+            // R7: the row leads with its glyph in a well, as a settings row does - 56 tall, 8 and 12.
             <Card
-              marginTop={24}
+              marginTop={16}
               overflow="hidden"
             >
               <XStack
                 alignItems="center"
                 gap={12}
-                paddingVertical={13}
-                paddingHorizontal={14}
+                minHeight={56}
+                paddingVertical={8}
+                paddingHorizontal={12}
                 pressStyle={{ opacity: 0.7 }}
                 onPress={() => setPickingTerm(true)}
                 accessibilityRole="button"
                 accessibilityLabel={t('term.action')}
                 testID="detail-term"
               >
-                <TimerIcon size={18} color={theme.textFaint} />
+                <Well name="remind" />
                 <YStack flex={1}>
-                  <BodyStrong color={theme.text}>
+                  <SmallStrong fontWeight="600" color={theme.text}>
                     {t('term.action')}
-                  </BodyStrong>
-                  <Meta marginTop={2} color={theme.textFaint}>
+                  </SmallStrong>
+                  <Caption color={theme.textMuted}>
                     {term != null
                       ? t('term.chip', { d: formatTermDate(term) })
                       : t('term.none')}
-                  </Meta>
+                  </Caption>
                 </YStack>
-                <ChevronRightIcon size={18} color={theme.textFaint} />
+                <ChevronRightIcon size={18} color={theme.textMuted} />
               </XStack>
               {/* Only for a date that is set, and only when saving could not change it: while the
                   box's first reminder is still being asked about (`ask`), the OS dialog is the answer. */}
@@ -855,175 +800,6 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
                 void scanController.dismiss(account.boxId, messageId);
               }}
             />
-          ) : null}
-
-          {isSent ? (
-            <>
-              <Overline
-                marginTop={24}
-                marginBottom={8}
-                paddingLeft={2}
-              >
-                {t('detail.deliveryStatus')}
-              </Overline>
-              <YStack
-                backgroundColor={theme.surface}
-                borderWidth={1}
-                borderColor={theme.border}
-                borderRadius={16}
-                paddingHorizontal={16}
-                paddingTop={14}
-                paddingBottom={8}
-              >
-                {/* The state, named, above the rail. The timeline shows the journey; this says where
-                    it currently stands - which the rail alone cannot, now that it can end early. */}
-                <XStack marginBottom={14}>
-                  <XStack
-                    minHeight={24}
-                    alignItems="center"
-                    paddingHorizontal={10}
-                    borderRadius={8}
-                    backgroundColor={statusTone.bg}
-                  >
-                    <Tag color={statusTone.fg}>
-                      {t(status.labelKey)}
-                    </Tag>
-                  </XStack>
-                </XStack>
-                {sentSteps.map((step, i) => {
-                  const last = i === sentSteps.length - 1;
-                  // A reached step takes its own state colour; one still ahead stays neutral. The
-                  // connector below an icon inherits that same colour, so the rail fades out exactly
-                  // where the message's progress stops.
-                  const stepColor = step.done
-                    ? chipTone(
-                        step.kind === 'stop'
-                          ? 'statusStop'
-                          : step.kind === 'fiction'
-                          ? 'statusFiction'
-                          : step.kind === 'accepted'
-                          ? 'statusRead'
-                          : step.kind === 'delivered'
-                          ? 'statusDelivered'
-                          : 'statusSent',
-                        theme,
-                      ).fg
-                    : theme.borderStrong;
-                  return (
-                    <XStack key={step.kind} gap={12}>
-                      <YStack width={18} flexShrink={0} alignItems="center">
-                        <DeliveryStateIcon
-                          kind={step.kind}
-                          color={stepColor}
-                          // The discs sit on the card, so they knock out against it.
-                          knockout={theme.surface}
-                        />
-                        {/* SVG, not a dotted border: one-sided dotted borders render SOLID on iOS
-                            (see `DottedRail`). */}
-                        {!last ? <DottedRail color={stepColor} /> : null}
-                      </YStack>
-                      <YStack flex={1} minWidth={0} paddingBottom={last ? 0 : 14}>
-                        <XStack
-                          alignItems="center"
-                          justifyContent="space-between"
-                          gap={10}
-                          minHeight={18}
-                        >
-                          <Value
-                            color={step.done ? theme.text : theme.textFaint}
-                          >
-                            {t(step.labelKey)}
-                          </Value>
-                          <Caption
-                            flexShrink={0}
-                            fontWeight="600"
-                            color={step.done ? theme.bodyText : theme.textFaint}
-                          >
-                            {step.time != null ? formatDateTime(step.time) : '—'}
-                          </Caption>
-                        </XStack>
-                        {step.noteKey ? (
-                          <Meta
-                            marginTop={4}
-                            color={theme.textFaint}
-                          >
-                            {t(step.noteKey)}
-                          </Meta>
-                        ) : null}
-                      </YStack>
-                    </XStack>
-                  );
-                })}
-                {/* How old the state is, while it can still change (owner, 2026-11-11). The card reads
-                    the archive, so opened from search or offline it can show "Dodáno" days after the
-                    message was served. A final state never changes, so it gets no date; nor does a row
-                    no listing has brought (a restore, a transfer). The footnote's own pattern, below. */}
-                {stateAsOf != null ? (
-                  <YStack
-                    borderTopWidth={1}
-                    borderTopColor={theme.border}
-                    marginTop={6}
-                    marginHorizontal={-16}
-                    paddingHorizontal={16}
-                    paddingTop={12}
-                    paddingBottom={4}
-                    testID="state-as-of"
-                  >
-                    <Caption color={theme.textFaint}>
-                      {t('detail.stateAsOf', { d: formatDateTime(stateAsOf) })}
-                    </Caption>
-                  </YStack>
-                ) : null}
-                {/* Why it stopped, and what to do instead - a terminal state without this is just a
-                    dead end the user has to interpret. Full-bleed hairline above, like the design. */}
-                {stopWhyKey ? (
-                  <YStack
-                    borderTopWidth={1}
-                    borderTopColor={theme.border}
-                    marginTop={6}
-                    marginHorizontal={-16}
-                    paddingHorizontal={16}
-                    paddingTop={12}
-                    paddingBottom={4}
-                  >
-                    <Caption
-                      color={theme.textMuted}
-                    >
-                      {t(stopWhyKey)}
-                    </Caption>
-                  </YStack>
-                ) : null}
-                {/* A footnote on a journey that already finished: ISDS erased the content, or the
-                    message moved into the user's Datový trezor. Neither is a state change worth a
-                    step, and both matter when the user wonders where the attachments went. */}
-                {status.annotation ? (
-                  <XStack
-                    borderTopWidth={1}
-                    borderTopColor={theme.border}
-                    marginTop={6}
-                    marginHorizontal={-16}
-                    paddingHorizontal={16}
-                    paddingTop={12}
-                    paddingBottom={4}
-                    alignItems="center"
-                    gap={8}
-                  >
-                    {status.annotation === 'erased' ? (
-                      <ContentErasedIcon size={15} color={theme.textFaint} />
-                    ) : (
-                      <VaultIcon size={15} color={theme.textFaint} />
-                    )}
-                    <Meta fontWeight="700" color={theme.textMuted}>
-                      {t(
-                        status.annotation === 'erased'
-                          ? 'status.note.erased'
-                          : 'status.note.vault',
-                      )}
-                    </Meta>
-                  </XStack>
-                ) : null}
-              </YStack>
-            </>
           ) : null}
 
           {/* Attachments - shared by both folders (a sent message can carry documents too). The
@@ -1093,65 +869,53 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
             // Not downloaded → always offer the download (attachments can be large, and we cannot
             // know from the envelope whether/how many there are - every data message has documents).
             <>
+              {/* R7: one card - the glyph in its well, the title over the explanation, and the blue
+                  download inside it, 10 under them (14 around). */}
               <Card
-                marginTop={10}
-                padding={16}
+                marginTop={12}
+                padding={14}
+                gap={10}
               >
-                <XStack gap={13} alignItems="flex-start">
-                  <YStack
-                    width={40}
-                    minHeight={40}
-                    borderRadius={11}
-                    backgroundColor={theme.surfaceSunken}
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    <MailIcon size={20} color={theme.textFaint} />
-                  </YStack>
-                  {/* Design: a title/sub PAIR - "Zpráva obsahuje přílohy" over the explanation. */}
+                <XStack gap={12} alignItems="center">
+                  <Well name="attach" />
                   <YStack flex={1}>
-                    <SmallStrong color={theme.text}>
+                    <SmallStrong fontWeight="600" color={theme.text}>
                       {t('detail.attachments.containsAtts')}
                     </SmallStrong>
-                    <Caption
-                      marginTop={4}
-                      color={theme.textMuted}
-                    >
+                    <Caption color={theme.textMuted}>
                       {t('detail.attachments.namesAfter')}
                     </Caption>
                   </YStack>
                 </XStack>
-              </Card>
-              {downloadError ? (
-                <Caption marginTop={10} color={theme.danger}>
-                  {downloadError}
-                </Caption>
-              ) : null}
-              {/* Blue primary action (design §detail) - a sibling BELOW the card, not inside it.
-                  The download is what puts the whole message in the offline archive (and counts as
-                  delivery), so the label + the quiet note under it say exactly that. */}
-              <PressScale
-                fullWidth
-                style={{ marginTop: 12 }}
-                onPress={downloadAttachments}
-                accessibilityLabel={t('detail.attachments.downloadFull')}
-                testID="downloadAttachments"
-              >
-                <XStack
-                  width="100%"
-                  minHeight={48}
-                  borderRadius={13}
-                  backgroundColor={theme.blue}
-                  alignItems="center"
-                  justifyContent="center"
-                  gap={8}
+                {downloadError ? (
+                  <Caption color={theme.danger}>
+                    {downloadError}
+                  </Caption>
+                ) : null}
+                {/* The download is what puts the whole message in the offline archive, so the label
+                    and the quiet note under the card say exactly that. */}
+                <PressScale
+                  fullWidth
+                  onPress={downloadAttachments}
+                  accessibilityLabel={t('detail.attachments.downloadFull')}
+                  testID="downloadAttachments"
                 >
-                  <DownloadIcon size={17} color={theme.onBlue} />
-                  <SmallStrong color={theme.onBlue}>
-                    {t('detail.attachments.downloadFull')}
-                  </SmallStrong>
-                </XStack>
-              </PressScale>
+                  <XStack
+                    width="100%"
+                    minHeight={48}
+                    borderRadius={13}
+                    backgroundColor={theme.blue}
+                    alignItems="center"
+                    justifyContent="center"
+                    gap={8}
+                  >
+                    <OffsetIcon name="download" size={20} color={theme.onBlue} plane="envelope" />
+                    <BodyStrong color={theme.onBlue}>
+                      {t('detail.attachments.downloadFull')}
+                    </BodyStrong>
+                  </XStack>
+                </PressScale>
+              </Card>
               <Meta
                 marginTop={8}
                 color={theme.textFaint}
@@ -1250,47 +1014,42 @@ function ProgressBar({
   );
 }
 
-/** Loading placeholder mirroring the detail layout: subject + identity card + one attachment row. */
+/**
+ * Loading placeholder in the message's own shape (031 R7, I31): the envelope, the sheet with the
+ * subject tucked 10 under its edge, and the slip - so nothing moves when the message comes in.
+ */
 function DetailSkeleton() {
   const theme = useTheme();
   return (
-    <YStack padding={16} paddingTop={18}>
-      <Skeleton width="85%" height={25} radius={7} />
-      <Skeleton width="55%" height={25} radius={7} style={{ marginTop: 8 }} />
-
-      <XStack
-        marginTop={24}
-        gap={14}
-        alignItems="center"
+    <YStack paddingHorizontal={16} paddingTop={12} testID="detailSkeleton">
+      <Skeleton width="100%" height={150} radius={20} />
+      <YStack
+        marginTop={-10}
+        marginHorizontal={10}
         backgroundColor={theme.surface}
-        borderWidth={1}
-        borderColor={theme.border}
-        borderRadius={16}
-        padding={16}
+        borderTopLeftRadius={8}
+        borderTopRightRadius={8}
+        borderBottomLeftRadius={14}
+        borderBottomRightRadius={14}
+        paddingTop={16}
+        paddingHorizontal={16}
+        paddingBottom={14}
+        gap={8}
       >
-        <Skeleton width={48} height={48} radius={14} />
-        <YStack flex={1} gap={8}>
-          <Skeleton width="55%" height={15} radius={6} />
-          <Skeleton width="78%" height={12} radius={6} />
-        </YStack>
-      </XStack>
-
-      <Skeleton
-        width={120}
-        height={18}
-        radius={6}
-        style={{ marginTop: 24, marginBottom: 12 }}
-      />
-      <Card flexDirection="row"
-        gap={12}
-        alignItems="center"
-        padding={12}
-      >
-        <Skeleton width={40} height={40} radius={11} />
-        <YStack flex={1} gap={8}>
-          <Skeleton width="50%" height={14} radius={6} />
-          <Skeleton width={96} height={11} radius={6} />
-        </YStack>
+        <Skeleton width="85%" height={24} radius={8} color={theme.borderStrong} />
+        <Skeleton width="55%" height={24} radius={8} color={theme.borderStrong} />
+      </YStack>
+      <Card marginTop={16} padding={16} gap={12}>
+        <Skeleton width={96} height={12} radius={6} color={theme.borderStrong} />
+        {[0, 1].map(i => (
+          <XStack key={i} gap={12} alignItems="center">
+            <Skeleton width={34} height={34} radius={999} color={theme.borderStrong} />
+            <YStack flex={1} gap={6}>
+              <Skeleton width="45%" height={14} radius={6} color={theme.borderStrong} />
+              <Skeleton width="60%" height={12} radius={6} color={theme.borderStrong} />
+            </YStack>
+          </XStack>
+        ))}
       </Card>
     </YStack>
   );

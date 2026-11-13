@@ -124,7 +124,7 @@ describe('no screen caps a text box height', () => {
   /**
    * Fixed heights that hold no text, so nothing can be cropped. Each one is a graphic:
    *   Welcome / LoginFlow  the brand tile and the Mobile Key pulse ring
-   *   MessageDetail        a loading Skeleton
+   *   MessageDetail        the loading skeleton's envelope (031 R7)
    *   ComposeScreen        the multiline body input - a text AREA scrolls rather than clipping, and
    *                        120 is its opening size, not a lid on its content
    * Anything new has to argue its way in here rather than pass silently.
@@ -133,7 +133,7 @@ describe('no screen caps a text box height', () => {
     'Welcome.tsx:120',
     'LoginFlow.tsx:104',
     'LoginFlow.tsx:84',
-    'MessageDetail.tsx:48',
+    'MessageDetail.tsx:150',
     'ComposeScreen.tsx:120',
   ]);
 

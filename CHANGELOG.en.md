@@ -86,6 +86,11 @@ What changed in each Obálka release, written for the people using it. The newes
   logo in its own colours; the warning and the buttons are under the slip. During a transfer only
   lines follow it: what is happening, the bar, Cancel transfer and, last, which way the transfer goes.
   The progress bar lies in the paper more softly.
+- **A sent message is the envelope it went in.** You are the sender, the recipient is in the window with
+  their address, and the stamp is cancelled by the postmark from when ISDS accepted it; under it is the
+  delivery record, which fills in once the recipient opens it. The reminder and the attachment download
+  have their mark in a well, and the Download button is inside its card.
+- **A test box shows an airmail strip above a message.** Blue and gold stripes say it isn't real mail.
 
 ### Fixed
 

@@ -99,7 +99,7 @@ const pairs = (t: Theme): [string, string, string][] => [
   ['testFg on testBg', t.testFg, t.testBg],
   // The two top-of-screen strips, read from the component's own tone table: a tone that is repainted
   // there is measured here, not left to the pair above that happens to match it today.
-  ...(['test', 'chrome'] as const).map((tone): [string, string, string] => {
+  ...(['chrome'] as const).map((tone): [string, string, string] => {
     const strip = statusStripColors(tone, t);
     return [`status strip (${tone}) label`, strip.ink, strip.background];
   }),

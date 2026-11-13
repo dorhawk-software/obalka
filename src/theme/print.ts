@@ -198,6 +198,8 @@ export const recordRing = {
   markStroke: 1.8,
   check: 'M12.6 17.2l3 3 5.8-6',
   clock: 'M17 12.5V17l3 2.4',
+  /** A journey that stopped (a sent message ISDS could not deliver): a cross where the check would be. */
+  cross: 'M13.8 13.8l6.4 6.4M20.2 13.8l-6.4 6.4',
   pendingDash: '2.5 3',
 } as const;
 

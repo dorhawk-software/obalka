@@ -10,7 +10,8 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
 `src/theme/print.ts`, the shadows in `src/theme/depth.ts` (`objectShadow`, `objectFilter`).
 
 - **Envelope** (`#2563A6`, **fixed in both appearances**): a box, and what arrives in it. The inbox
-  header, a message, compose, the sent result, the box avatars. Its folds are `envelope-crease`
+  header, a message (received, and a sent one opened from Odeslané), compose, the sent result, the box
+  avatars. Its folds are `envelope-crease`
   (`rgba(9,30,64,.22)`). Words on it are `on-solid`; its secondary words and the postmark are
   `envelope-ink-soft` (`rgba(255,255,255,.92)`, 5.51:1 composited). As an avatar tile (a box, a
   sender) it is a small envelope: a sealed gold flap while unread, else an `envelope-fold` line
@@ -43,16 +44,21 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
   muted `stamp-label` for the small print, perforated (4 every 12; the small stamp 3.5 every 10). Light
   in both appearances: it is paper stuck on the envelope. A used stamp is cancelled in `cancel-ink`.
   Stuck on an envelope (the sent result) its shadow is `stampOnEnvelope`, darker for the blue under it.
+  A sent message opened later (031 R7) carries the board's 84 stamp with a blank face: the archive does
+  not know what a send cost (ISDS lists no price), and a stamp prints nothing it does not know.
 - **Slip**: a record you keep - the delivery record, the recovery key, the transfer code. A sheet with
   a perforated top (5 every 14) and a faint `slip-mark` ring. On the delivery record each step is
   struck as a ring (`RecordRing`, `recordRing`: two rings on a 34 grid) - a check for the arrival in
   `body-text`, clock hands for fiction in `gold-ink` on a 1.6 line, the inner ring filled for a service
-  someone signed in for; a step still to come is the outer ring alone, dashed (the sent result).
+  someone signed in for; a step still to come is the outer ring alone, dashed (the sent result); a sent
+  message ISDS could not deliver ends on a cross in `danger` (031 R7).
 - **Document sheet**: a file in a message (board Message) - a sheet 40 x 46 in `surface-sunken` with a
   `border-strong` edge and its corner folded in `doc-fold` (`#E8DECB` / `#3B3429`), the file's type
   printed at 11 ("PDF" in `danger`, any other type in `text-muted`). The signed original sits beside it
   as the seal glyph in a well.
-- **Airmail strip**: the test environment, stripes of envelope, paper, flap and paper at 135 degrees.
+- **Airmail strip**: the test environment, stripes of envelope, paper, flap and paper at 135 degrees
+  (9/5/9/5), 6 of them above and below a `surface` band - "Testovací prostředí" over a czebox box's
+  messages (031 R7). It isn't real mail, and it says so.
 - **Offset glyphs**: a 1.75 ink stroke with one plane printed 1.3 off register, `icon-plane`
   (`#CFE0F5` / `#2F4A6E`), or `icon-plane-gold` (`#F3D891` / `#5A4716`) on gold. Plain controls stay
   Lucide.

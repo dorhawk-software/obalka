@@ -127,3 +127,131 @@ export function DeliveryRecordSlip({ record }: { readonly record: Record }) {
     </YStack>
   );
 }
+
+/** One step of a sent message's journey, as the detail works it out from the listing. */
+export interface SentStep {
+  readonly kind: 'sent' | 'delivered' | 'accepted' | 'fiction' | 'stop';
+  readonly labelKey: string;
+  readonly noteKey?: string;
+  readonly time: number | null | undefined;
+  readonly done: boolean;
+}
+
+/** A sent step's ring: struck once it happened, dashed while it is still to come. */
+export function sentRingKind(step: SentStep): RecordRingKind {
+  if (!step.done) {
+    return 'pending';
+  }
+  if (step.kind === 'fiction') {
+    return 'fiction';
+  }
+  if (step.kind === 'stop') {
+    return 'stopped';
+  }
+  return step.kind === 'accepted' ? 'signed' : 'arrived';
+}
+
+/**
+ * A sent message's delivery record (031 R7): the Sent board's slip under its envelope - the message's
+ * ID beside the heading, a ring per step, the moment on the right or "zatím ne". What used to hang
+ * under the old rail stays, as lines under the steps: how old the state is while it can still change,
+ * why a journey stopped, and what became of the message.
+ */
+export function SentRecordSlip({
+  messageId,
+  steps,
+  stateAsOf,
+  stopWhyKey,
+  annotation,
+}: {
+  readonly messageId: string;
+  readonly steps: readonly SentStep[];
+  /** When the listing last said it, while the state can still change; else null. */
+  readonly stateAsOf: string | null;
+  readonly stopWhyKey: string | null;
+  readonly annotation: 'erased' | 'vault' | null;
+}) {
+  const theme = useTheme();
+  const fiction = steps.some(s => s.kind === 'fiction' && s.done);
+  const ink = (step: SentStep) => {
+    const ring = sentRingKind(step);
+    if (ring === 'fiction') {
+      return theme.goldInk;
+    }
+    if (ring === 'signed') {
+      return chipTone('statusRead', theme).fg;
+    }
+    if (ring === 'stopped') {
+      return theme.danger;
+    }
+    return ring === 'pending' ? theme.slipMark : theme.bodyText;
+  };
+  return (
+    <YStack paddingTop={16} testID="deliveryRecord">
+      <Slip style={{ paddingTop: 16, paddingHorizontal: 16, paddingBottom: 14, gap: 10 }}>
+        <XStack justifyContent="space-between" alignItems="center" gap={10}>
+          <Overline flex={1} color={fiction ? chipTone('statusFiction', theme).fg : theme.textMuted}>
+            {t(fiction ? 'recv.head.fiction' : 'recv.head')}
+          </Overline>
+          <Meta fontWeight="400" color={theme.textFaint}>
+            {t('send.sent.record.id', { id: messageId })}
+          </Meta>
+        </XStack>
+        {steps.map(step => {
+          const at = step.time ?? null;
+          const [date, time] = at != null ? dateAndTime(at) : ['', ''];
+          return (
+            <XStack key={step.kind} alignItems="center" gap={12} testID={`sentStep-${step.kind}`}>
+              <RecordRing kind={sentRingKind(step)} color={ink(step)} knockout={theme.surface} size={30} />
+              <YStack flex={1} minWidth={0}>
+                <BodyStrong fontWeight={step.done ? '700' : '600'} color={step.done ? theme.text : theme.textMuted}>
+                  {t(step.labelKey)}
+                </BodyStrong>
+                {step.noteKey ? (
+                  <Caption fontWeight="400" color={theme.textMuted}>
+                    {t(step.noteKey)}
+                  </Caption>
+                ) : null}
+              </YStack>
+              {step.done && at != null ? (
+                <YStack alignItems="flex-end" flexShrink={0}>
+                  <Label color={theme.bodyText}>{date}</Label>
+                  <Caption color={theme.textMuted}>{time}</Caption>
+                </YStack>
+              ) : (
+                // ISDS gives no moment for a stop; a step still ahead is not yet.
+                <Label color={theme.textMuted} flexShrink={0}>
+                  {step.done ? '—' : t('send.sent.notYet')}
+                </Label>
+              )}
+            </XStack>
+          );
+        })}
+        {stopWhyKey ? (
+          <Caption color={theme.textMuted} testID="sentStopWhy">
+            {t(stopWhyKey)}
+          </Caption>
+        ) : null}
+        {annotation ? (
+          <XStack gap={8} alignItems="flex-start">
+            <LineIcon role="meta">
+              {annotation === 'erased' ? (
+                <ContentErasedIcon size={15} color={theme.textFaint} />
+              ) : (
+                <VaultIcon size={15} color={theme.textFaint} />
+              )}
+            </LineIcon>
+            <Meta fontWeight="600" flex={1} color={theme.textMuted}>
+              {t(annotation === 'erased' ? 'status.note.erased' : 'status.note.vault')}
+            </Meta>
+          </XStack>
+        ) : null}
+        {stateAsOf != null ? (
+          <Meta color={theme.textFaint} testID="state-as-of">
+            {t('detail.stateAsOf', { d: stateAsOf })}
+          </Meta>
+        ) : null}
+      </Slip>
+    </YStack>
+  );
+}

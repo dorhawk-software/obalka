@@ -4,7 +4,7 @@
 import Svg, { Circle, Path } from 'react-native-svg';
 import { recordRing } from '../print';
 
-export type RecordRingKind = 'arrived' | 'fiction' | 'signed' | 'pending';
+export type RecordRingKind = 'arrived' | 'fiction' | 'signed' | 'pending' | 'stopped';
 
 export function RecordRing({
   kind,
@@ -51,7 +51,7 @@ export function RecordRing({
       )}
       {kind === 'pending' ? null : (
         <Path
-          d={kind === 'fiction' ? r.clock : r.check}
+          d={kind === 'fiction' ? r.clock : kind === 'stopped' ? r.cross : r.check}
           fill="none"
           stroke={kind === 'signed' ? knockout : color}
           strokeWidth={r.markStroke}

@@ -14,7 +14,6 @@ import type { ReactNode } from 'react';
 import { XStack, YStack } from '../../theme/ui';
 import { Caption, Overline, Small } from '../../theme/Typography';
 import { useTheme } from '../../theme/ThemeProvider';
-import { OffsetIcon, type OffsetGlyphName } from '../../theme/offsetIcons';
 import { space } from '../../theme/spacing';
 
 /** A card row: DESIGN.md › Cards, "at least 52dp tall, 10dp above and below". */
@@ -88,25 +87,8 @@ export function RowText({ title, subtitle }: { readonly title: string; readonly 
   );
 }
 
-/** A row's glyph in its well: 40, the `lg` corner, sunken, the offset glyph at 24 in ink. */
-export function Well({ name }: { readonly name: OffsetGlyphName }) {
-  const theme = useTheme();
-  return (
-    <YStack
-      width={40}
-      height={40}
-      borderRadius={12}
-      alignItems="center"
-      justifyContent="center"
-      flexShrink={0}
-      backgroundColor={theme.surfaceSunken}
-      accessibilityElementsHidden
-      importantForAccessibility="no-hide-descendants"
-    >
-      <OffsetIcon name={name} size={24} color={theme.text} />
-    </YStack>
-  );
-}
+/** A row's glyph in its well: one drawing, shared with the message's rows (031 R7). */
+export { Well } from '../../theme/Well';
 
 /** The cards every settings row sits in - the app's one card, in the theme (spec 028). */
 export { Card } from '../../theme/Card';

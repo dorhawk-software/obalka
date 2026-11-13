@@ -4,8 +4,9 @@
 // that two strips in the same place would share their numbers. It kept them faithfully - and they were
 // on neither of DESIGN.md's scales: a 5 padding and a 7 gap against spacing that runs
 // 2/4/6/8/10/12/14/18, and a 12/15 label under a type scale that starts at 13 (review, 2026-09-15).
-// These tests hold the numbers to the scales DESIGN.md states, hold the two strips to one reserved
-// row, and check the two tones in both themes and at a large text size.
+// These tests hold the numbers to the scales DESIGN.md states and check the strip in both themes and at a
+// large text size. Since 031 R7 the test banner is the airmail strip, a printed object with its own
+// band (28 between 6 of stripes); it is held here too, where the two used to be one.
 
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -21,7 +22,8 @@ import {
   STATUS_STRIP_ROW,
   statusStripColors,
 } from '../../src/theme/StatusStrip';
-import { TestEnvBanner } from '../../src/app/TestEnvBanner';
+import { TEST_BAND, TestEnvBanner } from '../../src/app/TestEnvBanner';
+import { airmail } from '../../src/theme/print';
 import { DebugRecordingFrame } from '../../src/app/DebugRecordingStrip';
 import { cancelDebug } from '../../src/services/debug/debugController';
 import { startDebugRecording } from '../../src/services/debug/debugLog';
@@ -132,28 +134,37 @@ describe('the scale', () => {
     expect(BADGE).toEqual([13, 16]);
   });
 
-  it.each([
-    ['the test banner', () => banner()],
-    ['the recording strip', () => recordingStrip()],
-  ])('draws %s with spacing from the scale and the Badge type step', async (_name, draw) => {
-    const s = await draw();
-    const { padding, gap, type } = reserved(s);
+  it('draws the recording strip with spacing from the scale and the Badge type step', async () => {
+    const { padding, gap, type } = reserved(await recordingStrip());
     for (const value of [...padding, gap]) {
       expect(SPACING).toContain(value);
     }
     expect(type).toEqual(BADGE);
   });
+
+  it('draws the test banner as R7 s airmail strip: a 28 band between 6 of stripes, the Badge label', async () => {
+    const s = await banner();
+    expect(airmail.inset).toBe(6);
+    expect(s.row).toEqual(expect.objectContaining({ minHeight: TEST_BAND.minHeight, paddingLeft: 16, paddingRight: 16 }));
+    for (const value of [airmail.inset, TEST_BAND.paddingHorizontal]) {
+      expect(SPACING).toContain(value);
+    }
+    expect([s.label.fontSize, occupiedLine(s.label)]).toEqual(BADGE);
+    // The row's width: measured to its own words, Android cut "prostředí" off (dark walk, R7).
+    expect(s.label.flex ?? s.label.flexGrow).toBe(1);
+    // Clearing the status bar, on the header's paper, with no hairline: the stripes are the edge.
+    expect(s.strip.paddingTop).toBe(47);
+    expect(s.strip.borderBottomWidth ?? 0).toBe(0);
+  });
 });
 
 describe('one reserved row', () => {
-  it('reserves the same row for the test banner and the recording strip, button or label', async () => {
-    // A screen carrying either strip lays its content out in the same place. The copy this replaces
-    // had a minimum height the banner did not, and a label 12/15 inside 5/5 padding.
-    const expected = reserved(await banner());
+  it('reserves the same row for the recording strip, button or label', async () => {
+    // The copy this replaced had a label 12/15 inside 5/5 padding.
+    const expected = reserved(await recordingStrip({ pressable: false }));
     expect(expected.rowMinHeight).toBe(STATUS_STRIP_ROW);
     expect(STATUS_STRIP_ROW).toBe(6 + 16 + 6);
     expect(reserved(await recordingStrip({ pressable: true }))).toEqual(expected);
-    expect(reserved(await recordingStrip({ pressable: false }))).toEqual(expected);
     // Clearing the status bar, and never a fixed height a larger text size could not grow.
     expect(expected.inset).toBe(47);
     expect(expected.hairline).toBe(1);
@@ -162,22 +173,15 @@ describe('one reserved row', () => {
 
   it('grows a button to a finger s height only where no status bar pays for it', async () => {
     // Under another strip the inset is spent. The recording strip there is still a whole target; a
-    // banner or a label has none to meet, so it keeps the row every other strip reserves.
+    // label has none to meet, so it keeps the row every other strip reserves.
     expect((await recordingStrip({ pressable: true, top: 0 })).row.minHeight).toBe(MIN_TARGET);
     expect((await recordingStrip({ pressable: false, top: 0 })).row.minHeight).toBe(STATUS_STRIP_ROW);
-    expect((await banner({ top: 0 })).row.minHeight).toBe(STATUS_STRIP_ROW);
   });
 });
 
 describe('both themes', () => {
-  it('pins each tone to its tokens', () => {
+  it('pins the tone to its tokens', () => {
     for (const theme of [lightTheme, darkTheme]) {
-      expect(statusStripColors('test', theme)).toEqual({
-        background: theme.testBg,
-        ink: theme.testFg,
-        edge: theme.testBd,
-        chevron: theme.testFg,
-      });
       expect(statusStripColors('chrome', theme)).toEqual({
         background: theme.surfaceAlt,
         ink: theme.text,
@@ -192,8 +196,8 @@ describe('both themes', () => {
     ['dark', true, darkTheme],
   ])('paints both strips from the %s palette', async (_name, dark, theme) => {
     const test = await banner({ dark });
-    expect(test.strip.backgroundColor).toBe(theme.testBg);
-    expect(test.label.color).toBe(theme.testFg);
+    expect(test.strip.backgroundColor).toBe(theme.surfaceAlt);
+    expect(test.label.color).toBe(theme.text);
 
     const chrome = await recordingStrip({ dark });
     expect(chrome.strip.backgroundColor).toBe(theme.surfaceAlt);

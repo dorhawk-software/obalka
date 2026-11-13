@@ -2,7 +2,7 @@
 // 2026-11-12): the envelope tucks into the bar, and a band of its blue names who it is from and, in its
 // window, who it is for. The band's fade is drawn by the scroll on the UI thread and walked on a
 // device; these hold where it comes in, that it neither takes touches nor speaks until it is in, that
-// the status bar turns light over it, and that a sent message has none.
+// the status bar turns light over it, and that a sent message tucks the same way.
 
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { AppState, StatusBar } from 'react-native';
@@ -207,7 +207,13 @@ describe('a received message', () => {
   });
 });
 
-it('gives a sent message no band: it has no envelope to tuck', async () => {
+// Since 031 R7 a sent message has the Sent board's envelope, so it tucks as a received one does: the
+// sender on the blue (the box it went from), the recipient in the window.
+it('tucks a sent message too, now that it has an envelope', async () => {
   const { view } = await open('sent');
-  expect(view.queryByTestId('detailBand', hidden)).toBeNull();
+  expect(view.getByTestId('bandSender', hidden)).toHaveTextContent(mockEnvelope.sender);
+  expect(view.getByTestId('bandRecipient', hidden)).toHaveTextContent('Jana Nováková');
+  await placeEnvelope(view);
+  await scrollTo(view, ENVELOPE_BOTTOM);
+  expect(view.getByTestId('bandBack').props.accessibilityElementsHidden).toBeFalsy();
 });

@@ -114,7 +114,7 @@ describe('how old a sent message’s state is', () => {
     mockState = state;
     mockSyncedAt = AT;
     const view = await open();
-    await waitFor(() => view.getByText(t('detail.deliveryStatus')));
+    await waitFor(() => view.getByTestId('deliveryRecord'));
     expect(view.queryByTestId('state-as-of')).toBeNull();
   });
 
@@ -122,7 +122,7 @@ describe('how old a sent message’s state is', () => {
     mockState = 4;
     mockSyncedAt = null;
     const view = await open();
-    await waitFor(() => view.getByText(t('detail.deliveryStatus')));
+    await waitFor(() => view.getByTestId('deliveryRecord'));
     expect(view.queryByTestId('state-as-of')).toBeNull();
   });
 });

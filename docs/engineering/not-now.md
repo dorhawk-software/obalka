@@ -292,3 +292,15 @@ they wait for their own work. The owner decided "not now" on 2026-11-12.
   its board ("chyby:" in Settings › Diagnostika). Decided to leave it: tightening letter-spacing per
   platform would draw every other line narrower than the design, and the walks compare everything
   else at full resolution. ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I43)
+- **A sent message's stamp is blank (2026-11-13).** Board R7 prints what the send cost ("ZDARMA 0 Kč")
+  on the stamp of a sent message opened from Odeslané, but the archive does not know it: ISDS lists no
+  price, the app does not read `dmType` (which would tell a paid commercial message from a free one,
+  still not the amount), and only the sent result, at the moment of sending, knows `paidCzk`. A stamp
+  prints nothing it does not know, so it is blank and cancelled. Plan: keep the cost the sent result
+  learns, by message ID, and read `dmType` for the rest; then the stamp prints it.
+  ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I30)
+- **"č. j." can part across a line in a subject (2026-11-13).** The Czech typesetting (I82) holds a
+  one-letter word to the next; a two-part abbreviation such as "č. j." or "sp. zn." in a message's own
+  subject can still break after "č." (seen on the demo's "Odpověď na výzvu č. j. …"). Plan: extend
+  `typesetCs` to the abbreviations ISDS subjects use, and run subjects through it.
+  ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I82)

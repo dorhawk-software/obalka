@@ -74,6 +74,11 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   písmem ve dvou řádcích a QR kód je na papíře s logem Obálky v jeho barvách; varování a tlačítka
   jsou pod lístkem. Během přenosu jsou pod ním jen řádky: co se děje, pruh, Zrušit přenos a nakonec,
   kudy přenos jde. Pruh průběhu leží v papíře jemněji.
+- **Odeslaná zpráva je obálka, ve které odešla.** Odesílatelem jste vy, v okénku je adresát s adresou a
+  známku přeškrtlo razítko z okamžiku, kdy zprávu přijalo ISDS; pod ní je doručenka, která se doplní,
+  až ji adresát otevře. Připomínka a stažení příloh mají značku v jamce a tlačítko Stáhnout je v kartě.
+- **Testovací schránka má nad zprávou pruh jako letecká pošta.** Modré a zlaté proužky říkají, že nejde
+  o skutečnou poštu.
 
 ### Opraveno
 

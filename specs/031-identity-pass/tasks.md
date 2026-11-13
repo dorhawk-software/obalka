@@ -122,15 +122,31 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 - [ ] I28 Compose FAB (gold extended, pencil) - **D**: the blank stamp, board Inbox. Its stamp draws a
   frame late on a cold start (I107).
 - [ ] I29 Message detail, received - **D**: boards "Message - the envelope it came in" and "Message - dark".
-- [ ] I30 Message detail, sent (recipient card, delivery timeline) - **X**: R7.
-- [ ] I31 Detail loading skeleton and error - **X**: R7.
+- [x] I30 Message detail, sent (recipient card, delivery timeline) - **X**: R7. Fixed 2026-11-13: the
+  Sent board's envelope in `DetailEnvelope` (`sent`): from this box with its ID, the recipient with
+  their ID and address in the 236 window (015 US3), the 84 stamp blank and cancelled by the postmark
+  (108 at 102 / 20, -6 degrees; the cost is not in the archive - not-now.md), the subject on the sheet;
+  then `SentRecordSlip` (the message's ID, rings of 30, "zatím ne", the state's age, why it stopped,
+  erased or vault as lines under the steps; a stop is a cross in `danger`); the band tucks it as a
+  received one (R15). The header says "Odeslaná zpráva". Walked light and dark beside R7.
+- [ ] I31 Detail loading skeleton and error - **X**: R7. Built 2026-11-13: the skeleton takes the
+  envelope, the sheet and the slip; the title is the screen's from the first frame; the error's way
+  back is the sunken neutral button. Not yet captured on a device (a demo message loads at once).
 - [ ] I32 Fiction banner - **D**: board Message (gold band with "Připomenout").
 - [ ] I33 Delivery record (Doručenka card, dotted rail) - **D**: the slip, board Message.
 - [ ] I34 Term card, "alerts off" line, deadline suggestion (scan) - **X**: not on a board. R7.
+  2026-11-13: the reminder row matches R7 (56, 8/12, its glyph in a well, 14/600 over 13/500, the
+  muted chevron), walked; the "alerts off" line and the scan suggestion are still today's.
 - [ ] I35 Attachments: none, unavailable, downloading, not downloaded, missing, corrupt, opening, saved -
-  **D** for the saved row (board Message); **X** for the other states, R7.
+  **D** for the saved row (board Message); **X** for the other states, R7. 2026-11-13: not downloaded
+  matches R7 (one card, the attach glyph in a well, the blue download inside it at 48 / 13 with the
+  offset download glyph, 15/700), walked; the other states are still today's.
 - [ ] I36 Signed original (ZFO) row - **D**: board Message (Pečeť glyph in a well).
-- [ ] I37 Test-environment banner (`StatusStrip` test tone, flask) - **X**: the airmail strip. R7.
+- [x] I37 Test-environment banner (`StatusStrip` test tone, flask) - **X**: the airmail strip. R7. Fixed
+  2026-11-13: `TestEnvBanner` lays the existing `AirmailStrip` over `surface-alt`, the band 28 with 16
+  sides, the Badge label in ink taking the row's width (dark cut "prostředí" off before), no glyph or
+  hairline; StatusStrip lost its `test` tone. Walked light and dark by forcing it on (no czebox box on
+  the demo), reverted.
 - [ ] I38 Compose - **X**: the envelope you are sending (R2, agreed A).
   - [ ] I38.1 Sender gate (no box can send; dimmed placeholders).
   - [ ] I38.2 Sender card and the change; recipient card, its type and the change.
@@ -678,4 +694,12 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R8 puts the route above cancel; constitution V keeps the line that appears late last, built.
   - R6 draws no hidden key: the build shows the warning and one 52 button.
   - R6 and R10 draw section labels with no icon; the code keeps them until R10 drops them all.
+  - R7 sent: the stamp prints the cost; the archive has none, so the build's is blank (not-now.md).
+  - R7 sent: "Odesláno" and "Dodáno" as two rows at one time; ISDS gives one, the build merges them
+    into "Odesláno a dodáno" (017 T011).
+  - R7 sent window: the name alone; the build adds the box ID and the address (015 US3).
+  - R7 sent attachments are glyphs in wells; the build draws the Message board's document sheet.
+  - R7 not downloaded: no line under the card; the build keeps what the download does (it saves the
+    message, and does not deliver it).
+  - R7 download glyph plane at .28 white; the build takes `envelope-plane` (.2), the same blue under it.
 - [ ] T052 Delete `docs/engineering/identity-pass.md` in the last commit.
