@@ -100,7 +100,12 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   countdown and the erased/vault note stay. Dates padded as everywhere ("03.10.", the board "3.10.").
   In all boxes the box pill is the monogram alone (8 dp sides, the board's 7 rounded), inline after
   the name on every row and sheet; the row's spoken label names the box.
-- [ ] I20 List loading (6 skeleton rows) and the 3 px sync bar - **X**: under the new header. R5.
+- [x] I20 List loading (6 skeleton rows) and the 3 px sync bar - **X**: under the new header. R5. Fixed
+  2026-11-13: `RegisterSkeleton`, five rows of a day block and two lines at the board's widths (no
+  month over them: the month is not known yet); `SyncBar`, the one waiting bar, a 3 dp sunken track
+  inset 16 and 10 under the strips, one segment a third long sweeping (1.3 s; still with Reduce Motion),
+  laid over the list so nothing moves; core Animated on the native driver, not Reanimated (I68). Its
+  ends are the 999 step (the board's 2).
 - [ ] I21 List error (CloudOff hero 132, reason, retry) - **X**: R4.
 - [ ] I22 Empty received - **D**: board "Empty inbox - the inside of the envelope".
 - [ ] I23 Empty sent (paper-plane hero) - **X**: R4.

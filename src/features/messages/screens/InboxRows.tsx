@@ -13,6 +13,7 @@ import { OffsetIcon } from '../../../theme/offsetIcons';
 import { EnvelopeTile } from '../../../theme/objects/Envelope';
 import { objectShadow } from '../../../theme/depth';
 import { avatarColor } from '../../../theme/avatarPalette';
+import { Skeleton } from '../../../theme/Skeleton';
 import { chipTone } from '../../../theme/chipTone';
 import { touchSlop } from '../../../theme/touchTarget';
 import { t, getActiveLocale, plural } from '../../../i18n/strings';
@@ -381,3 +382,33 @@ export const RegisterRow = memo(function RegisterRowView({
     </XStack>
   );
 });
+
+/** The register's rows to come (031 I20, board R5 "Loading"): each widths pair is one row's two lines. */
+const SKELETON_ROWS = [
+  ['82%', '60%'],
+  ['70%', '52%'],
+  ['88%', '64%'],
+  ['64%', '48%'],
+  ['76%', '58%'],
+] as const;
+
+/** The shape of the register while it loads: the day, the subject, the sender's line. */
+export function RegisterSkeleton() {
+  const theme = useTheme();
+  return (
+    <YStack paddingTop={10}>
+      {SKELETON_ROWS.map(([subject, sender]) => (
+        <XStack key={subject} paddingHorizontal={16} paddingVertical={8} gap={14}>
+          <YStack width={34} alignItems="center" gap={4}>
+            <Skeleton width={28} height={26} radius={6} color={theme.borderStrong} />
+            <Skeleton width={18} height={12} radius={6} color={theme.borderStrong} />
+          </YStack>
+          <YStack flex={1} minWidth={0} gap={6} paddingTop={2}>
+            <Skeleton width={subject} height={16} radius={6} color={theme.borderStrong} />
+            <Skeleton width={sender} height={14} radius={6} color={theme.borderStrong} />
+          </YStack>
+        </XStack>
+      ))}
+    </YStack>
+  );
+}

@@ -7,29 +7,18 @@ import {
   useState,
 } from 'react';
 import {
-  type LayoutChangeEvent,
   Linking,
   RefreshControl,
   ScrollView,
   SectionList,
 } from 'react-native';
-import Animated, {
-  cancelAnimation,
-  Easing,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Button, XStack, YStack } from '../../../theme/ui';
+import { Button, YStack } from '../../../theme/ui';
 import { Caption, Heading, Small } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { CloudOffGlyph, SendGlyph } from '../../../theme/icons';
 import { Fab, useFabClearance } from '../../../theme/Fab';
 import { EmptyState } from '../../../theme/EmptyState';
-import { Skeleton } from '../../../theme/Skeleton';
 import { chipTone } from '../../../theme/chipTone';
 import { HeroIcon } from '../../../theme/iconTiers';
 import {
@@ -72,9 +61,9 @@ import type { BoxAttention } from '../state/crossBox';
 import { CrossBoxLine, crossBoxSummary } from './CrossBoxLine';
 import { InboxHeader } from './InboxHeader';
 import { boxColor } from '../../../theme/boxColor';
-import { AttentionHead, AttentionSheet, RegisterRow, SectionHead, freshnessText } from './InboxRows';
+import { AttentionHead, AttentionSheet, RegisterRow, RegisterSkeleton, SectionHead, freshnessText } from './InboxRows';
 import { DraftsEntry, SentRegisterRow } from './SentRows';
-import { InboxStrip, StaleLine, StripAction } from './InboxStrips';
+import { InboxStrip, StaleLine, StripAction, SyncBar } from './InboxStrips';
 import type { TileRect } from './EnvelopeFlight';
 import { EmptyObject } from '../../../theme/EmptyObject';
 import { OpenEnvelope } from '../../../theme/objects/Envelope';
@@ -133,67 +122,6 @@ type InboxSection =
   // `renderSectionHeader` - which is what puts it between this box's attention block and its date
   // sections, scrolling with the list, instead of floating above everything as a card did.
   | { key: string; kind: 'crossBox'; data: []; boxes: readonly BoxAttention[] };
-
-/**
- * The design's slim sync bar: a RESERVED 3px strip (so the list never shifts) in which a 38%-wide
- * brand-blue bar sweeps across while a sync runs. Keyframes copied from the design (`rprog`):
- * translateX(-110%) → translateX(320%) of the BAR's own width, 1.3s, ease-in-out, infinite.
- * Reduce Motion → the bar is shown static (no sweep).
- */
-function SyncProgressBar({ active }: { readonly active: boolean }) {
-  const theme = useTheme();
-  const reduceMotion = useReducedMotion();
-  const [width, setWidth] = useState(0);
-  const barWidth = width * 0.38;
-  const x = useSharedValue(0);
-
-  useEffect(() => {
-    if (!active || reduceMotion || barWidth === 0) {
-      cancelAnimation(x);
-      return;
-    }
-    x.value = -1.1 * barWidth;
-    x.value = withRepeat(
-      withTiming(3.2 * barWidth, {
-        duration: 1300,
-        easing: Easing.inOut(Easing.ease),
-      }),
-      -1,
-      false,
-    );
-    return () => cancelAnimation(x);
-  }, [active, reduceMotion, barWidth, x]);
-
-  const sweep = useAnimatedStyle(() => ({
-    transform: [{ translateX: x.value }],
-  }));
-
-  return (
-    <YStack
-      height={3}
-      backgroundColor={theme.bg}
-      overflow="hidden"
-      onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}
-      accessibilityElementsHidden
-      importantForAccessibility="no-hide-descendants"
-    >
-      {active && barWidth > 0 ? (
-        <Animated.View
-          style={[
-            {
-              height: '100%',
-              width: barWidth,
-              backgroundColor: theme.blue,
-              borderTopRightRadius: 999,
-              borderBottomRightRadius: 999,
-            },
-            reduceMotion ? undefined : sweep,
-          ]}
-        />
-      ) : null}
-    </YStack>
-  );
-}
 
 /**
  * The end of the list: a hairline, then how fresh what you just read is.
@@ -806,8 +734,6 @@ export function MessageList({
         onOpenSwitcher={onOpenSwitcher}
         onSearch={onSearch}
       />
-      {/* Slim sync bar: a RESERVED 3px strip that only animates while syncing (no layout jump). */}
-      <SyncProgressBar active={syncing} />
     </YStack>
   );
 
@@ -947,9 +873,7 @@ export function MessageList({
     // NOT fall through to the empty state - there are messages, they are just not renderable yet.
     content = (
       <YStack flex={1} accessibilityLabel={t('messages.loading')}>
-        {[0, 1, 2, 3, 4, 5].map(i => (
-          <MessageRowSkeleton key={i} />
-        ))}
+        <RegisterSkeleton />
       </YStack>
     );
   } else if (state.status === 'error') {
@@ -1227,6 +1151,8 @@ export function MessageList({
           SectionList is not rendered in either - so a user holding unsent drafts lost their only
           route to them exactly when the network was failing (2026-09-09 critique). */}
       {draftsEntry}
+      {/* Over the top of the list, under the strips: it takes no room (`SyncBar`). */}
+      <SyncBar active={syncing} />
       {/* 023 option C: the other boxes, above the list rather than inside it - it is not a message
           and must not scroll away among them. Renders nothing when every other box is quiet, so a
           single-box user never sees it at all. */}
@@ -1243,23 +1169,3 @@ export function MessageList({
   );
 }
 
-/** Loading placeholder mirroring the simple received row (avatar + name/date + subject). */
-function MessageRowSkeleton() {
-  return (
-    <XStack
-      paddingHorizontal={18}
-      paddingVertical={13}
-      gap={12}
-      alignItems="flex-start"
-    >
-      <Skeleton width={38} height={38} radius={12} />
-      <YStack flex={1} gap={8} paddingTop={4}>
-        <XStack alignItems="center" justifyContent="space-between">
-          <Skeleton width={150} height={13} radius={6} />
-          <Skeleton width={54} height={11} radius={6} />
-        </XStack>
-        <Skeleton width="72%" height={13} radius={6} />
-      </YStack>
-    </XStack>
-  );
-}

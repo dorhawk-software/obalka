@@ -72,6 +72,8 @@ What changed in each Obálka release, written for the people using it. The newes
 - **The notices above the message list are cards in their message's colour.** A signed-out box, a
   password running out and a missing box each have their own card with its button; the line about
   saved messages sits quieter under them.
+- **A loading box takes the register's shape.** Until the messages load, rows with a day and two lines
+  of text hold their place; a sync shows as a thin bar under the notices that moves nothing.
 
 ### Fixed
 

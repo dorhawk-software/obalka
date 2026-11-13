@@ -8,7 +8,8 @@ import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { lightTheme } from '../../src/theme/theme';
 import { chipTone } from '../../src/theme/chipTone';
-import { InboxStrip, StaleLine, StripAction } from '../../src/features/messages/screens/InboxStrips';
+import { InboxStrip, StaleLine, StripAction, SyncBar } from '../../src/features/messages/screens/InboxStrips';
+import { RegisterSkeleton } from '../../src/features/messages/screens/InboxRows';
 
 const tone = chipTone('dangerSoft', lightTheme);
 
@@ -70,4 +71,19 @@ it('keeps the stale line quieter: sunken, centred, inset, and closer under a str
   expect(alone.borderBottomWidth ?? 0).toBe(0);
   const under = style((await inLight(<StaleLine kind="failed" afterStrip />)).getByTestId('staleLine'));
   expect(under.marginTop).toBe(8);
+});
+
+it('draws the sync bar only while syncing, as an inset track that takes no room (I20)', async () => {
+  expect((await inLight(<SyncBar active={false} />)).queryByTestId('syncBar', { includeHiddenElements: true })).toBeNull();
+  const view = await inLight(<SyncBar active />);
+  const track = view.getByTestId('syncBar', { includeHiddenElements: true });
+  expect(style(track)).toMatchObject({ position: 'absolute', left: 16, right: 16, height: 3 });
+  // Its holder is 0 high: the list under it does not move when a sync starts or ends.
+  expect(style(track.parent as never).height).toBe(0);
+});
+
+it('loads as the register\'s shape: five rows of a day and two lines', async () => {
+  const view = await inLight(<RegisterSkeleton />);
+  const blocks = (view.toJSON() as { children: { children: unknown[] }[] }).children;
+  expect(blocks).toHaveLength(5);
 });

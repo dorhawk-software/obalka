@@ -62,6 +62,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Upozornění nad seznamem zpráv jsou karty v barvě sdělení.** Odhlášená schránka, končící heslo
   i chybějící schránka mají vlastní kartu s tlačítkem; řádek o uložených zprávách je pod nimi
   tišší.
+- **Načítání schránky má tvar knihy zpráv.** Než se zprávy načtou, jsou na jejich místě řádky se
+  dnem a dvěma řádky textu; synchronizaci ukazuje tenký pruh pod upozorněními, který nic neposune.
 
 ### Opraveno
 

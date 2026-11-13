@@ -6,8 +6,12 @@
 // A strip's message and its action share the first line: at a large text size the message wraps, and
 // an action centred on the whole strip lands in the middle of the sentence. An expired password takes
 // two steps in order, so its two actions go under the message (001 FR-009).
+//
+// Under them, while the inbox syncs, the one waiting bar (R5 "Loading", R14 "Waiting").
 
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Animated, Easing, type LayoutChangeEvent } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 import { XStack, YStack } from '../../../theme/ui';
 import { Badge, Meta } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -125,5 +129,70 @@ export function StaleLine({ kind, afterStrip }: { readonly kind: 'offline' | 'fa
         {t(kind === 'offline' ? 'messages.offline' : 'messages.stale')}
       </Meta>
     </XStack>
+  );
+}
+
+/**
+ * The inbox syncing (031 I20, board R5 "Loading"): the one waiting bar - a 3 dp sunken track inset
+ * under the strips, one segment a third of it long sweeping across. It lies over the top of the list,
+ * so it takes no room and nothing moves when it comes and goes. Reduce Motion: the segment stands.
+ * Core Animated on the native driver: Android never drew Reanimated's transform on these moments.
+ */
+export function SyncBar({ active }: { readonly active: boolean }) {
+  const theme = useTheme();
+  const reduceMotion = useReducedMotion();
+  const [track, setTrack] = useState(0);
+  const [sweep] = useState(() => new Animated.Value(0));
+  const segment = track * 0.3;
+  useEffect(() => {
+    if (!active || reduceMotion || track === 0) {
+      return;
+    }
+    sweep.setValue(0);
+    const loop = Animated.loop(
+      Animated.timing(sweep, { toValue: 1, duration: 1300, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [active, reduceMotion, track, sweep]);
+  if (!active) {
+    return null;
+  }
+  return (
+    <YStack height={0} zIndex={1} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <YStack
+        position="absolute"
+        left={16}
+        right={16}
+        top={10}
+        height={3}
+        borderRadius={999}
+        overflow="hidden"
+        backgroundColor={theme.surfaceSunken}
+        onLayout={(e: LayoutChangeEvent) => setTrack(e.nativeEvent.layout.width)}
+        testID="syncBar"
+      >
+        {track > 0 ? (
+          <Animated.View
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              width: segment,
+              height: 3,
+              borderRadius: 999,
+              backgroundColor: theme.blue,
+              transform: [
+                {
+                  translateX: reduceMotion
+                    ? track * 0.35
+                    : sweep.interpolate({ inputRange: [0, 1], outputRange: [-segment, track] }),
+                },
+              ],
+            }}
+          />
+        ) : null}
+      </YStack>
+    </YStack>
   );
 }
