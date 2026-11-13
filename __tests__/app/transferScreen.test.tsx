@@ -10,14 +10,14 @@ import { AppState } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
+import { TransferScreen } from '../../src/app/settings/TransferScreen';
 import {
-  TransferScreen,
   countList,
   errorText,
   routeKey,
   routeText,
   wentText,
-} from '../../src/app/settings/TransferScreen';
+} from '../../src/app/settings/transferWords';
 import type { TransferController } from '../../src/features/transfer/state/transferController';
 import {
   PhraseRefusedError,
@@ -350,7 +350,7 @@ describe('the receiving side', () => {
       fireEvent.press(view.getByTestId('transfer-received-confirm'));
     });
     await waitFor(() =>
-      expect(view.getByTestId('transfer-done').props.children).toContain(
+      expect(view.getByTestId('transfer-done-body').props.children).toContain(
         t('transfer.done.signIn'),
       ),
     );
@@ -660,6 +660,10 @@ describe('saving what arrived (025 review, 2026-09-15)', () => {
       state.settleApply?.resolve(state.applyReport);
     });
     expect(view.getByTestId('transfer-done')).toBeTruthy();
+    // The end is the whole screen (031 R8); the way on leads back to the form.
+    await act(async () => {
+      fireEvent.press(view.getByTestId('transfer-continue'));
+    });
     expect(view.getByTestId('transfer-receive')).toBeTruthy();
   });
 
@@ -677,7 +681,7 @@ describe('saving what arrived (025 review, 2026-09-15)', () => {
     const view = await mount(controller);
     await receiveAndConfirm(view);
     await waitFor(() => expect(view.getByTestId('transfer-done')).toBeTruthy());
-    expect(view.getByTestId('transfer-done').props.children).toContain(
+    expect(view.getByTestId('transfer-done-body').props.children).toContain(
       t('transfer.done.keyNotSaved'),
     );
   });
@@ -708,9 +712,12 @@ describe('saving what arrived (025 review, 2026-09-15)', () => {
     await act(async () => {
       state.applied?.({ ok: true, applied: { ...state.applyReport, keysFailed: true } });
     });
-    expect(view.getByTestId('transfer-done').props.children).toContain(
+    expect(view.getByTestId('transfer-done-body').props.children).toContain(
       t('transfer.done.keyNotSaved'),
     );
+    await act(async () => {
+      fireEvent.press(view.getByTestId('transfer-continue'));
+    });
     expect(view.getByTestId('transfer-receive')).toBeTruthy();
 
     const failing = fake();
@@ -846,11 +853,10 @@ describe('counts both phones can be read against (US1 scenarios 1 and 3)', () =>
     });
     await waitFor(() => expect(view.getByTestId('transfer-done')).toBeTruthy());
     expect(view.getByTestId('transfer-done').props.children).toBe(
-      [
-        t('transfer.done', { what: '1 schránka, 3 zprávy, 9 příloh' }),
-        '1 přílohu se nepodařilo obnovit.',
-        t('transfer.done.signIn'),
-      ].join(' '),
+      t('transfer.done', { what: '1 schránka, 3 zprávy, 9 příloh' }),
+    );
+    expect(view.getByTestId('transfer-done-body').props.children).toBe(
+      ['1 přílohu se nepodařilo obnovit.', t('transfer.done.signIn')].join(' '),
     );
     // The fake's receive reports a relayed route; the last word repeats it, as its own paragraph,
     // because it says something else than what was restored (025 T027).
@@ -892,8 +898,9 @@ describe('the last word on each phone (025 T027)', () => {
       finish();
     });
     await waitFor(() =>
-      expect(view.getByTestId('transfer-done').props.children).toBe(t('transfer.sent')),
+      expect(view.getByTestId('transfer-done').props.children).toBe(t('transfer.sent.title')),
     );
+    expect(view.getByTestId('transfer-done-body').props.children).toBe(t('transfer.sent.body'));
     expect(view.getByTestId('transfer-done-route').props.children).toBe(wentText(false));
   });
 

@@ -10,6 +10,7 @@ import { cs as detailCs, en as detailEn } from './messageDetailStrings';
 import { cs as sentCs, en as sentEn } from './sentResultStrings';
 import { cs as composeCs, en as composeEn } from './composeStrings';
 import { cs as pwdChangeCs, en as pwdChangeEn } from './pwdChangeStrings';
+import { cs as transferEndCs, en as transferEndEn } from './transferEndStrings';
 import type { Locale } from '../app/settings/languages';
 
 // The language list is `app/settings/languages.tsx`, and `Locale` is derived from it. Re-exported here
@@ -19,6 +20,7 @@ export type { Locale };
 const cs: Record<string, string> = {
   ...composeCs,
   ...pwdChangeCs,
+  ...transferEndCs,
   ...detailCs,
   ...sentCs,
   ...errorCs,
@@ -823,26 +825,6 @@ const cs: Record<string, string> = {
   'transfer.got.tooNew':
     'Tuto zálohu vytvořila novější verze aplikace. Aktualizujte aplikaci a zkuste to znovu.',
   'transfer.got.unsupported': 'Tuto zálohu tato verze aplikace otevřít neumí.',
-  // US1. Schránky, zprávy a přílohy ve stejném pořadí, v jakém je ukázal telefon, který odesílal.
-  'transfer.done': 'Obnoveno: {what}.',
-  // Přílohy, které záloha jmenuje a které se nepodařilo zapsat - spočítané a řečené, ne tiše vynechané.
-  'transfer.done.missing.one': '1 přílohu se nepodařilo obnovit.',
-  'transfer.done.missing.few': '{n} přílohy se nepodařilo obnovit.',
-  'transfer.done.missing.many': '{n} příloh se nepodařilo obnovit.',
-  // FR-011. Přihlašovací údaje se nepřenášejí a nikdy se nepřenášely; po obnovení se do schránek
-  // přihlásíte znovu. Řečeno tady, protože tady je člověk, který si myslí, že je hotovo.
-  'transfer.done.signIn': 'Do schránek se ještě budete muset přihlásit.',
-  // Poslední slovo ODESÍLAJÍCÍHO telefonu (025 T027). Dřív tu stálo jen "Do schránek se ještě budete
-  // muset přihlásit", věta pro druhý telefon - že se něco odeslalo, neřeklo nic.
-  'transfer.sent': 'Odesláno. Na druhém telefonu se do schránek ještě budete muset přihlásit.',
-  // FR-007 i po konci: malý archiv přejde za vteřinu a věta o cestě během přenosu jen probleskne.
-  'transfer.route.went.direct': 'Přenos šel přímo mezi telefony.',
-  'transfer.route.went.relayed':
-    'Přenos šel přes veřejný přenosový server {host}. Ten viděl velikost a čas, obsah ne - byl zašifrovaný.',
-  // Archiv je uložený, jen heslo k záloze, které přišlo s ním, se uložit nepodařilo (třeba odmítnutá
-  // výzva k zámku obrazovky). Řečeno, jinak by člověk věřil, že nový telefon zálohuje.
-  'transfer.done.keyNotSaved':
-    'Heslo k záloze se do tohoto telefonu nepodařilo uložit. Zkontrolujte to na obrazovce Záloha archivu.',
   // Jak dopadlo uložení přenosu, když při jeho konci nebyla otevřená obrazovka přenosu. Řekne to
   // obrazovka zálohy, jakmile je na očích - jinak by to neřekl nikdo.
   'transfer.outcome.title': 'Přenos z druhého telefonu',
@@ -1023,6 +1005,7 @@ const cs: Record<string, string> = {
 const en: Record<string, string> = {
   ...composeEn,
   ...pwdChangeEn,
+  ...transferEndEn,
   ...detailEn,
   ...sentEn,
   ...errorEn,
@@ -1609,16 +1592,6 @@ const en: Record<string, string> = {
   'transfer.got.tooNew':
     'This backup was made by a newer version of the app. Update the app and try again.',
   'transfer.got.unsupported': 'This version of the app cannot open this backup.',
-  'transfer.done': 'Restored {what}.',
-  'transfer.done.missing.one': '1 document could not be restored.',
-  'transfer.done.missing.other': '{n} documents could not be restored.',
-  'transfer.done.signIn': 'You still need to sign in to the data boxes.',
-  'transfer.sent': 'Sent. On the other phone you still need to sign in to the data boxes.',
-  'transfer.route.went.direct': 'The transfer went straight between the phones.',
-  'transfer.route.went.relayed':
-    'The transfer went through the public relay {host}. It saw the size and the timing, not the contents - those were encrypted.',
-  'transfer.done.keyNotSaved':
-    'The backup password could not be saved on this phone. Check it on the Archive backup screen.',
   'transfer.outcome.title': 'The transfer from the other phone',
   'transfer.error.phrase': 'That password does not match. Ask the other phone for a fresh one.',
   'transfer.error.typo': 'That cannot be the password. Compare it with the other phone: 4 characters, then 4 words.',

@@ -292,10 +292,17 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   - [ ] I46.2 Send: pick a backup (none: a link to create one), the option group, the note, send -
     **N**: R9.
   - [ ] I46.3 Receive: the description, the hint, scan, the phrase field, start - **N**: R9.
-  - [ ] I46.4 Running: stage lines (preparing, connecting, waiting, receiving, applying, received),
-    progress or waiting bar, cancel, keep open, the route - **N**: R8 (waiting).
-  - [ ] I46.5 Ends: error, done, done with a route, Continue, stopped by going to the background -
-    **N**: R8.
+  - [x] I46.4 Running: stage lines (preparing, connecting, waiting, receiving, applying, received),
+    progress or waiting bar, cancel, keep open, the route - **N**: R8 (waiting). Fixed 2026-11-13:
+    the half the run belongs to as a plain overline (no icon), the bytes in muted 13/17 beside the
+    stage while bytes move, and a receive's stage 18 under the overline (8 + 10, as R8). Walked
+    forced at 2,6 of 4,2 MB beside R8, light, dark and English.
+  - [x] I46.5 Ends: error, done, done with a route, Continue, stopped by going to the background -
+    **N**: R8. Fixed 2026-11-13: the end is a screen of its own - the archive stack, what came back
+    as the title (36 under, the board's 32), what is still to do in muted 14/20 at 300, the route in
+    faint meta, Pokračovat 52 at the foot with no bar; the sending phone's end in the same shape
+    ("Odesláno." and what the other phone still needs). A failure is R10's danger block at the top of
+    the half it happened in. Walked forced (done, stopped) beside R8 and R10, light, dark and English.
   - [ ] I46.6 First run, receive only - **N**: R9.
 - [ ] I47 `DebugScreen` (level, start/stop/saving, counter, files: loading, failed, empty, rows with
   share and delete) - **N** (cards).
@@ -767,6 +774,8 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
 ## Phase 6: Build round 1 and round 2; Phase 7: close
 
 - [ ] T050 impeccable critique of the built app (two isolated reviewers), fixes, re-audit with the owner.
+  Raised in I46.4: English byte sizes keep the Czech decimal comma ("2,6 MB of 4,2 MB"); `formatBytes`
+  knows one language.
   Raised in I11: R8's refusal card repeats its title as the first words of its body ("ISDS
   přihlášení odmítlo: …"), built as drawn; the error string could lose them.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
@@ -793,7 +802,14 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - InboxA: the edge only under the fiction sheet; the owner had it drawn under every attention sheet
     (2026-11-13), built.
   - R6 draws no hidden key: the build shows the warning and one 52 button.
-  - R6 and R10 draw section labels with no icon; the code keeps them until R10 drops them all.
+  - R6 and R10 draw section labels with no icon; the code keeps them until R10 drops them all. A
+    transfer's run has none already, as R6 and R8 draw it.
+  - R8 transfer done: drawn for the receiving phone on its first run only. The sending phone ends in
+    the same shape ("Odesláno." over what the other phone still needs), and from Settings Pokračovat
+    goes back to the form; the button sits 12 above the inset, as the password change's done state,
+    not 30 above the frame.
+  - R10 stopped by going away: the board's sentence drops "dokud přenos neskončí"; the build says the
+    string whole.
   - R7 sent: the stamp prints the cost; the archive has none, so the build's is blank (not-now.md).
   - R7 sent: "Odesláno" and "Dodáno" as two rows at one time; ISDS gives one, the build merges them
     into "Odesláno a dodáno" (017 T011).

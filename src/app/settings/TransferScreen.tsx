@@ -24,28 +24,18 @@ import { ProgressBar, WaitingBar } from '../../theme/ProgressBar';
 import { QrCode } from '../../theme/QrCode';
 import { useTheme } from '../../theme/ThemeProvider';
 import { BackupIcon, CameraIcon, CloseIcon, ShieldKeyIcon } from '../../theme/icons';
-import { formatBytes, plural, t } from '../../i18n/strings';
+import { formatBytes, t } from '../../i18n/strings';
 import { haptics } from '../../services/haptics';
 import { SubScreen } from './SubScreen';
 import { Card, CardRow, RowTitle, Section } from './SettingsSection';
 import type {
-  AppliedTransfer,
   ApplyOutcome,
   TransferController,
   TransferContents,
   ReceivedTransfer,
 } from '../../features/transfer/state/transferController';
 import type { BackupProgress } from '../../services/backup/progress';
-import {
-  PhraseRefusedError,
-  TRANSFER_RELAY,
-  TransferBackupGoneError,
-  TransferBusyError,
-  TransferNoAnswerError,
-  TransferOfferExpiredError,
-  TransferUnavailableError,
-  type TransferProgress,
-} from '../../services/transfer/transport';
+import { TransferBackupGoneError, type TransferProgress } from '../../services/transfer/transport';
 import { parseCodePhrase, unknownPhraseWord } from '../../services/transfer/codePhrase';
 import {
   METERED_ASK_BYTES,
@@ -59,6 +49,9 @@ import {
 import type { BackupManifest } from '../../services/backup/schema';
 import { useSingleFlight } from '../useSingleFlight';
 import { ContinueButton } from './ContinueButton';
+import { chipTone } from '../../theme/chipTone';
+import { TransferDone, type TransferEnd } from './TransferDone';
+import { contentsText, doneParts, errorText, lastWord, routeText } from './transferWords';
 import { OptionGroup } from '../../theme/OptionGroup';
 import {
   BackupDocumentsChip,
@@ -67,136 +60,11 @@ import {
 } from './BackupDocumentsChip';
 import { TransferDialogs, formatDateTime } from './TransferDialogs';
 
-/** Which of the three honest things to say about the route (FR-007). */
-export function routeKey(relayed: boolean | null): string {
-  if (relayed === null) {
-    return 'transfer.route.unknown';
-  }
-  return relayed ? 'transfer.route.relayed' : 'transfer.route.direct';
-}
-
-/** The route sentence itself, with the relay NAMED rather than described (US3 scenario 2). */
-export function routeText(relayed: boolean | null): string {
-  return t(routeKey(relayed), { host: TRANSFER_RELAY.host, host6: TRANSFER_RELAY.host6 });
-}
-
-/**
- * The route once it is over, in the past tense, or nothing when it never became known (025 T027).
- *
- * The sentence during the transfer is right for a large archive and invisible for a small one: the
- * walk moved three boxes in about a second, and nobody could say afterwards which way they had gone.
- */
-export function wentText(relayed: boolean | null): string | null {
-  if (relayed === null) {
-    return null;
-  }
-  return relayed
-    ? t('transfer.route.went.relayed', { host: TRANSFER_RELAY.host })
-    : t('transfer.route.went.direct');
-}
-
-/**
- * The last word, and the route as a paragraph of its own under it when the route is known. Run
- * on as one paragraph, "it went through the relay" read as part of "sign in to the boxes" (T027).
- */
-type Done = { readonly text: string; readonly went: string | null };
-
-function lastWord(text: string, relayed: boolean | null = null): Done {
-  return { text, went: wentText(relayed) };
-}
-
-/**
- * Boxes, messages and documents as one counted list (US1).
- *
- * The same words in the same order on the phone that sends and the phone that receives, because the
- * point of both counts is to be read against each other.
- */
-export function countList(
-  boxes: number | null,
-  messages: number | null,
-  documents: number | null,
-): string {
-  return [
-    boxes == null ? null : t(`backup.count.boxes.${plural(boxes)}`, { n: boxes }),
-    messages == null ? null : t(`backup.count.messages.${plural(messages)}`, { n: messages }),
-    documents == null
-      ? null
-      : t(`transfer.count.documents.${plural(documents)}`, { n: documents }),
-  ]
-    .filter(Boolean)
-    .join(', ');
-}
-
-/** Under the phrase: what is about to go, counted where it could be counted, and the size always. */
-export function contentsText(contents: TransferContents | null, sizeBytes: number): string {
-  const size = formatBytes(sizeBytes);
-  const counted =
-    contents != null &&
-    (contents.boxes != null || contents.messages != null || contents.documents != null);
-  return counted
-    ? t('transfer.phrase.contents', {
-        what: countList(contents.boxes, contents.messages, contents.documents),
-        size,
-      })
-    : t('transfer.phrase.size', { size });
-}
-
-/**
- * The receiving phone's last word (US1 scenarios 3 and 5, FR-011).
- *
- * Documents are counted with the rest. The ones the backup named and that did not land - not in what
- * arrived, unreadable, or with no message left to belong to - are said as a number rather than left
- * for the user to discover as a difference between the two phones.
- */
-export function doneText(restored: AppliedTransfer): string {
-  const messages = restored.messagesAdded + restored.messagesMerged;
-  const boxes = restored.accountsAdded + restored.accountsKept;
-  const documents = restored.documents;
-  const lost =
-    (documents?.missing ?? 0) + (documents?.failed ?? 0) + (documents?.orphaned ?? 0);
-  return [
-    t('transfer.done', { what: countList(boxes, messages, documents?.restored ?? 0) }),
-    lost > 0 ? t(`transfer.done.missing.${plural(lost)}`, { n: lost }) : null,
-    // The archive is saved either way, but the password that came with it was not kept, so backups on
-    // this phone may be off. Said, so nobody believes the new phone is backing up when it is not.
-    restored.keysFailed ? t('transfer.done.keyNotSaved') : null,
-    t('transfer.done.signIn'),
-  ]
-    .filter(Boolean)
-    .join(' ');
-}
-
-/**
- * The sentence for a transfer that did not finish (FR-006), so the outcomes stay told apart whichever
- * way the failure reaches the screen: from a run it started, or from a save it found running.
- *
- * A refused phrase reads differently on the two phones. It was typed on the receiving one, so that is
- * where it can be fixed; the sending phone can only start again, and "ask the other phone for a new
- * one" would send its user looking for a password they are the one showing (025 T027).
- */
-export function errorText(e: unknown, side: 'sending' | 'receiving' = 'receiving'): string {
-  if (e instanceof PhraseRefusedError) {
-    return side === 'sending' ? t('transfer.error.phrase.sender') : t('transfer.error.phrase');
-  }
-  if (e instanceof TransferNoAnswerError) {
-    return t('transfer.error.noAnswer');
-  }
-  if (e instanceof TransferOfferExpiredError) {
-    return t('transfer.error.expired');
-  }
-  if (e instanceof TransferUnavailableError) {
-    return t('transfer.unavailable');
-  }
-  if (e instanceof TransferBusyError) {
-    return t('transfer.error.busy');
-  }
-  if (e instanceof TransferBackupGoneError) {
-    return t('transfer.error.gone');
-  }
-  return t('transfer.error.failed');
-}
-
 type Mode = 'idle' | 'sending' | 'receiving';
+type Side = 'sending' | 'receiving';
+
+/** A failure and the half of the screen it happened in, which is where it is said (R10). */
+type Failure = { readonly text: string; readonly side: Side };
 
 export function TransferScreen({
   onBack,
@@ -233,6 +101,7 @@ export function TransferScreen({
   readonly inView?: boolean;
 }) {
   const theme = useTheme();
+  const danger = chipTone('dangerSoft', theme);
   const [mode, setMode] = useState<Mode>('idle');
   /** Newest first, which is also the one chosen until the person picks another. */
   const sorted = backups ? [...backups].sort((a, b) => b.createdAt - a.createdAt) : null;
@@ -264,8 +133,10 @@ export function TransferScreen({
    */
   const routeSeen = useRef<boolean | null>(null);
   const [got, setGot] = useState<ReceivedTransfer | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<Done | null>(null);
+  const [error, setError] = useState<Failure | null>(null);
+  const [done, setDone] = useState<TransferEnd | null>(null);
+  /** The half the run in flight belongs to, for a stop that arrives from outside it. */
+  const runSide = useRef<Side>('receiving');
   const [cancel, setCancel] = useState({ cancelled: false });
   const [scanning, setScanning] = useState(false);
   /** A send held back until the mobile-data question is answered (FR-008). */
@@ -350,10 +221,10 @@ export function TransferScreen({
     if (outcome.ok) {
       haptics.success();
       setError(null);
-      setDone(lastWord(doneText(outcome.applied)));
+      setDone(lastWord(doneParts(outcome.applied)));
     } else {
       setDone(null);
-      setError(errorText(outcome.error));
+      setError({ text: errorText(outcome.error), side: 'receiving' });
     }
   }, []);
 
@@ -423,7 +294,7 @@ export function TransferScreen({
     const leave = () => {
       stopRun(cancel);
       setDone(null);
-      setError(t('transfer.stopped.background'));
+      setError({ text: t('transfer.stopped.background'), side: runSide.current });
     };
     // A run can start in the instant the app is already on its way out - a scanned code landing as
     // the home button is pressed - and then no change event is ever coming.
@@ -453,8 +324,8 @@ export function TransferScreen({
   );
 
   /** Every failure funnels through here so the three outcomes stay told apart (FR-006). */
-  const report = (e: unknown, side: 'sending' | 'receiving') => {
-    setError(errorText(e, side));
+  const report = (e: unknown, side: Side) => {
+    setError({ text: errorText(e, side), side });
   };
 
   /** A run's progress, with the route it reports kept for after its end. */
@@ -480,6 +351,7 @@ export function TransferScreen({
     const signal = { cancelled: false };
     setCancel(signal);
     setMode('sending');
+    runSide.current = 'sending';
     setSendingManifest(manifest);
     routeSeen.current = null;
     // Every result below is dropped once the run was stopped. The screen has already said why and
@@ -502,7 +374,7 @@ export function TransferScreen({
         reset();
         // That it WENT, first: the sign-in reminder alone was the sentence for the other phone, and
         // left this one's user guessing whether anything had been sent (025 T027).
-        setDone(lastWord(t('transfer.sent'), routeSeen.current));
+        setDone(lastWord({ title: t('transfer.sent.title'), body: t('transfer.sent.body') }, routeSeen.current));
       })
       .catch(e => {
         if (signal.cancelled) {
@@ -554,6 +426,7 @@ export function TransferScreen({
     const signal = { cancelled: false };
     setCancel(signal);
     setMode('receiving');
+    runSide.current = 'receiving';
     routeSeen.current = null;
     void controller
       .receive(parsed, progressFor(signal), signal)
@@ -585,7 +458,10 @@ export function TransferScreen({
       // Not a transport failure and not a refused phrase: this one never left the phone, so the
       // fix is to look again - not the "ask for a new one" a refused phrase gets.
       const word = unknownPhraseWord(typed);
-      setError(word ? t('transfer.error.typo.word', { word }) : t('transfer.error.typo'));
+      setError({
+        text: word ? t('transfer.error.typo.word', { word }) : t('transfer.error.typo'),
+        side: 'receiving',
+      });
       return;
     }
     startReceive(parsed);
@@ -622,7 +498,7 @@ export function TransferScreen({
     if (!key) {
       // Without the key the archive cannot be opened, and this screen has nowhere to ask for one.
       void controller.dispose(received);
-      setError(t('transfer.error.failed'));
+      setError({ text: t('transfer.error.failed'), side: 'receiving' });
       reset();
       return;
     }
@@ -641,7 +517,7 @@ export function TransferScreen({
         }
         controller.takeOutcome();
         haptics.success();
-        setDone(lastWord(doneText(restored), routeSeen.current));
+        setDone(lastWord(doneParts(restored), routeSeen.current));
         reset();
       })
       .catch(e => {
@@ -655,6 +531,41 @@ export function TransferScreen({
   };
 
   const running = mode !== 'idle' || waitingForApply;
+  const screenTitle = receiveOnly ? t('transfer.receiveFrom') : t('transfer');
+
+  // R8: the end is the whole screen, until the way on is taken - the shell's, or back to the form.
+  if (done && !running) {
+    return (
+      <TransferDone
+        title={screenTitle}
+        end={done}
+        onBack={onBack}
+        onContinue={onContinue ?? (() => setDone(null))}
+      />
+    );
+  }
+
+  /** R10: a failure is a danger block at the top of the half it happened in, no outline, no icon. */
+  const failure = (side: Side) =>
+    error?.side === side ? (
+      <YStack
+        backgroundColor={danger.bg}
+        borderRadius={12}
+        paddingVertical={12}
+        paddingHorizontal={14}
+        testID={`transfer-error-${side}`}
+      >
+        <Small fontWeight="600" color={danger.fg} testID="transfer-error">
+          {error.text}
+        </Small>
+      </YStack>
+    ) : null;
+
+  /** The bytes beside the stage (R8), while there are bytes moving to count. */
+  const bytes =
+    !saving && !got && progress && progress.total > 0 && progress.stage !== 'preparing' && progress.stage !== 'connecting'
+      ? t('backup.progress.count', { done: formatBytes(progress.sent), total: formatBytes(progress.total) })
+      : null;
 
   return (
     <>
@@ -671,7 +582,7 @@ export function TransferScreen({
         onConfirm={onConfirm}
       />
 
-      <SubScreen title={receiveOnly ? t('transfer.receiveFrom') : t('transfer')} onBack={onBack}>
+      <SubScreen title={screenTitle} onBack={onBack}>
         {!available ? (
           <Section label={t('transfer')} icon={<BackupIcon size={13} color={theme.textFaint} />}>
             <Card>
@@ -691,6 +602,7 @@ export function TransferScreen({
                 label={t('transfer.pick')}
                 icon={<BackupIcon size={13} color={theme.textFaint} />}
               >
+                {failure('sending')}
                 {sorted === null ? null : sorted.length === 0 ? (
                   // Nothing to send: a transfer always sends a finished backup (026 US3).
                   <Card>
@@ -755,6 +667,7 @@ export function TransferScreen({
               label={t('transfer.receive')}
               icon={<ShieldKeyIcon size={13} color={theme.textFaint} />}
             >
+              {failure('receiving')}
               <Card>
                 <CardRow last={false}>
                   <YStack flex={1} gap={4}>
@@ -809,14 +722,13 @@ export function TransferScreen({
         ) : null}
 
         {running ? (
-          <Section
-            label={t('transfer')}
-            icon={<BackupIcon size={13} color={theme.textFaint} />}
-          >
+          // R6 and R8: the half the run belongs to, as a plain overline over it.
+          <Section label={mode === 'sending' ? t('transfer') : t('transfer.receive')} testID="transfer-run">
             {/* Boards R6 (the phrase) and R8 (a run): the phrase is a slip on the security tint, and
                 the run is plain lines under it - the stage, one bar, what to keep doing, the way to
-                stop. No card: a card around a run read as one more setting. */}
-            <YStack gap={10}>
+                stop. No card: a card around a run read as one more setting. A receive has no slip,
+                and R8 sets its stage 18 under the overline: the section's 8 and the column's 10. */}
+            <YStack gap={10} paddingTop={mode === 'sending' ? 0 : 10}>
               {phrase ? (
                 <SecureSlip testID="transfer-slip">
                   <Overline color={theme.textMuted}>{t('transfer.phrase.title')}</Overline>
@@ -857,29 +769,36 @@ export function TransferScreen({
                 </SecureSlip>
               ) : null}
 
-              <Small fontWeight="600" color={theme.text} testID="transfer-stage">
-                {/* "Waiting for the other phone" is only true once there IS a phrase to type. Before
-                    that the app is still packing, and the walk measured 25 seconds of it on an
-                    archive with nine documents. A receive has nothing to pack: it is connecting from
-                    the first frame, and said "Getting ready to send" (T027). Once it has arrived it
-                    says so, under the question about saving it. */}
-                {saving
-                  ? t('transfer.stage.applying')
-                  : got
-                  ? t('transfer.stage.received')
-                  : progress?.stage === 'preparing' && progress.total > 0
-                  ? t('transfer.stage.preparing.count', {
-                      done: String(progress.sent),
-                      total: String(progress.total),
-                    })
-                  : progress && progress.stage !== 'preparing'
-                  ? t(`transfer.stage.${progress.stage}`)
-                  : phrase
-                  ? t('transfer.phrase.waiting')
-                  : mode === 'receiving'
-                  ? t('transfer.stage.connecting')
-                  : t('transfer.stage.preparing')}
-              </Small>
+              <XStack justifyContent="space-between" alignItems="baseline" gap={10}>
+                <Small fontWeight="600" color={theme.text} flexShrink={1} testID="transfer-stage">
+                  {/* "Waiting for the other phone" is only true once there IS a phrase to type. Before
+                      that the app is still packing, and the walk measured 25 seconds of it on an
+                      archive with nine documents. A receive has nothing to pack: it is connecting from
+                      the first frame, and said "Getting ready to send" (T027). Once it has arrived it
+                      says so, under the question about saving it. */}
+                  {saving
+                    ? t('transfer.stage.applying')
+                    : got
+                    ? t('transfer.stage.received')
+                    : progress?.stage === 'preparing' && progress.total > 0
+                    ? t('transfer.stage.preparing.count', {
+                        done: String(progress.sent),
+                        total: String(progress.total),
+                      })
+                    : progress && progress.stage !== 'preparing'
+                    ? t(`transfer.stage.${progress.stage}`)
+                    : phrase
+                    ? t('transfer.phrase.waiting')
+                    : mode === 'receiving'
+                    ? t('transfer.stage.connecting')
+                    : t('transfer.stage.preparing')}
+                </Small>
+                {bytes ? (
+                  <Label color={theme.textMuted} testID="transfer-bytes">
+                    {bytes}
+                  </Label>
+                ) : null}
+              </XStack>
               {/* Always a bar in the same place: counting when there is something to count,
                   travelling when there is not (025 T027), full once it has all arrived. */}
               {saving ? (
@@ -948,25 +867,6 @@ export function TransferScreen({
           </Section>
         ) : null}
 
-        {error ? (
-          <YStack paddingHorizontal={16} paddingTop={4}>
-            <Label fontWeight="400" color={theme.danger} testID="transfer-error">
-              {error}
-            </Label>
-          </YStack>
-        ) : null}
-        {done ? (
-          <YStack paddingHorizontal={16} paddingTop={4} gap={8}>
-            <Label fontWeight="400" color={theme.textMuted} testID="transfer-done">
-              {done.text}
-            </Label>
-            {done.went ? (
-              <Label fontWeight="400" color={theme.textMuted} testID="transfer-done-route">
-                {done.went}
-              </Label>
-            ) : null}
-          </YStack>
-        ) : null}
         {/* Last, so it moves nothing when it arrives. Not while a transfer runs: a new one started
             after the first save is still this screen's to finish, or to stop. */}
         {onContinue && !running ? (

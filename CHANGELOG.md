@@ -20,6 +20,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Přenos do jiného telefonu končí obrazovkou, která řekne, co přišlo.** Archiv dorazí jako hromádka
+  obálek, pod ní co se obnovilo, co zbývá udělat a kudy přenos šel. Během přenosu je vedle stavu vidět,
+  kolik dat už prošlo, a když se přenos zastaví, řekne to červený blok nahoře v části, které se týká.
 - **Změna hesla vypadá jako zbytek přihlášení.** Pravidla nového hesla jsou na listu a splněná se
   zeleně zaškrtnou. Chyba je tónovaný blok bez ikony a změněné heslo potvrdí velký zámek.
 - **Přihlásit znovu vypadá jako přidání schránky.** Schránka je list s vlastní obálkou a zámkem. Když

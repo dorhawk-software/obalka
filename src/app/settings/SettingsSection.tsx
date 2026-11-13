@@ -33,13 +33,15 @@ export function Section({
   label,
   icon,
   children,
+  testID,
 }: {
   readonly label: string;
   readonly icon?: ReactNode;
   readonly children: ReactNode;
+  readonly testID?: string;
 }) {
   return (
-    <YStack marginBottom={space.gutter} gap={space.base}>
+    <YStack marginBottom={space.gutter} gap={space.base} testID={testID}>
       <XStack alignItems="center" gap={space.sm} marginLeft={space.xs}>
         {icon ? (
           <YStack accessibilityElementsHidden importantForAccessibility="no-hide-descendants">

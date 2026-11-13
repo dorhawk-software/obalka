@@ -119,10 +119,13 @@ describe('a save that ended while no transfer screen was open', () => {
     state.unseen = { ok: true, applied: { ...state.applyReport, keysFailed: true } };
     const view = await mount(controller);
     await waitFor(() => expect(view.getByTestId('transfer-done')).toBeTruthy());
-    expect(view.getByTestId('transfer-done').props.children).toContain(
+    expect(view.getByTestId('transfer-done-body').props.children).toContain(
       t('transfer.done.keyNotSaved'),
     );
     expect(state.unseen).toBeNull();
+    await act(async () => {
+      fireEvent.press(view.getByTestId('transfer-continue'));
+    });
     expect(view.getByTestId('transfer-receive')).toBeTruthy();
 
     const failing = fake();

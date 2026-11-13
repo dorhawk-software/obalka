@@ -8,7 +8,7 @@
 import { act, fireEvent, waitFor } from '@testing-library/react-native';
 import { fakeController, KEY, manifest, mount, wrap } from '../helpers/backupScreenHarness';
 import { BackupScreen, restoredText } from '../../src/app/settings/BackupScreen';
-import { doneText } from '../../src/app/settings/TransferScreen';
+import { doneText } from '../../src/app/settings/transferWords';
 import type {
   AppliedTransfer,
   ApplyOutcome,

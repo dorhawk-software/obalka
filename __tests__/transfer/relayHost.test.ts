@@ -9,7 +9,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { TRANSFER_RELAY } from '../../src/services/transfer/transport';
-import { routeText } from '../../src/app/settings/TransferScreen';
+import { routeText } from '../../src/app/settings/transferWords';
 import { STRINGS_FOR_TEST } from '../../src/i18n/strings';
 
 const NATIVE = join(__dirname, '../../native/transfer');

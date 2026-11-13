@@ -20,6 +20,10 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Moving to another phone ends on a screen that says what arrived.** The archive lands as a stack of
+  envelopes, with what was restored under it, what is still to do and which way the transfer went.
+  While it runs, the amount moved so far sits beside the stage, and a stopped transfer says so in a red
+  block at the top of the half it concerns.
 - **Changing the password looks like the rest of signing in.** The new password's rules are on a
   sheet and tick green as they are met. An error is a tinted block with no icon, and a large lock
   confirms the change.

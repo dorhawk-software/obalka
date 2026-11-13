@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { act, fireEvent, waitFor } from '@testing-library/react-native';
 import { fakeController, manifest, wrap } from '../helpers/backupScreenHarness';
 import { BackupScreen } from '../../src/app/settings/BackupScreen';
-import { doneText } from '../../src/app/settings/TransferScreen';
+import { doneText } from '../../src/app/settings/transferWords';
 import type {
   AppliedTransfer,
   ApplyOutcome,

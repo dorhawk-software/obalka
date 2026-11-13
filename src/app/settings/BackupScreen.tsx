@@ -81,7 +81,7 @@ import type {
   ApplyOutcome,
   TransferOutcomes,
 } from '../../features/transfer/state/transferController';
-import { doneText, errorText } from './TransferScreen';
+import { doneText, errorText } from './transferWords';
 import { useSingleFlight } from '../useSingleFlight';
 import { ContinueButton } from './ContinueButton';
 import { reportFailure } from '../../services/telemetry/telemetry';
