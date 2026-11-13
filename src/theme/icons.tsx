@@ -14,6 +14,7 @@ import {
   ArrowRight,
   Bell,
   ScanQrCode,
+  ScanLine,
   Check,
   ChevronDown,
   ChevronLeft,
@@ -373,6 +374,11 @@ export function ShieldKeyIcon({ size = 18, color = '#000' }: IconProps) {
 /** Reading a code off another phone's screen (025). Not a camera: this app never takes a photo. */
 export function CameraIcon({ size = 18, color = '#000' }: IconProps) {
   return <ScanQrCode size={size} color={color} strokeWidth={1.9} />;
+}
+
+/** The scan button's frame with its line (031 R10): read a code, drawn as the board draws it. */
+export function ScanIcon({ size = 20, color = '#000' }: IconProps) {
+  return <ScanLine size={size} color={color} strokeWidth={2} />;
 }
 
 export function TuneIcon({ size = 18, color = '#000' }: IconProps) {

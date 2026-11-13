@@ -3,6 +3,7 @@
 // 48 (`compact`); R4 sizes it to its words, 24 at each side, under a failed state's words (`inline`).
 // The press is PressScale's dip, as every button's.
 
+import type { ReactNode } from 'react';
 import { XStack } from './ui';
 import { BodyStrong } from './Typography';
 import { useTheme } from './ThemeProvider';
@@ -14,6 +15,7 @@ export function NeutralButton({
   busy,
   compact = false,
   inline = false,
+  icon,
   testID,
 }: {
   readonly label: string;
@@ -23,6 +25,8 @@ export function NeutralButton({
   readonly compact?: boolean;
   /** As wide as its words with 24 at each side, centred under them (R4); otherwise the column's width. */
   readonly inline?: boolean;
+  /** A glyph before the words, 10 from them (R10's scan button), sized and inked by the caller. */
+  readonly icon?: ReactNode;
   readonly testID?: string;
 }) {
   const theme = useTheme();
@@ -36,7 +40,9 @@ export function NeutralButton({
         alignItems="center"
         justifyContent="center"
         paddingHorizontal={inline ? 24 : 12}
+        gap={10}
       >
+        {icon}
         <BodyStrong color={theme.text} textAlign="center">
           {label}
         </BodyStrong>

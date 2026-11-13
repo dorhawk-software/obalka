@@ -20,6 +20,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Přenos do jiného telefonu je přehlednější.** Zálohy k odeslání jsou na jednom listu s velikostí
+  a tím, co obsahují, a odeslání je jedno velké tlačítko. Přijímání má vlastní obrazovku: načtení kódu,
+  pole pro heslo a tlačítko Přijmout, které počká, než heslo zadáte.
 - **Přenos do jiného telefonu končí obrazovkou, která řekne, co přišlo.** Archiv dorazí jako hromádka
   obálek, pod ní co se obnovilo, co zbývá udělat a kudy přenos šel. Během přenosu je vedle stavu vidět,
   kolik dat už prošlo, a když se přenos zastaví, řekne to červený blok nahoře v části, které se týká.

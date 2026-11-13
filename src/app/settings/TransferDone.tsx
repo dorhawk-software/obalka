@@ -7,11 +7,11 @@
 // the 32 under it is 36, as on every hero-object screen (the search, the password change).
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ScrollView, XStack, YStack } from '../../theme/ui';
+import { ScrollView, YStack } from '../../theme/ui';
 import { ScreenHeader } from '../../theme/ScreenHeader';
-import { BodyStrong, Meta, Small, Title } from '../../theme/Typography';
+import { Meta, Small, Title } from '../../theme/Typography';
 import { EnvelopePose } from '../../theme/objects/Envelope';
-import { PressScale } from '../../theme/PressScale';
+import { InkButton } from '../../theme/InkButton';
 import { useTheme } from '../../theme/ThemeProvider';
 import { space } from '../../theme/spacing';
 import { t } from '../../i18n/strings';
@@ -71,23 +71,7 @@ export function TransferDone({
         ) : null}
       </ScrollView>
       <YStack paddingHorizontal={16} paddingTop={12} paddingBottom={insets.bottom + 12}>
-        <PressScale
-          fullWidth
-          onPress={onContinue}
-          accessibilityLabel={t('common.continue')}
-          testID="transfer-continue"
-        >
-          <XStack
-            width="100%"
-            minHeight={52}
-            borderRadius={14}
-            backgroundColor={theme.text}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <BodyStrong color={theme.surfaceAlt}>{t('common.continue')}</BodyStrong>
-          </XStack>
-        </PressScale>
+        <InkButton label={t('common.continue')} onPress={onContinue} testID="transfer-continue" />
       </YStack>
     </YStack>
   );

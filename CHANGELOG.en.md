@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Moving to another phone is clearer.** The backups to send sit on one sheet with their size and
+  what they hold, and sending is one large button. Receiving has a screen of its own: scan the code,
+  the password field, and a Receive button that waits until the password is typed.
 - **Moving to another phone ends on a screen that says what arrived.** The archive lands as a stack of
   envelopes, with what was restored under it, what is still to do and which way the transfer went.
   While it runs, the amount moved so far sits beside the stage, and a stopped transfer says so in a red

@@ -1,11 +1,15 @@
-// The transfer's last word on each phone (025 US1, FR-007, FR-011, T027): what came back, what did not,
-// what is still to do, and which way it went. In their own file since 2026-11-13, when the end became a
-// screen of its own (031 I46.5, board R8) and the sending phone's sentence split into a title and what
-// follows it - `strings.ts` was at its size limit, which is met by splitting the file, never by
-// trimming what it says. `strings.ts` spreads these into its tables.
+// The transfer's strings that have left `strings.ts` (025, 031): the last word on each phone (US1,
+// FR-007, FR-011, T027) and, since R10, the row that leads to receiving and the refusal of an empty
+// Přijmout. Split out on 2026-11-13, when the end became a screen of its own (I46.5) - `strings.ts`
+// was at its size limit, which is met by splitting the file, never by trimming what it says.
+// `strings.ts` spreads these into its tables.
 
 /** Czech (primary). */
 export const cs: Record<string, string> = {
+  // R10: the row on the sending screen that opens the receiving one.
+  'transfer.receive.row': 'Zadejte heslo, které ukazuje druhý telefon.',
+  // Přijmout pressed with nothing in the field: what is missing, for the shake and a screen reader.
+  'transfer.needPhrase': 'Nejdřív zadejte heslo z druhého telefonu.',
   // US1. Schránky, zprávy a přílohy ve stejném pořadí, v jakém je ukázal telefon, který odesílal.
   'transfer.done': 'Obnoveno: {what}.',
   // Přílohy, které záloha jmenuje a které se nepodařilo zapsat - spočítané a řečené, ne tiše vynechané.
@@ -31,6 +35,8 @@ export const cs: Record<string, string> = {
 
 /** English. */
 export const en: Record<string, string> = {
+  'transfer.receive.row': 'Type the password the other phone is showing.',
+  'transfer.needPhrase': 'Type the password from the other phone first.',
   'transfer.done': 'Restored {what}.',
   'transfer.done.missing.one': '1 document could not be restored.',
   'transfer.done.missing.other': '{n} documents could not be restored.',

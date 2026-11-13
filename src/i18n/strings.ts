@@ -10,7 +10,7 @@ import { cs as detailCs, en as detailEn } from './messageDetailStrings';
 import { cs as sentCs, en as sentEn } from './sentResultStrings';
 import { cs as composeCs, en as composeEn } from './composeStrings';
 import { cs as pwdChangeCs, en as pwdChangeEn } from './pwdChangeStrings';
-import { cs as transferEndCs, en as transferEndEn } from './transferEndStrings';
+import { cs as transferCs, en as transferEn } from './transferStrings';
 import type { Locale } from '../app/settings/languages';
 
 // The language list is `app/settings/languages.tsx`, and `Locale` is derived from it. Re-exported here
@@ -20,7 +20,7 @@ export type { Locale };
 const cs: Record<string, string> = {
   ...composeCs,
   ...pwdChangeCs,
-  ...transferEndCs,
+  ...transferCs,
   ...detailCs,
   ...sentCs,
   ...errorCs,
@@ -1005,7 +1005,7 @@ const cs: Record<string, string> = {
 const en: Record<string, string> = {
   ...composeEn,
   ...pwdChangeEn,
-  ...transferEndEn,
+  ...transferEn,
   ...detailEn,
   ...sentEn,
   ...errorEn,

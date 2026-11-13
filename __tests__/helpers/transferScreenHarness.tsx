@@ -2,6 +2,7 @@
 // steps a person takes, and AppState driven by the test (moved out of transferScreen.test.tsx on
 // 2026-11-12, when the file reached its size limit).
 
+import type { ComponentProps } from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { AppState } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
@@ -153,11 +154,12 @@ export function fake(over: Partial<Record<string, unknown>> = {}) {
 export const mount = (
   controller: TransferController,
   newest: BackupManifest | null = manifest(),
+  extra: Partial<ComponentProps<typeof TransferScreen>> = {},
 ) =>
   render(
     <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
       <AppThemeProvider isDark={false}>
-        <TransferScreen onBack={() => {}} controller={controller} backups={newest ? [newest] : []} />
+        <TransferScreen onBack={() => {}} controller={controller} backups={newest ? [newest] : []} {...extra} />
       </AppThemeProvider>
     </TamaguiProvider>,
   );

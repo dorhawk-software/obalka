@@ -14,12 +14,8 @@ import { act, render, waitFor } from '@testing-library/react-native';
 import { TamaguiProvider } from 'tamagui';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { tamaguiConfig } from '../../tamagui.config';
-import {
-  AppNavigator,
-  useViewPresence,
-  type AppData,
-  type FocusEvents,
-} from '../../src/app/AppNavigator';
+import { AppNavigator, type AppData } from '../../src/app/AppNavigator';
+import { useViewPresence, type FocusEvents } from '../../src/app/viewPresence';
 import { navigate, navigationRef } from '../../src/app/navigationRef';
 import { backupController } from '../../src/features/accounts/deps';
 import type { DataBoxAccount } from '../../src/services/isds/types';

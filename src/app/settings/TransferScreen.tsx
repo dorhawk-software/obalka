@@ -17,17 +17,18 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
-import { XStack, YStack, Input } from '../../theme/ui';
+import { XStack, YStack } from '../../theme/ui';
 import { Caption, Label, Meta, Overline, Small, SmallStrong } from '../../theme/Typography';
 import { SecureSlip, SlipCode } from '../../theme/objects/SecureSlip';
 import { ProgressBar, WaitingBar } from '../../theme/ProgressBar';
 import { QrCode } from '../../theme/QrCode';
 import { useTheme } from '../../theme/ThemeProvider';
-import { BackupIcon, CameraIcon, CloseIcon, ShieldKeyIcon } from '../../theme/icons';
+import { CloseIcon } from '../../theme/icons';
 import { formatBytes, t } from '../../i18n/strings';
 import { haptics } from '../../services/haptics';
 import { SubScreen } from './SubScreen';
-import { Card, CardRow, RowTitle, Section } from './SettingsSection';
+import { Section } from './SettingsSection';
+import { space } from '../../theme/spacing';
 import type {
   ApplyOutcome,
   TransferController,
@@ -49,15 +50,10 @@ import {
 import type { BackupManifest } from '../../services/backup/schema';
 import { useSingleFlight } from '../useSingleFlight';
 import { ContinueButton } from './ContinueButton';
-import { chipTone } from '../../theme/chipTone';
 import { TransferDone, type TransferEnd } from './TransferDone';
 import { contentsText, doneParts, errorText, lastWord, routeText } from './transferWords';
-import { OptionGroup } from '../../theme/OptionGroup';
-import {
-  BackupDocumentsChip,
-  documentsChipText,
-  documentsMissingText,
-} from './BackupDocumentsChip';
+import { documentsChipText } from './BackupDocumentsChip';
+import { ReceiveForm, ReceiveRow, SendHalf, TransferUnavailable } from './TransferForms';
 import { TransferDialogs, formatDateTime } from './TransferDialogs';
 
 type Mode = 'idle' | 'sending' | 'receiving';
@@ -75,6 +71,7 @@ export function TransferScreen({
   inView = true,
   receiveOnly = false,
   onContinue,
+  onOpenReceive,
 }: {
   readonly onBack: () => void;
   readonly controller: TransferController;
@@ -85,6 +82,11 @@ export function TransferScreen({
   readonly receiveOnly?: boolean;
   /** The way on once what arrived has brought boxes onto the phone. The shell passes it only then. */
   readonly onContinue?: () => void;
+  /**
+   * The receiving screen, where the shell has one (Settings, R10): receiving is then a row here, and
+   * the form is on that screen. Without it the form is drawn here, under the send.
+   */
+  readonly onOpenReceive?: () => void;
   /**
    * The backups this phone holds, any order; null while they are being read (026 US3). The person picks
    * which one goes - nothing is backed up here.
@@ -101,7 +103,6 @@ export function TransferScreen({
   readonly inView?: boolean;
 }) {
   const theme = useTheme();
-  const danger = chipTone('dangerSoft', theme);
   const [mode, setMode] = useState<Mode>('idle');
   /** Newest first, which is also the one chosen until the person picks another. */
   const sorted = backups ? [...backups].sort((a, b) => b.createdAt - a.createdAt) : null;
@@ -545,27 +546,21 @@ export function TransferScreen({
     );
   }
 
-  /** R10: a failure is a danger block at the top of the half it happened in, no outline, no icon. */
-  const failure = (side: Side) =>
-    error?.side === side ? (
-      <YStack
-        backgroundColor={danger.bg}
-        borderRadius={12}
-        paddingVertical={12}
-        paddingHorizontal={14}
-        testID={`transfer-error-${side}`}
-      >
-        <Small fontWeight="600" color={danger.fg} testID="transfer-error">
-          {error.text}
-        </Small>
-      </YStack>
-    ) : null;
-
   /** The bytes beside the stage (R8), while there are bytes moving to count. */
   const bytes =
     !saving && !got && progress && progress.total > 0 && progress.stage !== 'preparing' && progress.stage !== 'connecting'
       ? t('backup.progress.count', { done: formatBytes(progress.sent), total: formatBytes(progress.total) })
       : null;
+
+  const receiveForm = (
+    <ReceiveForm
+      typed={typed}
+      onType={setTyped}
+      onScan={scanningAvailable() ? () => setScanning(true) : undefined}
+      onReceive={onReceive}
+      failure={error?.side === 'receiving' ? error.text : null}
+    />
+  );
 
   return (
     <>
@@ -582,142 +577,35 @@ export function TransferScreen({
         onConfirm={onConfirm}
       />
 
-      <SubScreen title={screenTitle} onBack={onBack}>
-        {!available ? (
-          <Section label={t('transfer')} icon={<BackupIcon size={13} color={theme.textFaint} />}>
-            <Card>
-              <CardRow last>
-                <Label fontWeight="400" flex={1} color={theme.textMuted}>
-                  {t('transfer.unavailable')}
-                </Label>
-              </CardRow>
-            </Card>
-          </Section>
-        ) : null}
+      {/* R10 sets the receiving form's words 16 under the header; a run keeps R8's 18. */}
+      <SubScreen title={screenTitle} onBack={onBack} paddingTop={receiveOnly && !running ? 16 : space.gutter}>
+        {!available ? <TransferUnavailable /> : null}
 
         {available && !running ? (
           <>
             {receiveOnly ? null : (
-              <Section
-                label={t('transfer.pick')}
-                icon={<BackupIcon size={13} color={theme.textFaint} />}
-              >
-                {failure('sending')}
-                {sorted === null ? null : sorted.length === 0 ? (
-                  // Nothing to send: a transfer always sends a finished backup (026 US3).
-                  <Card>
-                    <CardRow last={false} testID="transfer-no-backup">
-                      <YStack flex={1}>
-                        <RowTitle>{t('transfer.pick.none.title')}</RowTitle>
-                        <Meta color={theme.textFaint}>
-                          {t('transfer.pick.none.body')}
-                        </Meta>
-                      </YStack>
-                    </CardRow>
-                    <CardRow
-                      last
-                      onPress={onOpenBackup}
-                      accessibilityLabel={t('transfer.pick.create')}
-                      testID="transfer-create-backup"
-                    >
-                      <Label flex={1} color={theme.blue}>
-                        {t('transfer.pick.create')}
-                      </Label>
-                    </CardRow>
-                  </Card>
-                ) : (
-                  <YStack gap={8}>
-                    <OptionGroup<string>
-                      value={chosen?.archiveName ?? ''}
-                      onChange={setChosenName}
-                      testIDPrefix="transfer-backup"
-                      options={sorted.map(manifest => ({
-                        value: manifest.archiveName,
-                        label: formatDateTime(manifest.createdAt),
-                        description: [
-                          formatBytes(manifest.sizeBytes + (manifest.documentBytes ?? 0)),
-                          documentsMissingText(manifest),
-                        ]
-                          .filter(Boolean)
-                          .join(' · '),
-                        trailing: <BackupDocumentsChip manifest={manifest} />,
-                      }))}
-                    />
-                    <Meta color={theme.textFaint} marginHorizontal={4}>
-                      {t('transfer.pick.note')}
-                    </Meta>
-                    <Card>
-                      <CardRow
-                        last
-                        onPress={onSend}
-                        accessibilityLabel={t('transfer.pick.send')}
-                        testID="transfer-send"
-                      >
-                        <Label flex={1} color={theme.blue}>
-                          {t('transfer.pick.send')}
-                        </Label>
-                      </CardRow>
-                    </Card>
-                  </YStack>
-                )}
-              </Section>
+              <SendHalf
+                backups={sorted}
+                chosen={chosen}
+                onChoose={setChosenName}
+                onSend={onSend}
+                onOpenBackup={onOpenBackup}
+                failure={error?.side === 'sending' ? error.text : null}
+              />
             )}
-
-            <Section
-              label={t('transfer.receive')}
-              icon={<ShieldKeyIcon size={13} color={theme.textFaint} />}
-            >
-              {failure('receiving')}
-              <Card>
-                <CardRow last={false}>
-                  <YStack flex={1} gap={4}>
-                    <Label fontWeight="400" color={theme.textMuted}>
-                      {t('transfer.receive.desc')}
-                    </Label>
-                    <Meta color={theme.textFaint} testID="transfer-receive-hint">
-                      {t('transfer.phrase.hint')}
-                    </Meta>
-                  </YStack>
-                </CardRow>
-                {scanningAvailable() ? (
-                  <CardRow
-                    last={false}
-                    onPress={() => setScanning(true)}
-                    accessibilityLabel={t('transfer.scan')}
-                    testID="transfer-scan"
-                  >
-                    <XStack alignItems="center" gap={8} flex={1}>
-                      <CameraIcon size={15} color={theme.blue} />
-                      <Label flex={1} color={theme.blue}>
-                        {t('transfer.scan')}
-                      </Label>
-                    </XStack>
-                  </CardRow>
-                ) : null}
-                <CardRow last={false}>
-                  <Input
-                    flex={1}
-                    value={typed}
-                    onChangeText={setTyped}
-                    placeholder={t('transfer.phrase.placeholder')}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    accessibilityLabel={t('transfer.phrase.placeholder')}
-                    testID="transfer-phrase-input"
-                  />
-                </CardRow>
-                <CardRow
-                  last
-                  onPress={onReceive}
-                  accessibilityLabel={t('transfer.start')}
-                  testID="transfer-receive"
-                >
-                  <Label flex={1} color={theme.blue}>
-                    {t('transfer.start')}
-                  </Label>
-                </CardRow>
-              </Card>
-            </Section>
+            {/* R10: from Settings, receiving is a screen of its own behind one row, 26 under the send
+                (the section's 18 and 8). On that screen, and on a first run, it is the form. */}
+            {onOpenReceive && !receiveOnly ? (
+              <YStack marginTop={8}>
+                <ReceiveRow onPress={onOpenReceive} />
+              </YStack>
+            ) : receiveOnly ? (
+              receiveForm
+            ) : (
+              <YStack marginTop={8}>
+                <Section label={t('transfer.receive')}>{receiveForm}</Section>
+              </YStack>
+            )}
           </>
         ) : null}
 

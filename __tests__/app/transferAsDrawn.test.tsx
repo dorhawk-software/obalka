@@ -7,7 +7,7 @@ import { act, fireEvent, waitFor, within } from '@testing-library/react-native';
 import { t } from '../../src/i18n/strings';
 import { formatBytes } from '../../src/i18n/typeset';
 import { wentText } from '../../src/app/settings/transferWords';
-import { fake, mount, receiveAndConfirm, startReceiving } from '../helpers/transferScreenHarness';
+import { fake, manifest, mount, receiveAndConfirm, startReceiving } from '../helpers/transferScreenHarness';
 
 describe('a run, as R8 draws it', () => {
   it('heads a receive with its own half, and sets the bytes beside the stage', async () => {
@@ -114,5 +114,71 @@ describe('a failure, as R10 draws it', () => {
     const block = view.getByTestId('transfer-error-receiving');
     expect(within(block).getByTestId('transfer-error').props.children).toBe(t('transfer.error.typo'));
     expect(view.queryByTestId('transfer-error-sending')).toBeNull();
+  });
+});
+
+describe('the send half, as R10 draws it', () => {
+  it('says each backup as its size and what it holds, under its date, with no chip', async () => {
+    const { controller } = fake();
+    const view = await mount(controller);
+    const only = manifest();
+    expect(
+      view.getByText(`${formatBytes(only.sizeBytes + (only.documentBytes ?? 0))} · ${t('backup.docs.chip.none')}`),
+    ).toBeTruthy();
+    expect(view.queryByTestId(`transfer-backup-chip`)).toBeNull();
+    expect(view.getByTestId('transfer-send').props.accessibilityLabel).toBe(t('transfer.pick.send'));
+  });
+
+  it('offers to make a backup as a heading, its words, and a link', async () => {
+    const { controller } = fake();
+    const view = await mount(controller, null);
+    const none = view.getByTestId('transfer-no-backup');
+    expect(within(none).getByText(t('transfer.pick.none.title'))).toBeTruthy();
+    expect(within(none).getByTestId('transfer-create-backup').props.accessibilityRole).toBe('link');
+  });
+
+  it('leads to receiving through a row of its own when the shell has a screen for it', async () => {
+    const { controller } = fake();
+    const onOpenReceive = jest.fn();
+    const view = await mount(controller, manifest(), { onOpenReceive });
+    expect(view.queryByTestId('transfer-phrase-input')).toBeNull();
+    expect(view.getByText(t('transfer.receive.row'))).toBeTruthy();
+    fireEvent.press(view.getByTestId('transfer-open-receive'));
+    expect(onOpenReceive).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('the receive form, as R10 draws it', () => {
+  it('says what to do above the scan, the field and the hint', async () => {
+    const { controller } = fake();
+    const view = await mount(controller, null, { receiveOnly: true });
+    expect(view.getByText(t('transfer.receive.desc'))).toBeTruthy();
+    expect(view.getByTestId('transfer-receive-hint')).toBeTruthy();
+  });
+
+  it('puts a failure where the words were, and drops the hint while it stands', async () => {
+    const { controller } = fake();
+    const view = await mount(controller, null, { receiveOnly: true });
+    await act(async () => {
+      fireEvent.changeText(view.getByTestId('transfer-phrase-input'), 'nesmysl');
+    });
+    await act(async () => {
+      fireEvent.press(view.getByTestId('transfer-receive'));
+    });
+    expect(view.getByTestId('transfer-error-receiving')).toBeTruthy();
+    expect(view.queryByText(t('transfer.receive.desc'))).toBeNull();
+    expect(view.queryByTestId('transfer-receive-hint')).toBeNull();
+  });
+
+  it('refuses Přijmout with nothing typed, and says what is missing', async () => {
+    const { controller, state } = fake();
+    const view = await mount(controller, null, { receiveOnly: true });
+    const button = view.getByTestId('transfer-receive');
+    expect(button.props.accessibilityHint).toBe(t('transfer.needPhrase'));
+    await act(async () => {
+      fireEvent.press(button);
+    });
+    expect(state.calls).toEqual([]);
+    expect(view.queryByTestId('transfer-error-receiving')).toBeNull();
   });
 });

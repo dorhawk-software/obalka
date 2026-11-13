@@ -39,11 +39,11 @@ import { LicencesScreen } from './settings/LicencesScreen';
 import { ChangelogScreen } from './whatsNew/ChangelogScreen';
 import type { BoxAttention } from '../features/messages/state/crossBox';
 import { BackupScreen } from './settings/BackupScreen';
-import { TransferScreen } from './settings/TransferScreen';
+import { TransferReceiveRoute, TransferRoute } from './settings/TransferRoutes';
+import { useViewPresence } from './viewPresence';
 import { DebugScreen } from './settings/DebugScreen';
 import { DebugRecordingFrame } from './DebugRecordingStrip';
 import { backupController, transferController, draftsStore } from '../features/accounts/deps';
-import type { BackupManifest } from '../services/backup/schema';
 import { LicenceGroupScreen } from './settings/LicenceGroupScreen';
 import { LicenceDetailScreen } from './settings/LicenceDetailScreen';
 import { useLocale } from './settings/SettingsProvider';
@@ -70,6 +70,8 @@ export type RootStackParamList = {
   Faq: { focus?: FaqId } | undefined;
   Backup: undefined;
   Transfer: undefined;
+  /** Receiving, opened from the transfer screen's row (031 R10). */
+  TransferReceive: undefined;
   Debug: undefined;
   Licences: undefined;
   /** Every release's changes (029). */
@@ -313,46 +315,6 @@ function FaqRoute({
   );
 }
 
-/** The two focus events a stacked screen hears, and whether it is focused now. */
-export interface FocusEvents {
-  addListener(type: 'focus' | 'blur', listener: () => void): () => void;
-  isFocused(): boolean;
-}
-
-/**
- * For a screen that stays mounted under the ones it opens: whether it is the one in view, and how
- * many times it has come BACK into view after another covered it.
- *
- * A return only, not the first focus, which the screen's own mount already reads for. Extracted from
- * `BackupRoute` so the counting has a test of its own (2026-09-15).
- */
-export function useViewPresence(navigation: FocusEvents): {
-  inView: boolean;
-  shownAgain: number;
-} {
-  const [shownAgain, setShownAgain] = useState(0);
-  const [inView, setInView] = useState(() => navigation.isFocused());
-  useEffect(() => {
-    let away = false;
-    const offBlur = navigation.addListener('blur', () => {
-      away = true;
-      setInView(false);
-    });
-    const offFocus = navigation.addListener('focus', () => {
-      setInView(true);
-      if (away) {
-        away = false;
-        setShownAgain(n => n + 1);
-      }
-    });
-    return () => {
-      offBlur();
-      offFocus();
-    };
-  }, [navigation]);
-  return { inView, shownAgain };
-}
-
 function BackupRoute({
   navigation,
 }: Readonly<NativeStackScreenProps<RootStackParamList, 'Backup'>>) {
@@ -370,35 +332,6 @@ function BackupRoute({
       shownAgain={shownAgain}
       inView={inView}
       transferOutcomes={transferController}
-    />
-  );
-}
-
-function TransferRoute({
-  navigation,
-}: Readonly<NativeStackScreenProps<RootStackParamList, 'Transfer'>>) {
-  const [backups, setBackups] = useState<BackupManifest[] | null>(null);
-  // The backups this phone holds, read here rather than passed in so the screen cannot be opened
-  // holding a stale list - and read again when the chosen one turned out to be gone (026 US3).
-  const readBackups = useCallback(() => {
-    void backupController
-      .list()
-      .then(list => setBackups(list.map(item => item.manifest)))
-      .catch(() => setBackups([]));
-  }, []);
-  useEffect(readBackups, [readBackups]);
-  // Going back takes this screen out of view at once, while it stays mounted until the transition has
-  // finished. A save that ends in that moment belongs to the backup screen now in view (2026-09-15).
-  const { inView } = useViewPresence(navigation);
-  return (
-    <TransferScreen
-      onBack={() => navigation.goBack()}
-      controller={transferController}
-      backups={backups}
-      // Opened from the backup screen, which is where a backup is made.
-      onOpenBackup={() => navigation.goBack()}
-      onBackupsStale={readBackups}
-      inView={inView}
     />
   );
 }
@@ -617,6 +550,7 @@ export const screens: {
   Faq: localized(FaqRoute),
   Backup: localized(BackupRoute),
   Transfer: localized(TransferRoute),
+  TransferReceive: localized(TransferReceiveRoute),
   Debug: localized(DebugRoute),
   Licences: localized(LicencesRoute),
   Changelog: localized(ChangelogRoute),

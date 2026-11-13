@@ -228,8 +228,9 @@ describe('choosing which backup goes (026 US3)', () => {
     expect(view.getByTestId(`transfer-backup-${newer.archiveName}`).props.accessibilityState).toEqual({
       selected: true,
     });
-    expect(view.getByText(t('backup.docs.chip.all'))).toBeTruthy();
-    expect(view.getByText(t('backup.docs.chip.none'))).toBeTruthy();
+    // The chip's words, as text after the size (031 R10).
+    expect(view.getByText(new RegExp(` · ${t('backup.docs.chip.all')} · `))).toBeTruthy();
+    expect(view.getByText(new RegExp(` · ${t('backup.docs.chip.none')}$`))).toBeTruthy();
     expect(view.getByText(new RegExp(t('backup.docs.missing.few', { n: 3 }).replace(/\u00A0/g, ' ')))).toBeTruthy();
   });
 
