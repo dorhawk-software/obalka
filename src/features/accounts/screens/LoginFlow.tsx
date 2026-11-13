@@ -2,21 +2,18 @@ import type { ReactNode } from 'react';
 import { textSlop } from '../../../theme/touchTarget';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { useEffect, useRef } from 'react';
-import { Animated, Linking } from 'react-native';
+import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useReducedMotion } from 'react-native-reanimated';
-import { Button, Paragraph, Spinner, XStack, YStack } from '../../../theme/ui';
+import { Button, Paragraph, XStack, YStack } from '../../../theme/ui';
 import { Body, BodyStrong, Label, Small, Title } from '../../../theme/Typography';
+import { WaitingBar } from '../../../theme/ProgressBar';
+import { WaitingEnvelope } from '../../../theme/objects/WaitingEnvelope';
 import { PressScale } from '../../../theme/PressScale';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { chipTone } from '../../../theme/chipTone';
 import { depth } from '../../../theme/depth';
 import { t } from '../../../i18n/strings';
-import {
-  CheckIcon,
-  InfoIcon,
-  SmartphoneIcon,
-} from '../../../theme/icons';
+import { InfoIcon } from '../../../theme/icons';
 import { UseLoginControllerDeps, useLoginController } from '../state/useLoginController';
 import { AddBoxForm } from './AddBoxForm';
 import { OtpForm } from './OtpForm';
@@ -30,7 +27,6 @@ import type {
 } from '../../../services/isds/types';
 import { portalUrl } from '../../../services/isds/endpoints';
 import type { Credentials } from '../state/loginController';
-import { ICON_TIER } from '../../../theme/iconTiers';
 import { LineIcon } from '../../../theme/LineIcon';
 
 export interface LoginFlowProps {
@@ -129,9 +125,12 @@ function LoginFlowSteps({
    * from what was submitted.
    */
   const lastHost = useRef<Host | null>(reauth?.host ?? null);
+  /** The login name the request went out for: the waiting envelope's window shows it (R8). */
+  const lastLogin = useRef<string>(reauth?.loginName ?? '');
   const startLogin = (input: Credentials): Promise<void> => {
     beginOtp(input.method);
     lastHost.current = input.host;
+    lastLogin.current = input.loginName;
     return start(input);
   };
   /** A resend is another send - the screen should say "odesíláme", not "ověřujeme". */
@@ -182,7 +181,7 @@ function LoginFlowSteps({
     );
   }
   if (busy && step.current === 'mk') {
-    return <MobileKeyWaiting status={mkStatus.current} onCancel={cancel} />;
+    return <MobileKeyWaiting status={mkStatus.current} loginName={lastLogin.current} onCancel={cancel} />;
   }
 
   switch (state.status) {
@@ -226,7 +225,7 @@ function LoginFlowSteps({
         />
       );
     case 'awaitingMobileKey':
-      return <MobileKeyWaiting status={state.mkStatus} onCancel={cancel} />;
+      return <MobileKeyWaiting status={state.mkStatus} loginName={lastLogin.current} onCancel={cancel} />;
     case 'error':
       // A password login that smells like a missing SMS code. The design puts the recovery INLINE on
       // the credentials form ("Máte SMS kód?") instead of on its own screen - the form is itself the
@@ -290,42 +289,23 @@ function Centered({ children, testID }: { readonly children: ReactNode; readonly
  * Mobile Key: waiting for the user to approve the push. Narrates the live mepWsStateUpdate2 status.
  * The screen advances on the REAL poll outcome (authService → controller OUTCOME) - there is no
  * "confirm" action here; the only user action is to cancel.
+ *
+ * Board R8 (031, agreed 2026-11-12): the box's envelope stands still, its flap sealed and the login
+ * name in the window; the one waiting bar is the only motion, as transfer and backup wait. It replaced
+ * a brand tile in a pulsing ring and a platform spinner. Under Reduce Motion the bar is an empty track
+ * and the line under the title says what is happening.
  */
 function MobileKeyWaiting({
   status,
+  loginName,
   onCancel,
 }: {
   readonly status: number;
+  readonly loginName: string;
   readonly onCancel: () => void;
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const reduceMotion = useReducedMotion();
-  // Pulsing halo around the brand tile - a slow ring that scales out + fades (rpulse). Under Reduce
-  // Motion the loop never starts, so the ring is a static outline (no animation).
-  const pulse = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (reduceMotion) {
-      return;
-    }
-    const loop = Animated.loop(
-      Animated.timing(pulse, {
-        toValue: 1,
-        duration: 1800,
-        useNativeDriver: true,
-      }),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [reduceMotion, pulse]);
-  const ringScale = pulse.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 1.35],
-  });
-  const ringOpacity = pulse.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.5, 0],
-  });
 
   // 11/12/13 = push delivered (sent / shown / launched) → nudge the user to approve; else dispatching.
   const subtitle =
@@ -338,76 +318,24 @@ function MobileKeyWaiting({
       {/* The back chevron cancels the pending Mobile Key request. */}
       <ScreenHeader title={t('login.method.mobile_key')} onBack={onCancel} />
 
-      <YStack
-        flex={1}
-        alignItems="center"
-        justifyContent="center"
-        paddingVertical={36}
-        paddingHorizontal={36}
-      >
-        <YStack
-          width={104}
-          height={104}
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Animated.View
-            style={{
-              position: 'absolute',
-              width: 104,
-              height: 104,
-              // Concentric with the brand tile it rings, 10 dp out: the tile's radius plus the gap. At 30
-              // the ring's corner was 4 dp short and the two outlines pinched at the corners.
-              borderRadius: ICON_TIER.brand.radius + (104 - ICON_TIER.brand.box) / 2,
-              borderWidth: 3,
-              borderColor: theme.brandTile,
-              opacity: ringOpacity,
-              transform: [{ scale: ringScale }],
-            }}
-          />
-          {/* The brand tile's glyph is two-tone (design): a pale phone with a GOLD check inside it. */}
-          <YStack
-            width={84}
-            height={84}
-            borderRadius={ICON_TIER.brand.radius}
-            backgroundColor={theme.brandTile}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <SmartphoneIcon size={40} color={theme.blueSoft} />
-            <YStack position="absolute">
-              <CheckIcon size={16} color={theme.gold} />
-            </YStack>
-          </YStack>
-        </YStack>
-        <Title fontWeight="700"
-          color={theme.text}
-          textAlign="center"
-          marginTop={28}
-        >
+      <YStack flex={1} alignItems="center" paddingTop={36} paddingHorizontal={24}>
+        <WaitingEnvelope label={t('login.loginName')} name={loginName} testID="mobileKeyEnvelope" />
+        <Title fontWeight="700" textAlign="center" maxWidth={300} marginTop={36} textBreakStrategy="balanced">
           {t('login.mobileKey.title')}
         </Title>
-        <Small fontWeight="500"
-          color={theme.textMuted}
-          textAlign="center"
-          maxWidth={280}
-          marginTop={10}
-        >
+        <Small color={theme.textMuted} textAlign="center" maxWidth={290} marginTop={10} textBreakStrategy="balanced">
           {subtitle}
         </Small>
-        <XStack alignItems="center" gap={8} marginTop={18}>
-          <Spinner color={theme.blue} />
-          <Label color={theme.textFaint}>
-            {t('login.mobileKey.expiryHint')}
-          </Label>
-        </XStack>
+        <YStack width={220} marginTop={28}>
+          <WaitingBar label={subtitle} testID="mobileKeyBar" />
+        </YStack>
+        <Label fontWeight="500" color={theme.textFaint} marginTop={10}>
+          {t('login.mobileKey.expiryHint')}
+        </Label>
       </YStack>
 
-      {/* Footer: a full-bleed top hairline on the bar itself (design), not an inset rule inside it. */}
       <YStack
         backgroundColor={theme.surfaceAlt}
-        borderTopWidth={1}
-        borderTopColor={theme.border}
         paddingHorizontal={16}
         paddingTop={12}
         paddingBottom={insets.bottom + 12}
@@ -427,7 +355,6 @@ function MobileKeyWaiting({
     </YStack>
   );
 }
-
 function ErrorView({
   messageKey,
   onRetry,

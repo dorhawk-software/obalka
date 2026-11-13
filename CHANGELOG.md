@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Při čekání na Mobilní klíč leží obálka vaší schránky.** Chlopeň je zalepená, v okénku je
+  přihlašovací jméno a pod ní se pohybuje jen jeden pruh; točící se kolečko a pulzující dlaždice zmizely.
 - **Napřed jméno, potom druh schránky.** „Jan Novák - podnikající fyzická osoba“ je teď na obálce
   „Jan Novák“ a pod ním tišeji „PFO · ID …“; klepnutím se zkratka rozepíše. V seznamech a hledání
   stojí jen jméno.

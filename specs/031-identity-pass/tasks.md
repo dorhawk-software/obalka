@@ -66,8 +66,14 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     help, the OTP suggestion, alias, submit, busy, blocked (login name, password).
 - [ ] I09 `OtpForm` (code field, sending/sent notice, resend, blocked) - **N**.
 - [ ] I09.1 Android's SMS User Consent sheet over the code field (the system's) - **N**: seen in place.
-- [ ] I10 Mobile Key waiting (brand tile 84, phone glyph, pulse ring loop 1800 ms) - **X**: a generic
-  pulse. R8.
+- [x] I10 Mobile Key waiting (brand tile 84, phone glyph, pulse ring loop 1800 ms) - **X**: a generic
+  pulse. R8. Fixed 2026-11-13: `WaitingEnvelope`, the box's envelope (300 by 186, -1.5 degrees, the
+  flap shut, the login name in the 200 window) over the title, the line, the 220 waiting bar and the
+  faint hint; the cancel bar without its hairline. Roundings: the 48 above the envelope and the 40
+  under it to 36; the title's 20/25 to the 21/26 `title` role at 700; the name's 16 to `subheading`;
+  the window's 9 and its gap 1 to 10 and 2. Walked light, dark and in English (forced on, reverted).
+  The walk found the envelope's folds stopping the padding short of the corners, on every envelope:
+  fixed in e519006.
 - [ ] I11 Sign-in `ErrorView` and `OtpSuggestion` (retry with `depth.sm`) - **D** (cards); R8.
 - [ ] I12 `ReauthForm` (avatar, method cards, field) - **D** (avatar, icons: Zámek).
 - [ ] I13 `ChangePasswordForm` (avatar 46, three fields, ten rules and the history rule, busy) - **D**
@@ -301,7 +307,8 @@ surface below changes too, and the owner has seen none of them in the identity. 
 - [ ] I74 The paid-send confirmation slides (`animationType="slide"`) - **D** (rm); R2 may replace it.
 - [ ] I75 Skeleton pulse, waiting bar, sync bar - **N**: loop only while work runs. Under Reduce Motion
   the waiting bar is an empty track and the stage line beside it carries the meaning: shown on R8.
-- [ ] I76 Platform spinners in 11 places - **X**: R8 decides where an object waits instead.
+- [ ] I76 Platform spinners in 11 places - **X**: R8 decides where an object waits instead. The Mobile Key wait's
+  spinner is gone (I10, 2026-11-13); ten places left.
 - [ ] I77 Press dip, refusal shake, FAB press, segmented slide, radio fill - **N**.
 - [ ] I77.1 Haptics: 31 call sites (selection, light, medium, success, warning, error) - **N**: listed
   against the motion rule (a thump where paper lands).

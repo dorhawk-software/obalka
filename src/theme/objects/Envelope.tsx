@@ -19,12 +19,15 @@ import { fonts, type } from '../typeScale';
 export function Envelope({
   children,
   style,
+  creases = envelopeShape.creases,
 }: {
   readonly children: ReactNode;
   readonly style?: StyleProp<ViewStyle>;
+  /** The folds' drawing, for an envelope of another shape (the sign-in's, `waitingEnvelope`). */
+  readonly creases?: { readonly width: number; readonly height: number; readonly d: string; readonly stroke: number };
 }) {
   const theme = useTheme();
-  const c = envelopeShape.creases;
+  const c = creases;
   return (
     <View
       style={[

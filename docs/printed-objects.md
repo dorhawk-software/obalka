@@ -11,8 +11,9 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
 
 - **Envelope** (`#2563A6`, **fixed in both appearances**): a box, and what arrives in it. The inbox
   header, a message (received, and a sent one opened from Odeslané), compose, the sent result, the box
-  avatars. Its folds are `envelope-crease`
-  (`rgba(9,30,64,.22)`). Words on it are `on-solid`; its secondary words and the postmark are
+  avatars, and the box while its Mobile Key sign-in waits (R8: `WaitingEnvelope`, 300 by 186, laid
+  down -1.5 degrees, the flap shut, the login name in a 200 window). Its folds are `envelope-crease`
+  (`rgba(9,30,64,.22)`), drawn corner to corner in a layer filling the whole envelope. Words on it are `on-solid`; its secondary words and the postmark are
   `envelope-ink-soft` (`rgba(255,255,255,.92)`, 5.51:1 composited). As an avatar tile (a box, a
   sender) it is a small envelope: a sealed gold flap while unread, else an `envelope-fold` line
   (`rgba(255,255,255,.55)`). The inbox header is its front (lower corners 22, the flap shaded by

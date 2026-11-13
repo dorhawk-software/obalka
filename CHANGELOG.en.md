@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **While the Mobile Key is awaited, your box's envelope lies still.** Its flap is sealed, the login
+  name is in the window, and one bar under it is the only motion; the spinner and the pulsing tile are
+  gone.
 - **The name first, then the kind of box.** "Jan Novák - podnikající fyzická osoba" is now
   "Jan Novák" on the envelope with a quieter "PFO · ID …" under it; tap it to spell the kind out. Lists
   and search show the name alone.

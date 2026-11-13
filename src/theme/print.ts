@@ -151,6 +151,19 @@ export const openEnvelope = {
   },
 } as const;
 
+/**
+ * The box's envelope while its sign-in waits (031 R8, agreed 2026-11-12): 300 by at least 186, laid
+ * down 1.5 degrees, the flap shut across the top, the login name in a 200 window at the bottom.
+ */
+export const waitingEnvelope = {
+  width: 300,
+  minHeight: 186,
+  tilt: '-1.5deg',
+  creases: { width: 300, height: 186, d: 'M0 186 L124 110 M300 186 L176 110', stroke: 1.5 },
+  flap: { width: 300, height: 66, d: 'M0 0H300V34L162 60Q150 64 138 60L0 34Z' },
+  window: { width: 200, minHeight: 60, radius: 12 },
+} as const;
+
 /** The envelope's poses for the empty, failed and search states (031 R4), on a 220 x 140 front. */
 export const envelopePose = {
   width: 220,
