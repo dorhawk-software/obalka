@@ -7,9 +7,18 @@
 //
 // Presets are relative to TODAY, not to the message. "Za týden" means a week from now, because the
 // user is deciding when THEY want to look at this again.
+//
+// As board R9 draws it (031 I57, agreed 2026-11-12): the reminder's glyph in its well beside the title,
+// the promise under them in small muted text, the presets one card of 50 rows (label, date, a check),
+// the custom day another with its stepper, and Odebrat beside Uložit. Roundings: the stepper's 11
+// corner is 12. The stepper is 36 at the least and grows with the reading size: `height="auto"`,
+// since Tamagui's button sets its own 44 otherwise.
 
 import { useCallback, useState } from 'react';
-import { BodyStrong, Heading, Label, Meta } from '../../../theme/Typography';
+import { Label, Meta, Small, SmallStrong, Title } from '../../../theme/Typography';
+import { Well } from '../../../theme/Well';
+import { InkButton } from '../../../theme/InkButton';
+import { NeutralButton } from '../../../theme/NeutralButton';
 import { Button, XStack, YStack } from '../../../theme/ui';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { BottomSheet } from '../../../theme/BottomSheet';
@@ -22,6 +31,9 @@ import { haptics } from '../../../services/haptics';
 import { t } from '../../../i18n/strings';
 import { reminderPromise } from '../state/reminders';
 import { Card } from '../../../theme/Card';
+
+/** R9's preset row: 50 tall at the least. */
+const PRESET_ROW = 50;
 
 /** Midnight local on the day `d` days from `from` - the shape a stored reminder date takes. */
 function dayFromNow(from: number, days: number): number {
@@ -100,15 +112,20 @@ export function TermPicker({
 
   return (
     <BottomSheet onClose={onClose}>
-      {/* The sheet's own header, 16 under the grabber as R9 sets every sheet's title (I53); its well
-          and the title role come with the picker's own redraw (I57). */}
-      <YStack marginTop={space.inset} paddingBottom={4}>
-        <Heading>{t('term.title')}</Heading>
+      {/* R9 (031 I57): the reminder's glyph in its well beside the title, 16 under the grabber. */}
+      <XStack alignItems="center" gap={space.lg} marginTop={space.inset}>
+        <Well name="remind" />
+        <Title flex={1} accessibilityRole="header">
+          {t('term.title')}
+        </Title>
+      </XStack>
+      <YStack>
         {/* Says whose date this is. The app does not compute legal deadlines, and the
             picker must not be read as if it did (Principle VI). */}
-        <Meta
-          marginTop={2}
-          color={theme.textFaint}
+        <Small
+          marginTop={space.base}
+          color={theme.textMuted}
+          testID="term-sub"
         >
           {/* What this date will ACTUALLY get. A deadline chosen for today after 09:00
               gets no notification at all, and the sheet used to promise two. With
@@ -122,25 +139,24 @@ export function TermPicker({
                   none: 'term.sub.none',
                 }[reminderPromise(selected, now)],
               )}
-        </Meta>
+        </Small>
       </YStack>
 
       <Card
         overflow="hidden"
-        marginTop={12}
+        marginTop={space.xl}
       >
         {PRESETS.map((p, i) => {
           const date = p.at(now);
           const isSelected = selected != null && sameDay(selected, date);
           return (
+            <YStack key={p.key}>
+            {i > 0 ? <YStack height={1} marginLeft={space.xl} backgroundColor={theme.border} /> : null}
             <XStack
-              key={p.key}
               alignItems="center"
-              gap={12}
-              paddingVertical={13}
-              paddingHorizontal={14}
-              borderBottomWidth={i === PRESETS.length - 1 ? 0 : 1}
-              borderBottomColor={theme.border}
+              gap={space.lg}
+              minHeight={PRESET_ROW}
+              paddingHorizontal={space.xl}
               pressStyle={{ opacity: 0.7 }}
               onPress={() => pick(date)}
               accessibilityRole="button"
@@ -149,9 +165,9 @@ export function TermPicker({
               testID={`term-${p.key}`}
             >
               <YStack flex={1}>
-                <BodyStrong color={theme.text}>
+                <SmallStrong color={theme.text}>
                   {t(p.labelKey)}
-                </BodyStrong>
+                </SmallStrong>
               </YStack>
               <Label fontWeight="400" color={theme.textFaint}>
                 {formatTermDate(date)}
@@ -163,6 +179,7 @@ export function TermPicker({
                 ) : null}
               </YStack>
             </XStack>
+            </YStack>
           );
         })}
       </Card>
@@ -178,18 +195,19 @@ export function TermPicker({
         paddingHorizontal={14}
       >
         <YStack flex={1}>
-          <BodyStrong color={theme.text}>
+          <SmallStrong color={theme.text}>
             {t('term.custom')}
-          </BodyStrong>
-          <Meta marginTop={2} color={theme.textFaint}>
+          </SmallStrong>
+          <Meta color={theme.textFaint}>
             {formatTermDate(selected ?? dayFromNow(now, 1))}
           </Meta>
         </YStack>
         <Button
+          height="auto"
           minHeight={36}
           minWidth={STEPPER_W}
           paddingHorizontal={14}
-          borderRadius={11}
+          borderRadius={12}
           backgroundColor={theme.surfaceSunken}
           color={theme.text}
           fontSize={16}
@@ -211,10 +229,11 @@ export function TermPicker({
           −
         </Button>
         <Button
+          height="auto"
           minHeight={36}
           minWidth={STEPPER_W}
           paddingHorizontal={14}
-          borderRadius={11}
+          borderRadius={12}
           backgroundColor={theme.surfaceSunken}
           color={theme.text}
           fontSize={16}
@@ -231,41 +250,25 @@ export function TermPicker({
         </Button>
       </Card>
 
-      <XStack gap={10} marginTop={14}>
+      {/* R9: Odebrat and Uložit as two halves, 18 under the custom day; Odebrat in the danger ink. */}
+      <XStack gap={space.base} marginTop={space.gutter}>
         {current != null ? (
-          <Button
-            flex={1}
-            minHeight={46}
-            borderRadius={14}
-            backgroundColor={theme.surfaceSunken}
-            color={theme.text}
-            fontSize={15}
-            fontWeight="700"
-            onPress={() => {
-              haptics.selection();
-              onRemove();
-              onClose();
-            }}
-            accessibilityLabel={t('term.remove')}
-            testID="term-remove"
-          >
-            {t('term.remove')}
-          </Button>
+          <YStack flex={1}>
+            <NeutralButton
+              danger
+              label={t('term.remove')}
+              onPress={() => {
+                haptics.selection();
+                onRemove();
+                onClose();
+              }}
+              testID="term-remove"
+            />
+          </YStack>
         ) : null}
-        <Button
-          flex={1}
-          minHeight={46}
-          borderRadius={14}
-          backgroundColor={theme.text}
-          color={theme.surfaceAlt}
-          fontSize={15}
-          fontWeight="700"
-          onPress={() => pick(selected ?? dayFromNow(now, 1))}
-          accessibilityLabel={t('term.save')}
-          testID="term-save"
-        >
-          {t('term.save')}
-        </Button>
+        <YStack flex={1}>
+          <InkButton label={t('term.save')} onPress={() => pick(selected ?? dayFromNow(now, 1))} testID="term-save" />
+        </YStack>
       </XStack>
     </BottomSheet>
   );

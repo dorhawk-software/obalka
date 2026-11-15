@@ -379,7 +379,7 @@ surface below changes too, and the owner has seen none of them in the identity. 
   optional muted line 6 under that; each sheet's content brings its own distance (a card 14 under the
   title). Found on the device: the scrolling content clipped a card's resting shadow below and beside
   it; the scroll view now reaches 8 past the sides and 16 below and pads them back (a guard test,
-  proven to fail without it). The Term picker keeps its own header, 16 under the grabber, until I57.
+  proven to fail without it). The Term picker kept its own header, 16 under the grabber, until I57.
   Seen once in English dark, not again in seven launches: the sheet's slide-in stopped part-way, with
   Pokračovat below the screen (T050).
 - [x] I54 Box switcher sheet, `BoxRow`, `UnifiedRow` - **D** (avatar, Schránky glyph). R5 shows it. Fixed
@@ -389,8 +389,15 @@ surface below changes too, and the owner has seen none of them in the identity. 
   stav" after its state; for the canvas's sync-back.
 - [ ] I55 Box overflow menu (rename, change password, remove) - **D**: the menu's surface. R9.
 - [ ] I56 `AliasEditor` (avatar preview, colour swatches) - **D** (avatar). R9.
-- [ ] I57 `TermPicker` - **D** (icons: Připomínka). R9.
-- [ ] I58 Sender sheet - **D** (avatar). R9.
+- [x] I57 `TermPicker` - **D** (icons: Připomínka). R9. Built 2026-11-15: the reminder's glyph in a
+  well beside the title (title role), the promise in small muted text 8 under them, the presets one
+  card 14 under, rows 50 with an inset hairline and their labels in smallStrong, the custom row's
+  steppers 36 (Tamagui's button had made them 44) with the 11 corner rounded to 12, and Odebrat
+  (danger ink, only when a reminder is set) beside Uložit, 18 under the card. Walked light and dark,
+  Czech and English; line for line with R9 in light.
+- [x] I58 Sender sheet - **D** (avatar). R9. Built 2026-11-15: rows 60 with the box's envelope tile
+  at 36 in place of the avatar, and the Language rows' radio - a ring, blue with a 12 blue dot when
+  chosen - in place of the filled disc. Walked light and dark, Czech and English; matches R9 in light.
 - [x] I59 Language sheet - **D**: the sheet (I53). R9. Built 2026-11-15 with I53: the card 14 under
   the title. R9 draws its rows at 56; they are the Settings language rows (`OptionGroup`), which R13
   draws at 52, so one control keeps one height (constitution V): 52, for the canvas's sync-back.

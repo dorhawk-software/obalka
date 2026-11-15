@@ -24,9 +24,17 @@ import { creditState, type CreditState } from '../state/credit';
 import { t } from '../../../i18n/strings';
 import type { DataBoxAccount } from '../../../services/isds/types';
 import { Card } from '../../../theme/Card';
+import { EnvelopeTile } from '../../../theme/objects/Envelope';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 
 const boxName = (a: DataBoxAccount) => a.alias ?? a.label;
+
+/**
+ * R9's sender row (031 I58, agreed 2026-11-12): 60 tall at the least, the box's envelope tile at 36, its
+ * name over its kind and ID, and the Language rows' radio. A box that needs a new sign-in is dimmed and
+ * says so. Until 2026-11-15 the tile was the plain avatar and the radio a filled disc.
+ */
+const SENDER_ROW = 60;
 
 
 /**
@@ -162,9 +170,10 @@ export function SenderSheet({
             <XStack
               key={account.boxId}
               alignItems="center"
-              gap={12}
-              paddingVertical={12}
-              paddingHorizontal={14}
+              gap={space.lg}
+              minHeight={SENDER_ROW}
+              paddingVertical={space.lg}
+              paddingHorizontal={space.xl}
               borderTopWidth={i === 0 ? 0 : 1}
               borderColor={theme.border}
               opacity={blocked ? 0.5 : 1}
@@ -177,7 +186,7 @@ export function SenderSheet({
                 .join(', ')}
               testID={`senderOption-${account.boxId}`}
             >
-              <Avatar name={boxName(account)} color={boxColor(account)} size={36} />
+              <EnvelopeTile name={boxName(account)} color={boxColor(account)} size={36} box testID={`envelopeTile-${account.boxId}`} />
               <YStack flex={1} minWidth={0}>
                 <SmallStrong numberOfLines={1}>
                   {boxName(account)}
@@ -196,13 +205,12 @@ export function SenderSheet({
                 borderRadius={11}
                 borderWidth={2}
                 borderColor={on ? theme.blue : theme.borderStrong}
-                backgroundColor={on ? theme.blue : 'transparent'}
                 alignItems="center"
                 justifyContent="center"
+                testID={on ? 'senderOption-on' : undefined}
               >
-                {on ? (
-                  <YStack width={9} height={9} borderRadius={999} backgroundColor={theme.onBlue} />
-                ) : null}
+                {/* The Language rows' radio (`OptionGroup`, R9): a blue ring and a 12 blue dot. */}
+                {on ? <YStack width={12} height={12} borderRadius={999} backgroundColor={theme.blue} /> : null}
               </YStack>
             </XStack>
           );

@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Připomínka a výběr odesílatele mají nový vzhled.** Termíny připomínky jsou jedna karta s výraznějšími
+  popisky a Odebrat stojí vedle Uložit; schránky k odeslání mají svou obálku a zvolenou označuje kroužek.
 - **Otázky a upozornění vyjíždějí zdola jako ostatní panely.** Odpovědi jsou pod sebou na dosah palce,
   ta hlavní nahoře, a nad otázkou je to, čeho se týká: například obálka odebírané schránky.
 - **Co je nového se čte jako text.** Každá změna je jeden odstavec s tučnou první větou, seřazené podle

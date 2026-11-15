@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The reminder and the sender picker have the new look.** The reminder's dates are one card with
+  bolder labels and Remove stands beside Save; the boxes to send from carry their envelope, and a ring
+  marks the chosen one.
 - **Questions and notices rise from the bottom like the other panels.** The answers stand one above
   the other within reach of the thumb, the main one first, and above the question is what it is
   about: the envelope of the box being removed, for one.
