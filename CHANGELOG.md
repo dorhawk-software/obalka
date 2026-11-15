@@ -20,6 +20,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Počet nepřečtených u schránky svítí zlatou známky.** Je o kousek větší a stejně žlutý jako
+  tlačítko Napsat; značka nedokončeného přihlášení má stejný lem.
+- **Stahování příloh neznámé velikosti ukazuje běžící pruh.** Dřív stál pruh napůl a nehýbal se.
 - **Pokročilé volby zálohy říkají, co skrývají.** Řádek pod nadpisem Pokročilé už jen neopakuje
   nadpis: zve k automatickému zálohování a počtu záloh.
 - **Odpočet fikce u odeslané zprávy má obálku s hodinami.** Stejnou značku, jakou fikci ukazují
@@ -167,6 +170,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Ukazatel obnovení v tmavém režimu už není bílý kotouč.** Na Androidu ho aplikace kreslí na
+  barvu karet.
 - **Panel dole na Androidu zavřete stažením dolů.** Výběr schránky, výběr jazyka nebo lhůty i ostatní
   panely se dřív za prstem nehnuly; teď jdou stáhnout a puštěný příliš brzy se vrátí zpět.
 - **Na iPhonu se ze zprávy otevřené ze seznamu vrátíte přejetím od okraje.** Gesto na ní dřív

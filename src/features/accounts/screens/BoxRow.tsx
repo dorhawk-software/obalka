@@ -137,13 +137,15 @@ export function BoxRow({
           {unread > 0 ? (
             <XStack
               position="absolute"
-              top={-5}
-              right={-5}
-              minWidth={20}
-              minHeight={20}
-              paddingHorizontal={6}
+              // R14's disc is 20 with its 2 ring OUTSIDE it, as a CSS box-shadow draws one; a border
+              // draws inside, so the box is 24 and sits 2 further out (it was a 16 disc, 2026-11-15).
+              top={-7}
+              right={-7}
+              minWidth={24}
+              minHeight={24}
+              paddingHorizontal={8}
               borderRadius={999}
-              backgroundColor={theme.gold}
+              backgroundColor={theme.goldBright}
               borderWidth={2}
               borderColor={theme.surfaceAlt}
               alignItems="center"
@@ -165,10 +167,10 @@ export function BoxRow({
           {broken ? (
             <XStack
               position="absolute"
-              bottom={-3}
-              left={-3}
-              width={18}
-              height={18}
+              bottom={-5}
+              left={-5}
+              width={22}
+              height={22}
               borderRadius={999}
               backgroundColor={brokenTone.bg}
               borderWidth={2}

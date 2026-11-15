@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A box's unread count shines in the stamp's gold.** A touch larger and the same yellow as the
+  Compose button; the sign-in mark beside it has the same rim.
+- **Downloading attachments of unknown size shows a moving bar.** It used to stand half full.
 - **The backup's advanced options say what they hold.** The row under the Advanced heading no
   longer repeats it: it names automatic backups and how many are kept.
 - **A sent message's fiction countdown carries the envelope with a clock.** The same mark received
@@ -191,6 +194,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **The refresh indicator is no longer a white disc in dark mode.** On Android it now sits on the
+  colour of the cards.
 - **On Android, a sheet closes when you drag it down.** The box switcher, the language and deadline
   pickers and the other sheets used to stay put under the finger; now they follow it, and one let go
   too soon springs back.

@@ -747,34 +747,75 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   (`backupRetention.test`, red before).
 - [x] I108 `OptionGroup` radios (check 140 ms). Matches R13 2026-11-13: one card, rows 52, a 22 ring
   (2, `hs`), picked a blue ring with a 12 blue dot growing in over 140 ms; no tint.
-- [ ] I109 Buttons: primary, outline, link, danger; busy and blocked (warning haptic, shake).
-- [ ] I110 Text fields: rest, focus, error, the password eye, the dark keyboard.
+- [x] I109 Buttons: primary, outline, link, danger; busy and blocked (warning haptic, shake).
+  **M**. Walked 2026-11-15 on Obalka_Demo beside R14's "Every shared part" sheet rendered at the device's 2.625, light and dark: the primary (Sign in) and danger (Lower and delete) 52 with the 14
+  corner, the second (Keep) sunken with no outline, the link, the in-content blue 48/13. Busy is R12's
+  ring (I76). Blocked is .55, as R8 draws "Potvrdit kód" and R13 a dimmed row; R12 and R14 draw .45 -
+  two agreed boards disagree, the code keeps the one the most boards use (T051: R12, R14 to .55). The
+  blue's words are R7's 15/700 with the offset glyph, which R14's summary drew 14 with Lucide (T051).
+- [x] I110 Text fields: rest, focus, error, the password eye, the dark keyboard.
+  **M**. Walked 2026-11-15 on Obalka_Demo beside R14's "Every shared part" sheet rendered at the device's 2.625, light and dark, on the sign-in form: rest with the 1 outline, focused with the 1.5 blue,
+  the eye, the placeholder. The error states are R11's, walked with the forms (I08-I12). The keyboard
+  takes the app's appearance on iOS at every input (`ui.tsx` Input); Android draws its own.
 - [x] I111 `ScreenHeader` (min 54, back 44, two-line title, slot, hairline). Fixed 2026-11-13: the
   hairline stays (every board draws it inline on its header), but the archive search ends at its tone
   (`hairline={false}`, R4 - the owner's catch). 561d039 took it off every screen after reading only
   the boards' shared `.hdr` class; put back the same day. Walked on search and add-a-box, light and dark.
-- [ ] I112 `ProgressBar` (6 px, determinate) and `WaitingBar`; MessageDetail draws its own copy of the
+- [x] I112 `ProgressBar` (6 px, determinate) and `WaitingBar`; MessageDetail draws its own copy of the
   bar - **D**: one drawing (visual-craft, "One object, one drawing"). 2026-11-13, R6 walk: both
   tracks are the sunken surface (`--sk` on every board), not the off switch's darker track; the copy
   in MessageDetail is left for R7.
-- [ ] I113 `Skeleton` rows.
+  **Fixed** 2026-11-15: the detail's copy is gone. The download's bar is the shared one in its 6 slot:
+  the bar when the size is known, the waiting bar when it is not (R14 "Downloading"; it was a still
+  40 % stub). Held by `messageDetailDownload.test`, red before. Not walked live: a download asks
+  ISDS, and the demo boxes stay off it; the waiting bar itself is walked on the launch (I75).
+- [x] I113 `Skeleton` rows.
+  **M**, 2026-11-15: the skeletons take the shape of what comes (constitution V), the register row
+  (day, subject, sender) seen on the inbox's load, light, and the detail's (I31). R14's generic row,
+  a 38 tile and two bars, is drawn on no screen (T051: R14 shows the register row).
 - [x] I114 `EmptyState` and the hero glyphs (I79). Deleted 2026-11-13 with I79: `EmptyObject` draws
   every empty state.
-- [ ] I115 `DashedOutline` (add a box, add an attachment, the sender gate).
-- [ ] I116 `DottedRail` (delivery steps).
-- [ ] I117 Chips and tags: every `chipTone` (fiction red and amber, user blue, cost free and paid, the
+- [x] I115 `DashedOutline` (add a box, add an attachment, the sender gate).
+  **M**, 2026-11-15: two uses left, both R12's compose envelope (the stamp's frame and the empty
+  recipient), walked with R12. Add a box became R9's sunken button; the sender gate has no outline.
+- [x] I116 `DottedRail` (delivery steps).
+  **Deleted** 2026-11-15 with its test: no screen used it since the delivery record became R6/R7's
+  slip.
+- [x] I117 Chips and tags: every `chipTone` (fiction red and amber, user blue, cost free and paid, the
   four delivery states, info, danger soft, estimate soft, stop), the test tag, the box pill, the
   documents chip, the saved badge.
+  **M**. Walked 2026-11-15 on Obalka_Demo beside R14's "Every shared part" sheet rendered at the device's 2.625: the fiction red and amber, the cost free and paid, info and danger soft are R14's
+  pairs in both themes (`chipTone.ts` read against the sheet); the box pill and the documents chip
+  walked on the lists and the backup, the test tag in gold soft. `userBlue` is the reminder's ink for
+  links (Zapnout, Uložit jako připomínku), as R14 draws them; the app draws no reminder chip - the row
+  carries its glyph and date (R5), so R14's "Set" chip waits for T051.
 - [x] I118 `QrCode` with the Obálka plate. Fixed 2026-11-13 (R6): ink #211B12 on #FFFDF8, radius 8,
   the logo in its own colours with its tile exactly over the seven omitted modules (a test holds it).
-- [ ] I119 Flags (cs, en) in the language picker and sheet.
-- [ ] I120 `BoxPill`, `CrossBoxLine` (dots, +N), `DeliveryStateIcon` (sent, delivered, accepted or
+- [x] I119 Flags (cs, en) in the language picker and sheet.
+  **M**: walked with I43 (Settings › Language) and in the English walk (I81).
+- [x] I120 `BoxPill`, `CrossBoxLine` (dots, +N), `DeliveryStateIcon` (sent, delivered, accepted or
   fiction, stop).
-- [ ] I121 Unread badge (99+, min 20) and the sync-error badge on a box avatar.
-- [ ] I122 Pull to refresh (both lists and the error state).
-- [ ] I123 `ContinueButton` after a restore (backup, transfer, What's new).
-- [ ] I124 The Mobile Key brand tile, the logo at 40 / 84 / 120 (the lock tile, `BrandLockIcon`, became
+  **M**, 2026-11-15: the box pill and the other-boxes line on the merged inbox, light and dark (I81);
+  `DeliveryStateIcon` lives on in the FAQ's legend only, built with R11 (T044).
+- [x] I121 Unread badge (99+, min 20) and the sync-error badge on a box avatar.
+  **Fixed**. Walked 2026-11-15 on Obalka_Demo beside R14's "Every shared part" sheet rendered at the device's 2.625: the unread badge was `theme.gold` (#E8A100) and a 16 disc - R14's is the stamp's
+  #FFC305, 20 across with its 2 ring outside; the sign-in badge 18 with the ring outside too (it drew
+  both rings inside). Now 24 and 22 boxes, 2 further out. Held by `BoxSwitcherSheet.test`, red
+  before. `theme.gold` is now unused (T051 with DESIGN.md).
+- [x] I122 Pull to refresh (both lists and the error state).
+  **Fixed** 2026-11-15: Android drew its arrow on a white disc, a white blob on the dark paper. Both
+  lists set the disc to the card's surface (`noPlatformSpinner.test`, red before); walked in light and
+  dark on the merged inbox.
+- [x] I123 `ContinueButton` after a restore (backup, transfer, What's new).
+  **Fixed** 2026-11-15: it drew its own face at 48; it is the filled button now, 52 with the 14
+  corner, R14's primary (`continueButton.test`, red before). What's new's Pokračovat already was (I52).
+  Not walked live: it shows only after a restore on a phone with no boxes.
+- [x] I124 The Mobile Key brand tile, the logo at 40 / 84 / 120 (the lock tile, `BrandLockIcon`, became
   the sealed envelope in T034).
+  **M**, 2026-11-15: the Mobile Key wait is the waiting envelope (I10), the lock the sealed envelope
+  (T034), Welcome the envelope waiting for a box (R1), so the 120 mark and the brand tiles are gone
+  (their tier went with `iconTiers.tsx`, I78). The logo is left at 84 on the launch (I03) and 40 in
+  Licences (R13), and inside the QR plate (I118).
 
 ### What the system draws around the app
 

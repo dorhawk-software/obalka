@@ -287,3 +287,16 @@ describe('the detail screen for a large-volume message with enclosures missing',
     expect(mockGetDetail).not.toHaveBeenCalled();
   });
 });
+
+// R14 (a message's attachments, "Downloading"): a known amount fills the bar, an unknown one is the
+// waiting bar. Until 2026-11-15 the detail drew its own copy of the bar, a still 40 % stub when the
+// total was unknown (031 I112, "one object, one drawing").
+describe('the detail screen while the attachments download', () => {
+  it('waits on the shared waiting bar when the size is not known', async () => {
+    mockGetDetail.mockReturnValue(new Promise(() => {}));
+    const view = await openMessage();
+    const button = await waitFor(() => view.getByTestId('downloadAttachments'), { timeout: 3000 });
+    fireEvent.press(button);
+    await waitFor(() => expect(view.getByTestId('downloadWaiting')).toBeTruthy());
+  });
+});

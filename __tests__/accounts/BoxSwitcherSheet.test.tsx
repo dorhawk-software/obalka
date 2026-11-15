@@ -251,6 +251,19 @@ describe('a box with unread mail', () => {
     expect(view.getByTestId('unread-box2')).toHaveTextContent('3');
     expect(view.queryByTestId('unread-box1')).toBeNull();
   });
+
+  // R14 (Box badges, "Unread · gold"): the stamp's gold, #FFC305, with ink on it, in both themes.
+  // It was the darker #E8A100, the only use of `theme.gold` left (seen 2026-11-15, 031 I121).
+  it('wears the stamp gold, 20 across inside its ring', async () => {
+    const { view } = await renderSheet({ accounts: [account('box1', { unreadCount: 3 })] });
+    // A 20 disc with its 2 ring outside: 24 across, as R14's box-shadow ring draws it.
+    expect(view.getByTestId('unread-box1')).toHaveStyle({
+      backgroundColor: '#FFC305',
+      minWidth: 24,
+      minHeight: 24,
+      borderTopWidth: 2,
+    });
+  });
 });
 
 // 024 cycle 2. "The Vse section should look slightly different in the boxes selector, as not to

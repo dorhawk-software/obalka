@@ -3,6 +3,7 @@ import { touchSlop } from '../../../theme/touchTarget';
 import { Animated } from 'react-native';
 import { XStack, YStack } from '../../../theme/ui';
 import { Skeleton } from '../../../theme/Skeleton';
+import { ProgressBar, WaitingBar } from '../../../theme/ProgressBar';
 import { attachmentFileStore } from '../../../services/files/attachmentFileStore';
 import { Body, Caption, Heading, Label, Meta, Small, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -611,10 +612,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
         onPress={downloadAttachments}
         testID={testID}
       />
-      <ProgressBar
-        downloading={downloading}
-        fraction={downloadFraction}
-      />
+      <DownloadBar downloading={downloading} fraction={downloadFraction} />
     </YStack>
   );
 
@@ -808,7 +806,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
               <Meta fontWeight="600" color={theme.textMuted} marginBottom={6}>
                 {downloadingLabel}
               </Meta>
-              <ProgressBar downloading fraction={downloadFraction} />
+              <DownloadBar downloading fraction={downloadFraction} />
             </YStack>
           ) : (
             // Not downloaded → always offer the download (attachments can be large, and we cannot
@@ -906,38 +904,24 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
 }
 
 /**
- * A thin determinate progress bar for the large-attachment download - rendered into a CONSTANT-height
- * slot so its appearance never shifts the rows below (no layout jump, constitution V). Idle: an empty
- * reserved 6px. Downloading: a sunken track with a blue fill (a 35% stub when the total is unknown).
+ * The download's bar in a slot of constant height, so its coming never moves the rows below
+ * (constitution V): the shared bar when the total is known, the waiting bar when it is not (R14).
  */
-function ProgressBar({
+function DownloadBar({
   downloading,
   fraction,
 }: {
   readonly downloading: boolean;
   readonly fraction: number | null;
 }) {
-  const theme = useTheme();
   return (
     <YStack height={6} justifyContent="center">
       {downloading ? (
-        <YStack
-          height={6}
-          borderRadius={999}
-          backgroundColor={theme.surfaceSunken}
-          overflow="hidden"
-        >
-          <YStack
-            height={6}
-            borderRadius={999}
-            backgroundColor={theme.blue}
-            width={
-              fraction != null
-                ? `${Math.max(8, Math.min(100, Math.round(fraction * 100)))}%`
-                : '40%'
-            }
-          />
-        </YStack>
+        fraction != null ? (
+          <ProgressBar fraction={fraction} testID="downloadProgress" />
+        ) : (
+          <WaitingBar testID="downloadWaiting" />
+        )
       ) : null}
     </YStack>
   );

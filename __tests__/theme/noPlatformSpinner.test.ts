@@ -39,3 +39,26 @@ describe('the app draws its own waits', () => {
     expect(platformSpinners('<ArcSpinner track={a} ink={b} />')).toBe(0);
   });
 });
+
+// Pull to refresh is the one wait the platform draws (R14: "pull to refresh retries"). Android puts
+// its arrow on a disc that is white unless told otherwise: in dark mode, a white blob on the dark
+// paper (walked 2026-11-15, 031 I122). Every one sets the disc to the card's surface.
+/** The `<RefreshControl …>` elements in a file, each as its own source text. */
+export function refreshControls(source: string): string[] {
+  return source.match(/<RefreshControl\b[^>]*>/g) ?? [];
+}
+
+describe("pull to refresh's disc", () => {
+  it('takes the surface in both themes, never the platform white', () => {
+    const offenders = walk(join(ROOT, 'src')).flatMap(f =>
+      refreshControls(readFileSync(f, 'utf8'))
+        .filter(el => !el.includes('progressBackgroundColor={theme.surface}'))
+        .map(() => relative(ROOT, f)),
+    );
+    expect(offenders).toEqual([]);
+  });
+
+  it('is judged by the element itself', () => {
+    expect(refreshControls('<RefreshControl a={1}\n b={2} />')).toHaveLength(1);
+  });
+});

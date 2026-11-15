@@ -887,7 +887,7 @@ export function MessageList({
             refreshing={refreshing}
             onRefresh={onPullRefresh}
             tintColor={theme.blue}
-            colors={[theme.blue]}
+            colors={[theme.blue]} progressBackgroundColor={theme.surface}
           />
         }
       >
@@ -971,7 +971,7 @@ export function MessageList({
             refreshing={refreshing}
             onRefresh={onPullRefresh}
             tintColor={theme.blue}
-            colors={[theme.blue]}
+            colors={[theme.blue]} progressBackgroundColor={theme.surface}
           />
         }
         // Closes the list and says how fresh it is - see `ListEnd`. A folder with no rows ends with
