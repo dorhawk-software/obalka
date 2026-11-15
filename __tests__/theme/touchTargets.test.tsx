@@ -324,13 +324,13 @@ describe('the help links', () => {
     expect(height + slop.top + slop.bottom).toBe(Math.max(height, MIN_TARGET));
   };
 
-  it('on Welcome: a dense line with 6 above and below reaches the target', async () => {
+  // Until 2026-11-15 the Welcome link was a dense line padded 6 above and below, across the screen.
+  it('on Welcome: R1\'s 44 link, its slop taking it to the target', async () => {
     const view = await wrap(<Welcome onAddBox={() => {}} onOpenFaq={() => {}} onRestore={() => {}} canTransfer={false} />);
     const link = view.getByTestId('welcome-faq');
-    expectLinkTarget(link, [6, 6]);
-    // It spans the screen, so its width needs nothing.
     const slop = link.props.hitSlop as Slop;
-    expect(slop.left + slop.right).toBe(0);
+    expect(StyleSheet.flatten(link.props.style)?.minHeight).toBe(44);
+    expect(44 + slop.top + slop.bottom).toBe(MIN_TARGET);
   });
 
   it('on the add-box form: a 20 line padded 20 above and 6 below reaches the target (R11)', async () => {

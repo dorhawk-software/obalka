@@ -123,17 +123,20 @@ describe('no screen caps a text box height', () => {
 
   /**
    * Fixed heights that hold no text, so nothing can be cropped. Each one is a graphic:
-   *   Welcome              the brand tile
    *   MessageDetail        the loading skeleton's envelope (031 R7)
-   *   ComposeScreen        the multiline body input - a text AREA scrolls rather than clipping, and
-   *                        120 is its opening size, not a lid on its content
-   * Anything new has to argue its way in here rather than pass silently.
+   * Anything new has to argue its way in here rather than pass silently. Welcome's brand tile and
+   * compose's 120 body field left on 2026-11-15 (R1's envelope, R12's letter), and with them their
+   * entries: a height that is gone keeps no place here.
    */
-  const ALLOWED = new Set([
-    'Welcome.tsx:120',
-    'MessageDetail.tsx:150',
-    'ComposeScreen.tsx:120',
-  ]);
+  const ALLOWED = new Set(['MessageDetail.tsx:150']);
+
+  it('lists only heights that are still in the code', () => {
+    const found = SCREENS.flatMap(file => {
+      const name = file.split('/').pop() as string;
+      return [...readFileSync(file, 'utf8').matchAll(/\bheight=\{(\d+)\}/g)].map(m => `${name}:${m[1]}`);
+    });
+    expect([...ALLOWED].filter(k => !found.includes(k))).toEqual([]);
+  });
 
   it.each(SCREENS)('%s', file => {
     const src = readFileSync(file, 'utf8');

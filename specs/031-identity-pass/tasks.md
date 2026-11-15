@@ -58,12 +58,19 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   a compact inline `NeutralButton` at 64 in its place; the outlined retry is gone. Roundings: the bar's
   4 to the one waiting bar's 6 (DESIGN.md); the retry's 46/13/14 to the neutral button's compact
   48/14/15. Walked both states light, dark and in English (forced on, reverted).
-- [ ] I04 `Welcome` (logo tile 120, Hero title, add box, restore, language, FAQ) - **X**: the envelope's
-  biggest moment has no object. R1.
+- [x] I04 `Welcome` (logo tile 120, Hero title, add box, restore, language, FAQ) - **X**: the envelope's
+  biggest moment has no object. R1. Built 2026-11-15 as R1: the envelope (310×196, laid down -1.5°,
+  its creases) with the window empty - "Komu" over two blank lines of round dots - waiting for a box;
+  the name 36 under it, the tagline balanced; the dark action, the sunken restore with the archive
+  glyph, the help a blue link; the language a sunken pill in the corner. A short phone scrolls rather
+  than lay the two blocks over each other. Walked on Obalka_Demo beside R1 at full resolution, light
+  and dark, Czech and English (forced on, reverted); the window first came out 2.5 short (R1's rows are
+  14 over a 2 dotted border) and the dots square, both fixed. Rounded: the pill's 9 to 10, the window's
+  9 to 10, the actions' 16 labels to `bodyStrong` 15.
 - [ ] I05 FAQ overlay and `FaqScreen` (accordion cards, Overline groups) - **D** (cards).
 - [ ] I06 `TelemetryConsent` (first run after the first box; two cards, two buttons) - **D** (cards).
 - [ ] I07 `BackupScreen` first run (restore) - see I45.
-- [ ] I08 `AddBoxForm` - **D** (cards); the busy spinner is R8.
+- [x] I08 `AddBoxForm` - **D** (cards); the busy spinner is R8. The busy spinner went with I76.
   - [x] I08.1 Method step: three radio cards, Advanced (chevron, no animation), environment segmented,
     the "i" help, FAQ link, Continue. Fixed 2026-11-13 to R11 (the owner asked): the methods are one
     `OptionGroup` sheet, a row each, the radio on the right, as Settings' Vzhled; Pokročilé a 13/700

@@ -282,6 +282,7 @@ export function OffsetIcon({
       viewBox="0 0 24 24"
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
+      testID={`offset-${name}`}
     >
       <G
         fill={

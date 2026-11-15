@@ -21,6 +21,7 @@ import Svg, {
   FeGaussianBlur,
   Filter,
   G,
+  Line,
   LinearGradient,
   Mask,
   Path,
@@ -61,6 +62,32 @@ export function Window({
       {size ? <WindowFilm width={size.width} height={size.height} /> : null}
       {size ? <Glint width={size.width} height={size.height} /> : null}
       {children}
+    </View>
+  );
+}
+
+/**
+ * A blank line in an empty window, where a name will be written: a 2 dotted rule along the bottom of
+ * its row, in the faint ink at .45. Compose's window before a recipient (R12, rows of 12) and the
+ * welcome's before a box (R1, rows of 14 over the rule: 16).
+ */
+export function WindowBlankLine({ width, height = 12 }: { readonly width: `${number}%`; readonly height?: number }) {
+  const theme = useTheme();
+  return (
+    <View style={{ width, height, opacity: 0.45 }}>
+      <Svg width="100%" height={height}>
+        {/* Round dots 2 across, 4 apart: a browser's 2 dotted border, as the boards draw it. */}
+        <Line
+          x1="1"
+          y1={height - 1}
+          x2="100%"
+          y2={height - 1}
+          stroke={theme.textFaint}
+          strokeWidth={2}
+          strokeDasharray="0 4"
+          strokeLinecap="round"
+        />
+      </Svg>
     </View>
   );
 }

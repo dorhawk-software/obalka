@@ -166,6 +166,18 @@ export const waitingEnvelope = {
   window: { width: 200, minHeight: 60, radius: 12 },
 } as const;
 
+/**
+ * The welcome's envelope (031 R1, agreed 2026-11-12): 310 by at least 196, laid down 1.5 degrees the
+ * other way to the sign-in's, its window empty - "Komu" over two blank lines, waiting for a box.
+ */
+export const welcomeEnvelope = {
+  width: 310,
+  minHeight: 196,
+  tilt: '-1.5deg',
+  creases: { width: 310, height: 196, d: 'M0 196 L128 116 M310 196 L182 116', stroke: 1.5 },
+  window: { width: 236, minHeight: 66 },
+} as const;
+
 /** The envelope's poses for the empty, failed and search states (031 R4), on a 220 x 140 front. */
 export const envelopePose = {
   width: 220,

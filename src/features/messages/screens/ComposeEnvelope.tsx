@@ -7,13 +7,12 @@
 
 import { useRef, useState, type ReactNode } from 'react';
 import { View, type TextInput } from 'react-native';
-import Svg, { Line } from 'react-native-svg';
 import { Input, XStack, YStack } from '../../../theme/ui';
 import { Caption, Overline, Subheading, Tag, Title } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Envelope } from '../../../theme/objects/Envelope';
 import { Stamp } from '../../../theme/objects/Stamp';
-import { Window } from '../../../theme/objects/Window';
+import { Window, WindowBlankLine } from '../../../theme/objects/Window';
 import { OffsetIcon } from '../../../theme/offsetIcons';
 import { ChevronDownIcon, ChevronRightIcon } from '../../../theme/icons';
 import { DashedOutline } from '../../../theme/DashedOutline';
@@ -384,22 +383,10 @@ export function WaitingWindow() {
       <View style={{ opacity: 0.55 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         <Window style={{ minHeight: 62, paddingTop: 8, paddingBottom: 10, paddingHorizontal: 12, gap: 2 }}>
           <Overline color={theme.textMuted}>{t('detail.to')}</Overline>
-          <DottedLine width="80%" />
-          <DottedLine width="52%" />
+          <WindowBlankLine width="80%" />
+          <WindowBlankLine width="52%" />
         </Window>
       </View>
     </WindowFrame>
-  );
-}
-
-/** A 2 dotted line along the bottom of a 12 row, in the faint ink at .45 (R12). */
-function DottedLine({ width }: { readonly width: `${number}%` }) {
-  const theme = useTheme();
-  return (
-    <View style={{ width, height: 12, opacity: 0.45 }}>
-      <Svg width="100%" height={12}>
-        <Line x1="0" y1="11" x2="100%" y2="11" stroke={theme.textFaint} strokeWidth={2} strokeDasharray="2 2" />
-      </Svg>
-    </View>
   );
 }

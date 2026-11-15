@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Úvodní obrazovka ukazuje obálku, která čeká na schránku.** Okénko je zatím prázdné, pod ním
+  název aplikace, tlačítka pro přidání schránky a obnovení a jazyk v rohu.
 - **Čekání vypadá všude stejně.** Kde aplikace na něco čeká, točí se její vlastní kroužek místo
   systémového, na Androidu i na iPhonu stejně.
 - **Výsledky hledání vypadají jako seznam zpráv.** Mají den a měsíc, odesílatele, sponku, vlastní

@@ -79,7 +79,7 @@ function ancestors(node: Node): Node[] {
 const HIDDEN = { includeHiddenElements: true } as const;
 
 describe('the way to an archive that is somewhere else', () => {
-  it('is a button with the backup glyph, on Welcome, and opens the restore screen', async () => {
+  it('is a button with the archive glyph, on Welcome, and opens the restore screen', async () => {
     const onRestore = jest.fn();
     const onAddBox = jest.fn();
     const view = await wrap(
@@ -89,7 +89,7 @@ describe('the way to an archive that is somewhere else', () => {
 
     expect(button.props.accessibilityRole).toBe('button');
     expect(button.props.accessibilityLabel).toBe(typesetCs(cs['welcome.restore']));
-    expect(within(button).getByTestId('icon-backup', HIDDEN)).toBeTruthy();
+    expect(within(button).getByTestId('offset-archive', HIDDEN)).toBeTruthy();
     expect(within(button).getByText(cs['welcome.restore'], HIDDEN)).toBeTruthy();
 
     fireEvent.press(button);
@@ -97,7 +97,7 @@ describe('the way to an archive that is somewhere else', () => {
     expect(onAddBox).not.toHaveBeenCalled();
   });
 
-  it('is the primary button\'s box, outlined: same height, radius and width cap', async () => {
+  it('is the primary button\'s width and corner, in the sunken tone (R1)', async () => {
     const view = await wrap(
       <Welcome onAddBox={() => {}} onOpenFaq={() => {}} onRestore={() => {}} canTransfer />,
     );
@@ -106,17 +106,17 @@ describe('the way to an archive that is somewhere else', () => {
 
     const p = boxOf(primary);
     const s = boxOf(secondary);
-    expect(s.minHeight).toBe(p.minHeight);
+    // R1 draws the dark one 54 tall and the sunken one 52, both with the 16 corner.
+    expect([p.minHeight, s.minHeight]).toEqual([54, 52]);
     expect(s.borderTopLeftRadius).toBe(p.borderTopLeftRadius);
     expect(s.borderBottomRightRadius).toBe(p.borderBottomRightRadius);
     expect(StyleSheet.flatten(secondary.props.style).maxWidth).toBe(
       StyleSheet.flatten(primary.props.style).maxWidth,
     );
-    // Outlined, not filled: the primary is the one dark shape on the screen.
-    expect(s.borderTopWidth).toBe(1);
-    expect(s.borderBottomWidth).toBe(1);
-    expect(s.backgroundColor).toBeUndefined();
-    expect(p.backgroundColor).toBeDefined();
+    // Sunken, not outlined: tone, not a line, and the primary stays the one dark shape on the screen.
+    expect(s.borderTopWidth ?? 0).toBe(0);
+    expect(s.backgroundColor).toBeDefined();
+    expect(s.backgroundColor).not.toBe(p.backgroundColor);
   });
 
   it('names the other phone where this one can receive a transfer', async () => {
@@ -134,8 +134,8 @@ describe('the way to an archive that is somewhere else', () => {
     expect(button.props.accessibilityLabel).toBe(typesetCs(cs['welcome.restore.backupOnly']));
     expect(within(button).getByText(cs['welcome.restore.backupOnly'], HIDDEN)).toBeTruthy();
     expect(view.queryByText(cs['welcome.restore'], HIDDEN)).toBeNull();
-    // The same glyph fits a backup alone.
-    expect(within(button).getByTestId('icon-backup', HIDDEN)).toBeTruthy();
+    // The archive glyph fits a backup alone too.
+    expect(within(button).getByTestId('offset-archive', HIDDEN)).toBeTruthy();
   });
 });
 

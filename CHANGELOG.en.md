@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The welcome screen shows an envelope waiting for a box.** Its window is still empty; under it
+  are the app's name, the buttons to add a box or restore, and the language in the corner.
 - **Waiting looks the same everywhere.** Wherever the app waits, its own small ring turns in place
   of the system's spinner, the same on Android and iPhone.
 - **Search results look like the message list.** They carry the day and month, the sender, the
