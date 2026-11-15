@@ -78,7 +78,7 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   glyph over an 18 line), and the answers R6's pair of sunken neutral buttons at 48 - alike, as the
   screen's own rule asks; yes was filled in ink and no outlined, at 50. Walked light and dark (forced
   on, reverted); the Czech answers are the longer pair.
-- [ ] I07 `BackupScreen` first run (restore) - see I45.
+- [x] I07 `BackupScreen` first run (restore) - see I45. Built 2026-11-15 with I45.7.
 - [x] I08 `AddBoxForm` - **D** (cards); the busy spinner is R8. The busy spinner went with I76.
   - [x] I08.1 Method step: three radio cards, Advanced (chevron, no animation), environment segmented,
     the "i" help, FAQ link, Continue. Fixed 2026-11-13 to R11 (the owner asked): the methods are one
@@ -360,22 +360,46 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   `DeliveryStateIcon` the rows and the slip use (sent, delivered, by sign-in, by fiction, stopped),
   light and dark, on the sunken block.
   2026-11-13: the cards are sheets now (Card), walked dark; the line ticks with R13's rest.
-- [ ] I45 `BackupScreen` - **X** for the key and QR: a slip on the security tint (R6). The rest:
+- [x] I45 `BackupScreen` - **X** for the key and QR: a slip on the security tint (R6). The rest:
   - [x] I45.0 The key and its QR - **X**: R6. Fixed 2026-11-13: `SecureSlip` (the surface-alt panel,
     radius 16, the tint measured to it) holds the key three groups and two in `code` 20/28, the QR plate
     and its hint; the warning and the pair of sunken buttons (48, radius 14) under it, one button at
     52 while hidden. Walked light and dark beside R6: matches but for the 4-module quiet zone, the full
     logo for the board's simplified plate, the label icon (R10) and the known text width.
-  - [ ] I45.1 Backup: the toggle (loading skeleton), last, never, a running stage with its count and
+  - [x] I45.1 Backup: the toggle (loading skeleton), last, never, a running stage with its count and
     progress bar, verify, back up now - **N**: R9.
-  - [ ] I45.2 Scope: documents toggle, measuring, the mode chip, auto, where, how - **N**: R9.
-  - [ ] I45.3 Advanced: auto, keep, the keep-count segmented control - **D** (cards).
-  - [ ] I45.4 Restore list: loading, none, rows (documents chip, size and version, too new,
+    Fixed 2026-11-15 to R10, with the rest of I45: the archive's well, the switch and the last
+    backup in one row; under it one slot - what backing up does, or the run's stage, count and bar
+    laid over it, so nothing under the card moves when a run starts (constitution V; R10 only
+    adds the stage, which would push the page down); Zálohovat nyní and Ověřit zálohu as R6's sunken pair at 48,
+    dimmed while a run goes on (was a filled bar and a link row). The overline is R10's "Záloha".
+  - [x] I45.2 Scope: documents toggle, measuring, the mode chip, auto, where, how - **N**: R9.
+    Fixed 2026-11-15 to R10, with the rest of I45: what is (not) in the backup is the group's quiet
+    line under its overline (FR-008 keeps it beside the switch; R10 leaves it out); the attachments
+    switch and "Které přílohy" with the mode as R10's chip and Změnit; auto and where as quiet lines
+    under the card; how it is sealed as R1's help link.
+  - [x] I45.3 Advanced: auto, keep, the keep-count segmented control - **D** (cards).
+    Fixed 2026-11-15 to R10, with the rest of I45: the lines muted 13/17 (were faint meta), the keep
+    count in the card under its switch as R10 opens a backup (was a tinted block).
+  - [x] I45.4 Restore list: loading, none, rows (documents chip, size and version, too new,
     unsupported, documents missing, held), swipe to delete or its menu under Reduce Motion - **N**: R9.
-  - [ ] I45.5 An opened row: key input, scan, start, delete, use the stored key - **N**: R9.
-  - [ ] I45.6 File export and import; restored, notice, error; Continue - **N**: R9.
-  - [ ] I45.7 First run (restore only, its own snackbars) - **N**: R9.
-- [ ] I46 `TransferScreen` - **X** for the code phrase and QR: a slip (R6). The rest:
+    Fixed 2026-11-15 to R10, with the rest of I45: the date over "size · verze x", the chip and the
+    chevron at the end; a held one's reason in danger; one this build cannot read dimmed whole, with
+    no chevron (R10 draws one; it opens nothing). The documents chip has DESIGN.md's 8 corner and the
+    blue info tone for both kinds that hold attachments (was a pill, "downloaded only" in gold).
+  - [x] I45.5 An opened row: key input, scan, start, delete, use the stored key - **N**: R9.
+    Fixed 2026-11-15 to R10, with the rest of I45: the key field on the page's tone, no border;
+    the scan and the stored key as flush blue links with their glyphs; Smazat (neutral, danger ink) and
+    Obnovit (filled) side by side at 48 (was a 44 Obnovit over two links, Smazat a red link).
+  - [x] I45.6 File export and import; restored, notice, error; Continue - **N**: R9.
+    Fixed 2026-11-15 to R10, with the rest of I45: two rows in ink with the file-down and
+    file-up glyphs (were blue links), why a file is the group's quiet line; restored and notice as
+    quiet lines; a failure as the transfer's danger block (was a red line).
+  - [x] I45.7 First run (restore only, its own snackbars) - **N**: R9.
+    Fixed 2026-11-15 to R10, with the rest of I45: the sentence about a saved file heads the screen,
+    then receiving (the transfer glyph in its well, "Přijmout do tohoto telefonu"), the list, the
+    file - R10's order (the file was before the list). Walked through Welcome (forced, reverted).
+- [x] I46 `TransferScreen` - **X** for the code phrase and QR: a slip (R6). The rest:
   - [x] I46.0 The phrase and its QR - **X**: R6. Fixed 2026-11-13: the same slip with the overline,
     the phrase three words and two with faint dashes (the board's 22 rounded to the `code` 20), the
     hint, the backup's two meta lines and the QR at 195; the stage, the bar, keep-open, the cancel link
@@ -405,8 +429,9 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     faint meta, Pokračovat 52 at the foot with no bar; the sending phone's end in the same shape
     ("Odesláno." and what the other phone still needs). A failure is R10's danger block at the top of
     the half it happened in. Walked forced (done, stopped) beside R8 and R10, light, dark and English.
-  - [ ] I46.6 First run, receive only - **N**: R9. The same receiving screen as I46.3 (built); still
-    to walk on a first run, which needs a phone with no boxes.
+  - [x] I46.6 First run, receive only - **N**: R9. The same receiving screen as I46.3 (built); still
+    to walk on a first run, which needs a phone with no boxes. Walked 2026-11-15 from the first-run restore
+    screen (forced, reverted): the same receiving screen.
 - [x] I47 `DebugScreen` (level, start/stop/saving, counter, files: loading, failed, empty, rows with
   share and delete) - **N** (cards). Fixed 2026-11-15 to R13: the intro in body text, the two notes as
   meta lines under the choices, Spustit záznam as the 52 filled button; while recording one card

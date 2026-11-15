@@ -33,6 +33,36 @@ export function documentsMissingText(manifest: BackupManifest): string | null {
   return t(`backup.docs.missing.${plural(missing)}`, { n: missing });
 }
 
+/**
+ * What a backup holds of the attachments, as R10's chip: the 8 corner (DESIGN.md › Chips), the blue
+ * info tone when it holds some - downloaded only or all of them - and the sunken tone in body ink when
+ * it holds none. Until 2026-11-15 it was a pill (999), "downloaded only" in the soft gold.
+ */
+export function DocumentsKindChip({
+  kind,
+  testID,
+}: {
+  readonly kind: BackupDocumentsKind;
+  readonly testID?: string;
+}) {
+  const theme = useTheme();
+  return (
+    <XStack
+      flexShrink={0}
+      paddingHorizontal={8}
+      paddingVertical={2}
+      borderRadius={8}
+      backgroundColor={kind === 'none' ? theme.surfaceSunken : theme.blueSoft}
+      testID={testID}
+    >
+      <Meta fontWeight="700" color={kind === 'none' ? theme.bodyText : theme.blueDark}>
+        {t(`backup.docs.chip.${kind}`)}
+      </Meta>
+    </XStack>
+  );
+}
+
+/** A backup's chip in the restore list. */
 export function BackupDocumentsChip({
   manifest,
   testID,
@@ -40,25 +70,5 @@ export function BackupDocumentsChip({
   readonly manifest: BackupManifest;
   readonly testID?: string;
 }) {
-  const theme = useTheme();
-  const kind = documentsKindOf(manifest);
-  // All: the brand's informational blue. Downloaded only: the soft gold of "part of it". None: neutral.
-  const bg =
-    kind === 'all' ? theme.blueSoft : kind === 'downloaded' ? theme.goldSoft : theme.surfaceSunken;
-  const fg =
-    kind === 'all' ? theme.blueDark : kind === 'downloaded' ? theme.warningInk : theme.textMuted;
-  return (
-    <XStack
-      flexShrink={0}
-      paddingHorizontal={8}
-      paddingVertical={2}
-      borderRadius={999}
-      backgroundColor={bg}
-      testID={testID}
-    >
-      <Meta fontWeight="700" color={fg}>
-        {documentsChipText(manifest)}
-      </Meta>
-    </XStack>
-  );
+  return <DocumentsKindChip kind={documentsKindOf(manifest)} testID={testID} />;
 }

@@ -26,34 +26,34 @@ export const WELL_INSET = space.xl + 40 + space.lg;
  * A grouped-settings section: an uppercase faint label, its card(s) 8 under it, and the next section
  * 18 under the last card (boards R3, R13).
  *
- * `icon` is optional and decorative - it sits beside the label to make a long screen scannable, and
- * carries no meaning the label does not already carry (a screen reader hears the label alone).
+ * The label carries no glyph (R10, R13). Until 2026-11-15 it took an optional decorative `icon`, which
+ * only the backup screen still passed.
  */
 export function Section({
   label,
-  icon,
+  note,
   children,
   testID,
 }: {
   readonly label: string;
-  readonly icon?: ReactNode;
+  /** The group's quiet line under its label, 4 under it, in muted meta (R13's `GroupHead`). */
+  readonly note?: ReactNode;
   readonly children: ReactNode;
   readonly testID?: string;
 }) {
+  const theme = useTheme();
   return (
     <YStack marginBottom={space.gutter} gap={space.base} testID={testID}>
-      <XStack alignItems="center" gap={space.sm} marginLeft={space.xs}>
-        {icon ? (
-          <YStack accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            {icon}
-          </YStack>
-        ) : null}
-        {/* The row's width, not its own measure: Android measured "ZABEZPEČENÍ" a letter short and cut
-            the Í (practices, "Text takes its container's width"). */}
-        <Overline accessibilityRole="header" flex={1}>
-          {label}
-        </Overline>
-      </XStack>
+      <YStack gap={space.xs} marginHorizontal={space.xs}>
+        <XStack alignItems="center" gap={space.sm}>
+          {/* The row's width, not its own measure: Android measured "ZABEZPEČENÍ" a letter short and cut
+              the Í (practices, "Text takes its container's width"). */}
+          <Overline accessibilityRole="header" flex={1}>
+            {label}
+          </Overline>
+        </XStack>
+        {typeof note === 'string' ? <Meta color={theme.textMuted}>{note}</Meta> : note ?? null}
+      </YStack>
       {children}
     </YStack>
   );

@@ -20,6 +20,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Záloha vypadá jako zbytek aplikace.** Zálohovat a ověřit jsou dvě stejná tlačítka, průběh
+  zálohy se ukáže přímo pod přepínačem, zálohy v seznamu mají štítek s přílohami vpravo a otevřená
+  záloha nabízí Smazat a Obnovit vedle sebe.
 - **Otázka na hlášení o chybách nabízí obě odpovědi stejně.** „Neodesílat“ i „Odesílat hlášení“
   jsou stejná tlačítka; dřív bylo souhlasné vyplněné a odmítnutí jen orámované.
 - **Časté dotazy mají nadpisy jako Nastavení.** Upozornění u datových schránek je tichý řádek

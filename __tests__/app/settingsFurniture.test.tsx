@@ -134,10 +134,12 @@ describe('a section', () => {
     );
     const root = view.toJSON() as Json;
     expect(flat(root.props.style)).toEqual(expect.objectContaining(DESIGN_SECTION));
-    const labelRow = (root.children as Json[])[0];
-    expect(flat(labelRow.props.style)).toEqual(
-      expect.objectContaining({ gap: space.sm, marginLeft: space.xs }),
-    );
+    // The head holds the label row and, when a section has one, its quiet line 4 under it (R13's
+    // GroupHead; since 2026-11-15 - until then the label row was the section's first child).
+    const head = (root.children as Json[])[0];
+    expect(flat(head.props.style)).toEqual(expect.objectContaining({ gap: space.xs, marginLeft: space.xs }));
+    const labelRow = (head.children as Json[])[0];
+    expect(flat(labelRow.props.style)).toEqual(expect.objectContaining({ gap: space.sm }));
   });
 
   it('draws its label as the design does, which DESIGN.md records', async () => {
@@ -277,11 +279,11 @@ describe('on DESIGN.md s scales', () => {
 
   it('draws nothing in a section, card or row but a step or a value DESIGN.md records', async () => {
     // What a scan of the source used to hold them to, on what renders: every branch drawn - a section
-    // with an icon and one without, a pressable row and a last one. A number that is neither is how
+    // with its quiet line and one without, a pressable row and a last one. A number that is neither is how
     // off-scale spacing gets in, one close-enough value at a time.
     const view = await wrap(
       <View testID="furniture">
-        <Section label="Vzhled" icon={<Text>i</Text>}>
+        <Section label="Vzhled" note="Co v ní je">
           <Card>
             <CardRow last={false} onPress={() => {}} accessibilityLabel="Motiv">
               <RowTitle flex={1}>Motiv</RowTitle>

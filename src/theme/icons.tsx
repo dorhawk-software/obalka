@@ -31,6 +31,8 @@ import {
   Eye,
   EyeOff,
   File,
+  FileDown,
+  FileUp,
   FlaskConical,
   Info,
   Layers,
@@ -363,6 +365,16 @@ export function CreditCardIcon({ size = 20, color = '#000' }: IconProps) {
 /** A generic attachment file. The design's attachment tile is a neutral sunken square + this glyph. */
 export function FileIcon({ size = 18, color = '#000' }: IconProps) {
   return <File size={size} color={color} strokeWidth={2} />;
+}
+
+/** Saving a backup out to a file (R10): the page with the arrow going down into it. */
+export function FileDownIcon({ size = 20, color = '#000' }: IconProps) {
+  return <FileDown size={size} color={color} strokeWidth={2} />;
+}
+
+/** Loading a backup from a file (R10): the page with the arrow coming up out of it. */
+export function FileUpIcon({ size = 20, color = '#000' }: IconProps) {
+  return <FileUp size={size} color={color} strokeWidth={2} />;
 }
 
 // Raw Lucide glyphs for the SCALE tiers (016). `iconTiers.tsx` applies the tier's size, stroke and

@@ -621,6 +621,10 @@ moves without being asked.
 - **Spacing:** the cards sit 8dp under the label (`base`) and the next section 18dp under the last card
   (`gutter`); the first label sits 16dp under the header (boards R3, R13). Until 031 the 009 port drew 9
   and 22, off the scale.
+- **Quiet line:** a group that needs a sentence before its card says it 4dp under the label, Meta in
+  muted ink (R13's licence groups; the FAQ's disclaimer; what a backup holds). The label has no glyph
+  beside it (R10, R13); the backup screen's five glyphs went on 2026-11-15. A line after the card is
+  Caption in muted ink, 10dp under it (R10's "Záloha se ukládá do tohoto telefonu").
 
 ### Inputs
 - **Style:** `surface` fill, 1px `hairline-strong` border, 14dp radius, 50dp tall (the search field:

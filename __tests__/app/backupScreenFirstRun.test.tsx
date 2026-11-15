@@ -96,15 +96,17 @@ describe('the backup screen on a first run', () => {
     expect(onOpenTransfer).toHaveBeenCalledTimes(1);
   });
 
-  it('puts them in the order they are used: transfer, file, then the list the file lands in', async () => {
+  // R10 (2026-11-15): the sentence about a saved file heads the screen, then receiving, the list, and
+  // the file last. Until then the file sat between the transfer and the list it lands in.
+  it('puts them in R10\'s order: transfer, the list, then the file', async () => {
     const fake = fakeController();
     const view = await mountFirstRun(fake, { onOpenTransfer: () => {} });
     const tree = JSON.stringify(view.toJSON());
     const at = (id: string) => tree.indexOf(`"testID":"${id}"`);
 
     expect(at('backup-open-transfer')).toBeGreaterThan(-1);
-    expect(at('backup-open-transfer')).toBeLessThan(at('backup-import'));
-    expect(at('backup-import')).toBeLessThan(at('backup-none'));
+    expect(at('backup-open-transfer')).toBeLessThan(at('backup-none'));
+    expect(at('backup-none')).toBeLessThan(at('backup-import'));
   });
 
   it('loads a backup file into the list, and restores it from there', async () => {

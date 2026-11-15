@@ -22,11 +22,14 @@ describe('BackupScreen while it runs', () => {
       });
 
     await at({ stage: 'reading', done: 12, total: 40, fraction: 0.075, detail: 'Jan Novák' });
-    // Exactly what was asked for: what is happening, to what, and how far - not "Pracuji…".
-    expect(view.getByTestId('backup-last')).toHaveTextContent(
+    // Exactly what was asked for: what is happening, to what, and how far - not "Pracuji…". R10 draws
+    // the stage under the switch with the last backup still beside it (until 2026-11-15 the stage
+    // took the last backup's line).
+    expect(view.getByTestId('backup-stage')).toHaveTextContent(
       new RegExp(t('backup.stage.reading')),
     );
-    expect(view.getByTestId('backup-last')).toHaveTextContent(/Jan Novák/);
+    expect(view.getByTestId('backup-stage')).toHaveTextContent(/Jan Novák/);
+    expect(view.getByTestId('backup-last')).toHaveTextContent(/Naposledy/);
     expect(view.getByTestId('backup-count')).toHaveTextContent('12 z 40');
     expect(view.getByTestId('backup-progress').props.accessibilityValue).toEqual({
       min: 0,
@@ -36,14 +39,15 @@ describe('BackupScreen while it runs', () => {
 
     // The KDF has no rows to count, so it reports a percentage instead of a fake "x of y".
     await at({ stage: 'sealing', done: 0.5, total: 1, fraction: 0.55 });
-    expect(view.getByTestId('backup-last')).toHaveTextContent(t('backup.stage.sealing'));
+    expect(view.getByTestId('backup-stage')).toHaveTextContent(t('backup.stage.sealing'));
     expect(view.getByTestId('backup-count')).toHaveTextContent('55 %');
 
-    // …and when the run ends, the row goes back to saying when the last backup was.
+    // …and when the run ends, the stage and its bar give the slot back.
     await act(async () => {
       fake.state.setRun(null);
     });
     expect(view.queryByTestId('backup-progress')).toBeNull();
+    expect(view.queryByTestId('backup-stage')).toBeNull();
     expect(view.getByTestId('backup-last')).toHaveTextContent(/Naposledy/);
   });
 

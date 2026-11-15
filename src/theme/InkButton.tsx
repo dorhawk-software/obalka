@@ -3,6 +3,7 @@
 // is unmet is drawn at .55, as R10 draws Přijmout with an empty field, and still answers a press with
 // PressScale's refusal, so the reason is felt and heard rather than the press swallowed (019).
 // `small` is R13's half of a pair inside a card row: 40 tall, the 12 corner, the label 14/700.
+// `compact` is 48, one of a pair beside a neutral button (R10's Smazat and Obnovit).
 // `danger` is R9's `dbtn`, the answer a question's danger takes: the same button filled with the danger
 // colour, its glyph 10 before the words (the bin before Smazat).
 
@@ -19,6 +20,7 @@ export function InkButton({
   blockedReason,
   onBlockedPress,
   small = false,
+  compact = false,
   danger = false,
   icon,
   accessibilityLabel,
@@ -33,6 +35,8 @@ export function InkButton({
   readonly onBlockedPress?: () => void;
   /** R13's row button, one of two side by side: 40 tall, the 12 corner, 14/700. */
   readonly small?: boolean;
+  /** 48 tall, one of a pair beside a neutral button (R10). */
+  readonly compact?: boolean;
   /** R9's danger answer: filled with the danger colour. */
   readonly danger?: boolean;
   /** A glyph before the words, 10 from them, inked by the caller in `inkButtonInk`. */
@@ -55,7 +59,7 @@ export function InkButton({
     >
       <XStack
         width="100%"
-        minHeight={small ? 40 : 52}
+        minHeight={small ? 40 : compact ? 48 : 52}
         borderRadius={small ? 12 : 14}
         backgroundColor={danger ? theme.danger : theme.text}
         alignItems="center"

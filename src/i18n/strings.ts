@@ -150,8 +150,6 @@ const cs: Record<string, string> = {
   'home.title': 'Schránky',
   'home.addBox': 'Přidat datovou schránku',
   'home.refreshAll': 'Obnovit všechny schránky',
-  'home.settings': 'Nastavení',
-  'home.menu': 'Nabídka',
   'box.testEnv': 'Testovací',
   'testEnv.banner': 'Testovací prostředí',
   'box.idLabel': 'ID schránky',
@@ -503,9 +501,8 @@ const cs: Record<string, string> = {
   // contain (FR-008), and that the password is the only way in. Both are stated plainly rather than
   // softened, because a user who misunderstands either finds out at the worst possible moment.
   'backup': 'Záloha archivu',
-  'backup.on': 'Zapnuto',
-  'backup.off': 'Vypnuto',
   'backup.toggle': 'Zálohovat archiv',
+  'backup.section': 'Záloha',
   // Shown while the screen is still finding out whether backups are on. It has to exist: the answer
   // is two async reads away (the Keychain, then the target's manifests), and for that gap the screen
   // used to render the OFF copy - telling a user with backups enabled, in a full sentence, that
@@ -704,6 +701,8 @@ const cs: Record<string, string> = {
   'backup.verify.ok': 'Záloha je v pořádku: {boxes}, {messages}.',
   'backup.verify.failed':
     'Zálohu se nepodařilo otevřít. Buď je poškozená, nebo k ní nesedí heslo.',
+  // A backup's version in the restore list, after its size (R10): "4,2 MB · verze 1.1.0".
+  'backup.restore.version': 'verze {version}',
   'backup.restore.tooNew': 'Vytvořeno novější verzí aplikace. Aktualizujte aplikaci.',
   'backup.restore.unsupported': 'Tuto zálohu tato verze aplikace nepřečte.',
   // U zálohy, kterou si retence nechává, protože z ní obnova nevrátila všechny přílohy (2026-09-15).
@@ -1112,8 +1111,6 @@ const en: Record<string, string> = {
   'home.title': 'Boxes',
   'home.addBox': 'Add a data box',
   'home.refreshAll': 'Refresh all boxes',
-  'home.settings': 'Settings',
-  'home.menu': 'Menu',
   'box.testEnv': 'Test',
   'testEnv.banner': 'Test environment',
   'box.idLabel': 'Box ID',
@@ -1361,9 +1358,8 @@ const en: Record<string, string> = {
     'The documents of received and sent messages that are not on the phone are downloaded at the next box refresh you start, not as soon as this is on: the ISDS Operating Rules let an app on a phone contact a box only when you ask it to. This does not deliver a message or mark it read: listing it already delivered it. Documents take up space on the phone, and each is downloaded only once.',
   'settings.autoDownload.ask.confirm': 'Turn on',
   'backup': 'Archive backup',
-  'backup.on': 'On',
-  'backup.off': 'Off',
   'backup.toggle': 'Back up the archive',
+  'backup.section': 'Backup',
   'backup.loading': 'Checking backup status…',
   'backup.toggle.desc':
     'The archive backs itself up after every refresh, encrypted, on this phone. Keep a copy elsewhere too: a lost phone takes both with it.',
@@ -1503,6 +1499,7 @@ const en: Record<string, string> = {
   'backup.verify.ok': 'The backup is sound: {boxes}, {messages}.',
   'backup.verify.failed':
     'The backup could not be opened. It is either damaged, or the password does not match it.',
+  'backup.restore.version': 'version {version}',
   'backup.restore.tooNew': 'Made by a newer version of the app. Update the app.',
   'backup.restore.unsupported': 'This version of the app cannot read that backup.',
   'backup.restore.held': 'Not deleted automatically: it holds documents that could not be restored from it.',

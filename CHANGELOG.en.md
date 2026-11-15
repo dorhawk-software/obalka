@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The backup looks like the rest of the app.** Back up and verify are two matching buttons, a
+  running backup shows its progress right under the switch, each backup in the list has its
+  documents label at the end, and an opened backup offers Delete and Restore side by side.
 - **The error-report question offers both answers alike.** "Don't send" and "Send reports" are the
   same button; before, agreeing was filled and refusing only outlined.
 - **The FAQ is headed as Settings is.** The note on the data-box answers is the quiet line under its

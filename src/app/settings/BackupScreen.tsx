@@ -12,11 +12,14 @@
 //   * Backups that this build cannot read are LISTED, greyed, with the reason. Hiding them would look
 //     like the backup was lost when the answer is "update the app" (FR-011).
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { BackHandler, type DimensionValue } from 'react-native';
 import { XStack, YStack, Input } from '../../theme/ui';
-import { BodyStrong, Caption, Label, Meta, Small, SmallStrong } from '../../theme/Typography';
-import { PressScale } from '../../theme/PressScale';
+import { Caption, Label, Small, SmallStrong } from '../../theme/Typography';
+import { Well } from '../../theme/Well';
+import { touchSlop } from '../../theme/touchTarget';
+import { InkButton } from '../../theme/InkButton';
+import { OffsetIcon } from '../../theme/offsetIcons';
 import { Toggle } from '../../theme/Toggle';
 import { QrCode } from '../../theme/QrCode';
 import { NeutralButton } from '../../theme/NeutralButton';
@@ -26,18 +29,16 @@ import { ProgressBar } from '../../theme/ProgressBar';
 import { Skeleton } from '../../theme/Skeleton';
 import { Dialog, type DialogAction } from '../../theme/Dialog';
 import { useTheme } from '../../theme/ThemeProvider';
+import { chipTone } from '../../theme/chipTone';
 import {
-  BackupIcon,
-  CameraIcon,
   CheckIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  ClockIcon,
+  FileDownIcon,
+  FileUpIcon,
   HelpIcon,
-  MailIcon,
-  ShieldKeyIcon,
+  ScanIcon,
   TrashIcon,
-  TuneIcon,
 } from '../../theme/icons';
 import { SegmentedControl } from '../../theme/SegmentedControl';
 import { SwipeableRow } from '../../theme/SwipeableRow';
@@ -46,7 +47,7 @@ import { formatBytes, plural, t } from '../../i18n/strings';
 import { haptics } from '../../services/haptics';
 import { SubScreen } from './SubScreen';
 import { useSnackbar } from '../Snackbar';
-import { Card, CardRow, RowTitle, Section } from './SettingsSection';
+import { Card, CardRow, RowDivider, RowTitle, Section } from './SettingsSection';
 import {
   BackupAbortedError,
   BackupCancelledError,
@@ -75,7 +76,7 @@ import { useCloseOnBackground } from '../useCloseOnBackground';
 import { parseRecoveryKey } from '../../services/backup/recoveryKey';
 import type { BackupDocumentMode, BackupManifest } from '../../services/backup/schema';
 import { OptionGroup } from '../../theme/OptionGroup';
-import { BackupDocumentsChip, documentsChipText, documentsMissingText } from './BackupDocumentsChip';
+import { BackupDocumentsChip, DocumentsKindChip, documentsChipText, documentsMissingText } from './BackupDocumentsChip';
 import type { BackupProgress } from '../../services/backup/progress';
 import type {
   ApplyOutcome,
@@ -374,6 +375,12 @@ export function leaveDialogActions({
  * Argon2id knows how far along it is but not in units a person cares about, so it gets the
  * percentage; reading messages and writing rows get the real counts, which is what was asked for.
  */
+/** R1's help link: 44 tall, the slop takes it to the target. */
+const LINK_HEIGHT = 44;
+
+/** The run's slot under the switch: the stage's 20, the 8 between, the bar's 6 (R10). */
+const RUN_SLOT = 34;
+
 function countLabel(progress: BackupProgress): string {
   return progress.total > 1
     ? t('backup.progress.count', { done: progress.done, total: progress.total })
@@ -390,6 +397,42 @@ function countLabel(progress: BackupProgress): string {
  * rather than Skeleton's default: these sit inside a Card, and there `surfaceAlt` is DARKER than
  * the surface behind it in dark mode, which measured 1.09:1 on a device - invisible.
  */
+/** R10's link under the key field: its glyph and words in blue, 44 tall (R1's link). */
+function KeyLink({
+  icon,
+  label,
+  onPress,
+  busy = false,
+  testID,
+}: {
+  readonly icon: ReactNode;
+  readonly label: string;
+  readonly onPress: () => void;
+  readonly busy?: boolean;
+  readonly testID: string;
+}) {
+  const theme = useTheme();
+  return (
+    <XStack
+      alignSelf="flex-start"
+      minHeight={LINK_HEIGHT}
+      paddingHorizontal={space.xs}
+      alignItems="center"
+      gap={space.sm}
+      hitSlop={touchSlop({ height: LINK_HEIGHT })}
+      onPress={onPress}
+      pressStyle={{ opacity: 0.5 }}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ busy }}
+      testID={testID}
+    >
+      {icon}
+      <SmallStrong color={theme.blue}>{label}</SmallStrong>
+    </XStack>
+  );
+}
+
 function LoadingLines({
   widths,
   height = 11,
@@ -467,6 +510,7 @@ export function BackupScreen({
   readonly inView?: boolean;
 }) {
   const theme = useTheme();
+  const dangerTone = chipTone('dangerSoft', theme);
   // The run lives in the controller, so it keeps going when this screen goes away. This subscribes to
   // it - which also means re-entering the screen mid-run shows the bar where it actually is.
   const activeRun = useSyncExternalStore(
@@ -997,7 +1041,6 @@ export function BackupScreen({
   const restoreSection = (
     <Section
       label={t('backup.restore')}
-      icon={<ClockIcon size={13} color={theme.textFaint} />}
     >
       <Card>
         {/* `backups` starts EMPTY, which is not the same as "there are none" - and the empty-state
@@ -1018,13 +1061,9 @@ export function BackupScreen({
           </CardRow>
         ) : backups.length === 0 ? (
           <CardRow last>
-            <Caption
-              flex={1}
-              color={theme.textFaint}
-              testID="backup-none"
-            >
+            <Small flex={1} color={theme.textMuted} testID="backup-none">
               {t('backup.restore.none')}
-            </Caption>
+            </Small>
           </CardRow>
         ) : null}
         {backups.map((item, index) => {
@@ -1064,58 +1103,62 @@ export function BackupScreen({
                   testID: `backup-delete-${index}`,
                 }}
               >
-                {/* `backup-row-N` is always here; `backup-item-N` is the PRESSABLE, which a
-                  backup this build cannot read does not get. */}
+                {/* `backup-row-N` is always here; `backup-item-N` is the PRESSABLE, which a backup
+                  this build cannot read does not get - dimmed whole and with no chevron (R10). */}
                 <CardRow
-                  last={index === backups.length - 1 && !open}
+                  last={index === backups.length - 1 || open}
+                  dimmed={!item.restorable}
                   testID={`backup-row-${index}`}
                 >
-                  <YStack flex={1} opacity={item.restorable ? 1 : 0.6}>
-                    <XStack alignItems="center" gap={8}>
-                      <RowTitle>
-                        {formatDateTime(item.manifest.createdAt)}
-                      </RowTitle>
-                      <BackupDocumentsChip manifest={item.manifest} testID={`backup-docs-${index}`} />
-                    </XStack>
-                    <Meta
-                      color={theme.textFaint}
-                    >
+                  <YStack flex={1} gap={2}>
+                    <RowTitle>{formatDateTime(item.manifest.createdAt)}</RowTitle>
+                    <Caption color={theme.textMuted}>
                       {item.restorable
-                        ? `${backupSizeText(item.manifest)} · ${item.manifest.appVersion}`
+                        ? `${backupSizeText(item.manifest)} · ${t('backup.restore.version', { version: item.manifest.appVersion })}`
                         : item.compatibility.kind === 'tooNew'
                         ? t('backup.restore.tooNew')
                         : t('backup.restore.unsupported')}
-                    </Meta>
+                    </Caption>
                     {documentsMissingText(item.manifest) ? (
-                      <Meta color={theme.textFaint}>
-                        {documentsMissingText(item.manifest)}
-                      </Meta>
+                      <Caption color={theme.textMuted}>{documentsMissingText(item.manifest)}</Caption>
                     ) : null}
                     {/* Why this one outlives the retention limit, for as long as it does (2026-09-15). */}
                     {item.held ? (
-                      <Meta
-                        color={theme.textFaint}
-                        testID={`backup-held-${index}`}
-                      >
+                      <Caption color={theme.danger} testID={`backup-held-${index}`}>
                         {t('backup.restore.held')}
-                      </Meta>
+                      </Caption>
                     ) : null}
                   </YStack>
                   {item.restorable ? (
-                    <ChevronRightIcon size={18} color={theme.textFaint} />
+                    <BackupDocumentsChip manifest={item.manifest} testID={`backup-docs-${index}`} />
+                  ) : null}
+                  {item.restorable ? (
+                    open ? (
+                      <ChevronDownIcon size={18} color={theme.textMuted} />
+                    ) : (
+                      <ChevronRightIcon size={18} color={theme.textMuted} />
+                    )
                   ) : null}
                 </CardRow>
               </SwipeableRow>
               {open ? (
+                // R10: the key field on the page's tone, the two ways to the key as links, then Smazat
+                // and Obnovit side by side - the danger in the neutral tone, the restore filled.
                 <YStack
-                  gap={10}
-                  paddingHorizontal={14}
-                  paddingVertical={12}
-                  borderBottomWidth={index === backups.length - 1 ? 0 : 1}
-                  borderBottomColor={theme.border}
-                  backgroundColor={theme.surfaceAlt}
+                  gap={space.base}
+                  paddingHorizontal={space.xl}
+                  paddingBottom={space.xl}
                 >
                   <Input
+                    minHeight={50}
+                    backgroundColor={theme.bg}
+                    borderWidth={0}
+                    borderRadius={14}
+                    paddingHorizontal={space.inset}
+                    fontSize={15}
+                    letterSpacing={1}
+                    color={theme.text}
+                    placeholderTextColor={theme.textFaint}
                     value={typedKey}
                     onChangeText={setTypedKey}
                     placeholder={t('backup.restore.key.placeholder')}
@@ -1124,105 +1167,70 @@ export function BackupScreen({
                     accessibilityLabel={t('backup.restore.key.placeholder')}
                     testID="backup-key-input"
                   />
-                  {/* Showing the key as a QR has worked since T012a; READING one needs a
-                      camera, which the app only gained for 025. Typing stays: the phone showing
-                      the code may be the lost one. */}
-                  {scanningAvailable() ? (
-                    <PressScale
-                      fullWidth
-                      onPress={() => setScanningKey(true)}
-                      accessibilityLabel={t('backup.restore.scan')}
-                      testID="backup-scan-key"
-                    >
-                      <XStack
-                        paddingVertical={8}
-                        alignItems="center"
-                        gap={8}
-                      >
-                        <CameraIcon size={15} color={theme.blue} />
-                        <Label color={theme.blue}>
-                          {t('backup.restore.scan')}
-                        </Label>
-                      </XStack>
-                    </PressScale>
-                  ) : null}
-                  <PressScale
-                    fullWidth
-                    onPress={() => startTypedRestore(item.manifest)}
-                    // Busy while any restore runs, this visit's or one an earlier visit left
-                    // going (2026-09-24): the button said "Pracuji…" over the earlier one and
-                    // still started a second restore behind it, and a screen reader heard its
-                    // own run as unavailable.
-                    busy={restoring}
-                    disabled={busy !== null}
-                    accessibilityLabel={t('backup.restore.start')}
-                    testID="backup-restore-start"
-                  >
-                    <XStack
-                      width="100%"
-                      minHeight={44}
-                      borderRadius={12}
-                      backgroundColor={theme.text}
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <SmallStrong color={theme.surfaceAlt}>
-                        {restoring ? t('backup.working') : t('backup.restore.start')}
-                      </SmallStrong>
-                    </XStack>
-                  </PressScale>
-                  {/* The same phone that made the backup already holds the password; making the
-                    user copy it out of the card above and back in would be theatre. */}
-                  <XStack
-                    paddingVertical={6}
-                    alignItems="center"
-                    gap={6}
-                    onPress={() => setDoomed(item.manifest)}
-                    pressStyle={{ opacity: 0.6 }}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('backup.delete')}
-                    testID="backup-delete-open"
-                  >
-                    <TrashIcon size={15} color={theme.danger} />
-                    <Label
-                      color={theme.danger}
-                    >
-                      {t('backup.delete')}
-                    </Label>
-                  </XStack>
-                  {enabled ? (
-                    <XStack
-                      paddingVertical={6}
-                      onPress={() => {
-                        // The same restore as the button above, so it waits the same way.
-                        if (restoring) {
-                          return;
-                        }
-                        void run('restore', async () => {
-                          try {
-                            const key = await controller.revealKey(
-                              t('backup.prompt.reveal'),
-                            );
-                            await restoreWith(item.manifest, key);
-                          } catch (err) {
-                            report(err, t('backup.restore.failed'));
+                  <YStack /* the two ways to the key, flush: their 44 rows touch (R10) */>
+                    {/* Showing the key as a QR has worked since T012a; READING one needs a camera,
+                        which the app only gained for 025. Typing stays: the phone showing the code
+                        may be the lost one. */}
+                    {scanningAvailable() ? (
+                      <KeyLink
+                        icon={<ScanIcon size={18} color={theme.blue} />}
+                        label={t('backup.restore.scan')}
+                        onPress={() => setScanningKey(true)}
+                        testID="backup-scan-key"
+                      />
+                    ) : null}
+                    {/* The same phone that made the backup already holds the password; making the
+                      user copy it out of the slip above and back in would be theatre. */}
+                    {enabled ? (
+                      <KeyLink
+                        icon={<OffsetIcon name="lock" size={18} color={theme.blue} />}
+                        label={t('backup.restore.useStored')}
+                        busy={restoring}
+                        onPress={() => {
+                          // The same restore as the button below, so it waits the same way.
+                          if (restoring) {
+                            return;
                           }
-                        });
-                      }}
-                      pressStyle={{ opacity: 0.6 }}
-                      accessibilityRole="button"
-                      accessibilityState={{ busy: restoring }}
-                      testID="backup-use-stored-key"
-                    >
-                      <Label
-                        color={theme.blue}
-                      >
-                        {t('backup.restore.useStored')}
-                      </Label>
-                    </XStack>
-                  ) : null}
+                          void run('restore', async () => {
+                            try {
+                              const key = await controller.revealKey(t('backup.prompt.reveal'));
+                              await restoreWith(item.manifest, key);
+                            } catch (err) {
+                              report(err, t('backup.restore.failed'));
+                            }
+                          });
+                        }}
+                        testID="backup-use-stored-key"
+                      />
+                    ) : null}
+                  </YStack>
+                  <XStack gap={space.base}>
+                    <YStack flex={1}>
+                      <NeutralButton
+                        compact
+                        danger
+                        label={t('backup.delete')}
+                        onPress={() => setDoomed(item.manifest)}
+                        testID="backup-delete-open"
+                      />
+                    </YStack>
+                    <YStack flex={1}>
+                      <InkButton
+                        compact
+                        label={restoring ? t('backup.working') : t('backup.restore.start')}
+                        onPress={() => startTypedRestore(item.manifest)}
+                        // Busy while any restore runs, this visit's or one an earlier visit left
+                        // going (2026-09-24): the button said "Pracuji…" over the earlier one and
+                        // still started a second restore behind it.
+                        busy={restoring}
+                        accessibilityLabel={t('backup.restore.start')}
+                        testID="backup-restore-start"
+                      />
+                    </YStack>
+                  </XStack>
                 </YStack>
               ) : null}
+              {open && index < backups.length - 1 ? <RowDivider /> : null}
             </YStack>
           );
         })}
@@ -1236,26 +1244,21 @@ export function BackupScreen({
   // side: "Přenést do jiného telefonu" is the wrong way round for the phone the archive is coming to.
   const transferTitle = firstRun ? t('transfer.receiveFrom') : t('transfer');
   const transferSection = onOpenTransfer ? (
-    <Section
-      label={transferTitle}
-      icon={<BackupIcon size={13} color={theme.textFaint} />}
-    >
+    <Section label={transferTitle}>
       <Card>
+        {/* R10: the transfer glyph in its well, what it does under the words. */}
         <CardRow
           last
           onPress={onOpenTransfer}
           accessibilityLabel={transferTitle}
           testID="backup-open-transfer"
         >
-          <YStack flex={1}>
-            <RowTitle>{transferTitle}</RowTitle>
-            <Meta
-              color={theme.textFaint}
-            >
-              {t('transfer.row.desc')}
-            </Meta>
+          <Well name="transfer" />
+          <YStack flex={1} gap={2}>
+            <RowTitle>{firstRun ? t('transfer.receive') : transferTitle}</RowTitle>
+            <Caption color={theme.textMuted}>{t('transfer.row.desc')}</Caption>
           </YStack>
-          <ChevronRightIcon size={18} color={theme.textFaint} />
+          <ChevronRightIcon size={18} color={theme.textMuted} />
         </CardRow>
       </Card>
     </Section>
@@ -1266,20 +1269,11 @@ export function BackupScreen({
   // one, where backup has never been switched on and the archive is empty. EXPORT appears only once
   // there is something to export - and never on a first run, where the only backups are ones brought
   // in to be restored, so saving one back out is not what anybody there came for.
+  // R10: two rows in ink, each with its file glyph at the end; why a file at all is the group's quiet
+  // line (on a first run it heads the screen instead, see below).
   const fileSection = (
-    <Section
-      label={t('backup.file')}
-      icon={<BackupIcon size={13} color={theme.textFaint} />}
-    >
+    <Section label={t('backup.file')} note={firstRun ? undefined : t('backup.file.desc')}>
       <Card>
-        <CardRow last={false}>
-          <Meta
-            flex={1}
-            color={theme.textFaint}
-          >
-            {t(firstRun ? 'backup.file.desc.firstRun' : 'backup.file.desc')}
-          </Meta>
-        </CardRow>
         {!firstRun && !loading && status?.last ? (
           <CardRow
             last={false}
@@ -1287,10 +1281,8 @@ export function BackupScreen({
             accessibilityLabel={t('backup.file.export')}
             testID="backup-export"
           >
-            <Label flex={1} color={theme.blue}>
-              {t('backup.file.export')}
-            </Label>
-            <ChevronRightIcon size={16} color={theme.blue} />
+            <RowTitle flex={1}>{t('backup.file.export')}</RowTitle>
+            <FileDownIcon size={20} color={theme.text} />
           </CardRow>
         ) : null}
         <CardRow
@@ -1299,10 +1291,8 @@ export function BackupScreen({
           accessibilityLabel={t('backup.file.import')}
           testID="backup-import"
         >
-          <Label flex={1} color={theme.blue}>
-            {t('backup.file.import')}
-          </Label>
-          <ChevronRightIcon size={16} color={theme.blue} />
+          <RowTitle flex={1}>{t('backup.file.import')}</RowTitle>
+          <FileUpIcon size={20} color={theme.text} />
         </CardRow>
       </Card>
     </Section>
@@ -1516,103 +1506,37 @@ export function BackupScreen({
       ) : null}
       <SubScreen title={firstRun ? t('restore.title') : t('backup')} onBack={leave}>
         {firstRun ? (
+          // R10: the screen opens with how a saved file comes back; then receiving, the list, and
+          // the file itself.
           <>
+            <Small color={theme.bodyText} marginHorizontal={space.xs} marginBottom={space.gutter}>
+              {t('backup.file.desc.firstRun')}
+            </Small>
             {transferSection}
-            {fileSection}
             {restoreSection}
+            {fileSection}
           </>
         ) : (
           <>
-        <Section
-          label={t('backup')}
-          icon={<BackupIcon size={13} color={theme.textFaint} />}
-        >
+        {/* R10: the archive's well, the switch and the last backup in a row; under it one slot - what
+            backing up does, or the run's stage, count and bar laid over it, so nothing below moves
+            (constitution V); then R6's sunken pair, dimmed while a run goes on. */}
+        <Section label={t('backup.section')}>
           <Card>
-            <CardRow last={!enabled && !loading}>
-              <YStack flex={1}>
-                <RowTitle>{t('backup.toggle')}</RowTitle>
-                {loading ? (
-                  /* Three bars because the real copy runs to three lines at this width, so the row
-                   keeps its height and the switch does not hop when the text replaces them
-                   (constitution V). One label for the group: a screen reader should hear that the
-                   answer is coming, not silence, and certainly not three anonymous blocks. */
-                  <LoadingLines
-                    widths={['96%', '88%', '52%']}
-                    label={t('backup.loading')}
-                    testID="backup-toggle-loading"
-                  />
-                ) : (
-                  <Meta
-                    color={theme.textFaint}
-                  >
-                    {/* THREE states, three sentences. `enabled` comes first: with no password stored
-                      there is no backup of any kind, so both of the other sentences are false - one
-                      promises an automatic backup, the other points at a button this screen does not
-                      render (see `enabled ?` on the "Zálohovat nyní" block below). A fourth state,
-                      "not known yet", is handled above rather than folded in here - it is the one
-                      case where saying nothing is the only honest thing to say. */}
-                    {t(
-                      !enabled
-                        ? 'backup.toggle.desc.off'
-                        : prefs.automatic
-                        ? 'backup.toggle.desc'
-                        : 'backup.toggle.desc.manual',
-                    )}
-                  </Meta>
-                )}
-              </YStack>
-              {loading ? (
-                /* The switch's own 48x28, so it does not move when the real one arrives. Drawing a
-                 real Toggle here is what caused the bug: a switch has no "don't know" position, so
-                 whichever way it points is a claim, and half the time it is the wrong one. */
-                <Skeleton
-                  color={theme.borderStrong}
-                  width={48}
-                  height={28}
-                  radius={14}
-                />
-              ) : (
-                <Toggle
-                  value={enabled}
-                  onChange={onToggle}
-                  label={t('backup.toggle')}
-                  disabled={busy !== null}
-                  testID="backup-toggle"
-                />
-              )}
-            </CardRow>
-            {loading ? (
-              <CardRow last>
-                <Skeleton
-                  color={theme.borderStrong}
-                  width="58%"
-                  height={13}
-                  radius={6}
-                />
-              </CardRow>
-            ) : enabled || activeRun ? (
-              <CardRow last>
-                {/* One row, two jobs: the last-backup line when idle, the live progress when not. Same
-                  place, same metrics, so nothing below it moves when a run starts (constitution V). */}
-                <YStack flex={1} gap={6}>
-                  <XStack alignItems="center" gap={8}>
-                    <Label fontWeight="400"
-                      flex={1}
-                      color={theme.textMuted}
-                      testID="backup-last"
-                    >
-                      {activeRun
-                        ? `${stageText(activeRun)}${
-                            activeRun.progress.detail
-                              ? ` · ${activeRun.progress.detail}`
-                              : ''
-                          }`
-                        : status?.last
-                        ? // "Backed up" means two different things once Tier 2 exists, and this
-                          // line is where that stops being ambiguous (FR-008). Read from the
-                          // MANIFEST, so a backup made before the switch was turned on still
-                          // reports what it actually holds rather than what is switched on today.
-                          status.last.tiers.documents && status.last.documentBytes != null
+            <YStack padding={space.xl}>
+              <XStack alignItems="center" gap={space.lg}>
+                <Well name="archive" />
+                <YStack flex={1} gap={2}>
+                  <RowTitle>{t('backup.toggle')}</RowTitle>
+                  {loading ? (
+                    <LoadingLines widths={['72%']} label={t('backup.loading')} testID="backup-toggle-loading" />
+                  ) : enabled ? (
+                    <Caption color={theme.textMuted} testID="backup-last">
+                      {/* "Backed up" means two things once attachments can be in it, and this line is
+                        where that stops being ambiguous (FR-008): read from the MANIFEST, so a backup
+                        made before the switch was turned on reports what it really holds. */}
+                      {status?.last
+                        ? status.last.tiers.documents && status.last.documentBytes != null
                           ? t('backup.last.documents', {
                               when: formatDateTime(status.last.createdAt),
                               size: formatBytes(status.last.sizeBytes),
@@ -1623,19 +1547,54 @@ export function BackupScreen({
                               size: formatBytes(status.last.sizeBytes),
                             })
                         : t('backup.never')}
-                    </Label>
-                    {activeRun ? (
-                      <Label
-                        color={theme.textFaint}
-                        testID="backup-count"
-                      >
-                        {countLabel(activeRun.progress)}
-                      </Label>
+                    </Caption>
+                  ) : (
+                    // With no password stored there is no backup of any kind: both other sentences
+                    // would be false here - one promises an automatic backup, the other a button.
+                    <Caption color={theme.textMuted}>{t('backup.toggle.desc.off')}</Caption>
+                  )}
+                </YStack>
+                {loading ? (
+                  /* The switch's own 48x28: a switch has no "don't know" position, so drawing a real
+                   one here claims an answer, and half the time the wrong one. */
+                  <Skeleton color={theme.borderStrong} width={48} height={28} radius={14} />
+                ) : (
+                  <Toggle
+                    value={enabled}
+                    onChange={onToggle}
+                    label={t('backup.toggle')}
+                    disabled={busy !== null}
+                    testID="backup-toggle"
+                  />
+                )}
+              </XStack>
+              {loading || enabled || activeRun ? (
+                <YStack marginTop={space.xl} minHeight={RUN_SLOT}>
+                  <YStack
+                    opacity={activeRun ? 0 : 1}
+                    accessibilityElementsHidden={activeRun != null}
+                    importantForAccessibility={activeRun ? 'no-hide-descendants' : 'auto'}
+                  >
+                    {loading ? (
+                      <LoadingLines widths={['96%', '88%', '52%']} />
+                    ) : enabled ? (
+                      <Caption color={theme.textMuted}>
+                        {t(prefs.automatic ? 'backup.toggle.desc' : 'backup.toggle.desc.manual')}
+                      </Caption>
                     ) : null}
-                  </XStack>
-                  {/* The bar's 6px + the 6px gap are reserved whether or not it is drawn. */}
-                  <YStack height={6} justifyContent="center">
-                    {activeRun ? (
+                  </YStack>
+                  {activeRun ? (
+                    <YStack position="absolute" top={0} left={0} right={0} gap={space.base}>
+                      <XStack alignItems="center" gap={space.base}>
+                        <YStack flex={1} testID="backup-stage">
+                          <RowTitle>
+                            {`${stageText(activeRun)}${activeRun.progress.detail ? ` · ${activeRun.progress.detail}` : ''}`}
+                          </RowTitle>
+                        </YStack>
+                        <Label color={theme.textMuted} testID="backup-count">
+                          {countLabel(activeRun.progress)}
+                        </Label>
+                      </XStack>
                       <ProgressBar
                         fraction={activeRun.progress.fraction}
                         label={stageText(activeRun)}
@@ -1643,209 +1602,140 @@ export function BackupScreen({
                         total={activeRun.progress.total}
                         testID="backup-progress"
                       />
-                    ) : null}
-                  </YStack>
+                    </YStack>
+                  ) : null}
                 </YStack>
-              </CardRow>
-            ) : null}
-            {/* Directly under the line it checks. "Naposledy 09.09. · 2 kB" is the app vouching for
-                itself from a manifest; this is the only control on the screen that opens the archive
-                and finds out. Hidden until there IS one, so it never invites a check of nothing. */}
-            {!loading && enabled && status?.last ? (
-              <CardRow
-                last
-                onPress={() => void onVerify(status.last as BackupManifest)}
-                accessibilityLabel={t('backup.verify')}
-                testID="backup-verify"
-              >
-                <XStack alignItems="center" gap={8} flex={1}>
-                  <ShieldKeyIcon size={15} color={theme.blue} />
-                  <Label flex={1} color={theme.blue}>
-                    {busy === 'verify' ? t('backup.verify.busy') : t('backup.verify')}
-                  </Label>
-                </XStack>
-                <ChevronRightIcon size={16} color={theme.blue} />
-              </CardRow>
-            ) : null}
+              ) : null}
+            </YStack>
           </Card>
 
           {enabled ? (
-            <PressScale
-              fullWidth
-              onPress={onBackupNow}
-              // Busy, not disabled, while a backup runs (2026-09-24, 023): a screen reader heard
-              // "Pracuji…" as unavailable. Whenever the label says "Pracuji…" - its own run, or one
-              // running without this screen (an automatic backup, one an earlier visit left going).
-              // Another run of this screen's still disables it.
-              busy={busy === 'backup' || activeRun?.kind === 'backup'}
-              disabled={busy !== null}
-              accessibilityLabel={t('backup.now')}
-              testID="backup-now"
-            >
-              <XStack
-                width="100%"
-                minHeight={48}
-                borderRadius={14}
-                backgroundColor={theme.text}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <BodyStrong color={theme.surfaceAlt}>
-                  {activeRun?.kind === 'backup' || busy === 'backup'
-                    ? t('backup.working')
-                    : t('backup.now')}
-                </BodyStrong>
-              </XStack>
-            </PressScale>
+            <XStack gap={space.base} marginTop={space.md}>
+              <YStack flex={1}>
+                <NeutralButton
+                  compact
+                  label={activeRun?.kind === 'backup' || busy === 'backup' ? t('backup.working') : t('backup.now')}
+                  onPress={onBackupNow}
+                  // Busy, not disabled, while a backup runs (2026-09-24, 023): a screen reader heard
+                  // "Pracuji…" as unavailable - its own run, or one running without this screen.
+                  busy={busy === 'backup' || activeRun?.kind === 'backup'}
+                  disabled={busy !== null || activeRun != null}
+                  accessibilityLabel={t('backup.now')}
+                  testID="backup-now"
+                />
+              </YStack>
+              {/* "Naposledy …" is the app vouching for itself from a manifest; this opens the archive
+                  and finds out. Only once there IS one, so it never invites a check of nothing. */}
+              {!loading && status?.last ? (
+                <YStack flex={1}>
+                  <NeutralButton
+                    compact
+                    label={busy === 'verify' ? t('backup.verify.busy') : t('backup.verify')}
+                    onPress={() => void onVerify(status.last as BackupManifest)}
+                    busy={busy === 'verify'}
+                    disabled={busy !== null || activeRun != null}
+                    accessibilityLabel={t('backup.verify')}
+                    testID="backup-verify"
+                  />
+                </YStack>
+              ) : null}
+            </XStack>
           ) : null}
         </Section>
 
-        {/* What is NOT in the backup, next to the switch that turns it on (FR-008). */}
+        {/* What is NOT in the backup, next to the switch that turns it on (FR-008): the group's quiet
+            line, as R13 heads a list - two sentences for two states, one for both would be false in
+            one of them. Then R10's card: the attachments switch, the mode as its chip with Změnit;
+            under it the quiet lines and how the backup is sealed, as a help link (R1). */}
         <Section
           label={t('backup.scope')}
-          icon={<MailIcon size={13} color={theme.textFaint} />}
-        >
-          <Card>
-            {/* The card's shape while the answer is still coming. Two of its four rows depend on
-              state - the automatic-backup sentence exists only when backups are on, and the scope
-              text sits beside it - so drawing the settled card early means assembling it in front
-              of the user. Four groups, one per row, at the line counts the real copy takes. */}
-            {loading ? (
-              <>
-                <CardRow last={false}>
-                  <LoadingLines
-                    widths={['97%', '93%', '61%']}
-                    height={13}
-                    label={t('backup.loading')}
-                    testID="backup-scope-loading"
-                  />
-                </CardRow>
-                <CardRow last={false}>
-                  <LoadingLines widths={['90%', '44%']} />
-                </CardRow>
-                <CardRow last={false}>
-                  <LoadingLines widths={['86%', '38%']} />
-                </CardRow>
-                <CardRow last>
-                  <LoadingLines widths={['52%']} height={13} />
-                </CardRow>
-              </>
+          note={
+            loading ? (
+              <LoadingLines widths={['97%', '93%', '61%']} label={t('backup.loading')} testID="backup-scope-loading" />
             ) : (
-              <>
-                <CardRow last={false}>
-                  <Label fontWeight="400"
-                    flex={1}
-                    color={theme.textMuted}
-                  >
-                    {/* Two sentences for two states. One sentence covering both would be false in
-                      one of them - and it is the exact sentence somebody reads to decide. */}
-                    {t(
-                      prefs.documents
-                        ? 'backup.scope.desc.documents'
-                        : 'backup.scope.desc',
-                    )}
-                  </Label>
-                </CardRow>
-                {/* The switch that changes the sentence above, right under it. Hidden entirely where
-                  the destination cannot hold documents: a control that can do nothing is worse than
-                  no control. */}
-                {status?.documentsPossible ? (
-                  <CardRow last={false}>
-                    <YStack flex={1}>
-                      <RowTitle>{t('backup.docs.title')}</RowTitle>
-                      <Meta
-                        color={theme.textFaint}
-                      >
-                        {busy === 'documents'
-                          ? t('backup.docs.measuring')
-                          : t(
-                              prefs.documents
-                                ? `backup.docs.desc.on.${prefs.documentMode}`
-                                : 'backup.docs.desc.off',
-                            )}
-                      </Meta>
-                    </YStack>
-                    <Toggle
-                      value={prefs.documents}
-                      onChange={onToggleDocuments}
-                      label={t('backup.docs.title')}
-                      disabled={busy !== null}
-                      testID="backup-documents-toggle"
-                    />
-                  </CardRow>
-                ) : null}
-                {/* The mode, and the way to change it, while attachments are on (026 US1). */}
-                {status?.documentsPossible && prefs.documents ? (
-                  <CardRow
-                    last={false}
-                    onPress={busy === null ? () => askDocuments(true) : undefined}
-                    accessibilityLabel={`${t('backup.docs.which')}: ${t(
-                      `backup.docs.mode.${prefs.documentMode}`,
-                    )}. ${t('backup.docs.change')}`}
-                    testID="backup-documents-mode"
-                  >
-                    <YStack flex={1}>
-                      <RowTitle>{t('backup.docs.which')}</RowTitle>
-                      <Meta color={theme.textFaint}>
-                        {t(`backup.docs.mode.${prefs.documentMode}`)}
-                      </Meta>
-                    </YStack>
-                    <Small fontWeight="600" color={theme.blue}>
-                      {t('backup.docs.change')}
-                    </Small>
-                  </CardRow>
-                ) : null}
-                {/* Only this row is hidden while backups are off - both of its sentences point at
-              controls that are not on screen then. The scope text around it stays: someone deciding
-              whether to switch backups ON is exactly who needs to read what a backup does and does
-              not contain (FR-008). */}
-                {enabled ? (
-                  <CardRow last={false}>
-                    <Meta
-                      flex={1}
-                      color={theme.textFaint}
-                    >
-                      {t(prefs.automatic ? 'backup.auto' : 'backup.auto.off')}
-                    </Meta>
-                  </CardRow>
-                ) : null}
-                <CardRow last={false}>
-                  <Meta
-                    flex={1}
-                    color={theme.textFaint}
-                  >
-                    {t('backup.where')}
-                  </Meta>
-                </CardRow>
-                {/* The algorithms, the parameters and what losing the password costs - one tap away, the
-              same way the attachment scan explains itself. A settings row is not the place for a
-              cipher name, but the full account has to exist somewhere findable. */}
+              t(prefs.documents ? 'backup.scope.desc.documents' : 'backup.scope.desc')
+            )
+          }
+        >
+          {loading ? (
+            <Card>
+              <CardRow last>
+                <LoadingLines widths={['44%', '90%', '38%']} />
+              </CardRow>
+            </Card>
+          ) : status?.documentsPossible ? (
+            // Hidden entirely where the destination cannot hold documents: a control that can do
+            // nothing is worse than no control.
+            <Card>
+              <CardRow last={!prefs.documents}>
+                <YStack flex={1} gap={2}>
+                  <RowTitle>{t('backup.docs.title')}</RowTitle>
+                  <Caption color={theme.textMuted}>
+                    {busy === 'documents'
+                      ? t('backup.docs.measuring')
+                      : t(prefs.documents ? `backup.docs.desc.on.${prefs.documentMode}` : 'backup.docs.desc.off')}
+                  </Caption>
+                </YStack>
+                <Toggle
+                  value={prefs.documents}
+                  onChange={onToggleDocuments}
+                  label={t('backup.docs.title')}
+                  disabled={busy !== null}
+                  testID="backup-documents-toggle"
+                />
+              </CardRow>
+              {/* The mode, and the way to change it, while attachments are on (026 US1). */}
+              {prefs.documents ? (
                 <CardRow
                   last
-                  onPress={() => onOpenFaq('backupEncryption')}
-                  accessibilityLabel={t('backup.how')}
-                  testID="backup-how"
+                  onPress={busy === null ? () => askDocuments(true) : undefined}
+                  accessibilityLabel={`${t('backup.docs.which')}: ${t(
+                    `backup.docs.mode.${prefs.documentMode}`,
+                  )}. ${t('backup.docs.change')}`}
+                  testID="backup-documents-mode"
                 >
-                  <XStack alignItems="center" gap={8} flex={1}>
-                    <HelpIcon size={15} color={theme.blue} />
-                    <Label
-                      flex={1}
-                      color={theme.blue}
-                    >
-                      {t('backup.how')}
-                    </Label>
-                  </XStack>
-                  <ChevronRightIcon size={16} color={theme.blue} />
+                  <RowTitle flex={1}>{t('backup.docs.which')}</RowTitle>
+                  <DocumentsKindChip kind={prefs.documentMode} />
+                  <SmallStrong color={theme.blue} paddingHorizontal={space.xs}>
+                    {t('backup.docs.change')}
+                  </SmallStrong>
                 </CardRow>
-              </>
-            )}
-          </Card>
+              ) : null}
+            </Card>
+          ) : null}
+          {loading ? null : (
+            <YStack paddingHorizontal={space.xs} marginTop={space.hair} gap={space.base}>
+              {/* Only while backups are on: both sentences point at controls that are not on screen
+                  otherwise. */}
+              {enabled ? (
+                <Caption color={theme.textMuted}>{t(prefs.automatic ? 'backup.auto' : 'backup.auto.off')}</Caption>
+              ) : null}
+              <Caption color={theme.textMuted}>{t('backup.where')}</Caption>
+            </YStack>
+          )}
+          {/* The algorithms, the parameters and what losing the password costs, one tap away: a
+              settings row is not the place for a cipher name, but the full account has to exist. */}
+          <XStack
+            alignSelf="flex-start"
+            minHeight={LINK_HEIGHT}
+            paddingHorizontal={space.xs}
+            alignItems="center"
+            gap={space.sm}
+            hitSlop={touchSlop({ height: LINK_HEIGHT })}
+            onPress={() => onOpenFaq('backupEncryption')}
+            pressStyle={{ opacity: 0.5 }}
+            accessibilityRole="button"
+            accessibilityLabel={t('backup.how')}
+            testID="backup-how"
+          >
+            <HelpIcon size={18} color={theme.blue} />
+            <SmallStrong color={theme.blue}>{t('backup.how')}</SmallStrong>
+          </XStack>
         </Section>
 
         {enabled ? (
           <Section
             label={t('backup.key')}
-            icon={<ShieldKeyIcon size={13} color={theme.textFaint} />}
           >
             {/* Board R6: once shown, the key is a slip on the security tint - a record you keep - with
                 its QR on the same slip; the warning and the two buttons sit under it. Hidden, the
@@ -1906,7 +1796,6 @@ export function BackupScreen({
         {enabled ? (
           <Section
             label={t('backup.advanced')}
-            icon={<TuneIcon size={13} color={theme.textFaint} />}
           >
             {/* Collapsed by default. Everything under here has a sensible default, so a user who never
               opens it still gets the right behaviour - which is the only way "advanced" earns its
@@ -1920,22 +1809,18 @@ export function BackupScreen({
               >
                 <RowTitle flex={1}>{t('backup.advanced')}</RowTitle>
                 {advanced ? (
-                  <ChevronDownIcon size={18} color={theme.textFaint} />
+                  <ChevronDownIcon size={18} color={theme.textMuted} />
                 ) : (
-                  <ChevronRightIcon size={18} color={theme.textFaint} />
+                  <ChevronRightIcon size={18} color={theme.textMuted} />
                 )}
               </CardRow>
 
               {advanced ? (
                 <>
                   <CardRow last={false}>
-                    <YStack flex={1}>
+                    <YStack flex={1} gap={2}>
                       <RowTitle>{t('backup.auto.title')}</RowTitle>
-                      <Meta
-                        color={theme.textFaint}
-                      >
-                        {t('backup.auto.desc')}
-                      </Meta>
+                      <Caption color={theme.textMuted}>{t('backup.auto.desc')}</Caption>
                     </YStack>
                     <Toggle
                       value={prefs.automatic}
@@ -1946,13 +1831,9 @@ export function BackupScreen({
                   </CardRow>
 
                   <CardRow last={prefs.keep <= 1}>
-                    <YStack flex={1}>
+                    <YStack flex={1} gap={2}>
                       <RowTitle>{t('backup.keep.title')}</RowTitle>
-                      <Meta
-                        color={theme.textFaint}
-                      >
-                        {t('backup.keep.desc')}
-                      </Meta>
+                      <Caption color={theme.textMuted}>{t('backup.keep.desc')}</Caption>
                     </YStack>
                     <Toggle
                       value={prefs.keep > 1}
@@ -1969,15 +1850,9 @@ export function BackupScreen({
                   </CardRow>
 
                   {prefs.keep > 1 ? (
-                    <YStack
-                      gap={8}
-                      paddingHorizontal={14}
-                      paddingVertical={12}
-                      backgroundColor={theme.surfaceAlt}
-                    >
-                      <Meta color={theme.textFaint}>
-                        {t('backup.keep.count')}
-                      </Meta>
+                    // Under its switch, in the card, as R10 opens a backup: no block of its own.
+                    <YStack gap={space.base} paddingHorizontal={space.xl} paddingBottom={space.xl}>
+                      <Caption color={theme.textMuted}>{t('backup.keep.count')}</Caption>
                       <SegmentedControl
                         value={String(prefs.keep)}
                         onChange={key => requestKeep(Number(key))}
@@ -2004,41 +1879,27 @@ export function BackupScreen({
           </>
         )}
 
+        {/* What a run left to say, under everything, as quiet lines; a failure as R10's danger block,
+            no outline and no icon, as the transfer says one. */}
         {restored ? (
-          <XStack
-            alignItems="center"
-            gap={8}
-            paddingHorizontal={4}
-            paddingBottom={10}
-          >
+          <XStack alignItems="center" gap={space.base} paddingHorizontal={space.xs} paddingBottom={space.md}>
             <CheckIcon size={16} color={theme.success} />
-            <Label fontWeight="400"
-              flex={1}
-              color={theme.textMuted}
-              testID="backup-restored"
-            >
+            <Caption flex={1} color={theme.textMuted} testID="backup-restored">
               {restored}
-            </Label>
+            </Caption>
           </XStack>
         ) : null}
         {notice ? (
-          <Label fontWeight="400"
-            paddingHorizontal={4}
-            paddingBottom={10}
-            color={theme.textMuted}
-            testID="backup-notice"
-          >
+          <Caption paddingHorizontal={space.xs} paddingBottom={space.md} color={theme.textMuted} testID="backup-notice">
             {notice}
-          </Label>
+          </Caption>
         ) : null}
         {error ? (
-          <Label fontWeight="400"
-            paddingHorizontal={4}
-            color={theme.danger}
-            testID="backup-error"
-          >
-            {error}
-          </Label>
+          <YStack backgroundColor={dangerTone.bg} borderRadius={12} paddingVertical={space.lg} paddingHorizontal={space.xl}>
+            <Small fontWeight="600" color={dangerTone.fg} testID="backup-error">
+              {error}
+            </Small>
+          </YStack>
         ) : null}
         {/* Last, so it moves nothing when it arrives: nothing is below it. */}
         {firstRun && onContinue ? (
