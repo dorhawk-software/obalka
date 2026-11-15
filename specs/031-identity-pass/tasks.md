@@ -834,8 +834,9 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   says "we will tell you the day before and on the day", so the reason is on screen as it asks; "Don't
   allow" leaves the reminder set with the alerts-off line under it, and its "Turn on" opens the app's
   page in the system settings. The nudge (I86) was walked with the dialogs. **M**.
-- [ ] I127 Camera permission: asked when the scanner opens, with no word before it - **X**: the mobile
+- [x] I127 Camera permission: asked when the scanner opens, with no word before it - **X**: the mobile
   practice "Explain before the permission prompt"; behaviour, not now (owner, 2026-11-12, not-now.md).
+  Not now, as decided (not-now.md, Part C); the explanation gets its board with the sheets when built.
 - [x] I128 Notifications: Android channels, the iOS hidden-body placeholder, the reminder and password
   texts - **N** (I63 is the colour).
   Walked 2026-11-15 on Obalka_Demo, English and Czech: two channels, "Password expiry" and "Reminders"; a reminder (its
@@ -894,14 +895,24 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   the password strip's words to nothing: text now stops at 2x (`MAX_TEXT_SCALE`, `textScaleCap.test`),
   after which the iOS inbox reads as Android's largest; growing every drawn part to 3x is not now
   (not-now.md).
-- [ ] I136 Touch targets under 48: the box menu's trigger (38), header back (44) - **N**.
-- [ ] I137 Language: the app starts in Czech whatever the device says; dates are Czech in English too;
+- [x] I136 Touch targets under 48: the box menu's trigger (38), header back (44) - **N**.
+  **M**, 2026-11-15: both take a slop derived from their drawn size up to 48 (`touchSlop`; typed slops
+  fail `noTypedHitSlop.test`). On Obalka_Demo a tap 4 dp outside the 38 menu trigger opened its menu,
+  not the row under it.
+- [x] I137 Language: the app starts in Czech whatever the device says; dates are Czech in English too;
   the iOS permission texts are Czech only - **N**: walked in English; the gaps are behaviour, not
   now (owner, 2026-11-12, not-now.md).
-- [ ] I138 Orientation and size: iPhone only and portrait; Android tablets (600 dp and up) may rotate;
+  Not now, as decided (not-now.md, Part C), with the reminder's language added on 2026-11-15 (I128).
+- [x] I138 Orientation and size: iPhone only and portrait; Android tablets (600 dp and up) may rotate;
   content stops at 720 - **N**: walked on a tablet AVD in landscape.
-- [ ] I139 No error boundary: a render error shows nothing - **X**: behaviour, not now (owner, 2026-11-12,
+  **M**, 2026-11-15: Obalka_Demo's display set to 2560x1600 at 320 dpi (1280x800 dp, landscape; Android
+  16 ignores the portrait lock at 600 dp and up). The inbox, the detail and the box switcher stop at the
+  720 column, centred, the envelope header, the stamp and the sheet inside it. The header's band stops
+  with the column too: the column is the page and the margins are paper, as `ContentColumn` decides -
+  left as it is (not-now.md). The display was reset after.
+- [x] I139 No error boundary: a render error shows nothing - **X**: behaviour, not now (owner, 2026-11-12,
   not-now.md); the fallback screen, once built, gets a board.
+  Not now, as decided (not-now.md, Part C).
 
 ### Fixed on the way (behaviour, the owner's call on 2026-11-12)
 

@@ -291,6 +291,12 @@ they wait for their own work. The owner decided "not now" on 2026-11-12.
   drawn part with the text (the stamp, the segmented control, a strip whose action moves under its
   words), walk every screen at 3x, then lift the cap. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
   I135)
+- **On a tablet the header's band stops with the 720 column (2026-11-15, left as it is).** The whole app
+  is one centred column (`ContentColumn`), so a screen's header - its band, its hairline, the inbox's
+  envelope front - ends where the column does and the margins are paper. Walked at 1280 dp in
+  landscape. Decided to leave it: the column is the page, as print sets one; a header that ran to the
+  screen's edges over a column that does not would draw two widths. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
+  I138)
 - **No error boundary (2026-11-12).** A render error leaves an empty screen with no way on. Plan: a
   boundary at the root with a fallback screen that offers to start again, reported only with consent;
   the screen gets a board on the canvas first. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
