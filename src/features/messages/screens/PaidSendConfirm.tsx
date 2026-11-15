@@ -1,21 +1,26 @@
-// The paid-send confirmation (a PDZ costs about 10 Kč): a bottom sheet with the committing button
-// (design §7). Split out of ComposeScreen.tsx on 2026-11-12, when it learnt to close with the app: an
-// RN Modal draws above the lock cover, so the question closes as the app leaves. A send already
-// confirmed carries on (it has no idempotency key and runs once); its result is there on return.
+// The paid-send question (a PDZ costs about 10 Kč), as R2 draws it (031 I40, agreed 2026-11-12): the
+// stamp the send will take, laid on the sheet on its own and tilted as on the envelope, the question
+// under it, what it costs, the box's credit, and the answers under the thumb. R9 took this sheet as
+// the shape of every question, so it is the app's `Dialog`: it rises, scrolls and closes as they do.
+// Until 2026-11-15 it was a sheet of its own that slid up (I74), with a card glyph and a sunken panel
+// for the credit.
+//
+// Split out of ComposeScreen.tsx on 2026-11-12, when it learnt to close with the app: a Modal draws
+// above the lock cover, so the question closes as the app leaves. A send already confirmed carries on
+// (it has no idempotency key and runs once); its result is there on return.
 
-import { Modal, Pressable, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button, XStack, YStack } from '../../../theme/ui';
-import { PressScale } from '../../../theme/PressScale';
-import { BodyStrong, Heading, Label, Small } from '../../../theme/Typography';
+import { View } from 'react-native';
+import { YStack } from '../../../theme/ui';
+import { Label, Small } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { useScrim } from '../../../theme/useScrim';
-import { sheetWidth } from '../../../theme/ContentColumn';
-import { raised } from '../../../theme/depth';
-import { useSheetMaxHeight } from '../../../theme/useSheetMaxHeight';
-import { CreditCardIcon } from '../../../theme/icons';
+import { Dialog } from '../../../theme/Dialog';
+import { space } from '../../../theme/spacing';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 import { t } from '../../../i18n/strings';
+import { PriceStamp } from './ComposeEnvelope';
+
+/** R2's stamp on the sheet: 112 wide and 92 tall at the least, its 1 border included. */
+const STAMP_FRAME = { width: 112, height: 92 };
 
 export function PaidSendConfirm({
   approxCzk,
@@ -31,143 +36,42 @@ export function PaidSendConfirm({
   readonly onCancel: () => void;
 }) {
   const theme = useTheme();
-  const scrim = useScrim(0.4);
-  const insets = useSafeAreaInsets();
-  const sheetMaxHeight = useSheetMaxHeight();
   useCloseOnBackground(onCancel);
+  const cancelUnlessSending = () => {
+    if (!busy) {
+      onCancel();
+    }
+  };
   return (
-    <Modal
-      visible
-      transparent
-      animationType="slide"
-      statusBarTranslucent
-      onRequestClose={() => {
-        if (!busy) {
-          onCancel();
-        }
-      }}
-    >
-      <Pressable
-        accessible={false}
-        onPress={() => {
-          if (!busy) {
-            onCancel();
-          }
-        }}
-        style={{
-          flex: 1,
-          backgroundColor: scrim,
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-        }}
-      >
-        <Pressable accessible={false} onPress={() => {}} style={sheetWidth}>
-          <YStack
-            // Containment for VoiceOver, as in theme/Dialog.tsx.
-            accessibilityViewIsModal
-            backgroundColor={theme.surfaceAlt}
-            borderTopLeftRadius={24}
-            borderTopRightRadius={24}
-            paddingHorizontal={18}
-            paddingTop={10}
-            paddingBottom={Math.max(20, insets.bottom + 8)}
-            maxHeight={sheetMaxHeight}
-            style={{ boxShadow: raised(theme.name, 'sheet') }}
-            testID="composeConfirm"
-          >
-            {/* Grab handle */}
-            <YStack
-              width={40}
-              height={4}
-              borderRadius={999}
-              backgroundColor={theme.borderStrong}
-              alignSelf="center"
-              marginTop={6}
-              marginBottom={16}
-            />
-            {/* What it costs scrolls at its cap; the two buttons below it never leave the screen. */}
-            <ScrollView style={{ flexGrow: 0, flexShrink: 1 }} bounces={false}>
-            <XStack gap={12} alignItems="center" marginBottom={12}>
-              <YStack
-                width={44}
-                height={44}
-                borderRadius={13}
-                backgroundColor={theme.goldSoft}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <CreditCardIcon size={24} color={theme.warningInk} />
-              </YStack>
-              <Heading
-                flex={1}
-              >
-                {t('send.confirm.title')}
-              </Heading>
-            </XStack>
-            <Small fontWeight="500"
-              color={theme.textMuted}
-            >
-              {t('send.confirm.body', {
-                czk: approxCzk,
-              })}
-            </Small>
-            <YStack
-              backgroundColor={theme.surfaceSunken}
-              borderRadius={12}
-              paddingHorizontal={14}
-              paddingVertical={12}
-              marginTop={16}
-              marginBottom={16}
-            >
-              <Label color={theme.text}>
-                {t('send.confirm.balance', {
-                  czk: balanceCzk,
-                })}
-              </Label>
-            </YStack>
-            </ScrollView>
-            <PressScale
-              fullWidth
-              busy={busy}
-              onPress={onSend}
-              accessibilityLabel={t('send.confirm.send', {
-                czk: approxCzk,
-              })}
-              testID="composeConfirmSend"
-            >
-              <XStack
-                width="100%"
-                minHeight={52}
-                borderRadius={14}
-                backgroundColor={theme.text}
-                alignItems="center"
-                justifyContent="center"
-                opacity={busy ? 0.6 : 1}
-              >
-                <BodyStrong color={theme.surfaceAlt}>
-                  {t('send.confirm.send', {
-                    czk: approxCzk,
-                  })}
-                </BodyStrong>
-              </XStack>
-            </PressScale>
-            <Button
-              chromeless
-              width="100%"
-              minHeight={48}
-              marginTop={4}
-              color={theme.textMuted}
-              fontSize={14}
-              fontWeight="700"
-              disabled={busy}
-              onPress={onCancel}
-              testID="composeConfirmCancel"
-            >
-              {t('login.cancel')}
-            </Button>
-          </YStack>
-        </Pressable>
-      </Pressable>
-    </Modal>
+    <Dialog
+      title={t('send.confirm.title')}
+      object={
+        <View
+          style={{ transform: [{ rotate: '2deg' }] }}
+          // The words say what it costs; the picture would only say it again.
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          testID="composeConfirmStamp"
+        >
+          <PriceStamp paid approxCzk={approxCzk} frame={STAMP_FRAME} shadow="stamp" />
+        </View>
+      }
+      body={
+        <YStack alignItems="center" gap={space.base}>
+          <Small color={theme.bodyText} textAlign="center">
+            {t('send.confirm.body', { czk: approxCzk })}
+          </Small>
+          <Label fontWeight="500" color={theme.textMuted} textAlign="center" testID="composeConfirmBalance">
+            {t('send.confirm.balance', { czk: balanceCzk })}
+          </Label>
+        </YStack>
+      }
+      actions={[
+        { label: t('send.confirm.send', { czk: approxCzk }), onPress: onSend, tone: 'primary', busy, testID: 'composeConfirmSend' },
+        { label: t('login.cancel'), onPress: cancelUnlessSending, testID: 'composeConfirmCancel' },
+      ]}
+      onDismiss={cancelUnlessSending}
+      testID="composeConfirm"
+    />
   );
 }

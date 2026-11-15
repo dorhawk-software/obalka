@@ -36,7 +36,8 @@ describe('a modal', () => {
   const modals = files.filter(f => /<Modal\b/.test(f.text));
 
   it('exists to be checked', () => {
-    expect(modals.length).toBeGreaterThan(3);
+    // Three since 2026-11-15, when the paid-send question became a Dialog (a BottomSheet).
+    expect(modals.length).toBeGreaterThan(2);
   });
 
   it('clears the home indicator', () => {

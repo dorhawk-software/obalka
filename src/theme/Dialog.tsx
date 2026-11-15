@@ -44,6 +44,8 @@ export interface DialogAction {
    * user has to read all of them to find the safe way out.
    */
   tone?: 'primary' | 'danger' | 'neutral';
+  /** The filled answer's press is running (the paid send while it starts): its spinner, no second press. */
+  busy?: boolean;
   testID?: string;
 }
 
@@ -151,6 +153,7 @@ function Answer({ action }: { readonly action: DialogAction }) {
     <InkButton
       label={action.label}
       onPress={action.onPress}
+      busy={action.busy}
       danger={tone === 'danger'}
       icon={glyph(inkButtonInk(theme))}
       testID={action.testID}

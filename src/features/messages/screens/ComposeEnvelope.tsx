@@ -102,31 +102,53 @@ function CostStamp({ estimate }: { readonly estimate: CostEstimate | null }) {
       </View>
     );
   }
-  const paid = estimate.paid;
   return (
     <View testID="composeStamp" accessible accessibilityLabel={stampLabel(estimate)}>
-      <Stamp kind="stamp" shadow="stampOnEnvelope">
-        {/* Inside the frame's 1 border. A word wider than the face widens the stamp rather than
-            being cut. */}
-        <YStack
-          minWidth={FRAME.width - 2}
-          minHeight={FRAME.height - 2}
-          paddingVertical={8}
-          paddingHorizontal={8}
-          justifyContent="space-between"
-        >
-          <Tag color={theme.stampLabel}>
-            {(paid ? t('send.cost.paid.badge') : t('send.cost.free')).toLocaleUpperCase('cs')}
-          </Tag>
-          <Title color={theme.stampInk} numberOfLines={1} adjustsFontSizeToFit testID="composeStampPrice">
-            {paid ? t('send.sent.stamp.paid', { czk: estimate.approxCzk ?? 0 }) : t('send.sent.stamp.free')}
-          </Title>
-          <Tag fontWeight="400" color={theme.stampLabel}>
-            {paid ? t('send.stamp.paid.kind') : t('send.stamp.free.kind')}
-          </Tag>
-        </YStack>
-      </Stamp>
+      <PriceStamp paid={estimate.paid} approxCzk={estimate.approxCzk ?? 0} frame={FRAME} shadow="stampOnEnvelope" />
     </View>
+  );
+}
+
+/**
+ * The stamp's face: ZDARMA or PLACENÁ, the price, and the kind. On the envelope it is R2's 96×78 stuck
+ * on (`stampOnEnvelope`); the paid-send question lays it on its own at 112×92 (`stamp`), as R2 does.
+ * Decorative where it stands: the caller says what it costs.
+ */
+export function PriceStamp({
+  paid,
+  approxCzk,
+  frame,
+  shadow,
+}: {
+  readonly paid: boolean;
+  readonly approxCzk: number;
+  /** The printed frame, its 1 border included; the perforated margin lies outside it. */
+  readonly frame: { readonly width: number; readonly height: number };
+  readonly shadow: 'stamp' | 'stampOnEnvelope';
+}) {
+  const theme = useTheme();
+  return (
+    <Stamp kind="stamp" shadow={shadow}>
+      {/* Inside the frame's 1 border. A word wider than the face widens the stamp rather than
+          being cut. */}
+      <YStack
+        minWidth={frame.width - 2}
+        minHeight={frame.height - 2}
+        paddingVertical={8}
+        paddingHorizontal={8}
+        justifyContent="space-between"
+      >
+        <Tag color={theme.stampLabel}>
+          {(paid ? t('send.cost.paid.badge') : t('send.cost.free')).toLocaleUpperCase('cs')}
+        </Tag>
+        <Title color={theme.stampInk} numberOfLines={1} adjustsFontSizeToFit testID="composeStampPrice">
+          {paid ? t('send.sent.stamp.paid', { czk: approxCzk }) : t('send.sent.stamp.free')}
+        </Title>
+        <Tag fontWeight="400" color={theme.stampLabel}>
+          {paid ? t('send.stamp.paid.kind') : t('send.stamp.free.kind')}
+        </Tag>
+      </YStack>
+    </Stamp>
   );
 }
 

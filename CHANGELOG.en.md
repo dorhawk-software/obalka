@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A paid message asks with the stamp you are paying for.** The question before a postal data
+  message is sent shows the stamp with its price and the box's credit, and rises like every other
+  question in the app.
 - **A new message is the envelope you are sending.** The sender is on the envelope, the recipient
   in its window, and the stamp in the corner shows whether the message is free or paid as soon as
   you pick the recipient. The subject and text go on a sheet tucked under the envelope.

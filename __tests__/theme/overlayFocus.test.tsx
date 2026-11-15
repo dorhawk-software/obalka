@@ -363,7 +363,8 @@ describe('every Modal in the app', () => {
   );
 
   it('is found - the scan covers the overlays the render tests cover, and more', () => {
-    expect(found.length).toBeGreaterThanOrEqual(4);
+    // Three since 2026-11-15, when the paid-send question became a `Dialog`.
+    expect(found.length).toBeGreaterThanOrEqual(3);
     expect(found.map(m => m.file)).toEqual(
       expect.arrayContaining([
         // The dialog's Modal is the sheet's since 2026-11-15 (R9): `Dialog` is a `BottomSheet`, and
@@ -372,9 +373,8 @@ describe('every Modal in the app', () => {
         'src/features/accounts/screens/BoxSwitcherSheet.tsx',
         // The Termín picker's Modal and the language picker's are this one (2026-09-24), and every
         // dialog's and the alias editor's (2026-11-15).
+        // The paid-send confirmation's too since 2026-11-15 (R2 is R9's Dialog).
         'src/theme/BottomSheet.tsx',
-        // The paid-send confirmation, out of ComposeScreen since 2026-11-12.
-        'src/features/messages/screens/PaidSendConfirm.tsx',
       ]),
     );
   });

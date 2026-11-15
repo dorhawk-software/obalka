@@ -300,7 +300,10 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   - [x] I38.7 Footer: errors (too large, attach, PDF, sign in again, send), send busy. Busy is R12's
     ring spinner in the button's ink; the dimmed button fades as one layer (Android).
 - [ ] I39 Compose sent state (emblem, ID, Done, Open sent) - **D**: board "Sent - the stamp is cancelled".
-- [ ] I40 Paid-send confirmation (modal, credit card tile) - **X**: R2.
+- [x] I40 Paid-send confirmation (modal, credit card tile) - **X**: R2. Built 2026-11-15: R9's `Dialog`
+  (R9 took this sheet as every question's shape) with R2's paid stamp on it at 112×92, tilted 2° in its
+  own drop shadow, the question, the words, and the box's credit as a muted line (it was a sunken
+  panel under a card glyph). Walked beside R2 aligned at the sheet's top, light and dark, English.
 - [x] I41 Draft rows (swipe to discard, snackbar Undo) - **X**: R2 (Koncept glyph). Built 2026-11-15 as
   R12's sheets (the glyph in a 36 well, Zahodit in danger), walked beside R12; the swipe and Undo kept.
 - [ ] I42 Search: hint, skeleton, no results, results - **X**: R4 (hint, no results), rows as I18.
@@ -518,7 +521,8 @@ surface below changes too, and the owner has seen none of them in the identity. 
   Reduce Motion, the drag's settle (180/160 ms) does not.
 - [ ] I73 `Dialog`, sheet scrims and `AliasEditor` use `Modal animationType="fade"` - **D** (rm): no
   animation under Reduce Motion.
-- [ ] I74 The paid-send confirmation slides (`animationType="slide"`) - **D** (rm); R2 may replace it.
+- [x] I74 The paid-send confirmation slides (`animationType="slide"`) - **D** (rm); R2 may replace it.
+  Gone 2026-11-15 with I40: it rises as every sheet does (`BottomSheet`); the app has three Modals.
 - [ ] I75 Skeleton pulse, waiting bar, sync bar - **N**: loop only while work runs. Under Reduce Motion
   the waiting bar is an empty track and the stage line beside it carries the meaning: shown on R8.
 - [ ] I76 Platform spinners in 11 places - **X**: R8 decides where an object waits instead. The Mobile Key wait's
@@ -1047,6 +1051,8 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R2/R12 compose: R2 lays the footer on the paper, R12 (newer) on surfaceAlt, built as R12. The
     board gives namesakes two avatar colours; the build colours by name. Some derived phones omit the
     text field or the attachments; the build keeps them. The window is 3 taller from the roundings.
+    R2's paid question: 20 above the stamp and under it, the words 15/21; the build is R9's `Dialog`
+    (24 above the object, 18 under it, the words in Small), one anatomy for every question.
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).

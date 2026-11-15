@@ -45,8 +45,9 @@ describe('every dialog, as R9 draws it', () => {
     .filter(f => !f.endsWith(join('theme', 'Dialog.tsx')))
     .flatMap(f => dialogsIn(f, readFileSync(f, 'utf8')).map(d => ({ ...d, file: relative(ROOT, f) })));
 
-  it('finds them all: 22 in the code (tasks.md I84-I105)', () => {
-    expect(found.length).toBe(22);
+  // 23 since 2026-11-15: the paid-send question (I40) is a Dialog, carrying its stamp.
+  it('finds them all: 23 in the code (tasks.md I84-I105, I40)', () => {
+    expect(found.length).toBe(23);
   });
 
   it('carries the glyph or the object it is about', () => {

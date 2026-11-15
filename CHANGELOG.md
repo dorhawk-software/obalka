@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Placená zpráva se ptá se známkou, kterou zaplatíte.** Otázka před odesláním poštovní datové
+  zprávy ukáže známku s cenou a kredit schránky a vyjede stejně jako ostatní otázky v aplikaci.
 - **Nová zpráva je obálka, kterou posíláte.** Odesílatel je na obálce, příjemce v jejím okénku a
   známka v rohu ukáže, zda bude zpráva zdarma, nebo placená, hned jak příjemce vyberete. Předmět a
   text píšete na list zastrčený pod obálkou.
