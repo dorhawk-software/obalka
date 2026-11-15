@@ -209,23 +209,15 @@ describe('the sheet dismiss pan', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('the ⋯ menu closes through it', async () => {
-    const timings = recordTimings();
+  it('the ⋯ menu, a popover since R9, takes no pan: a tap outside closes it', async () => {
     const view = await wrap(
       <BoxOverflowMenu account={account('a')} onRename={() => {}} onRemove={() => {}} />,
     );
-    // Closed, it registers no pan: a hook-API gesture exists natively from mount, and this host sits
-    // on every row of the switcher.
-    expect(panMock).not.toHaveBeenCalled();
     await fireEvent.press(view.getByTestId('boxMenu-a'));
     expect(view.getByText('Upravit schránku')).toBeTruthy();
-
-    const config = lastPanConfig();
-    expect(config.activeOffsetY).toBe(12);
-    config.onDeactivate(release({ translationY: 200 }));
-    const slide = timings.find(t => t.to === 600);
-    expect(slide).toBeDefined();
-    await act(() => slide?.done?.(true));
+    // Held up beside the ⋯, not risen from the bottom: nothing to swipe down (2026-11-15).
+    expect(panMock).not.toHaveBeenCalled();
+    await fireEvent.press(view.getByTestId('boxMenu-outside'));
     expect(view.queryByText('Upravit schránku')).toBeNull();
   });
 });

@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The box menu opens beside its ⋯ button, and editing a box rises from the bottom.** The editor shows
+  the box's envelope with the name and colour as you type and pick them, and needs only Save.
 - **The reminder and the sender picker have the new look.** The reminder's dates are one card with
   bolder labels and Remove stands beside Save; the boxes to send from carry their envelope, and a ring
   marks the chosen one.

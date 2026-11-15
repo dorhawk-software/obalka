@@ -89,10 +89,11 @@ describe('keyboard avoidance (regression)', () => {
     }
   });
 
-  it('alias-editor modal lifts its card above the keyboard', async () => {
+  it('the alias editor rises over the keyboard', async () => {
     const view = await ui(
       <AliasEditor account={account} onSave={() => {}} onClose={() => {}} />,
     );
-    expect(view.getByTestId('aliasKeyboardAvoider')).toBeTruthy();
+    // A sheet since 2026-11-15 (R9): the sheet's own avoider.
+    expect(view.getByTestId('aliasEditor-keyboard')).toBeTruthy();
   });
 });

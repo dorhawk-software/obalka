@@ -16,7 +16,7 @@
 // would otherwise sit over the lock screen.
 
 import { useRef, type ReactNode } from 'react';
-import { Modal, Pressable, ScrollView } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView } from 'react-native';
 import Animated, {
   SlideInDown,
   useAnimatedStyle,
@@ -75,89 +75,97 @@ export function BottomSheet({
 
   return (
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-      {/* No `accessibilityLabel`: with `accessible={false}` it is never announced. */}
-      <Pressable
-        accessible={false}
-        onPress={onClose}
-        style={{
-          flex: 1,
-          backgroundColor: scrim, // warm "paper" sheet scrim (009 §3)
-          justifyContent: 'flex-end',
-          // Centred so the sheet can be capped on a tablet instead of spanning a metre of glass.
-          alignItems: 'center',
-        }}
+      {/* A sheet with a field in it (the alias editor) rises over the keyboard rather than under it;
+          one without changes nothing, since no keyboard comes up. */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        testID={testID ? `${testID}-keyboard` : undefined}
       >
-        <SheetDismissGesture dragY={dragY} onDismiss={onClose}>
-          <Animated.View
-            style={[sheetStyle, sheetWidth]}
-            entering={reduceMotion ? undefined : SlideInDown.duration(240)}
-          >
-            {/* The press-eater: a tap on the sheet itself must not close it. Not an accessibility
-                element: on iOS this wrapper would swallow every control inside the sheet into one
-                unreachable blob (see theme/Dialog.tsx). */}
-            <Pressable accessible={false} onPress={() => {}}>
-              <YStack
-                // Keeps the VoiceOver cursor inside the sheet rather than on the screen behind it, as
-                // in theme/Dialog.tsx. Android needs no prop: the `Modal` is a dialog window of its
-                // own, and TalkBack stays inside it.
-                accessibilityViewIsModal
-                backgroundColor={theme.surfaceAlt}
-                borderTopLeftRadius={24}
-                borderTopRightRadius={24}
-                paddingTop={space.md}
-                paddingHorizontal={space.section}
-                paddingBottom={insets.bottom + space.gutter}
-                maxHeight={maxHeight}
-                style={{ boxShadow: sheetShadow }}
-                testID={testID}
-              >
+        {/* No `accessibilityLabel`: with `accessible={false}` it is never announced. */}
+        <Pressable
+          accessible={false}
+          onPress={onClose}
+          style={{
+            flex: 1,
+            backgroundColor: scrim, // warm "paper" sheet scrim (009 §3)
+            justifyContent: 'flex-end',
+            // Centred so the sheet can be capped on a tablet instead of spanning a metre of glass.
+            alignItems: 'center',
+          }}
+        >
+          <SheetDismissGesture dragY={dragY} onDismiss={onClose}>
+            <Animated.View
+              style={[sheetStyle, sheetWidth]}
+              entering={reduceMotion ? undefined : SlideInDown.duration(240)}
+            >
+              {/* The press-eater: a tap on the sheet itself must not close it. Not an accessibility
+                  element: on iOS this wrapper would swallow every control inside the sheet into one
+                  unreachable blob (see theme/Dialog.tsx). */}
+              <Pressable accessible={false} onPress={() => {}}>
                 <YStack
-                  alignSelf="center"
-                  width={40}
-                  height={4}
-                  borderRadius={999}
-                  backgroundColor={theme.borderStrong}
-                />
-                {title != null ? (
-                  <Title marginTop={space.inset} accessibilityRole="header">
-                    {title}
-                  </Title>
-                ) : null}
-                {subtitle != null ? (
-                  <Small color={theme.textMuted} marginTop={space.sm} testID={testID ? `${testID}-subtitle` : undefined}>
-                    {subtitle}
-                  </Small>
-                ) : null}
-                {/* Scrolls once the sheet reaches its cap, so it never rises past the status bar.
-                    A scroll view clips what it holds, and a card's resting shadow reaches 14 under it
-                    and 6 beside it (depth `sheet`): the view reaches past the content by that much and
-                    pads it back, so the cards keep their shadow and nothing moves. */}
-                <ScrollView
-                  ref={hintIfCut.ref}
-                  onLayout={event => hintIfCut.drawn(event.nativeEvent.layout.height)}
-                  onContentSizeChange={(_width, height) => hintIfCut.words(height)}
-                  alwaysBounceVertical={false}
-                  style={{
-                    flexGrow: 0,
-                    flexShrink: 1,
-                    marginHorizontal: -SHADOW_ROOM.side,
-                    marginBottom: -SHADOW_ROOM.below,
-                  }}
-                  contentContainerStyle={{
-                    paddingHorizontal: SHADOW_ROOM.side,
-                    paddingBottom: SHADOW_ROOM.below,
-                  }}
-                  bounces={false}
-                  keyboardShouldPersistTaps="handled"
+                  // Keeps the VoiceOver cursor inside the sheet rather than on the screen behind it, as
+                  // in theme/Dialog.tsx. Android needs no prop: the `Modal` is a dialog window of its
+                  // own, and TalkBack stays inside it.
+                  accessibilityViewIsModal
+                  backgroundColor={theme.surfaceAlt}
+                  borderTopLeftRadius={24}
+                  borderTopRightRadius={24}
+                  paddingTop={space.md}
+                  paddingHorizontal={space.section}
+                  paddingBottom={insets.bottom + space.gutter}
+                  maxHeight={maxHeight}
+                  style={{ boxShadow: sheetShadow }}
+                  testID={testID}
                 >
-                  {children}
-                </ScrollView>
-                {footer}
-              </YStack>
-            </Pressable>
-          </Animated.View>
-        </SheetDismissGesture>
-      </Pressable>
+                  <YStack
+                    alignSelf="center"
+                    width={40}
+                    height={4}
+                    borderRadius={999}
+                    backgroundColor={theme.borderStrong}
+                  />
+                  {title != null ? (
+                    <Title marginTop={space.inset} accessibilityRole="header">
+                      {title}
+                    </Title>
+                  ) : null}
+                  {subtitle != null ? (
+                    <Small color={theme.textMuted} marginTop={space.sm} testID={testID ? `${testID}-subtitle` : undefined}>
+                      {subtitle}
+                    </Small>
+                  ) : null}
+                  {/* Scrolls once the sheet reaches its cap, so it never rises past the status bar.
+                      A scroll view clips what it holds, and a card's resting shadow reaches 14 under it
+                      and 6 beside it (depth `sheet`): the view reaches past the content by that much and
+                      pads it back, so the cards keep their shadow and nothing moves. */}
+                  <ScrollView
+                    ref={hintIfCut.ref}
+                    onLayout={event => hintIfCut.drawn(event.nativeEvent.layout.height)}
+                    onContentSizeChange={(_width, height) => hintIfCut.words(height)}
+                    alwaysBounceVertical={false}
+                    style={{
+                      flexGrow: 0,
+                      flexShrink: 1,
+                      marginHorizontal: -SHADOW_ROOM.side,
+                      marginBottom: -SHADOW_ROOM.below,
+                    }}
+                    contentContainerStyle={{
+                      paddingHorizontal: SHADOW_ROOM.side,
+                      paddingBottom: SHADOW_ROOM.below,
+                    }}
+                    bounces={false}
+                    keyboardShouldPersistTaps="handled"
+                  >
+                    {children}
+                  </ScrollView>
+                  {footer}
+                </YStack>
+              </Pressable>
+            </Animated.View>
+          </SheetDismissGesture>
+        </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

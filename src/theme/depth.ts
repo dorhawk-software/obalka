@@ -55,6 +55,7 @@ export const depth = {
  * - `letter`: the letter rising out of its envelope, shading the envelope's lip.
  * - `window`: the envelope's paper lying over the window's edge (an inset).
  * - `seal`: the lock's wax seal, raised and lit.
+ * - `popover`: a menu held up over the screen beside what opened it (R9's box menu, `--dlgsh`).
  *
  * `slip`, `stamp` and `stampFab` are filters (`drop-shadow`), not box shadows: the perforated edge is
  * cut out of the object, and the shadow has to follow the holes.
@@ -67,7 +68,8 @@ type ObjectShadow =
   | 'letter'
   | 'window'
   | 'seal'
-  | 'sealedEnvelope';
+  | 'sealedEnvelope'
+  | 'popover';
 type ObjectFilter = 'slip' | 'stamp' | 'stampOnEnvelope' | 'stampFab' | 'openEnvelope';
 
 const OBJECT_SHADOWS: Record<'light' | 'dark', Record<ObjectShadow, string>> = {
@@ -83,6 +85,7 @@ const OBJECT_SHADOWS: Record<'light' | 'dark', Record<ObjectShadow, string>> = {
       'inset 0px -2px 3px rgba(0,0,0,0.25)',
     /** The lock's sealed envelope, held up off the paper (board "Lock - sealed"). */
     sealedEnvelope: '0px 18px 26px rgba(33,50,90,0.35)',
+    popover: '0px 1px 2px rgba(33,27,18,0.08), 0px 24px 40px -20px rgba(33,27,18,0.5)',
   },
   dark: {
     // A dark sheet is lighter than the paper already; the shadow fades to a faint edge (R3).
@@ -98,6 +101,7 @@ const OBJECT_SHADOWS: Record<'light' | 'dark', Record<ObjectShadow, string>> = {
     // No board at night: the light shadow's blue is lost on the dark paper, so it is black, as the
     // envelope's own is.
     sealedEnvelope: '0px 18px 26px rgba(0,0,0,0.55)',
+    popover: '0px 0px 0px 1px rgba(255,255,255,0.05), 0px 24px 40px -20px rgba(0,0,0,0.8)',
   },
 };
 

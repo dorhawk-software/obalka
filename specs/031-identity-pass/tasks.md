@@ -387,8 +387,21 @@ surface below changes too, and the owner has seen none of them in the identity. 
   ink, the add row filled (sunken, 52, radius 12), the offset settings glyph. Kept against the board,
   both from the owner's own reports: the alert mark on a broken box's tile and "· Poslední známý
   stav" after its state; for the canvas's sync-back.
-- [ ] I55 Box overflow menu (rename, change password, remove) - **D**: the menu's surface. R9.
-- [ ] I56 `AliasEditor` (avatar preview, colour swatches) - **D** (avatar). R9.
+- [x] I55 Box overflow menu (rename, change password, remove) - **D**: the menu's surface. R9. Built
+  2026-11-15 as R9's popover beside the ⋯ (it was a bottom sheet with the box's name over the rows):
+  230 across, the 14 corner, the surface with R9's popover shadow (`objectShadow('popover')`, light
+  and dark), rows 48 with the glyph 12 before the bold small words, a hairline above Odebrat in the
+  danger ink; under the ⋯ with its right edge on the ⋯'s, or over it where the screen ends (walked:
+  the lowest box opens upwards). No scrim; a tap outside, back or backgrounding closes it. Rounding:
+  its 3 over the ⋯ is 2. Walked light and dark, Czech and English; line for line with R9 in light
+  bar the glyphs (T051).
+- [x] I56 `AliasEditor` (avatar preview, colour swatches) - **D** (avatar). R9. Built 2026-11-15 as
+  a sheet (`BottomSheet`, which now rises over the keyboard): the envelope tile at 56 for the avatar,
+  taking the name and colour live, beside the name and identity line; the chosen colour ringed outside
+  its edge and checked; Uložit alone (Zrušit went: the sheet closes as every sheet does). Roundings:
+  the tile's 15 corner is 16, the 20 above Uložit 18, the field's 15 inset 16, the ring's 3 off the
+  swatch 2 (its corner then on the 16 step). Walked light and dark, Czech and English, typing with the
+  keyboard up; matches R9 in light.
 - [x] I57 `TermPicker` - **D** (icons: Připomínka). R9. Built 2026-11-15: the reminder's glyph in a
   well beside the title (title role), the promise in small muted text 8 under them, the presets one
   card 14 under, rows 50 with an inset hairline and their labels in smallStrong, the custom row's
@@ -929,6 +942,12 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R13 scanner: the window's film and glint lie outside a `.win`, so the board's `.win .crk` rules
     miss them and the film's stroke runs past the window's edge; the build draws the window's own
     film and glint inside it. DESIGN.md to record `cameraDim` and the 56 well (`Well large`).
+  - R9 box menu and R14: the bin with two inner strokes and a square-cornered lock; the build's bin is
+    the plain one an earlier board chose (`TrashIcon`) and its lock is the app's `LockIcon`, one
+    drawing each across the app.
+  - R9 alias editor: the identity line in the 13 Label role at 500; the build uses the switcher rows'
+    `BoxIdentityLine` (Meta), so the box reads the same in both. Six swatches drawn; there are ten,
+    on two rows. DESIGN.md to record the popover (`objectShadow('popover')`).
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).

@@ -1,35 +1,71 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { Modal, Pressable } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+// The box's ⋯ menu (008): Upravit schránku, Změnit heslo (a box signed in with name and password,
+// 030 US2), Odebrat.
+//
+// Board R9 (031 I55, agreed 2026-11-12) draws it as a popover held up beside the ⋯ that opened it, not
+// a second sheet over the switcher: 230 across, the 14 corner, the surface with the popover's shadow,
+// rows 48 tall with the glyph 12 before the words in the bold small role, and a hairline above Odebrat,
+// which is in the danger ink. Its top edge stands just over the ⋯'s bottom and its right edge on the
+// ⋯'s right; where the screen leaves no room below, it opens upwards from the ⋯'s top instead. No scrim
+// of its own: the switcher behind stays as it is, and a tap anywhere outside closes it, as do back and
+// the app going to the background. Until 2026-11-15 it was a bottom sheet with the box's name over the
+// rows.
+//
+// Rounding from the board: its top overlaps the ⋯ by 3, which is the 2 step.
+
+import { useCallback, useRef, useState, type ReactNode } from 'react';
+import { Modal, Pressable, useWindowDimensions, type View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { sheetWidth } from '../../../theme/ContentColumn';
 import { XStack, YStack } from '../../../theme/ui';
-import { Body, Caption } from '../../../theme/Typography';
+import { SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { useScrim } from '../../../theme/useScrim';
-import { SheetDismissGesture } from '../../../theme/SheetDismissGesture';
 import { EditIcon, LockIcon, MoreIcon, TrashIcon } from '../../../theme/icons';
+import { objectShadow } from '../../../theme/depth';
+import { space } from '../../../theme/spacing';
 import { haptics } from '../../../services/haptics';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 import { touchSlop } from '../../../theme/touchTarget';
 import { t } from '../../../i18n/strings';
 import type { DataBoxAccount } from '../../../services/isds/types';
-import { useSheetMaxHeight } from '../../../theme/useSheetMaxHeight';
 
 /** The ⋯ trigger's drawn size - declared once so its touch slop is derived, not guessed. */
 const TRIGGER = 38;
 
+/** R9's popover: 230 across, the 14 corner, rows 48 tall at the least. */
+const MENU = { width: 230, radius: 14, row: 48 } as const;
+
+/** How far the menu's edge reaches over the ⋯ it opened from. */
+const OVERLAP = space.hair;
+
+/** Where the ⋯ is on the screen, measured when it is pressed. */
+interface Anchor {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
 /**
- * Per-box overflow menu (008): a single `⋯` button opening a bottom action sheet with **Přejmenovat /
- * Odebrat**. Self-contained (renders the trigger + owns the sheet state). The sheet is dismissable by
- * tapping the dim backdrop OR swiping it down (US4 polish); it auto-closes when the app backgrounds so
- * it's never left over the lock screen.
+ * Where the menu stands: under the ⋯, its right edge on the ⋯'s, or over the ⋯ when the screen leaves
+ * no room below. Null until both the ⋯ and the menu have been measured, so it never shows in the wrong
+ * place for a frame.
  */
+export function placeMenu(
+  anchor: Anchor | null,
+  menuHeight: number,
+  screen: { readonly width: number; readonly height: number },
+  insets: { readonly top: number; readonly bottom: number },
+): { top: number; right: number } | null {
+  if (anchor == null || menuHeight === 0) {
+    return null;
+  }
+  const right = screen.width - (anchor.x + anchor.width);
+  const below = anchor.y + anchor.height - OVERLAP;
+  if (below + menuHeight <= screen.height - insets.bottom - space.base) {
+    return { top: below, right };
+  }
+  return { top: Math.max(insets.top + space.base, anchor.y + OVERLAP - menuHeight), right };
+}
+
 export function BoxOverflowMenu({
   account,
   onRename,
@@ -43,26 +79,24 @@ export function BoxOverflowMenu({
   readonly onChangePassword?: () => void;
 }) {
   const theme = useTheme();
-  const scrim = useScrim(0.4);
   const insets = useSafeAreaInsets();
-  const maxHeight = useSheetMaxHeight();
-  const reduceMotion = useReducedMotion();
+  const screen = useWindowDimensions();
+  const trigger = useRef<View>(null);
   const [open, setOpen] = useState(false);
-  const close = useCallback(() => setOpen(false), []);
+  const [anchor, setAnchor] = useState<Anchor | null>(null);
+  const [menuHeight, setMenuHeight] = useState(0);
+  const close = useCallback(() => {
+    setOpen(false);
+    setAnchor(null);
+    setMenuHeight(0);
+  }, []);
   useCloseOnBackground(close);
+  const place = placeMenu(anchor, menuHeight, screen, insets);
 
-  // Swipe the sheet DOWN to dismiss. On open it SLIDES UP (the correct bottom-sheet entrance) - the
-  // trigger pre-positions it offscreen (below) before mount so there's no flash, then this settles it
-  // to 0. Reduce Motion → snap to 0 (no slide).
-  const dragY = useSharedValue(0);
-  useEffect(() => {
-    if (open) {
-      dragY.value = reduceMotion ? 0 : withTiming(0, { duration: 240 });
-    }
-  }, [open, dragY, reduceMotion]);
-  const sheetStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: dragY.value }],
-  }));
+  const choose = (action: () => void) => () => {
+    close();
+    action();
+  };
 
   return (
     <>
@@ -71,11 +105,10 @@ export function BoxOverflowMenu({
           keeps the touch responder), so the ⋯ silently did nothing while every other row worked. The
           box row's own press area is a plain Pressable too, so this now matches it. */}
       <Pressable
+        ref={trigger}
         onPress={() => {
-          haptics.light(); // a light tick as the sheet opens
-          if (!reduceMotion) {
-            dragY.value = 800; // pre-position offscreen so it slides up (no first-frame flash)
-          }
+          haptics.light(); // a light tick as the menu opens
+          trigger.current?.measureInWindow((x, y, width, height) => setAnchor({ x, y, width, height }));
           setOpen(true);
         }}
         accessibilityRole="button"
@@ -97,97 +130,58 @@ export function BoxOverflowMenu({
       </Pressable>
 
       {open ? (
-        <Modal
-          visible
-          transparent
-          animationType="fade"
-          statusBarTranslucent
-          onRequestClose={close}
-        >
-          <Pressable
-            accessible={false}
-            onPress={close}
-            style={{
-              flex: 1,
-              // Warm "paper" sheet scrim (design §3).
-              backgroundColor: scrim,
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}
-          >
-            <SheetDismissGesture dragY={dragY} onDismiss={close}>
-              {/* press-eater (taps on the sheet itself must not close it) + the swipe-down transform */}
-              <Animated.View style={[sheetStyle, sheetWidth]}>
-                <Pressable accessible={false} onPress={() => {}}>
-                  {/* Design: padding 10/14/18, no sheet shadow (the scrim + slide-up carry it). */}
-                  <YStack
-                    // Keeps the VoiceOver cursor on Přejmenovat / Odebrat rather than the switcher
-                    // rows behind them, as in theme/Dialog.tsx. Android needs no prop: the `Modal`
-                    // is a dialog window of its own, and TalkBack stays inside it.
-                    accessibilityViewIsModal
-                    backgroundColor={theme.surfaceAlt}
-                    borderTopLeftRadius={24}
-                    borderTopRightRadius={24}
-                    paddingTop={10}
-                    paddingHorizontal={14}
-                    paddingBottom={insets.bottom + 18}
-                    maxHeight={maxHeight}
-                  >
-                    <YStack
-                      alignSelf="center"
-                      width={40}
-                      height={4}
-                      borderRadius={999}
-                      backgroundColor={theme.borderStrong}
-                      marginTop={6}
-                      marginBottom={12}
-                    />
-                    {/* Design: only the box name (its ID/login now live on the switcher row); 13/700
-                        faint, inset 6dp inside the 14dp-padded sheet. Public Sans is a per-face
-                        family, so the Bold face has to be named explicitly. */}
-                    <Caption fontWeight="700"
-                      color={theme.textFaint}
-                      numberOfLines={1}
-                      paddingHorizontal={6}
-                      paddingTop={0}
-                      paddingBottom={8}
-                    >
-                      {account.alias ?? account.label}
-                    </Caption>
-                    <SheetRow
-                      icon={<EditIcon size={20} color={theme.text} />}
-                      label={t('box.rename')}
-                      onPress={() => {
-                        close();
-                        onRename();
-                      }}
-                      testID={`boxRename-${account.boxId}`}
-                    />
-                    {onChangePassword ? (
-                      <SheetRow
-                        icon={<LockIcon size={20} color={theme.text} />}
-                        label={t('box.changePassword')}
-                        onPress={() => {
-                          close();
-                          onChangePassword();
-                        }}
-                        testID={`boxChangePassword-${account.boxId}`}
-                      />
-                    ) : null}
-                    <SheetRow
-                      icon={<TrashIcon size={20} color={theme.danger} />}
-                      label={t('box.remove')}
-                      danger
-                      onPress={() => {
-                        close();
-                        onRemove();
-                      }}
-                      testID={`boxRemove-${account.boxId}`}
-                    />
-                  </YStack>
-                </Pressable>
-              </Animated.View>
-            </SheetDismissGesture>
+        <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={close}>
+          {/* The whole screen outside the menu: a tap there closes it. Clear - R9 draws no scrim. */}
+          <Pressable accessible={false} onPress={close} style={{ flex: 1 }} testID="boxMenu-outside">
+            {/* The press-eater: a tap on the menu's padding must not close it. */}
+            <Pressable
+              accessible={false}
+              onPress={() => {}}
+              onLayout={event => setMenuHeight(event.nativeEvent.layout.height)}
+              style={{
+                position: 'absolute',
+                width: MENU.width,
+                top: place?.top ?? 0,
+                right: place?.right ?? 0,
+                // Measured first, then shown where it belongs.
+                opacity: place == null ? 0 : 1,
+              }}
+            >
+              <YStack
+                // Keeps the VoiceOver cursor on the menu rather than the switcher rows behind it, as
+                // in theme/Dialog.tsx. Android needs no prop: the `Modal` is a dialog window of its
+                // own, and TalkBack stays inside it.
+                accessibilityViewIsModal
+                backgroundColor={theme.surface}
+                borderRadius={MENU.radius}
+                paddingVertical={space.sm}
+                style={{ boxShadow: objectShadow(theme.name, 'popover') }}
+                testID={`boxMenuList-${account.boxId}`}
+              >
+                <MenuRow
+                  icon={<EditIcon size={20} color={theme.text} />}
+                  label={t('box.rename')}
+                  onPress={choose(onRename)}
+                  testID={`boxRename-${account.boxId}`}
+                />
+                {onChangePassword ? (
+                  <MenuRow
+                    icon={<LockIcon size={20} color={theme.text} />}
+                    label={t('box.changePassword')}
+                    onPress={choose(onChangePassword)}
+                    testID={`boxChangePassword-${account.boxId}`}
+                  />
+                ) : null}
+                <YStack height={1} backgroundColor={theme.border} />
+                <MenuRow
+                  icon={<TrashIcon size={20} color={theme.danger} />}
+                  label={t('box.remove')}
+                  danger
+                  onPress={choose(onRemove)}
+                  testID={`boxRemove-${account.boxId}`}
+                />
+              </YStack>
+            </Pressable>
           </Pressable>
         </Modal>
       ) : null}
@@ -195,8 +189,8 @@ export function BoxOverflowMenu({
   );
 }
 
-/** One action row in the overflow sheet: leading icon + label, full-width tappable. */
-function SheetRow({
+/** One action in the menu: the glyph, then the words, the whole row the press. */
+function MenuRow({
   icon,
   label,
   danger,
@@ -213,10 +207,9 @@ function SheetRow({
   return (
     <XStack
       alignItems="center"
-      gap={14}
-      paddingVertical={14}
-      paddingHorizontal={8}
-      borderRadius={12}
+      gap={space.lg}
+      minHeight={MENU.row}
+      paddingHorizontal={space.inset}
       pressStyle={{ backgroundColor: theme.surfaceSunken }}
       onPress={onPress}
       accessibilityRole="button"
@@ -225,12 +218,9 @@ function SheetRow({
       <YStack width={20} alignItems="center">
         {icon}
       </YStack>
-      <Body fontWeight="600"
-        flex={1}
-        color={danger ? theme.danger : theme.text}
-      >
+      <SmallStrong flex={1} color={danger ? theme.danger : theme.text}>
         {label}
-      </Body>
+      </SmallStrong>
     </XStack>
   );
 }
