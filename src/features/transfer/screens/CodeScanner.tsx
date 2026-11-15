@@ -42,16 +42,12 @@ import { Platform } from 'react-native';
 import { scheduleOnRN } from 'react-native-worklets';
 import type * as VisionCamera from 'react-native-vision-camera';
 import type * as NitroZxing from 'react-native-nitro-zxing';
-import { XStack, YStack } from '../../../theme/ui';
-import { BodyStrong, Label, Small } from '../../../theme/Typography';
-import { PressScale } from '../../../theme/PressScale';
+import { YStack } from '../../../theme/ui';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { CloseIcon } from '../../../theme/icons';
 import { t } from '../../../i18n/strings';
 import { parseTransferQr } from '../../../services/transfer/transferQr';
 import { reportFailure } from '../../../services/telemetry/telemetry';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { space } from '../../../theme/spacing';
+import { ScannerSheet, ScannerWindow } from './ScannerFrame';
 
 type CameraModule = typeof VisionCamera;
 type ZxingModule = typeof NitroZxing;
@@ -250,7 +246,6 @@ export function TransferCodeScanner({
   readonly hint?: string;
 }) {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
   const modules = cameraModules();
   // `done` stops the camera, but it is state: it takes effect on the next render, and the camera
   // delivers frames faster than that. Two frames holding the same code both saw `done === false`, and
@@ -315,7 +310,7 @@ export function TransferCodeScanner({
     setDenied(true);
   };
 
-  const frame = (children: React.ReactNode) => (
+  const frame = (children: React.ReactNode, words: string, noCamera: boolean) => (
     <YStack
       position="absolute"
       top={0}
@@ -329,63 +324,26 @@ export function TransferCodeScanner({
       testID="transfer-scanner"
     >
       {children}
-      {/* Past the home indicator: the scanner is full-screen, and a Cancel button under the gesture bar
-          is a button the gesture takes instead (2026-10-04). */}
-      <YStack
-        position="absolute"
-        bottom={0}
-        left={0}
-        right={0}
-        paddingHorizontal={space.section}
-        paddingTop={space.section}
-        paddingBottom={insets.bottom + space.section}
-        gap={12}
-      >
-        <Label fontWeight="400" color={theme.surfaceAlt} textAlign="center">
-          {hint ?? t('transfer.scan.hint')}
-        </Label>
-        <PressScale
-          fullWidth
-          onPress={onCancel}
-          accessibilityLabel={t('common.cancel')}
-          testID="transfer-scanner-close"
-        >
-          <XStack
-            width="100%"
-            minHeight={48}
-            borderRadius={14}
-            backgroundColor={theme.surface}
-            alignItems="center"
-            justifyContent="center"
-            gap={8}
-          >
-            <CloseIcon size={16} color={theme.text} />
-            <BodyStrong color={theme.text}>
-              {t('common.cancel')}
-            </BodyStrong>
-          </XStack>
-        </PressScale>
-      </YStack>
+      <ScannerSheet words={words} noCamera={noCamera} onCancel={onCancel} />
     </YStack>
   );
 
   if (denied || !hasPermission || !device) {
-    return frame(
-      <YStack flex={1} alignItems="center" justifyContent="center" padding={24}>
-        <Small color={theme.surfaceAlt} textAlign="center">
-          {device ? t('transfer.scan.denied') : t('transfer.scan.noCamera')}
-        </Small>
-      </YStack>,
-    );
+    return frame(null, device ? t('transfer.scan.denied') : t('transfer.scan.noCamera'), true);
   }
 
   return frame(
-    <QrViewfinder
-      modules={modules}
-      device={device}
-      active={!done}
-      onCodes={onCodes}
-      onError={onError}
-    />,
+    <>
+      <QrViewfinder
+        modules={modules}
+        device={device}
+        active={!done}
+        onCodes={onCodes}
+        onError={onError}
+      />
+      <ScannerWindow />
+    </>,
+    hint ?? t('transfer.scan.hint'),
+    false,
   );
 }

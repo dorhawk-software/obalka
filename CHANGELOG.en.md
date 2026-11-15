@@ -134,6 +134,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **The code reader's hint can be read in dark mode too.** The reader shows the envelope's window to
+  aim the code into, with the hint and Cancel on a panel at the bottom.
 - **Words on the plain buttons are in the app's typeface.** Cancel, Resend SMS or Buy credit, for
   example, were drawn in the system's on Android.
 - **The envelope's folds run all the way to its corners.** On a message's envelope the lines stopped

@@ -113,6 +113,11 @@ export interface Theme {
    * see-through, only the alpha changes.
    */
   scrimOpaque: string;
+  /**
+   * The code scanner's dim around its window (R13): black at .45 in both themes, since what it dims
+   * is the camera's picture, not the app's paper.
+   */
+  cameraDim: string;
   /** The ring around the 52dp identity avatar: a soft highlight in light mode, a recessed edge in dark. */
   avatarRing: string;
 
@@ -240,6 +245,7 @@ export const lightTheme: Theme = {
   testBd: '#E8D49A',
   scrimRgb: '33,27,18', // the design's warm ink, over the light paper
   scrimOpaque: '#211B12',
+  cameraDim: 'rgba(0,0,0,0.45)',
   avatarRing: 'rgba(255,255,255,0.5)',
   snackbarBg: '#211B12',
   snackbarInk: '#FBF6EA',
@@ -323,6 +329,7 @@ export const darkTheme: Theme = {
   testBd: '#4A3D1C',
   scrimRgb: '0,0,0', // the warm ink is LIGHTER than the dark ground - see the token's doc comment
   scrimOpaque: '#000000',
+  cameraDim: 'rgba(0,0,0,0.45)',
   avatarRing: 'rgba(0,0,0,0.28)',
   snackbarBg: '#211B12', // NOT inverted for dark - see the token's doc comment
   snackbarInk: '#FBF6EA',

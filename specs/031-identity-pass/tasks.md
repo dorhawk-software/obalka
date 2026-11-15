@@ -340,9 +340,20 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   52 button (it was the 48 ContinueButton), pinned. The Changelog screen shares the list (no board
   draws it). Rounding: the 22 above Pokračovat is 24. Walked light and dark, Czech and English, forced
   from "seen 1.0.0" against R9's phone (its 5 changes; the real 1.1.0 has 6).
-- [ ] I50 Lock screen (brand tile 104, lock glyph, unlock, failure slot, reset link) - **D**: board
-  "Lock - sealed" (tint, sealed envelope, wax seal).
-- [ ] I51 QR code scanner (viewfinder, hint, cancel; camera denied; no camera) - **N**.
+- [x] I50 Lock screen (brand tile 104, lock glyph, unlock, failure slot, reset link) - **D**: board
+  "Lock - sealed" (tint, sealed envelope, wax seal). Built in T034 (2026-11-12), the unlock's motion
+  since; checked again 2026-11-15 on Obalka_Demo against the board, the lock turned on for it and off
+  after: as T034 lists.
+- [x] I51 QR code scanner (viewfinder, hint, cancel; camera denied; no camera) - **N**. R13. Built
+  2026-11-15: the picture dimmed (`cameraDim`, black at .45 in both themes) around the envelope's
+  window - 260, the 24 corner, a 2 white edge at .9, the window's own film and glint - its top 230/844
+  down the screen, as the lock places its envelope; under it a sheet (surfaceAlt, the 24 corner) with
+  the hint in ink and Zrušit as the neutral button with its cross. The hint was `surfaceAlt` on the
+  dark ground, unreadable in dark (R13's note). Without the camera, also while the system asks: the
+  camera in a 56 well (`Well large`), the sentence, Zrušit. Roundings: the sheet's 22 above its words
+  is 24; the words' 14/600 is smallStrong. Walked on Obalka_Demo with the emulator's scene camera,
+  light and dark, Czech and English, declined in dark and while asked in light; no camera only in the
+  tests (the emulator has one). The camera permission put back as it was.
 
 ### Sheets, dialogs, menus
 
@@ -834,6 +845,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   part-way and stayed there, Pokračovat under the screen's edge (the sheet laid out at full height,
   drawn 980 px lower). Not seen again in seven launches; Reanimated's entering animation on the
   Modal is the suspect.
+  Raised in I51: the scanner's sentence without the camera fits two lines under R13's 300 cap on the
+  board and needs three on Android (the face 2 % wider); balanced, as the board's `text-wrap`, so no
+  word stands alone.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
@@ -891,6 +905,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     The text is Public Sans at the Meta size, not monospace (the owner, 2026-11-15).
   - R9 Language: rows at 56; the same `OptionGroup` rows are 52 on R13 and in the build.
   - R9 What's new: 22 above Pokračovat; the build's scale step is 24.
+  - R13 scanner: the window's film and glint lie outside a `.win`, so the board's `.win .crk` rules
+    miss them and the film's stroke runs past the window's edge; the build draws the window's own
+    film and glint inside it. DESIGN.md to record `cameraDim` and the 56 well (`Well large`).
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).

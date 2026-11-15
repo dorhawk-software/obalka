@@ -66,6 +66,19 @@ export function Window({
 }
 
 /**
+ * The window's film and glint alone, over whatever lies under them: the code scanner's window, where
+ * the camera's picture is the paper (R13).
+ */
+export function WindowSheen({ width, height }: { readonly width: number; readonly height: number }) {
+  return (
+    <>
+      <WindowFilm width={width} height={height} />
+      <Glint width={width} height={height} />
+    </>
+  );
+}
+
+/**
  * The CSS gradient line for `angle` across a `width` x `height` box: CSS measures the angle from
  * "up", clockwise, and makes the line just long enough that the corners take the first and last stop.
  */

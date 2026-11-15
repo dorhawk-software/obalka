@@ -117,6 +117,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Pokyn ve čtečce kódu je čitelný i v tmavém režimu.** Čtečka ukazuje okénko obálky, kam kód
+  namířit, a pokyn se Zrušit leží na spodním panelu.
 - **Text na tlačítkách bez rámečku je v písmu aplikace.** Třeba Zrušit, Poslat SMS znovu nebo Koupit
   kredit se na Androidu kreslily systémovým písmem.
 - **Přehyby obálky vedou až do rohů.** Na obálce zprávy končily čáry kus před okrajem.
