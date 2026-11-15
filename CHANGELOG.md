@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Záloha bez opakování.** Obrazovka zálohy říká každou věc jednou; přepínač příloh má kratší popis. Přihlášení jménem používá slovo ISDS „Uživatelské jméno“.
+- **Aplikace mluví sama za sebe.** Texty, které dřív mluvily v první osobě („Ukládám…“, „pošleme“), teď říkají, co dělá aplikace, nebo co se právě děje („Ukládání…“).
 - **Nedoručitelná zpráva má v Odeslaných svou značku.** Před slovem „Nedoručitelné“ stojí plné kolečko
   s přeškrtnutím, jako v nápovědě a v detailu zprávy; dřív to byl nejtišší řádek v seznamu.
 - **Šedá tlačítka jsou zřetelná i na papíře.** „Zálohovat nyní“, „Ověřit zálohu“ a „Zobrazit heslo“

@@ -141,8 +141,8 @@ describe('the progress line of a restore (2026-09-24)', () => {
   });
 
   it('says a restore is restoring its documents, and a backup that it is backing them up', () => {
-    expect(stageText(at('restore', 'documents'))).toBe('Obnovuji přílohy');
-    expect(stageText(at('backup', 'documents'))).toBe('Zálohuji přílohy');
+    expect(stageText(at('restore', 'documents'))).toBe('Obnova příloh');
+    expect(stageText(at('backup', 'documents'))).toBe('Zálohování příloh');
     expect(stageText(at('restore', 'restoring'))).toBe(t('backup.stage.restoring'));
   });
 });

@@ -778,6 +778,14 @@ After the critique (2026-11-15), the owner's answers, one by one:
   (`#E9DFCD`, dark `#373026`): 1.14 on the paper, 1.30 on a card, as deep as the danger words keep 4.5:1.
 - **Nedoručitelné in Odeslané:** words alone lost to the stop disc (`StatusStopIcon`, 15) before them, in
   the same ink - the FAQ legend's and the detail's glyph.
+- **Backup text:** the three loose paragraphs under the card (what is backed up, automatic backups,
+  where the backup lives) and the cloud sentence lost to what the card's own line already says; the
+  attachments switch keeps one short line.
+- **The app's voice:** every "we" and every Czech "I" form ("Ukládám…") lost to the app speaking
+  ("Aplikace vás upozorní…") or a verbal noun ("Ukládání…"); `__tests__/content/projectVoice.test.ts`
+  holds every string.
+- **The sign-in name:** "Přihlašovací jméno" with a placeholder lost to ISDS's own "Uživatelské jméno",
+  no placeholder; the alias field's example is "Např. Osobní, Firma…".
 
 ## Do's and Don'ts
 

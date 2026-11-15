@@ -142,7 +142,7 @@ const cs: Readonly<Record<FaqId, FaqText>> = {
     answer: [
       'Technický popis chyby, nic jiného. Vypnete ji v Nastavení → Diagnostika.',
       'Odesílá se: kde chyba nastala, typ chyby, chybový kód datové schránky, HTTP kód, pořadí pokusu, verze aplikace a systému.',
-      'Neodesílá se: obsah zpráv, předměty, jména odesílatelů ani příjemců, ID schránek, přihlašovací jméno, hesla, přílohy ani jejich názvy, text dokumentů a nic ze zálohy. Filtr propustí jen vyjmenované údaje a ostatní zahodí; zná ID a jména vašich schránek a odstraní je i z volného textu.',
+      'Neodesílá se: obsah zpráv, předměty, jména odesílatelů ani příjemců, ID schránek, uživatelské jméno, hesla, přílohy ani jejich názvy, text dokumentů a nic ze zálohy. Filtr propustí jen vyjmenované údaje a ostatní zahodí; zná ID a jména vašich schránek a odstraní je i z volného textu.',
       'Hlášení míří do služby Sentry (Functional Software, Inc.), projekt v evropském regionu, tedy servery v EU. Čte je vývojář této aplikace; nepředáváme je dál, neprodáváme ani nepoužíváme k reklamě. Sentry je po 30 dnech smaže. Vlastní server nemáme.',
     ],
   },
@@ -273,7 +273,7 @@ const en: Readonly<Record<FaqId, FaqText>> = {
     answer: [
       'A technical description of the error, nothing else. Turn it off in Settings → Diagnostics.',
       'Sent: where the error happened, the kind of error, the data box’s error code, the HTTP code, which attempt it was, the app and OS version.',
-      'Never sent: message contents, subjects, sender or recipient names, box IDs, your login name, passwords, attachments or their filenames, document text, anything from your backup. A filter admits only the listed fields and discards the rest; it knows your boxes’ IDs and names and strips them from free text too.',
+      'Never sent: message contents, subjects, sender or recipient names, box IDs, your username, passwords, attachments or their filenames, document text, anything from your backup. A filter admits only the listed fields and discards the rest; it knows your boxes’ IDs and names and strips them from free text too.',
       'Reports go to Sentry (Functional Software, Inc.), on a project held in the European region, so they sit on servers in the EU. They are read by the developer of this app; we do not pass them on, sell them, or use them for advertising. Sentry deletes them after 30 days. We have no server of our own.',
     ],
   },

@@ -7,7 +7,7 @@
 export const cs: Record<string, string> = {
   'send.sent': 'Zpráva odeslána',
   'send.sent.reconciled':
-    'Tato zpráva už byla odeslána při předchozím pokusu. Znovu jsme ji neodesílali ani neúčtovali.',
+    'Tato zpráva už byla odeslána při předchozím pokusu. Aplikace ji znovu neodeslala ani nezaúčtovala.',
   // Czech says "ve" before 2-4, 12-14 and 20-23 o'clock and "v" before the rest (as `messages.synced.at`).
   'send.sent.body': 'ISDS ji přijalo {date} v {time}. Až ji adresát otevře, doručenka se doplní sama.',
   'send.sent.body.ve': 'ISDS ji přijalo {date} ve {time}. Až ji adresát otevře, doručenka se doplní sama.',
@@ -34,7 +34,7 @@ export const cs: Record<string, string> = {
 export const en: Record<string, string> = {
   'send.sent': 'Message sent',
   'send.sent.reconciled':
-    'This message was already sent on a previous attempt. We did not re-send or charge again.',
+    'This message was already sent on a previous attempt. The app did not send it again or charge for it again.',
   'send.sent.body':
     'ISDS accepted it on {date} at {time}. Once the recipient opens it, the delivery record fills in by itself.',
   'send.sent.body.ve':

@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A backup screen that says each thing once.** The paragraphs that repeated the card are gone and the attachments switch has a shorter line. The sign-in form calls the name "Username", as ISDS does.
+- **The app speaks for itself.** Texts that said "we" now say what the app does, or what is happening.
 - **An undeliverable message has its mark in Sent.** "Undeliverable" now follows the filled
   disc with a slash, as in the help and the message detail; it used to be the quietest line in
   the list.

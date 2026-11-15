@@ -95,7 +95,7 @@ describe('asking for an SMS code', () => {
       answer({ kind: 'needsOtpSms' } as LoginOutcome);
     });
     await waitFor(() =>
-      expect(view.getByTestId('otpNotice')).toHaveTextContent(/poslali v SMS/),
+      expect(view.getByTestId('otpNotice')).toHaveTextContent(/poslalo jednorázový kód v SMS/),
     );
     expect(deps.authService.abandon).not.toHaveBeenCalled();
 
@@ -121,14 +121,14 @@ describe('asking for an SMS code', () => {
     const view = await flow(deps);
     await submitSmsLogin(view);
     await waitFor(() => expect(view.getByTestId('otpCode')).toBeTruthy());
-    expect(view.getByTestId('otpNotice')).toHaveTextContent(/Žádáme o jednorázový kód/);
+    expect(view.getByTestId('otpNotice')).toHaveTextContent(/Žádost o jednorázový kód/);
 
     await act(async () => {
       answer({ kind: 'needsOtpSms' } as LoginOutcome);
     });
     await waitFor(() =>
       expect(view.getByTestId('otpNotice')).toHaveTextContent(
-        /poslali v SMS/,
+        /poslalo jednorázový kód v SMS/,
       ),
     );
   });

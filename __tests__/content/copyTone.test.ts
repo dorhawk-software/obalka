@@ -148,10 +148,14 @@ describe('the backup does not claim to leave the phone', () => {
     }
   });
 
-  it('still says plainly where a backup is written', () => {
-    // The honest statement has to survive too - deleting it would "fix" the contradiction by
-    // saying nothing, which is how a vague app is built.
-    expect(STRINGS_FOR_TEST.cs['backup.where']).toMatch(/do tohoto telefonu/i);
-    expect(STRINGS_FOR_TEST.en['backup.where']).toMatch(/on this phone/i);
-  });
+  it.each(['backup.toggle.desc', 'backup.toggle.desc.manual', 'backup.toggle.desc.off'])(
+    'still says plainly where a backup is written, in the card it is on (%s)',
+    key => {
+      // The honest statement has to survive too - deleting it would "fix" the contradiction by
+      // saying nothing, which is how a vague app is built. Since 2026-11-15 the card's line in each
+      // state says it; the separate `backup.where` sentence under the card repeated it and went.
+      expect(STRINGS_FOR_TEST.cs[key]).toMatch(/(do|v) tomto telefonu|do tohoto telefonu/i);
+      expect(STRINGS_FOR_TEST.en[key]).toMatch(/(on|in) this phone/i);
+    },
+  );
 });

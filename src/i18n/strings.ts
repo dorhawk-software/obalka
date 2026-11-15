@@ -59,12 +59,12 @@ const cs: Record<string, string> = {
   'login.environment.help.recommend': 'Pro běžné použití zvolte',
   'login.env.production': 'Ostré',
   'login.env.czebox': 'Testovací',
-  'login.loginName': 'Přihlašovací jméno',
+  'login.loginName': 'Uživatelské jméno',
   'login.password': 'Heslo',
   'login.password.show': 'Zobrazit heslo',
   'login.password.hide': 'Skrýt heslo',
   'login.alias': 'Název schránky (volitelné)',
-  'login.alias.placeholder': 'Např. Moje osoba, DPFO…',
+  'login.alias.placeholder': 'Např. Osobní, Firma…',
   'alias.title': 'Název schránky',
   // One sheet for the box's own name and its colour since 027 (decision 2B): naming boxes "Osobní",
   // "Živnost", "Firma" and colouring them apart are the two halves of telling them apart.
@@ -115,10 +115,10 @@ const cs: Record<string, string> = {
   'login.submit': 'Přihlásit se',
   'login.cancel': 'Zrušit',
   'login.authenticating': 'Přihlašování…',
-  'login.otp.notice.smsSent': 'Jednorázový kód jsme vám poslali v SMS.',
+  'login.otp.notice.smsSent': 'ISDS vám poslalo jednorázový kód v SMS.',
   // While the request is in flight: the code screen opens before ISDS answers, so no "it is on its way".
-  'login.otp.notice.smsSending': 'Žádáme o jednorázový kód…',
-  'login.otp.stillSending': 'Kód ještě odesíláme',
+  'login.otp.notice.smsSending': 'Žádost o jednorázový kód…',
+  'login.otp.stillSending': 'Kód se ještě odesílá',
   'login.otp.verify': 'Ověření',
   'login.otp.smsTitle': 'Zadejte kód z SMS',
   'login.otp.code': 'Jednorázový kód',
@@ -132,7 +132,6 @@ const cs: Record<string, string> = {
   'login.otpSuggest.sub':
     'Zkontrolujte jméno a heslo. Pokud heslu vypršela platnost, změňte ho v portálu ISDS. Pokud schránka vyžaduje i kód z SMS, přihlaste se přes SMS kód. Po opakovaných pokusech může ISDS přístup zablokovat.',
   'login.otpSuggest.btn': 'Přihlásit přes SMS kód',
-  'login.loginName.placeholder': 'Uživatelské jméno',
   'login.creds.title': 'Přihlášení',
   'login.method.label.password': 'Přihlášení heslem',
   'login.method.label.otp_totp': 'Přihlášení přes SMS kód',
@@ -153,7 +152,7 @@ const cs: Record<string, string> = {
   'box.testEnv': 'Testovací',
   'testEnv.banner': 'Testovací prostředí',
   'box.idLabel': 'ID schránky',
-  'box.loginLabel': 'Přihlašovací jméno',
+  'box.loginLabel': 'Uživatelské jméno',
   'box.remove': 'Odebrat',
   'box.menu': 'Možnosti schránky',
   'box.rename': 'Upravit schránku',
@@ -301,9 +300,9 @@ const cs: Record<string, string> = {
   'settings.diagnostics': 'DIAGNOSTIKA',
   'settings.telemetry.title': 'Posílat hlášení o chybách',
   'settings.telemetry.desc':
-    'Zapnuto. Když aplikace narazí na chybu, odešleme technický popis: kde nastala, jaká to byla chyba a co na ni odpověděla datová schránka. Nikdy obsah zpráv, jména, ID schránek ani přílohy.',
+    'Zapnuto. Když aplikace narazí na chybu, odešle technický popis: kde nastala, jaká to byla chyba a co na ni odpověděla datová schránka. Nikdy obsah zpráv, jména, ID schránek ani přílohy.',
   'settings.telemetry.desc.off':
-    'Vypnuto. Neodesílá se nic. Po zapnutí budeme posílat technický popis chyby: nikdy obsah zpráv, jména, ID schránek ani přílohy.',
+    'Vypnuto. Neodesílá se nic. Po zapnutí bude aplikace posílat technický popis chyby: nikdy obsah zpráv, jména, ID schránek ani přílohy.',
 
   // 023. Sits beside the error-report toggle because it is the same kind of decision - what this app
   // may do with your data - and a different answer to it. Error reports are automatic and stripped
@@ -314,9 +313,9 @@ const cs: Record<string, string> = {
   // The wording is the settings description's, made into a question, plus the two lists the FAQ
   // already uses - because the thing that earns a yes here is being specific, and this app can
   // afford to be: `scrub.ts` is an allow-list, so "what is sent" really is a closed set.
-  'consent.title': 'Smíme posílat hlášení o chybách?',
+  'consent.title': 'Může aplikace posílat hlášení o chybách?',
   'consent.intro':
-    'Když aplikace narazí na chybu, může o ní odeslat technický popis. Bez něj se o chybě nedozvíme a neopravíme ji.',
+    'Když aplikace narazí na chybu, může o ní odeslat technický popis. Bez něj se o chybě vývojáři nedozvědí a neopraví ji.',
   'consent.sends': 'Odesílá se: kde chyba nastala, jaká to byla chyba, chybový kód datové schránky, HTTP kód, verze aplikace a systému.',
   'consent.never': 'Neodesílá se nikdy: obsah zpráv, předměty, jména, ID schránek, přihlašovací údaje, přílohy ani text dokumentů.',
   'consent.where': 'Hlášení míří do služby Sentry na servery v EU. Čte je vývojář této aplikace.',
@@ -372,7 +371,7 @@ const cs: Record<string, string> = {
   'faq.explain': 'Co to znamená?',
   'messages.reauth.empty': 'Zprávy zatím nejsou k dispozici',
   'messages.reauth.empty.hint':
-    'Přihlaste se znovu výše a schránka se načte. Neznamená to, že je prázdná. Jen jsme se do ní zatím nedostali.',
+    'Přihlaste se znovu výše a schránka se načte. Neznamená to, že je prázdná. Jen se do ní aplikace zatím nedostala.',
   'messages.attention': 'Vyžaduje pozornost',
   // The group's subtitle, DERIVED from what the group actually holds (2026-09-09 critique). It used
   // to be one fixed legend printed under a number that mixes four different feeds, so the loudest
@@ -420,12 +419,12 @@ const cs: Record<string, string> = {
   // (Principle VI).
   'term.action': 'Připomínka',
   'term.title': 'Vaše připomínka',
-  'term.sub': 'Nastavujete si ji sami. Upozorníme vás den předem a v den připomínky.',
+  'term.sub': 'Nastavujete si ji sami. Aplikace vás upozorní den předem a v den připomínky.',
   // Near dates get fewer notifications, or none - see `reminderPromise`. Promising two anyway is the
   // easiest promise in the app to break: pick "dnes" after nine in the morning.
-  'term.sub.onDay': 'Nastavujete si ji sami. Upozorníme vás v den připomínky.',
+  'term.sub.onDay': 'Nastavujete si ji sami. Aplikace vás upozorní v den připomínky.',
   'term.sub.none':
-    'Nastavujete si ji sami. Datum si uložíme, upozornění už ale nestihneme poslat.',
+    'Nastavujete si ji sami. Datum se uloží, na upozornění už ale nezbývá čas.',
   // Notifications switched off (2026-09-24, 010 FR-006). The reminder still works as the chip and the
   // attention group, so the sheet says where it WILL show rather than promising an alert, and the
   // reminder row says the alert will not come and offers the one thing that changes that.
@@ -504,7 +503,7 @@ const cs: Record<string, string> = {
   // is two async reads away (the Keychain, then the target's manifests), and for that gap the screen
   // used to render the OFF copy - telling a user with backups enabled, in a full sentence, that
   // their archive was not backed up anywhere. A placeholder cannot be wrong; that sentence was.
-  'backup.loading': 'Zjišťuji stav zálohy…',
+  'backup.loading': 'Zjišťuje se stav zálohy…',
   // Says what the switch DOES - and there are two answers, because automatic backups can be turned
   // off. One sentence for both states is a sentence that is wrong in one of them.
   'backup.toggle.desc':
@@ -516,26 +515,26 @@ const cs: Record<string, string> = {
   //
   // It also used to end "a archiv už nebude jen v tomto telefonu", which was simply false: the
   // backup is written to this phone's own storage and dies with it - a `pm clear` empties the
-  // restore list. The app said the opposite two cards further down ('backup.where'). What IS true,
+  // restore list. The app said the opposite two cards further down (a `backup.where` line, gone 2026-11-15). What IS true,
   // now that 006 T014 exists, is that the user can take the backup off the phone themselves.
   'backup.toggle.desc.off':
     'Zašifrovaná záloha zpráv a nastavení. Uloží se do tohoto telefonu a odtud si ji můžete uložit i jinam.',
   // The Settings ROW does not know the user's settings and should not claim to: it says what the
   // section is, and the section itself says what state it is in.
   'backup.row.desc': 'Zašifrovaná záloha zpráv a nastavení v tomto telefonu.',
-  'backup.working': 'Pracuji…',
+  'backup.working': 'Probíhá…',
   // The progress line. `x z y` are real counts - messages read, rows written - never an estimate.
   'backup.stage.reading': 'Čtu zprávy',
-  'backup.stage.sealing': 'Šifruji zálohu',
-  'backup.stage.writing': 'Ukládám zálohu',
-  'backup.stage.fetching': 'Stahuji zálohu',
-  'backup.stage.opening': 'Dešifruji zálohu',
-  'backup.stage.restoring': 'Obnovuji záznamy',
-  'backup.stage.documents': 'Zálohuji přílohy',
-  'backup.stage.downloading': 'Stahuji chybějící přílohy',
+  'backup.stage.sealing': 'Šifrování zálohy',
+  'backup.stage.writing': 'Ukládání zálohy',
+  'backup.stage.fetching': 'Stahování zálohy',
+  'backup.stage.opening': 'Dešifrování zálohy',
+  'backup.stage.restoring': 'Obnova záznamů',
+  'backup.stage.documents': 'Zálohování příloh',
+  'backup.stage.downloading': 'Stahování chybějících příloh',
   // Obnova zapisuje přílohy zpět stejnou fází jako záloha, a řádek pod ní psal "Zálohuji přílohy"
   // (2026-09-24).
-  'backup.stage.documents.restore': 'Obnovuji přílohy',
+  'backup.stage.documents.restore': 'Obnova příloh',
   'backup.progress.count': '{done} z {total}',
   'backup.progress.percent': '{percent} %',
   'backup.leave.title': 'Záloha ještě běží',
@@ -575,13 +574,13 @@ const cs: Record<string, string> = {
     'Zprávy a jejich stav, koncepty, připomenutí, nastavení aplikace a stažené přílohy. Přihlašovací údaje v záloze nejsou - do schránky se po obnovení přihlásíte znovu.',
   'backup.docs.title': 'Zálohovat i přílohy',
   'backup.docs.desc.off':
-    'Záloha ví, že zpráva přílohu měla, ale soubor v ní není. Po obnovení na novém telefonu si přílohy stáhnete znovu - pokud je ISDS ještě má.',
+    'Bez nich záloha ví jen, že příloha byla. Po obnovení si ji stáhnete znovu, dokud ji ISDS má.',
   // Dva režimy příloh (026). Řádek pod přepínačem říká, který platí, a čím se od druhého liší.
   'backup.docs.desc.on.downloaded':
     'Zálohují se přílohy stažené v telefonu. Každý soubor se uloží jen jednou, takže další zálohy jsou menší.',
   'backup.docs.desc.on.all':
     'Chybějící přílohy se stáhnou při zálohování a při aktualizaci schránky.',
-  'backup.docs.measuring': 'Počítám velikost příloh…',
+  'backup.docs.measuring': 'Počítá se velikost příloh…',
   'backup.docs.which': 'Které přílohy',
   'backup.docs.change': 'Změnit',
   'backup.docs.ask.title': 'Zálohovat i přílohy?',
@@ -618,15 +617,10 @@ const cs: Record<string, string> = {
   'backup.count.files.one': '1 soubor',
   'backup.count.files.few': '{n} soubory',
   'backup.count.files.many': '{n} souborů',
-  'backup.auto':
-    'Záloha se vytvoří po každé aktualizaci schránky, chvíli po ní. Tlačítkem výše ji vytvoříte hned.',
-  'backup.auto.off':
-    'Automatické zálohování je vypnuté. Zálohu vytvoříte tlačítkem výše; zapnout ho můžete v Pokročilé.',
-  'backup.where': 'Záloha se ukládá do tohoto telefonu. Uložení do cloudu zatím není hotové.',
   'backup.how': 'Jak je záloha zašifrovaná',
   'backup.key': 'Heslo k záloze',
   'backup.key.desc':
-    'Bez tohoto hesla zálohu nikdo neotevře, ani my. Uschovejte si ho mimo telefon.',
+    'Bez tohoto hesla zálohu nikdo neotevře, ani vývojáři aplikace. Uschovejte si ho mimo telefon.',
   'backup.key.show': 'Zobrazit heslo',
   'backup.key.hide': 'Skrýt heslo',
   'backup.key.qr': 'Zobrazit QR kód',
@@ -693,7 +687,7 @@ const cs: Record<string, string> = {
   'backup.file.importFailed': 'Soubor se nepodařilo načíst.',
   // T013. "Ověřit" is the promise; the count is what makes it checkable.
   'backup.verify': 'Ověřit zálohu',
-  'backup.verify.busy': 'Ověřuji zálohu…',
+  'backup.verify.busy': 'Ověřování zálohy…',
   // Počty ve tvaru, který číslo žádá (2026-09-24): pevná věta s holými čísly četla "1 schránky, 1
   // zpráv".
   'backup.verify.ok': 'Záloha je v pořádku: {boxes}, {messages}.',
@@ -771,7 +765,7 @@ const cs: Record<string, string> = {
   'transfer.count.documents.one': '1 příloha',
   'transfer.count.documents.few': '{n} přílohy',
   'transfer.count.documents.many': '{n} příloh',
-  'transfer.phrase.waiting': 'Čekám na druhý telefon…',
+  'transfer.phrase.waiting': 'Čeká se na druhý telefon…',
   // Jak heslo opsat (025 T027): nebylo jasné, jestli se píšou pomlčky, a jestli s mezerami kolem.
   'transfer.phrase.hint':
     'Na oddělovačích ani velikosti písmen nezáleží: slova stačí oddělit mezerou.',
@@ -795,23 +789,23 @@ const cs: Record<string, string> = {
   'transfer.cancel': 'Zrušit přenos',
   // Před heslem, ne po něm. Chvíli to trvá (na archivu s přílohami desítky sekund) a druhý telefon
   // zatím nemá co zadat - říct v tu chvíli "čekám na druhý telefon" je nepravda.
-  'transfer.stage.preparing': 'Připravuji odeslání…',
-  'transfer.stage.preparing.count': 'Připravuji přílohy: {done} z {total}',
-  'transfer.stage.connecting': 'Navazuji spojení…',
+  'transfer.stage.preparing': 'Příprava odeslání…',
+  'transfer.stage.preparing.count': 'Příprava příloh: {done} z {total}',
+  'transfer.stage.connecting': 'Navazování spojení…',
   'transfer.stage.received': 'Přijato',
   // Výzva systému k zámku obrazovky, když se ukládá heslo k záloze, které přišlo s přenosem.
   'transfer.prompt.keepKey': 'Převzít heslo k záloze z druhého telefonu',
-  'transfer.stage.transferring': 'Přenáším',
-  'transfer.stage.finishing': 'Dokončuji',
+  'transfer.stage.transferring': 'Přenos',
+  'transfer.stage.finishing': 'Dokončování',
   // Ukládání toho, co přišlo, už není přenos: nic nejde po síti, jen se zapisuje do archivu. Zrušit ho
   // nejde - zprávy se uloží najednou a přílohy až po nich, takže zastavení v půlce by nechalo zprávy
   // bez příloh (FR-012). Věta pod pruhem říká proč, místo tlačítka, které by nic neudělalo.
-  'transfer.stage.applying': 'Ukládám do archivu tohoto telefonu…',
+  'transfer.stage.applying': 'Ukládání do archivu tohoto telefonu…',
   'transfer.applying.note':
     'Ukládání do archivu už nejde přerušit, aby v něm nic nezůstalo napůl. Nechte aplikaci otevřenou, dokud neskončí.',
   // FR-007. Kde přenos běží, řečeno v průběhu - a co o něm relay ví. Tři stavy, protože dokud není
   // spojení navázané, je jediná pravdivá odpověď "zatím nevím".
-  'transfer.route.unknown': 'Zjišťuji, kudy přenos půjde…',
+  'transfer.route.unknown': 'Zjišťuje se, kudy přenos půjde…',
   'transfer.route.direct': 'Přenos jde přímo mezi telefony. Nikam jinam se data nedostanou.',
   // Server jménem, ne popisem (US3): {host} a {host6} jsou výchozí servery crocu, viz TRANSFER_RELAY.
   'transfer.route.relayed':
@@ -861,7 +855,7 @@ const cs: Record<string, string> = {
   // …and the card the scan produces. `scan.found` is phrased as an OFFER, never as a statement of
   // fact: everything else on the detail screen is something ISDS asserted, this is the one line the
   // app inferred, and the wording has to carry that difference on its own.
-  'scan.running': 'Hledám v příloze termín…',
+  'scan.running': 'Hledání termínu v příloze…',
   'scan.found': 'Nalezený termín: {d}',
   'scan.from': '„{q}“ · {f}',
   'scan.disclaimer':
@@ -923,7 +917,7 @@ const cs: Record<string, string> = {
   'licences.appSpdx': 'Licence MIT',
   'licences.copyright': '© 2026 Přispěvatelé projektu Obálka',
   'licences.searchPlaceholder': 'Hledat komponentu nebo licenci',
-  'licences.noResults': 'Nic odpovídajícího jsme nenašli.',
+  'licences.noResults': 'Nic odpovídajícího se nenašlo.',
   'licences.bundled': 'Vestavěné komponenty',
   'licences.bundled.desc':
     'Písma a nativní knihovny zabudované přímo do aplikace.',
@@ -1027,12 +1021,12 @@ const en: Record<string, string> = {
   'login.environment.help.recommend': 'For normal use choose',
   'login.env.production': 'Production',
   'login.env.czebox': 'Test',
-  'login.loginName': 'Login name',
+  'login.loginName': 'Username',
   'login.password': 'Password',
   'login.password.show': 'Show password',
   'login.password.hide': 'Hide password',
   'login.alias': 'Box name (optional)',
-  'login.alias.placeholder': 'e.g. My person, sole trader…',
+  'login.alias.placeholder': 'e.g. Personal, Business…',
   'alias.title': 'Box name',
   'alias.renameTitle': 'Edit box',
   'alias.name': 'Your name for it',
@@ -1080,7 +1074,7 @@ const en: Record<string, string> = {
   'login.submit': 'Sign in',
   'login.cancel': 'Cancel',
   'login.authenticating': 'Signing in…',
-  'login.otp.notice.smsSent': 'We sent you a one-time code by SMS.',
+  'login.otp.notice.smsSent': 'ISDS sent you a one-time code by SMS.',
   'login.otp.notice.smsSending': 'Asking for a one-time code…',
   'login.otp.stillSending': 'The code is still being sent',
   'login.otp.verify': 'Verification',
@@ -1093,7 +1087,6 @@ const en: Record<string, string> = {
   'login.otpSuggest.sub':
     'Check the name and password. If the password has expired, change it in the ISDS portal. If the box also requires an SMS code, sign in with the SMS code. Repeated attempts can get the access blocked.',
   'login.otpSuggest.btn': 'Sign in with SMS code',
-  'login.loginName.placeholder': 'Username',
   'login.creds.title': 'Sign in',
   'login.method.label.password': 'Sign in with password',
   'login.method.label.otp_totp': 'Sign in with SMS code',
@@ -1112,7 +1105,7 @@ const en: Record<string, string> = {
   'box.testEnv': 'Test',
   'testEnv.banner': 'Test environment',
   'box.idLabel': 'Box ID',
-  'box.loginLabel': 'Login name',
+  'box.loginLabel': 'Username',
   'box.remove': 'Remove',
   'box.menu': 'Box options',
   'box.rename': 'Edit box',
@@ -1210,15 +1203,15 @@ const en: Record<string, string> = {
   'settings.diagnostics': 'DIAGNOSTICS',
   'settings.telemetry.title': 'Send error reports',
   'settings.telemetry.desc':
-    'On. When the app hits an error we send a technical description: where it happened, what kind of error it was, and what the data box answered. Never message contents, names, box IDs or attachments.',
+    'On. When the app hits an error it sends a technical description: where it happened, what kind of error it was, and what the data box answered. Never message contents, names, box IDs or attachments.',
   'settings.telemetry.desc.off':
-    'Off. Nothing is sent. Turned on, we send a technical description of an error: never message contents, names, box IDs or attachments.',
+    'Off. Nothing is sent. Turned on, the app sends a technical description of an error: never message contents, names, box IDs or attachments.',
 
   // 023 - see the Czech block for why this sits here.
   // See the Czech block.
-  'consent.title': 'May we send error reports?',
+  'consent.title': 'May the app send error reports?',
   'consent.intro':
-    'When the app hits an error it can send a technical description of it. Without that we do not find out, and it does not get fixed.',
+    'When the app hits an error it can send a technical description of it. Without that the developers do not find out, and it does not get fixed.',
   'consent.sends': 'Sent: where the error happened, what kind it was, the data box error code, the HTTP code, and the app and system versions.',
   'consent.never': 'Never sent: message contents, subjects, names, box IDs, sign-in details, attachments or document text.',
   'consent.where': 'Reports go to Sentry, on servers in the EU. They are read by the developer of this app.',
@@ -1273,7 +1266,7 @@ const en: Record<string, string> = {
   'faq.explain': 'What does this mean?',
   'messages.reauth.empty': 'Messages are not available yet',
   'messages.reauth.empty.hint':
-    'Sign in again above and this box will load. It does not mean the box is empty. We have not been able to look.',
+    'Sign in again above and this box will load. It does not mean the box is empty. The app has not been able to look yet.',
   'messages.attention': 'Needs attention',
   'attn.overdue.one': '{n} past reminder',
   'attn.overdue.other': '{n} past reminders',
@@ -1300,10 +1293,10 @@ const en: Record<string, string> = {
   'notif.passwordAsk.later': 'Not now',
   'term.action': 'Reminder',
   'term.title': 'Your reminder',
-  'term.sub': 'You set it yourself. We will tell you the day before and on the day.',
-  'term.sub.onDay': 'You set it yourself. We will tell you on the day.',
+  'term.sub': 'You set it yourself. The app will remind you the day before and on the day.',
+  'term.sub.onDay': 'You set it yourself. The app will remind you on the day.',
   'term.sub.none':
-    'You set it yourself. We will save the date, but there is no time left to notify you.',
+    'You set it yourself. The date is saved, but there is no time left to notify you.',
   'term.sub.silent':
     'You set it yourself. Notifications are off, so you will only see it in the app.',
   'term.alertsOff': 'Notifications are off, so this reminder will not alert you.',
@@ -1404,7 +1397,7 @@ const en: Record<string, string> = {
     'Your messages and their status, drafts, reminders, app settings and your downloaded documents. Sign-in details are not in it - you sign in to the data box again after restoring.',
   'backup.docs.title': 'Back up documents too',
   'backup.docs.desc.off':
-    'The backup knows a message had an attachment, but the file itself is not in it. On a new phone you download the documents again - if ISDS still has them.',
+    'Without them the backup only knows a document was there. After a restore you download it again, while ISDS still has it.',
   'backup.docs.desc.on.downloaded':
     'The documents downloaded to this phone are backed up. Each file is stored once, so later backups are smaller.',
   'backup.docs.desc.on.all':
@@ -1438,15 +1431,10 @@ const en: Record<string, string> = {
   'backup.docs.missing.other': 'documents missing for {n} messages',
   'backup.count.files.one': '1 file',
   'backup.count.files.other': '{n} files',
-  'backup.auto':
-    'A backup is made shortly after every refresh of the box. The button above makes one right now.',
-  'backup.auto.off':
-    'Automatic backups are off. Use the button above to make one; you can switch them back on under Advanced.',
-  'backup.where': 'Backups are saved on this phone. Saving to the cloud is not built yet.',
   'backup.how': 'How the backup is encrypted',
   'backup.key': 'Backup password',
   'backup.key.desc':
-    'Without this password nobody can open the backup, including us. Keep a copy off the phone.',
+    'Without this password nobody can open the backup, not even the app’s developers. Keep a copy off the phone.',
   'backup.key.show': 'Show password',
   'backup.key.hide': 'Hide password',
   'backup.key.qr': 'Show QR code',

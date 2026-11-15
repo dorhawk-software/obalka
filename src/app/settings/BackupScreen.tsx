@@ -1694,16 +1694,8 @@ export function BackupScreen({
               ) : null}
             </Card>
           ) : null}
-          {loading ? null : (
-            <YStack paddingHorizontal={space.xs} marginTop={space.hair} gap={space.base}>
-              {/* Only while backups are on: both sentences point at controls that are not on screen
-                  otherwise. */}
-              {enabled ? (
-                <Caption color={theme.textMuted}>{t(prefs.automatic ? 'backup.auto' : 'backup.auto.off')}</Caption>
-              ) : null}
-              <Caption color={theme.textMuted}>{t('backup.where')}</Caption>
-            </YStack>
-          )}
+          {/* No paragraph here: "made after every refresh" and "saved on this phone" are what the
+              card's own line says in each of its states; their repeat went (the owner, 2026-11-15). */}
           {/* The algorithms, the parameters and what losing the password costs, one tap away: a
               settings row is not the place for a cipher name, but the full account has to exist. */}
           <XStack

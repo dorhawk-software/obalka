@@ -94,7 +94,8 @@ describe('BackupScreen', () => {
     const view = await mount(fakeController());
     // FR-008: attachments and sign-in details are named, on the same screen as the switch.
     expect(view.getByText(t('backup.scope.desc'))).toBeTruthy();
-    expect(view.getByText(t('backup.where'))).toBeTruthy();
+    // Where it is written, in the card's own line (the separate sentence repeated it, 2026-11-15).
+    expect(view.getByText(t('backup.toggle.desc.off'))).toBeTruthy();
     expect(view.getByTestId('backup-none')).toBeTruthy();
   });
 

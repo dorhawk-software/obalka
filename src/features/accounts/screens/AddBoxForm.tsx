@@ -286,7 +286,6 @@ export function AddBoxForm({
                 autoComplete="username"
                 value={loginName}
                 onChangeText={setLoginName}
-                placeholder={t('login.loginName.placeholder')}
                 accessibilityLabel={t('login.loginName')}
                 testID="loginName"
               />

@@ -15,7 +15,7 @@ export const cs: Record<string, string> = {
   'send.recipient': 'Příjemce',
   'send.recipient.search': 'Hledat příjemce (název nebo ID schránky)',
   'send.recipient.search.short': 'Jméno nebo ID schránky',
-  'send.recipient.searching': 'Vyhledávám…',
+  'send.recipient.searching': 'Vyhledávání…',
   'send.recipient.none': 'Žádný příjemce nenalezen',
   'send.recipient.hint':
     'Začněte zadáním příjemce: jeho jméno nebo ID schránky. Po výběru doplníte předmět, text zprávy a případně přílohy.',
@@ -48,7 +48,7 @@ export const cs: Record<string, string> = {
   'send.subject.placeholder': 'Předmět zprávy',
   'send.body': 'Text zprávy',
   'send.body.placeholder': 'Napište zprávu…',
-  'send.body.hint': 'Z textu vytvoříme přílohu „Textová zpráva.pdf".',
+  'send.body.hint': 'Z textu vznikne příloha „Textová zpráva.pdf".',
   // The letter the text becomes (R12): the box ID under each name, and the foot line.
   'send.letter.boxId': 'ID datové schránky {id}',
   'send.letter.footer': 'Odesláno datovou zprávou z aplikace Obálka',
@@ -62,7 +62,7 @@ export const cs: Record<string, string> = {
   'send.attachments.cancel': 'Zrušit načítání',
   // Refused before a byte is read. No advice to remove an attachment: there may not be one yet.
   'send.attachments.tooLarge':
-    'S tímto výběrem by zpráva měla {size}, datová zpráva ale smí mít nejvýš {limit}. Nic jsme nepřidali, vyberte prosím menší soubory.',
+    'S tímto výběrem by zpráva měla {size}, datová zpráva ale smí mít nejvýš {limit}. Nic se nepřidalo, vyberte prosím menší soubory.',
   'send.send': 'Odeslat',
   'send.sending': 'Odesílání…',
   'send.confirm.title': 'Odeslat placenou zprávu?',
@@ -142,7 +142,7 @@ export const en: Record<string, string> = {
   'send.body': 'Message text',
   'send.body.placeholder': 'Write a message…',
   'send.body.hint':
-    'We’ll turn the text into a “Textová zpráva.pdf” attachment.',
+    'The text becomes a “Textová zpráva.pdf” attachment.',
   'send.letter.boxId': 'Data box ID {id}',
   'send.letter.footer': 'Sent as a data message from the Obálka app',
   'send.attachments': 'Attachments',

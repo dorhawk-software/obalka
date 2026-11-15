@@ -124,7 +124,7 @@ describe('the resend link in the sign-in flow', () => {
     await fireEvent.changeText(view.getByTestId('password'), 'secret');
     await fireEvent.press(view.getByTestId('submit'));
     await waitFor(() =>
-      expect(view.getByTestId('otpNotice')).toHaveTextContent(/poslali v SMS/),
+      expect(view.getByTestId('otpNotice')).toHaveTextContent(/poslalo jednorázový kód v SMS/),
     );
     expect(view.getByTestId('otpResend')).toBeEnabled();
 
@@ -133,7 +133,7 @@ describe('the resend link in the sign-in flow', () => {
     // While ISDS has not answered, the link is there but cannot be pressed again.
     await waitFor(() => expect(view.getByTestId('otpResend')).toBeDisabled());
     // And the screen says it is asking - not that a code was sent, nor that one is being checked.
-    expect(view.getByTestId('otpNotice')).toHaveTextContent(/Žádáme o jednorázový kód/);
+    expect(view.getByTestId('otpNotice')).toHaveTextContent(/Žádost o jednorázový kód/);
 
     await act(async () => {
       answerResend({ kind: 'needsOtpSms' });

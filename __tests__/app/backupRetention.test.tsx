@@ -99,15 +99,12 @@ describe('what the switch claims', () => {
     expect(view.getByText(t('backup.toggle.desc.off'))).toBeTruthy();
     expect(view.queryByText(t('backup.toggle.desc'))).toBeNull();
     expect(view.queryByText(t('backup.toggle.desc.manual'))).toBeNull();
-    expect(view.queryByText(t('backup.auto'))).toBeNull();
-    expect(view.queryByText(t('backup.auto.off'))).toBeNull();
     // …and the sentence that was pointing at it is gone precisely because the button is.
     expect(view.queryByTestId('backup-now')).toBeNull();
 
     // What DOES stay is the scope: what a backup holds is what someone deciding to switch it on
     // needs to read (FR-008).
     expect(view.getByText(t('backup.scope.desc'))).toBeTruthy();
-    expect(view.getByText(t('backup.where'))).toBeTruthy();
   });
 
   it('stops promising automatic backups once they are turned off', async () => {
@@ -130,8 +127,6 @@ describe('what the switch claims', () => {
       expect(view.getByText(t('backup.toggle.desc.manual'))).toBeTruthy(),
     );
     expect(view.queryByText(t('backup.toggle.desc'))).toBeNull();
-    expect(view.getByText(t('backup.auto.off'))).toBeTruthy();
-    expect(view.queryByText(t('backup.auto'))).toBeNull();
   });
 });
 
