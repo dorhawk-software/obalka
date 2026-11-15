@@ -115,8 +115,7 @@ const cs: Record<string, string> = {
   'login.cancel': 'Zrušit',
   'login.authenticating': 'Přihlašování…',
   'login.otp.notice.smsSent': 'Jednorázový kód jsme vám poslali v SMS.',
-  // Shown while the request is still in flight - the code screen now opens before ISDS answers, so
-  // it must not say the SMS is on its way until it is.
+  // While the request is in flight: the code screen opens before ISDS answers, so no "it is on its way".
   'login.otp.notice.smsSending': 'Žádáme o jednorázový kód…',
   'login.otp.stillSending': 'Kód ještě odesíláme',
   'login.otp.verify': 'Ověření',
@@ -203,8 +202,7 @@ const cs: Record<string, string> = {
   'box.credit': 'Kredit: {czk} Kč',
   'box.sync.failed': 'Synchronizace se nezdařila.',
   'box.sync.retry': 'Zkusit znovu',
-  // 001 T041 - the password's own expiry, which is NOT the session's. The app cannot change an ISDS
-  // password, so the copy points at the portal instead of offering a button it cannot honour.
+  // 001 T041 - the password's own expiry, which is NOT the session's (the portal's way; 030 US2 adds ours).
   'pwd.expired': 'Platnost hesla vypršela.',
   'pwd.today': 'Platnost hesla končí dnes.',
   // `{d}` is `formatTermDate`, which is "11. 9." - the date ends the sentence itself. A period
@@ -640,6 +638,7 @@ const cs: Record<string, string> = {
   'backup.prompt.enable': 'Uložit heslo k záloze',
   'backup.prompt.backup': 'Zálohovat archiv',
   'backup.advanced': 'Pokročilé',
+  'backup.advanced.holds': 'Automatické zálohování a počet záloh',
   'backup.keep.title': 'Uchovávat více záloh',
   'backup.keep.desc':
     'Ve výchozím stavu se uchovává jen poslední záloha. Každá další je celá kopie archivu. Se zapnutou volbou se drží několik posledních a nejstarší se maže.',
@@ -1457,6 +1456,7 @@ const en: Record<string, string> = {
   'backup.prompt.enable': 'Save the backup password',
   'backup.prompt.backup': 'Back up the archive',
   'backup.advanced': 'Advanced',
+  'backup.advanced.holds': 'Automatic backups and how many are kept',
   'backup.keep.title': 'Keep more than one backup',
   'backup.keep.desc':
     'By default only the newest backup is kept. Every extra one is a whole copy of the archive. With this on, the last few are kept and the oldest is deleted.',

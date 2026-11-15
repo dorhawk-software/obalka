@@ -675,7 +675,13 @@ surface below changes too, and the owner has seen none of them in the identity. 
 - [x] I79 Hero glyphs at 132 (Mail, Send, Search, CloudOff, stroke 1.25) - **X**: R4. Fixed 2026-11-13:
   every one is a pose; `HeroIcon`, the hero tier, `heroInk` and the unused `EmptyState` are deleted.
 - [x] I80 `BrandHeader.tsx`, imported nowhere, with a stale TODO - **D**: delete. Deleted 2026-11-15.
-- [ ] I81 Every touched screen walked in English (the longest Czech strings are on the boards).
+- [x] I81 Every touched screen walked in English (the longest Czech strings are on the boards).
+  **M**, walked 2026-11-15 on Obalka_Demo in light: the inbox, Sent, a received and a sent message,
+  the reminder sheet, search with results, Settings top to bottom, Backup (shut, Advanced open, an
+  opened backup, the keep-count question), Transfer, Debug, the FAQ, Licences, What's new, Add a box
+  with its three sign-in forms and the environment. Nothing clipped or cut: the one ellipsis is a
+  licence name on its designed single line; the sent detail's "č. j." parting across a line is the
+  open I82 note. The dialogs were walked in both languages with I84-I105, the lock with T034.
 
 ### Typesetting (found while drawing round 1)
 
@@ -726,7 +732,7 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 
 - [x] I106 `Toggle` (48 x 28, disabled .6, not animated). Matches R13 2026-11-13: the off track `hs`
   (#DCD2BF / #4A4236) with its inset ring; inside a dimmed row it takes the row's .55 alone (`rowDims`).
-- [ ] I107 `SegmentedControl` (height 34, 200 ms slide, the unseen dot) - inbox board shows it on blue;
+- [x] I107 `SegmentedControl` (height 34, 200 ms slide, the unseen dot) - inbox board shows it on blue;
   the backup and sign-in uses are on paper. Seen 2026-11-13: on a cold start the selected tab's fill
   draws a frame after the labels (it waits for the first layout); the FAB's stamp the same (I28).
   2026-11-15: the words were in Roboto (a weight and no face); they are the `smallStrong` role,
@@ -734,7 +740,11 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   role). Held by `SegmentedControl.test`, red before. Walked on the inbox and the add-box form.
   The cold start's late fill, fixed the same day: until the track is measured the selected tab
   carries the fill itself (`SegmentedControl.test`, red before); the recording's first inbox frame
-  has it. Open: the backup's keep-count use, walked with I45.3.
+  has it. Open: the backup's keep-count use, walked with I45.3. **M** 2026-11-15: walked, 2-5 on the
+  sunken track with the white thumb, as the add-box form's, light and dark. The walk found its row
+  saying "Pokročilé" under the overline "POKROČILÉ"; it says what it folds away now ("Automatické
+  zálohování a počet záloh"), its chevron right shut and down open as R10 opens a backup
+  (`backupRetention.test`, red before).
 - [x] I108 `OptionGroup` radios (check 140 ms). Matches R13 2026-11-13: one card, rows 52, a 22 ring
   (2, `hs`), picked a blue ring with a 12 blue dot growing in over 140 ms; no tint.
 - [ ] I109 Buttons: primary, outline, link, danger; busy and blocked (warning haptic, shake).

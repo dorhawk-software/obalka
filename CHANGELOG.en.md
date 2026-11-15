@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The backup's advanced options say what they hold.** The row under the Advanced heading no
+  longer repeats it: it names automatic backups and how many are kept.
 - **A sent message's fiction countdown carries the envelope with a clock.** The same mark received
   messages show for fiction, in place of a stopwatch.
 - **The app icon has a dark and a tinted look.** On iPhone dark mode shows the blue envelope with its

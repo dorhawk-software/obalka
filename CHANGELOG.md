@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Pokročilé volby zálohy říkají, co skrývají.** Řádek pod nadpisem Pokročilé už jen neopakuje
+  nadpis: zve k automatickému zálohování a počtu záloh.
 - **Odpočet fikce u odeslané zprávy má obálku s hodinami.** Stejnou značku, jakou fikci ukazují
   přijaté zprávy, místo stopek.
 - **Ikona aplikace má tmavou a tónovanou podobu.** Na iPhonu se v tmavém režimu ukáže modrá obálka se

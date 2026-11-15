@@ -1804,10 +1804,10 @@ export function BackupScreen({
               <CardRow
                 last={!advanced}
                 onPress={() => setAdvanced(v => !v)}
-                accessibilityLabel={t('backup.advanced')}
+                accessibilityLabel={t('backup.advanced.holds')}
                 testID="backup-advanced-toggle"
               >
-                <RowTitle flex={1}>{t('backup.advanced')}</RowTitle>
+                <RowTitle flex={1}>{t('backup.advanced.holds')}</RowTitle>
                 {advanced ? (
                   <ChevronDownIcon size={18} color={theme.textMuted} />
                 ) : (

@@ -33,6 +33,14 @@ describe('the advanced options', () => {
     expect(view.getByTestId('backup-keep-toggle')).toBeTruthy();
   });
 
+  // Walked 2026-11-15 (031 I107): the row repeated its overline, "POKROČILÉ" over "Pokročilé". It
+  // says what it folds away now.
+  it('names what it folds away, under the overline that names the group', async () => {
+    const view = await mount(enabled());
+    expect(view.getAllByText(t('backup.advanced'))).toHaveLength(1);
+    expect(view.getByText(t('backup.advanced.holds'))).toBeTruthy();
+  });
+
   it('hides the how-many picker until keeping more than one is on', async () => {
     const fake = enabled();
     const view = await mount(fake);
