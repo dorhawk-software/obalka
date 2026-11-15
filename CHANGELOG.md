@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Co je nového se čte jako text.** Každá změna je jeden odstavec s tučnou první větou, seřazené podle
+  druhu, a spodní okna mají větší nadpis a víc místa po stranách.
 - **Licence se čtou snáz.** Každá licence má na přehledu jeden řádek s počtem komponent, každá
   komponenta otevře text své licence i se svým copyrightem a text plyne v odstavcích.
 - **Režim ladění je uspořádanější.** Probíhající záznam má vlastní kartu s počtem záznamů a oběma

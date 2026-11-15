@@ -13,6 +13,7 @@ import { BodyStrong, Heading, Label, Meta } from '../../../theme/Typography';
 import { Button, XStack, YStack } from '../../../theme/ui';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { BottomSheet } from '../../../theme/BottomSheet';
+import { space } from '../../../theme/spacing';
 import { touchSlop } from '../../../theme/touchTarget';
 import { chipTone } from '../../../theme/chipTone';
 import { CheckIcon } from '../../../theme/icons';
@@ -99,7 +100,9 @@ export function TermPicker({
 
   return (
     <BottomSheet onClose={onClose}>
-      <YStack paddingHorizontal={6} paddingBottom={4}>
+      {/* The sheet's own header, 16 under the grabber as R9 sets every sheet's title (I53); its well
+          and the title role come with the picker's own redraw (I57). */}
+      <YStack marginTop={space.inset} paddingBottom={4}>
         <Heading>{t('term.title')}</Heading>
         {/* Says whose date this is. The app does not compute legal deadlines, and the
             picker must not be read as if it did (Principle VI). */}

@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **What's new reads as text.** Each change is one paragraph with its first sentence in bold, grouped
+  by kind, and the sheets from the bottom have a larger title and more room at the sides.
 - **Licences are easier to read.** Each licence is one row with its count of components, every
   component opens its licence's text with its own copyright notice, and the text flows in paragraphs.
 - **Debug mode is tidier.** A running recording has a card of its own with the count and both

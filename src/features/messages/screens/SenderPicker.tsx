@@ -12,6 +12,7 @@ import { Body, Label, Meta, SmallStrong, Value } from '../../../theme/Typography
 import { Avatar } from '../../../theme/Avatar';
 import { ChevronDownIcon } from '../../../theme/icons';
 import { BottomSheet } from '../../../theme/BottomSheet';
+import { space } from '../../../theme/spacing';
 import { DashedOutline } from '../../../theme/DashedOutline';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -149,8 +150,10 @@ export function SenderSheet({
   useCloseOnBackground(onClose);
   return (
     <BottomSheet onClose={onClose} title={t('send.from.sheet')} testID="senderSheet">
+      {/* R9: the card 14 under the title. */}
       <Card
         overflow="hidden"
+        marginTop={space.xl}
       >
         {accounts.map((account, i) => {
           const blocked = needsSignIn(account.syncError);

@@ -333,7 +333,13 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   with its name over version and licence, the text flowed (the owner, 2026-11-15; spec 012 amended)
   with its copyright under the licence's title; no results as the glyph in a 96 disc and one sentence.
   Walked light against the four R13 phones, dark (no dark board) and in English.
-- [ ] I49 What's new sheet and Changelog - **D**: the sheet (I53). R9.
+- [x] I49 What's new sheet and Changelog - **D**: the sheet (I53). R9. Built 2026-11-15: the title in
+  the title role, since which version and how many changes as the sheet's muted line, each kind an
+  overline over a list, each change one paragraph - its sentence in the bold small role in ink, the
+  rest in body text - behind a faint 5 dot held to its first line; no cards. Pokračovat is the filled
+  52 button (it was the 48 ContinueButton), pinned. The Changelog screen shares the list (no board
+  draws it). Rounding: the 22 above Pokračovat is 24. Walked light and dark, Czech and English, forced
+  from "seen 1.0.0" against R9's phone (its 5 changes; the real 1.1.0 has 6).
 - [ ] I50 Lock screen (brand tile 104, lock glyph, unlock, failure slot, reset link) - **D**: board
   "Lock - sealed" (tint, sealed envelope, wax seal).
 - [ ] I51 QR code scanner (viewfinder, hint, cancel; camera denied; no camera) - **N**.
@@ -348,8 +354,15 @@ surface below changes too, and the owner has seen none of them in the identity. 
 - [ ] I52 `Dialog`, the anatomy (scrim .45, card max 420, radius 20, scrolling, actions in a row or
   stacked above two, primary / danger / neutral, icon) - **D**: the sheet weight from Cards B; its fade
   ignores Reduce Motion (I73). R9. Each use is a line, I84-I105.
-- [ ] I53 `BottomSheet` (Language, What's new, Term picker, Sender) - **D**: the grabber, the sheet's
-  surface and shadow from Cards B. R9.
+- [x] I53 `BottomSheet` (Language, What's new, Term picker, Sender) - **D**: the grabber, the sheet's
+  surface and shadow from Cards B. R9. Built 2026-11-15: 10 above and 24 at the sides (it was 14), the
+  grabber alone at the top, the title in the title role 16 under it (it was Bricolage 16/700), an
+  optional muted line 6 under that; each sheet's content brings its own distance (a card 14 under the
+  title). Found on the device: the scrolling content clipped a card's resting shadow below and beside
+  it; the scroll view now reaches 8 past the sides and 16 below and pads them back (a guard test,
+  proven to fail without it). The Term picker keeps its own header, 16 under the grabber, until I57.
+  Seen once in English dark, not again in seven launches: the sheet's slide-in stopped part-way, with
+  Pokračovat below the screen (T050).
 - [x] I54 Box switcher sheet, `BoxRow`, `UnifiedRow` - **D** (avatar, Schránky glyph). R5 shows it. Fixed
   2026-11-13: envelope tiles at 40, the merged entry's fanned tile (no summed badge), the check in gold
   ink, the add row filled (sunken, 52, radius 12), the offset settings glyph. Kept against the board,
@@ -359,7 +372,10 @@ surface below changes too, and the owner has seen none of them in the identity. 
 - [ ] I56 `AliasEditor` (avatar preview, colour swatches) - **D** (avatar). R9.
 - [ ] I57 `TermPicker` - **D** (icons: Připomínka). R9.
 - [ ] I58 Sender sheet - **D** (avatar). R9.
-- [ ] I59 Language sheet - **D**: the sheet (I53). R9.
+- [x] I59 Language sheet - **D**: the sheet (I53). R9. Built 2026-11-15 with I53: the card 14 under
+  the title. R9 draws its rows at 56; they are the Settings language rows (`OptionGroup`), which R13
+  draws at 52, so one control keeps one height (constitution V): 52, for the canvas's sync-back.
+  Walked light and English through a temporary swap (Welcome opens it; the demo has boxes).
 
 ### Transient surfaces
 
@@ -812,8 +828,12 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   fits one line (Android draws Public Sans about 2 % wider); the strip's height is held, so it moves
   nothing.
   Raised in I48: R13 sets a licence's text in monospace 12/18; the type scale has no monospaced role and
-  the rule is no new roles, so it is the Meta role in Public Sans (12/16). A monospaced role is the
-  owner's to add (DESIGN.md and the theme) if the board's look is wanted.
+  the rule is no new roles, so it is the Meta role in Public Sans (12/16). Decided by the owner
+  (2026-11-15): "public sans at meta size is ok" - kept; the canvas's text to follow (sync-back).
+  Raised in I53: once, in English dark right after a language change, What's new's slide-in stopped
+  part-way and stayed there, Pokračovat under the screen's edge (the sheet laid out at full height,
+  drawn 980 px lower). Not seen again in seven launches; Reanimated's entering animation on the
+  Modal is the suspect.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
@@ -868,6 +888,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R13 Licence: the third-party card ends after the MIT row and one component; built as one row per
     licence (the owner, 2026-11-15). The app's card is a button opening the whole text (not drawn).
     The licence texts flow and carry the component's notice (spec 012 amended the same day).
+    The text is Public Sans at the Meta size, not monospace (the owner, 2026-11-15).
+  - R9 Language: rows at 56; the same `OptionGroup` rows are 52 on R13 and in the build.
+  - R9 What's new: 22 above Pokračovat; the build's scale step is 24.
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).

@@ -6,7 +6,9 @@
 // whole app at once and closes the sheet; picking the current one only closes it.
 
 import { useCallback } from 'react';
+import { YStack } from '../../theme/ui';
 import { BottomSheet } from '../../theme/BottomSheet';
+import { space } from '../../theme/spacing';
 import { t } from '../../i18n/strings';
 import { useCloseOnBackground } from '../useCloseOnBackground';
 import { useSettings } from './SettingsProvider';
@@ -17,7 +19,9 @@ export function LanguageSheet({ onClose }: { readonly onClose: () => void }) {
   useCloseOnBackground(useCallback(() => onClose(), [onClose]));
   return (
     <BottomSheet onClose={onClose} title={t('settings.language')} testID="language-sheet">
-      <LanguageChoice
+      {/* R9: the card 14 under the title. */}
+      <YStack marginTop={space.xl}>
+        <LanguageChoice
         value={locale}
         // The row ticks its own selection haptic (OptionGroup), so none is added here.
         onChange={next => {
@@ -26,7 +30,8 @@ export function LanguageSheet({ onClose }: { readonly onClose: () => void }) {
           }
           onClose();
         }}
-      />
+        />
+      </YStack>
     </BottomSheet>
   );
 }
