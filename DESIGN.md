@@ -677,9 +677,10 @@ moves without being asked.
 
 ### Navigation
 - **Header:** one component, `ScreenHeader` - a 54dp `surface-alt` bar, a 44dp back chevron, a
-  Bricolage 18/700 title announced as a heading, and a 1px hairline below. Two variants: a title, or
-  a control that fills the row (search). The message list and detail are the documented exemptions;
-  everything else uses this.
+  Bricolage 18/700 title announced as a heading, and a 1px hairline below. Three variants: a title,
+  a quiet title (the faint label, the message detail's, whose headline is the envelope's subject),
+  or a control that fills the row (search). The message list, under the envelope, is the one
+  exemption; everything else uses this.
 - **Back:** the iOS left-edge swipe is never disabled. Screens outside the native stack get an
   equivalent pan; Android's system Back is routed, never hijacked.
 - **Bottom sheets:** 24dp top corners, `surface-alt`, a 40×4 grabber, slide-in over a scrim at
@@ -795,6 +796,8 @@ After the critique (2026-11-15), the owner's answers, one by one:
 - **The window at night:** the film kept to the margins and a glint at a tenth (a grey band and a
   streak, a smudge on the glass) lost to no film and no glint in dark; the window keeps its tone and
   its inset edge. By day it is unchanged, and the scanner's sheen follows the same rule.
+- **The detail's header:** its own bar, 12 lower than every other, lost to the shared bar with a
+  quiet title (`ScreenHeader quiet`); nothing jumps between the list, a message and Settings.
 
 ## Do's and Don'ts
 

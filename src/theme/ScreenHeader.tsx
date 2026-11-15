@@ -1,8 +1,8 @@
 // The stack-screen header - the design draws ONE header bar and repeats it verbatim across every
 // stack screen (compose, search, settings, add-box, credentials, OTP, mobile key, reauth): a flat
 // 54px `surfaceAlt` bar below the safe area, a 1px bottom hairline, a 44×44 back chevron and a
-// Bricolage 18/700 title. (Entity screens that carry a context subtitle - the message list and
-// detail - keep their own header.)
+// Bricolage 18/700 title. The message detail takes it too, with its title quiet (`quiet`); the
+// message list, under the envelope, keeps its own.
 //
 // This component said all of that before, and had exactly ONE consumer. The eight screens it names
 // each built their own, and by the 2026-09-09 audit they had drifted into four different bars:
@@ -26,7 +26,7 @@
 import type { ReactNode } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { XStack, YStack } from './ui';
-import { Title } from './Typography';
+import { Label, Title } from './Typography';
 import { useTheme } from './ThemeProvider';
 import { fonts } from './typeScale';
 import { ChevronLeftIcon } from './icons';
@@ -83,6 +83,7 @@ export function ScreenHeader({
   content,
   insetTop = true,
   hairline = true,
+  quiet = false,
 }: {
   /** The screen's name. Omit only when `content` fills the row instead. */
   readonly title?: string;
@@ -104,6 +105,12 @@ export function ScreenHeader({
    * well and whose bar ends at its tone (031 R4, the owner's catch 2026-11-13).
    */
   readonly hairline?: boolean;
+  /**
+   * The title in the faint label instead of the heading: the message detail, whose headline is the
+   * envelope's subject below. Same bar, same height; the colour and the size are the one exception
+   * (the owner's answer 14, 2026-11-15).
+   */
+  readonly quiet?: boolean;
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -123,7 +130,19 @@ export function ScreenHeader({
         gap={content ? 6 : 0}
       >
         {onBack ? <HeaderBack onBack={onBack} testID={testID} /> : null}
-        {content ?? (
+        {content ?? (quiet ? (
+          <Label
+            accessibilityRole="header"
+            fontWeight="700"
+            color={theme.textFaint}
+            numberOfLines={1}
+            flex={1}
+            minWidth={0}
+            marginLeft={onBack ? 0 : 12}
+          >
+            {title}
+          </Label>
+        ) : (
           <Title
             // Announced as a heading so a screen reader can jump straight to it - every stack screen
             // in the app gets that from this one line (001 T042).
@@ -142,7 +161,7 @@ export function ScreenHeader({
           >
             {title}
           </Title>
-        )}
+        ))}
       </XStack>
       {/* The bar's bottom edge. `surfaceAlt` on `bg` is 1.06:1 - without this there is no edge. */}
       {hairline ? <YStack height={1} backgroundColor={theme.border} /> : null}

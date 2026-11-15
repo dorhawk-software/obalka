@@ -5,11 +5,12 @@
 // the status bar turns light over it, and that a sent message tucks the same way.
 
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
-import { AppState, StatusBar } from 'react-native';
+import { AppState, StatusBar, StyleSheet } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
+import { lightTheme } from '../../src/theme/theme';
 import type { DataBoxAccount, MessageEnvelope } from '../../src/services/isds/types';
 
 const mockEnvelope: MessageEnvelope = {
@@ -161,6 +162,38 @@ describe('where the band comes in', () => {
   });
 });
 
+describe('the bar', () => {
+  const paddingTops = (root: unknown): number[] => {
+    const out: number[] = [];
+    const walk = (n: unknown) => {
+      if (!n || typeof n !== 'object') {
+        return;
+      }
+      const node = n as { props?: { style?: unknown }; children?: unknown[] };
+      const flat = (StyleSheet.flatten(node.props?.style as never) ?? {}) as { paddingTop?: number };
+      if (typeof flat.paddingTop === 'number') {
+        out.push(flat.paddingTop);
+      }
+      (node.children ?? []).forEach(walk);
+    };
+    walk(root);
+    return out;
+  };
+
+  it("is every screen's bar: the inset, 54, the hairline, with its quiet title a heading", async () => {
+    // It sat 12 lower than every other bar, so going from the list to a message and on to Settings
+    // the header jumped; the title stays faint, the envelope's subject being this screen's headline
+    // (the owner's answer 14, 2026-11-15).
+    const { view } = await open();
+    const tops = paddingTops(view.toJSON());
+    expect(tops).toContain(METRICS.insets.top);
+    expect(tops).not.toContain(METRICS.insets.top + 12);
+    const title = view.getByText('Přijatá zpráva');
+    expect(title.props.accessibilityRole).toBe('header');
+    expect(StyleSheet.flatten(title.props.style).color).toBe(lightTheme.textFaint);
+  });
+});
+
 describe('a received message', () => {
   it('names who it is from, and in the window who it is for', async () => {
     const { view } = await open();
@@ -186,8 +219,14 @@ describe('a received message', () => {
     expect(band.props.pointerEvents).toBe('auto');
     expect(band.props.accessibilityElementsHidden).toBe(false);
     // The paper bar's own back is under it now: one back for assistive technology, not two.
-    const paperBack = view.getByTestId('back', hidden);
-    expect(paperBack.parent?.props.accessibilityElementsHidden).toBe(true);
+    // (An ancestor hides it: the bar is the shared ScreenHeader, wrapped.)
+    let node = view.getByTestId('back', hidden).parent;
+    let hiddenByAncestor = false;
+    while (node) {
+      hiddenByAncestor ||= node.props.accessibilityElementsHidden === true;
+      node = node.parent;
+    }
+    expect(hiddenByAncestor).toBe(true);
     expect(lightBar()).toBe(true);
     await fireEvent.press(view.getByTestId('bandBack'));
     expect(onBack).toHaveBeenCalledTimes(1);

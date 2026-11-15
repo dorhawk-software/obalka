@@ -36,18 +36,14 @@ function sourceFiles(dir: string): string[] {
 /**
  * The two files allowed to name the back chevron.
  *
- * `MessageDetail` is the documented exemption and has been since this component was written: an
- * entity screen carries a context subtitle and a row of actions that the shared bar does not model.
- * Everything else - every screen that shows a name and a way back - goes through `ScreenHeader`.
+ * `MessageDetail` drew its own until 2026-11-15, the documented exemption, and its bar sat 12 lower
+ * than every other; it now takes `ScreenHeader quiet` (the owner's answer 14). Every screen that shows
+ * a name and a way back goes through `ScreenHeader`.
  */
-const ALLOWED = new Set([
-  'src/theme/icons.tsx',
-  'src/theme/ScreenHeader.tsx',
-  'src/features/messages/screens/MessageDetail.tsx',
-]);
+const ALLOWED = new Set(['src/theme/icons.tsx', 'src/theme/ScreenHeader.tsx']);
 
 describe('the back chevron', () => {
-  it('is drawn in one place, plus the one documented exemption', () => {
+  it('is drawn in one place', () => {
     const drawers = sourceFiles(SRC)
       .filter(f => /<ChevronLeftIcon\b/.test(readFileSync(f, 'utf8')))
       .map(f => relative(ROOT, f))

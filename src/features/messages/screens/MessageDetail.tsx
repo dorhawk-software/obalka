@@ -1,18 +1,14 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { touchSlop } from '../../../theme/touchTarget';
 import { Animated } from 'react-native';
 import { XStack, YStack } from '../../../theme/ui';
 import { Skeleton } from '../../../theme/Skeleton';
 import { ProgressBar, WaitingBar } from '../../../theme/ProgressBar';
 import { attachmentFileStore } from '../../../services/files/attachmentFileStore';
-import { Body, Caption, Heading, Label, Meta, Small, SmallStrong } from '../../../theme/Typography';
+import { Body, Caption, Heading, Meta, Small, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import {
-  AlertIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from '../../../theme/icons';
-import { useHeaderTop } from '../../../theme/useHeaderTop';
+import { AlertIcon, ChevronRightIcon } from '../../../theme/icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { useContentBottom } from '../../../theme/useContentBottom';
 // gesture-handler Pressable for the attachment row: a plain RN/Tamagui onPress holds the JS touch
 // responder across the app backgrounding to the external PDF viewer, and on return it's never released
@@ -167,7 +163,9 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
   const theme = useTheme();
   // czebox boxes get a persistent "Testovací" banner pushed in above the header (US3, no overlap).
   const showTestBanner = account.host === 'czebox';
-  const headerTop = useHeaderTop(showTestBanner);
+  const insets = useSafeAreaInsets();
+  // Where the bar's row starts: under the status bar, or right under the banner that cleared it.
+  const barTop = showTestBanner ? 0 : insets.top;
   const contentBottom = useContentBottom(24);
   const tuck = useTuck(); // the envelope tucking into the bar as the message scrolls (DetailBand)
   const [state, setState] = useState<State>({ status: 'loading' });
@@ -391,46 +389,18 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
     }
   }, [account, messageId, downloading, folder, runScan]);
 
-  // The "paper" header (009): a 54dp bar and a hairline, a back chevron (44x44) and a quiet subtitle;
-  // a received message's `band` comes in over it as the envelope tucks under (DetailBand). The test
-  // banner is a SIBLING of the bar: nested inside it, Android clipped its label to "Testovací".
+  // The shared bar (`ScreenHeader quiet`): its title faint, since the envelope's subject is this
+  // screen's headline; a received message's `band` comes in over it as the envelope tucks under
+  // (DetailBand). Until 2026-11-15 the detail drew its own, 12 lower than every other screen's (the
+  // owner's answer 14). The test banner is a SIBLING of the bar: nested inside it, Android clipped its
+  // label to "Testovací".
   const renderHeader = (subtitle: string, band?: ReactNode) => (
     <>
       <TestEnvBanner show={showTestBanner} />
-      <YStack backgroundColor={theme.surfaceAlt} zIndex={1}>
-        <XStack
-          accessibilityElementsHidden={band != null && tuck.tucked}
-          alignItems="center"
-          paddingLeft={6}
-          paddingRight={16}
-          paddingTop={headerTop}
-          height={headerTop + 54}
-        >
-          <XStack
-            width={44}
-            height={44}
-            alignItems="center"
-            justifyContent="center"
-            borderRadius={999}
-            hitSlop={touchSlop({ width: 44, height: 44 })}
-            pressStyle={{ opacity: 0.5 }}
-            onPress={onBack}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.back')}
-            testID="back"
-          >
-            <ChevronLeftIcon size={24} color={theme.text} />
-          </XStack>
-          <Label fontWeight="700"
-            flex={1}
-            minWidth={0}
-            color={theme.textFaint}
-            numberOfLines={1}
-          >
-            {subtitle}
-          </Label>
-        </XStack>
-        <YStack height={1} backgroundColor={theme.border} />
+      <YStack zIndex={1}>
+        <YStack accessibilityElementsHidden={band != null && tuck.tucked}>
+          <ScreenHeader title={subtitle} quiet onBack={onBack} insetTop={!showTestBanner} />
+        </YStack>
         {band}
       </YStack>
     </>
@@ -639,7 +609,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
     <YStack flex={1} backgroundColor={theme.bg}>
       {/* Received (031): the header names what this is, and the envelope says who it is from. */}
       {renderHeader(title, (
-        <DetailBand top={headerTop} envelope={envelope} account={account} tuck={tuck} onBack={onBack} />
+        <DetailBand top={barTop} envelope={envelope} account={account} tuck={tuck} onBack={onBack} />
       ))}
       <Animated.ScrollView onScroll={tuck.onScroll} scrollEventThrottle={16} testID="detailScroll"
         contentContainerStyle={{ paddingBottom: contentBottom }}>
