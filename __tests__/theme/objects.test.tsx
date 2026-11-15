@@ -197,7 +197,7 @@ describe.each([
   });
 
   describe('the window', () => {
-    it('is window paper with an inset shade, and its film under the words', async () => {
+    it(isDark ? 'is window paper with an inset shade, and nothing over the words at night' : 'is window paper with an inset shade, and its film under the words', async () => {
       const { all } = await draw(
         <Window>
           <Text>Ondřej Dvořák</Text>
@@ -208,24 +208,21 @@ describe.each([
       const root = all()[0];
       expect(style(root).backgroundColor).toBe(theme.window);
       expect(style(root).boxShadow).toBe(objectShadow(theme.name, 'window'));
+      const kids = (root.children ?? []).filter((c): c is Node => typeof c !== 'string');
+      if (isDark) {
+        // At night the film's blurred band and the glint's streak read as a smudge on the glass, not
+        // light on film (the critique); the dark window keeps its tone and its edge alone (the owner's
+        // answer 11, 2026-11-15).
+        expect(all().some(n => n.type === 'RNSVGSvgView')).toBe(false);
+        expect(kids).toHaveLength(1);
+        return;
+      }
       expect(all().some(n => n.type === 'RNSVGFeGaussianBlur')).toBe(true);
       expect(filled(all(), theme.windowGlint).length).toBe(1);
       // The film and the glint come first, so the words print over them.
-      const kids = (root.children ?? []).filter((c): c is Node => typeof c !== 'string');
       expect(kids[0].type).toBe('RNSVGSvgView');
       expect(nodes(kids[1]).some(n => n.props.testID === 'windowGlint')).toBe(true);
       expect(kids[kids.length - 1].type).toBe('Text');
-    });
-
-    it(isDark ? 'keeps the film to its margins at night' : 'lets the film cover it by day', async () => {
-      const { all } = await draw(
-        <Window>
-          <Text>Ondřej Dvořák</Text>
-        </Window>,
-        isDark,
-        { width: 200, height: 76 },
-      );
-      expect(all().some(n => n.type === 'RNSVGMask')).toBe(isDark);
     });
   });
 

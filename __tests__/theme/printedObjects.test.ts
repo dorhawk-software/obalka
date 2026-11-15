@@ -2,7 +2,7 @@
 // properties a later edit by eye would break without noticing.
 
 import { objectFilter, objectShadow } from '../../src/theme/depth';
-import { perforation, securityTint, windowFilm } from '../../src/theme/print';
+import { perforation, securityTint } from '../../src/theme/print';
 
 const SHADOWS = ['sheet', 'sheetEdge', 'envelope', 'envelopeHeader', 'letter', 'window', 'seal'] as const;
 const FILTERS = ['slip', 'stamp', 'stampFab'] as const;
@@ -53,6 +53,5 @@ describe('print geometry', () => {
 
   it('keeps the tint quieter at night, where the ground is darker', () => {
     expect(securityTint.opacity.dark).toBeLessThan(securityTint.opacity.light);
-    expect(windowFilm.film.dark).toBeLessThan(windowFilm.film.light);
   });
 });

@@ -20,6 +20,7 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A clean envelope window in dark.** The grey band and smudge that lay over the address window at night are gone.
 - **A switch you can't use doesn't look on.** It takes the grey track; its knob stays on its side, so you can see what will apply once it can be used.
 - **Less red in the box switcher.** A box with a problem shows only the problem in red; "Last known state" is grey, and the alert badge no longer covers the letters.
 - **A backup screen that says each thing once.** The paragraphs that repeated the card are gone and the attachments switch has a shorter line. The sign-in form calls the name "Username", as ISDS does.

@@ -20,6 +20,7 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Čisté okénko obálky v tmavém vzhledu.** Šedý pruh a šmouha, které v noci ležely na okénku s adresou, jsou pryč.
 - **Nedostupný přepínač nevypadá zapnutě.** Přepínač, který zrovna nejde použít, má šedou dráhu; jezdec zůstává na své straně, takže je vidět, co se použije, až to půjde.
 - **Méně červené v přepínači schránek.** U schránky s problémem je červeně jen to, co se stalo; „Poslední známý stav“ je šedě a výstražný odznak už nezakrývá písmena.
 - **Záloha bez opakování.** Obrazovka zálohy říká každou věc jednou; přepínač příloh má kratší popis. Přihlášení jménem používá slovo ISDS „Uživatelské jméno“.

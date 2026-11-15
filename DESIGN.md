@@ -792,6 +792,9 @@ After the critique (2026-11-15), the owner's answers, one by one:
 - **A switch that cannot be used:** the faded blue track (it still read as on) lost to the off track
   whatever the value, the knob keeping its side (Material 3's disabled selected switch); every
   `Toggle`.
+- **The window at night:** the film kept to the margins and a glint at a tenth (a grey band and a
+  streak, a smudge on the glass) lost to no film and no glint in dark; the window keeps its tone and
+  its inset edge. By day it is unchanged, and the scanner's sheen follows the same rule.
 
 ## Do's and Don'ts
 

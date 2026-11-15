@@ -1,7 +1,9 @@
 // The window (031): who it is addressed to - the box switcher, the recipient in compose, the login name
 // while signing in. The site's cellophane, made quieter for a phone: an inset shade where the
 // envelope's paper lies over its edge, a film that catches the light, and a faint glint. The film lies
-// under the print, so it never costs a letter any contrast; at night it keeps to the margins.
+// under the print, so it never costs a letter any contrast. At night the window keeps its tone and its
+// edge alone: until 2026-11-15 the film kept to the margins and the glint stayed at a tenth, and the two
+// read as a grey band and a streak, a smudge on the glass (the owner's answer 11).
 //
 // The glint follows the phone's tilt (board Motion 4), lagging behind it, and only while the window is
 // on screen: the gravity sensor runs only then. With Reduce Motion it stays still.
@@ -23,7 +25,6 @@ import Svg, {
   G,
   Line,
   LinearGradient,
-  Mask,
   Path,
   Rect,
   Stop,
@@ -46,6 +47,7 @@ export function Window({
 }) {
   const theme = useTheme();
   const [size, onLayout] = useLayoutSize();
+  const sheen = size && theme.name !== 'dark';
   return (
     <View
       onLayout={onLayout}
@@ -59,8 +61,8 @@ export function Window({
         style,
       ]}
     >
-      {size ? <WindowFilm width={size.width} height={size.height} /> : null}
-      {size ? <Glint width={size.width} height={size.height} /> : null}
+      {sheen ? <WindowFilm width={size.width} height={size.height} /> : null}
+      {sheen ? <Glint width={size.width} height={size.height} /> : null}
       {children}
     </View>
   );
@@ -97,6 +99,10 @@ export function WindowBlankLine({ width, height = 12 }: { readonly width: `${num
  * the camera's picture is the paper (R13).
  */
 export function WindowSheen({ width, height }: { readonly width: number; readonly height: number }) {
+  const theme = useTheme();
+  if (theme.name === 'dark') {
+    return null;
+  }
   return (
     <>
       <WindowFilm width={width} height={height} />
@@ -125,9 +131,6 @@ export function gradientLine(angle: number, width: number, height: number) {
 function WindowFilm({ width, height }: { readonly width: number; readonly height: number }) {
   const theme = useTheme();
   const f = windowFilm;
-  const dark = theme.name === 'dark';
-  const solid = Math.min(0.5, f.darkMargin.solid / height);
-  const fade = Math.min(0.5, f.darkMargin.fade / height);
   return (
     <Svg
       width={width}
@@ -141,23 +144,8 @@ function WindowFilm({ width, height }: { readonly width: number; readonly height
         <Filter id="soft" x="-10%" y="-40%" width="120%" height="180%">
           <FeGaussianBlur stdDeviation={f.blur} />
         </Filter>
-        {dark ? (
-          <LinearGradient id="margins" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset={0} stopColor={theme.onSolid} stopOpacity={1} />
-            <Stop offset={solid} stopColor={theme.onSolid} stopOpacity={1} />
-            <Stop offset={fade} stopColor={theme.onSolid} stopOpacity={0} />
-            <Stop offset={1 - fade} stopColor={theme.onSolid} stopOpacity={0} />
-            <Stop offset={1 - solid} stopColor={theme.onSolid} stopOpacity={1} />
-            <Stop offset={1} stopColor={theme.onSolid} stopOpacity={1} />
-          </LinearGradient>
-        ) : null}
-        {dark ? (
-          <Mask id="edges">
-            <Rect width={width} height={height} fill="url(#margins)" />
-          </Mask>
-        ) : null}
       </Defs>
-      <G opacity={f.film[theme.name]} mask={dark ? 'url(#edges)' : undefined}>
+      <G opacity={f.film}>
         {/* The film is drawn on a 300 x 120 sheet stretched over the window, strokes and blur too. */}
         <G transform={`scale(${width / 300} ${height / 120})`}>
           <G filter="url(#soft)" fill="none" strokeLinecap="round">
@@ -242,7 +230,7 @@ function GlintDrawing({ width, height }: { readonly width: number; readonly heig
           x2={line.x2 + tilt.reach}
           y2={line.y2}
         >
-          {windowFilm.glintStops[theme.name].map(([offset, opacity]) => (
+          {windowFilm.glintStops.map(([offset, opacity]) => (
             <Stop key={offset} offset={offset} stopColor={theme.onSolid} stopOpacity={opacity} />
           ))}
         </LinearGradient>

@@ -54,26 +54,21 @@ export const liningPrint = {
  * The window's film: the light it catches.
  *
  * - `film`: two soft white strokes on a 300 x 120 sheet stretched over the window, blurred by `blur`,
- *   at `film` opacity. In dark they keep to the window's margins: solid to `darkMargin.solid` from the
- *   top and bottom edge, gone by `darkMargin.fade`, so no sheen lies over the words.
+ *   at `film` opacity. By day only: the dark window has neither film nor glint (2026-11-15).
  * - `glint`: two diagonal highlights at `angle` (a CSS angle: 0 points up, 90 right), over the
  *   `windowGlint` cast, the whole layer at `glint` opacity. Each stop is [position, white's opacity].
  *   The angle follows the phone's tilt (board Motion).
  */
 export const windowFilm = {
-  film: { light: 0.9, dark: 0.55 },
+  film: 0.9,
   strokes: [
     { d: 'M-10 94C60 72 120 106 190 82S280 60 320 68', width: 12, opacity: 0.28 },
     { d: 'M40 16C90 26 150 8 230 20', width: 7, opacity: 0.22 },
   ],
   blur: 3,
-  darkMargin: { solid: 5, fade: 9 },
   glint: 0.5,
   angle: 112,
-  glintStops: {
-    light: [[0.06, 0], [0.12, 0.5], [0.17, 0.1], [0.24, 0], [0.62, 0], [0.67, 0.3], [0.73, 0]],
-    dark: [[0.06, 0], [0.12, 0.1], [0.17, 0.03], [0.24, 0], [0.62, 0], [0.67, 0.07], [0.73, 0]],
-  },
+  glintStops: [[0.06, 0], [0.12, 0.5], [0.17, 0.1], [0.24, 0], [0.62, 0], [0.67, 0.3], [0.73, 0]],
   /**
    * The glint follows the phone's tilt (board Motion 4): up to `reach` either way, closing `lerp` of
    * the distance each frame; it stops once within `rest` (under a pixel), so a steady hand lays out
