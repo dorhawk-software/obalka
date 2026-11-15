@@ -187,6 +187,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **On Android, a sheet closes when you drag it down.** The box switcher, the language and deadline
+  pickers and the other sheets used to stay put under the finger; now they follow it, and one let go
+  too soon springs back.
 - **On iPhone, a message opened from the list goes back with a swipe from the edge.** The gesture
   did nothing on it before; now the message fades under your finger and you are back in the box.
 - **The code reader's hint can be read in dark mode too.** The reader shows the envelope's window to

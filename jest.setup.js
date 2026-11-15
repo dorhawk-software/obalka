@@ -62,8 +62,8 @@ jest.mock('react-native-gesture-handler', () => {
   const { View, Pressable } = require('react-native');
   return {
     __esModule: true,
-    GestureHandlerRootView: ({ children, style }) =>
-      React.createElement(View, { style }, children),
+    GestureHandlerRootView: ({ children, style, testID }) =>
+      React.createElement(View, { style, testID }, children),
     // gesture-handler's Pressable behaves like RN's in tests (onPress / a11y / pressed-style callback).
     Pressable,
     GestureDetector: ({ children }) => children,

@@ -163,6 +163,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Panel dole na Androidu zavřete stažením dolů.** Výběr schránky, výběr jazyka nebo lhůty i ostatní
+  panely se dřív za prstem nehnuly; teď jdou stáhnout a puštěný příliš brzy se vrátí zpět.
 - **Na iPhonu se ze zprávy otevřené ze seznamu vrátíte přejetím od okraje.** Gesto na ní dřív
   nedělalo nic; teď zpráva pod prstem zmizí a jste zpět ve schránce.
 - **Pokyn ve čtečce kódu je čitelný i v tmavém režimu.** Čtečka ukazuje okénko obálky, kam kód

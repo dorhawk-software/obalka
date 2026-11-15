@@ -116,6 +116,31 @@ function wrap(ui: React.ReactElement) {
   );
 }
 
+/** The sheets that close on a drag down (the ⋯ menu is a popover, with no pan). */
+const SHEETS: [string, (onClose: () => void) => React.ReactElement][] = [
+  [
+    'the box switcher',
+    (onClose: () => void) => (
+      <BoxSwitcherSheet
+        onClose={onClose}
+        accounts={[account('a')]}
+        activeBoxId="a"
+        onSwitch={() => {}}
+        onAddBox={() => {}}
+        onOpenSettings={() => {}}
+        onSetAlias={() => {}}
+        onRemove={async () => {}}
+      />
+    ),
+  ],
+  [
+    'the Termín picker',
+    (onClose: () => void) => (
+      <TermPicker current={null} onPick={() => {}} onRemove={() => {}} onClose={onClose} />
+    ),
+  ],
+];
+
 beforeEach(() => {
   panMock.mockClear();
 });
@@ -176,29 +201,7 @@ describe('the sheet dismiss pan', () => {
     expect(onDismiss).not.toHaveBeenCalled();
   });
 
-  it.each([
-    [
-      'the box switcher',
-      (onClose: () => void) => (
-        <BoxSwitcherSheet
-          onClose={onClose}
-          accounts={[account('a')]}
-          activeBoxId="a"
-          onSwitch={() => {}}
-          onAddBox={() => {}}
-          onOpenSettings={() => {}}
-          onSetAlias={() => {}}
-          onRemove={async () => {}}
-        />
-      ),
-    ],
-    [
-      'the Termín picker',
-      (onClose: () => void) => (
-        <TermPicker current={null} onPick={() => {}} onRemove={() => {}} onClose={onClose} />
-      ),
-    ],
-  ])('%s closes through it', async (_, ui) => {
+  it.each(SHEETS)('%s closes through it', async (_, ui) => {
     const timings = recordTimings();
     const onClose = jest.fn();
     await wrap(ui(onClose));
@@ -207,6 +210,15 @@ describe('the sheet dismiss pan', () => {
     config.onDeactivate(release({ translationY: 200 }));
     timings[timings.length - 1].done?.(true);
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  // On Android a `Modal` is a window of its own, outside the app's gesture root: a pan inside it is never
+  // recognised, and until 2026-11-15 no sheet moved under the finger there (walked on Obalka_Demo).
+  it.each(SHEETS)('%s is a gesture root of its own inside its Modal (Android)', async (_, ui) => {
+    const view = await wrap(ui(() => {}));
+    const root = view.getByTestId('sheetGestureRoot');
+    expect(root.parent?.type).toBe('Modal');
+    expect(root.props.style).toEqual({ flex: 1 });
   });
 
   it('the ⋯ menu, a popover since R9, takes no pan: a tap outside closes it', async () => {

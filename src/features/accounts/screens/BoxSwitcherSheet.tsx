@@ -14,6 +14,7 @@ import Animated, {
   useReducedMotion,
   useSharedValue,
 } from 'react-native-reanimated';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { sheetWidth } from '../../../theme/ContentColumn';
 import { BodyStrong, Heading, Small } from '../../../theme/Typography';
@@ -102,6 +103,9 @@ export function BoxSwitcherSheet({
 
   return (
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+      {/* A gesture root of its own: on Android the Modal is a window outside the app's root, and the
+          drag down was never recognised in it (until 2026-11-15). */}
+      <GestureHandlerRootView style={{ flex: 1 }} testID="sheetGestureRoot">
       {/* No `accessibilityLabel` here: with `accessible={false}` it is never announced, so it read
           as a dismiss affordance the screen reader offers and does not. The sheet's own Close
           control is the announced way out. */}
@@ -290,6 +294,7 @@ export function BoxSwitcherSheet({
           }}
         />
       ) : null}
+      </GestureHandlerRootView>
     </Modal>
   );
 }

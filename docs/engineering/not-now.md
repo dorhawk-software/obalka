@@ -304,3 +304,9 @@ they wait for their own work. The owner decided "not now" on 2026-11-12.
   subject can still break after "č." (seen on the demo's "Odpověď na výzvu č. j. …"). Plan: extend
   `typesetCs` to the abbreviations ISDS subjects use, and run subjects through it.
   ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I82)
+- **Sheets and dialogs fade in and out, under Reduce Motion too (2026-11-15, left as it is).** The
+  three `Modal`s (every sheet and dialog, the box switcher, the ⋯ menu) open and close with the
+  platform's fade. The Motion board turns each moving moment into a crossfade under Reduce Motion, and
+  the fade already is one, so it stays; Android with its animation scales at 0 cuts it, iOS keeps it.
+  The sheets' slide up from the bottom is the part that moves, and that is off under Reduce Motion.
+  ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I73)

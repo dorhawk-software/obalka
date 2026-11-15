@@ -602,17 +602,38 @@ surface below changes too, and the owner has seen none of them in the identity. 
   with T035 (below), the lock captured in T034.
 - [x] I70 The window film's glint (tilt, `useAnimatedSensor`, only on screen) - **X** build, board Motion.
   Built and walked with T035 (below), with the emulator's virtual sensor.
-- [ ] I71 Edge swipe back (160 ms settle) - **N**: follows the finger; its settle ignores Reduce Motion.
-- [ ] I71.1 Native-stack push and pop between screens - **N**: the platform's own; checked under
-  Reduce Motion on both.
-- [ ] I72 Sheets' slide-in (240 ms), the overflow menu, drag to dismiss - **N**: the slides honour
-  Reduce Motion, the drag's settle (180/160 ms) does not.
-- [ ] I73 `Dialog`, sheet scrims and `AliasEditor` use `Modal animationType="fade"` - **D** (rm): no
-  animation under Reduce Motion.
+- [x] I71 Edge swipe back (160 ms settle) - **N**: follows the finger; its settle ignores Reduce Motion.
+  **M**, walked 2026-11-15. Since the iOS fix (I67) the swipe is the native stack's own: UIKit's
+  interactive pop on iOS, the system's back arrow following the finger on Android, then the pop. The
+  hand-made 160 ms settle (`EdgeSwipeBack`) is left only on the screens outside the stack (first run,
+  restore, the FAQ), on iOS, where it is a `withTiming` with no `reduceMotion`, which Reanimated 4.4
+  reads as the system's: under Reduce Motion it lands at once. A gesture follows the finger in either mode; that is direct manipulation,
+  not a moment.
+- [x] I71.1 Native-stack push and pop between screens - **N**: the platform's own; checked under
+  Reduce Motion on both. **M**, 2026-11-15: Android's push to Settings is the platform's crossfade, and
+  with the animation scales at 0 it is a cut; a message opened from the list fades in 150 ms (I67).
+  iOS pushes with UIKit's own slide, which UIKit keeps under Reduce Motion as every iOS app does; not
+  walked under Reduce Motion on the simulator, since its app would sync from ISDS on launch.
+- [x] I72 Sheets' slide-in (240 ms), the overflow menu, drag to dismiss - **N**: the slides honour
+  Reduce Motion, the drag's settle (180/160 ms) does not. **Fixed** 2026-11-15, and the grade was
+  wrong: the settle's `withTiming` has no `reduceMotion`, which Reanimated 4.4 reads as the system's,
+  so it lands at once under Reduce Motion. The walk found worse: on Android no sheet moved under the
+  finger at all. A `Modal` is a window outside the app's gesture root, and neither `BottomSheet` nor
+  the box switcher had one of its own. Both have it now (`sheetGestures.test`, red before the fix).
+  Walked on Obalka_Demo: the switcher follows a drag, springs back short of 90, dismisses past it;
+  under Reduce Motion the same, the spring-back a cut. The ⋯ menu is a popover since R9, with no pan.
+- [x] I73 `Dialog`, sheet scrims and `AliasEditor` use `Modal animationType="fade"` - **D** (rm): no
+  animation under Reduce Motion. **Left as it is**, 2026-11-15: three Modals are left (`BottomSheet`,
+  the switcher, the ⋯ menu; `Dialog` and `AliasEditor` are sheets in them). Their fade is the Reduce
+  Motion form the Motion board asks for ("each becomes a crossfade"), so there is nothing to turn
+  off. Android with the animation scales at 0 cuts it; iOS keeps the fade. In not-now.md.
 - [x] I74 The paid-send confirmation slides (`animationType="slide"`) - **D** (rm); R2 may replace it.
   Gone 2026-11-15 with I40: it rises as every sheet does (`BottomSheet`); the app has three Modals.
-- [ ] I75 Skeleton pulse, waiting bar, sync bar - **N**: loop only while work runs. Under Reduce Motion
+- [x] I75 Skeleton pulse, waiting bar, sync bar - **N**: loop only while work runs. Under Reduce Motion
   the waiting bar is an empty track and the stage line beside it carries the meaning: shown on R8.
+  **M**, 2026-11-15: the skeleton pulses only while mounted and stands at 0.7 under Reduce Motion; the
+  waiting bar's loop (`ProgressBar`) runs only while work does and is an empty track under Reduce
+  Motion, walked on the launch with the animation scales at 0.
 - [x] I76 Platform spinners in 11 places - **X**: R8 decides where an object waits instead. The Mobile Key wait's
   spinner is gone (I10, 2026-11-13), and the launch's (I03); the deadline scan's (I34, 2026-11-15)
   takes the waiting bar. Counted in the code that day, nine left: debug files, attachment opening,
@@ -622,9 +643,19 @@ surface below changes too, and the owner has seen none of them in the identity. 
   its words (re-auth, password change, add box, the SMS code). Tamagui's `Spinner` is no longer
   exported and `noPlatformSpinner.test` fails on any platform spinner in src. Walked on Obalka_Demo:
   an attachment opening, and add box's busy button light and dark.
-- [ ] I77 Press dip, refusal shake, FAB press, segmented slide, radio fill - **N**.
-- [ ] I77.1 Haptics: 31 call sites (selection, light, medium, success, warning, error) - **N**: listed
-  against the motion rule (a thump where paper lands).
+- [x] I77 Press dip, refusal shake, FAB press, segmented slide, radio fill - **N**. **M**, 2026-11-15,
+  each answering a touch and each off under Reduce Motion: the dip 0.97 in 90 ms (`PressScale`, the
+  FAB's own the same, filmed on Compose); the refusal shake ±4 in three 50 ms steps with a warning
+  haptic, the haptic alone under Reduce Motion (read in code, held by `pressScale.test`); the
+  segmented thumb 200 ms, filmed sliding and, under Reduce Motion, jumping; the radio fill 140 ms,
+  filmed in Settings › Appearance shrinking from the old choice and growing in the new.
+- [x] I77.1 Haptics: 31 call sites (selection, light, medium, success, warning, error) - **N**: listed
+  against the motion rule (a thump where paper lands). **M**, counted 2026-11-15: 38 calls now, every
+  one answering something the person did, none on its own. One heavy thump, where paper lands: the
+  postmark (`stamp`, SentResult). Light: the seal splitting on unlock, the FAB, the ⋯ menu opening,
+  the switcher's add and settings rows. Medium: a swipe action committed. Success: the three ends of
+  a transfer. Warning: a refused press, a refused unlock, the paid-send gate. Error: a failed send.
+  The other 24 are selection ticks on a switch, a pick or an opened attachment.
 
 ### Icons and leftovers
 
