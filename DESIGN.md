@@ -15,10 +15,8 @@ colors:
   brand-blue: "#2A5C9A"
   brand-blue-deep: "#1E4E80"
   brand-blue-soft: "#EEF4FB"
-  brand-tile: "#2D6CB5"
   on-blue: "#FFFFFF"
   on-solid: "#FFFFFF"
-  gold: "#E8A100"
   gold-ink: "#A87400"
   gold-bright: "#FFC305"
   gold-soft: "#FBEFD0"
@@ -251,17 +249,19 @@ A warm paper ramp with two accents - a brand blue that acts, and a gold that not
   button, which is `ink`. Among the accents, it is the one that means "this does something".
 - **Brand Blue Deep** (`#1E4E80` / `#9BC2EC`): brand headings and strong brand text - the darker
   register when blue has to be read rather than pressed.
-- **Brand Tile** (`#2D6CB5`, **fixed in both appearances**): the solid tile behind the logo and lock
-  marks. It does not follow the theme, which is precisely why the glyph on it uses `on-solid`.
 
 ### Secondary
-- **Gold** (`#E8A100`, both appearances): the unread dot and count badge, the active
-  box's check mark, and the accent of the fiction and paid-send chips. Its scarcity is the point -
-  see The One Job Rule.
+- **Gold** is the envelope's: the flap and the compose stamp (`flap` `#FFC305`, both appearances), and
+  `gold-bright` for the unread count on a box in the switcher and a snackbar's action. Its scarcity is
+  the point - see The One Job Rule. The 009 `gold` (`#E8A100`) and the `brand-tile` blue went on
+  2026-11-15, when nothing drew them any more (the logo's tile and the gold FAB were redrawn in 031).
 - **Gold Ink** (`#A87400` light / `#E8A100` dark): gold at a strength that can be *seen*. Plain gold
   is 2.17:1 on `surface` in light mode, so anything gold that carries meaning rather than decoration
   - the unread dot's ring, the attention numeral - takes this instead.
 - **Violet** (`#5A4CA8` / `#B0A4EE`): the draft marker, and one of the six avatar hues.
+- **Success** (`#2A744C` / `#57B484`): the delivered state in Odeslané and the done check. Until
+  2026-11-15 `#2E7D52`, which measured 4.36:1 on the paper for the register's 12/600 "Doručeno" (031
+  T050); `contrast.test.ts` now holds it on the paper and the sunken row.
 
 ### Neutral
 - **Paper** (`#F4EEE2` / `#1A1712`): the page. The stock everything is printed on.
@@ -301,15 +301,16 @@ edge) follows the appearance. `contrast.test.ts` holds both halves of that sente
 
 ### Named Rules
 
-**The One Job Rule.** Solid gold marks unread (the dot and the count badge) and the active box's check
-mark; `gold-ink` draws the attention numeral. The compose button is a stamp in the flap's gold, an
+**The One Job Rule.** Gold marks unread (the dot, and the count on a box in the switcher in
+`gold-bright`) and the active box's check mark; `gold-ink` draws the check, the dot's ring and the
+attention numeral. The compose button is a stamp in the flap's gold, an
 object rather than a mark (docs/printed-objects.md). The gold chip tones
 (`statusFiction`, `fikceAmber`, `costPaid`) mean delivery by fiction or a paid send, which is why a
 decorative glyph is never gold (016). Soft gold carries the test pill, the paid-cost card
 and the paid-send confirmation, the missing-attachments notice, and the pressed add-box row in the
 box switcher. Beyond that, gold appears only in fixed artwork (the logo's flap, the lock's keyhole),
 as the envelope's own `flap` (the printed objects, 031) and as `gold-bright` on the snackbar's
-action, for contrast on its dark bar. Gold takes on no other
+action, for contrast on its dark bar, and on the switcher's count. Gold takes on no other
 meaning: every new gold thing on a screen dilutes the ones already there.
 
 **The On-X Rule.** A token named `on-<something>` is safe **only on that something**. `on-blue` is
@@ -588,14 +589,29 @@ moves without being asked.
 ### Buttons
 - **Shape:** 14dp radius (`rounded.card`; 16 on Welcome and Lock), mostly 48–52dp minimum height (54
   on Welcome and Lock).
-- **Primary:** `ink` fill with a `surface-alt` label - the dark high-contrast button, full width in a
-  form footer. Blue fills only in-content actions: downloading attachments, accepting a scan
-  suggestion.
-- **Danger:** `danger` fill, `on-blue` ink. Used only where something is destroyed.
+- **Primary** (`InkButton`, the boards' `fbtn`): `ink` fill with a `surface-alt` label in `bodyStrong` -
+  the dark high-contrast button, full width in a form footer, 52 tall. `compact` is 48, one of a pair
+  beside a neutral button (R10's Smazat and Obnovit); `small` is R13's half of a pair inside a card row,
+  40 tall with the 12 corner and the label 14/700; `icon` puts a glyph 10 before the words, in the
+  label's colour (`inkButtonInk`). Blue fills only in-content actions: downloading attachments,
+  accepting a scan suggestion.
+- **Danger:** `InkButton danger` (R9's `dbtn`): `danger` fill, the label in the paper colour, the bin 10
+  before Smazat. Used only where something is destroyed.
 - **Neutral** (`NeutralButton`, R6/R14/R4): `surface-sunken` fill, no border - tone, not an outline -
   and an `ink` label in `bodyStrong`. 52 alone across its column; 48 for two side by side
   (`compact`); under a failed state's words it is as wide as its label with 24 at each side
-  (`inline`), as the failed list and a message the archive does not hold both draw it.
+  (`inline`), as the failed list and a message the archive does not hold both draw it. `small danger`
+  is R13's other half of a row pair: 40 tall, the 12 corner, the label 14/700 in `danger`.
+- **Faded as one picture:** a blocked button is drawn at .55 (the boards' group opacity; .45 until
+  031). On Android a View's opacity applies to each child on its own, so every faded control
+  composites its layer (`needsOffscreenAlphaCompositing`) and its words do not sink into its ink
+  (`fadedAsOne.test.tsx`).
+- **Target:** 48dp. A press drawn smaller (a 44 download, a 40 row button) takes `touchSlop()` to reach
+  it; two links stacked with no room between are each drawn at 48 instead, because their slops would
+  overlap; a link's room above it is margin, not padding, when another target sits there
+  (`smallPressHasSlop.test.ts`).
+- **Busy:** the board draws the ring and the busy words centred as one group inside the button; the
+  button itself does not move or resize.
 - **Press:** scale to 0.97 over 90ms, timing curve, native driver. A dip, not a bop.
 - **Busy vs blocked:** a *busy* button (action already running) swallows the press - the spinner is
   the answer. A *blocked* button (a requirement unmet) still receives the press and answers with a
@@ -622,7 +638,11 @@ moves without being asked.
   (the Wi-Fi row under automatic downloads, "Jak to funguje"), so the line starts where its words do
   (`CardRow`, `RowDivider`).
 - **Well:** a row may lead with its glyph in a 40dp well - 12dp corner, `sunken`, the offset glyph at
-  24dp in ink (`Well`).
+  24dp in ink (`Well`). `Well large` is the scanner's 56 with the 16 corner; around its window the
+  camera's picture is dimmed by `camera-dim` (black at .45, both themes) so the window and its words read
+  on it (R13).
+- **Monogram:** the initials of the first two words of a name, its academic degrees left out
+  ("Ing. Ondřej Dvořák" is OD; until 2026-11-15 IO beside OD for the same person's other box).
 
 ### Settings sections
 - **Label:** Public Sans Bold 12, uppercase, 0.4 letter-spacing, `faint-ink` - the design's settings
@@ -647,6 +667,12 @@ moves without being asked.
   system bar.
 - **Autofocus:** the `autoFocus` prop does not survive Tamagui. Use `useAutoFocus`, which waits for
   the screen transition to settle.
+- **Tap to focus:** a stack that focuses its field on a tap is `accessible={false}`: on iOS an element
+  is a leaf, and the field inside it would be out of VoiceOver's reach (031 T050).
+- **Options** (`OptionGroup`, R3/R9/R11/R13): one card, a row per option at 52, the radio at the right -
+  a 22 ring, 2px in `track-off-border` (`#8E7F62`, the off switch's edge; `hairline-strong` measured
+  1.47:1), and when picked the blue ring with a 12 blue dot. The card is a `radiogroup` and each row
+  says `checked`.
 
 ### Navigation
 - **Header:** one component, `ScreenHeader` - a 54dp `surface-alt` bar, a 44dp back chevron, a
@@ -656,7 +682,19 @@ moves without being asked.
 - **Back:** the iOS left-edge swipe is never disabled. Screens outside the native stack get an
   equivalent pan; Android's system Back is routed, never hijacked.
 - **Bottom sheets:** 24dp top corners, `surface-alt`, a 40×4 grabber, slide-in over a scrim at
-  0.40–0.45 alpha, swipe-down to dismiss, capped at the content width.
+  0.40–0.45 alpha, swipe-down to dismiss, capped at the content width and at the window less the
+  status bar and a `section` of dim (`useSheetMaxHeight`); what a sheet holds scrolls inside that cap,
+  never inside a smaller fixed one (the switcher's 360 hid a fourth box until 2026-11-15).
+- **Questions** (`Dialog`, R9): every question is a bottom sheet - its object or glyph, the title in
+  Title, the thing it is about as a subtitle when there is one (a backup's date, a recording's file
+  name), the body saying what happens in Small, then the answers, the destructive one in `InkButton
+  danger`. Deleting a debug recording asks "Smazat záznam?" over the file's name, as deleting a backup
+  does.
+- **Popover** (the ⋯ menu, R9): 230 across, `surface`, the 14 corner, rows at least 48,
+  `objectShadow('popover')`, no scrim; held up beside the ⋯ that opened it.
+- **Status bar:** dark icons over the inbox's flap in both themes, because the flap is gold in both
+  (white on it measured 1.68:1 at night); every sheet and menu puts the theme's style back while its
+  scrim covers the flap (`SheetStatusBar`).
 
 ### Status strips
 - **One component:** `StatusStrip` (`src/theme/StatusStrip.tsx`) - the full-width strip above a
@@ -694,6 +732,34 @@ The inbox opens with an oversized `gold-ink` Bricolage numeral beside "Vyžaduje
 one-line reason. It is the app's loudest moment and it earns it: the number is a count of things with
 legal consequences, stated nowhere else on the screen. Everything below it returns to the ordinary
 row rhythm.
+
+## Rejected variants (031)
+
+What was drawn beside the agreed design and not chosen, so it is not proposed again without a new
+reason. Each pick was the owner's (2026-11-12), each time the recommendation; the losers were stripped
+from the canvas after the pick (versions 21, 23, 25).
+
+- **Icon set:** "A plane" lost to "B offset print" - the 1.75 ink stroke with one plane printed 1.3 off
+  register.
+- **Welcome:** "B the flap opens the app" (the inbox's band, taller, the name on the envelope) and "C the
+  letter comes out" (the envelope's back with its lining, the name on the letter) lost to "A addressed
+  to nobody" - an empty Komu window that later carries the box.
+- **Compose's stamp:** "B above Odeslat" (in the bottom bar beside the send) lost to "A in the Komu row",
+  where a stamp goes on an envelope, priced as soon as the recipient is known.
+- **Cards:** "A hairline" (the surface and a 1px line, flat - the 009 card) and "C tone only" (no line,
+  no shadow) lost to "B a sheet with weight".
+- **Empty, error and search states:** "B an offset glyph in a 72 well" lost to "A the envelope in a
+  pose".
+- **Waiting:** "B today's screen" (Mobile Key's own tile, the platform spinner) lost to "A a still object
+  and one waiting bar".
+- **Questions:** "A a centred card" (420 wide, radius 20, the buttons side by side) lost to "B the bottom
+  sheet" every question now is.
+- **The dark iOS icon:** "B today's icon, dimmed" lost to "A the blue and gold envelope" on a dark ground.
+- **The recipient search:** "B a field under the envelope" lost to "A in the window".
+- **The typed text's PDF:** "A plain text on US Letter" lost to "B a Czech letter on A4".
+- **The sign-in method:** "A separate cards" (the chosen one blue, the radio on the left) lost to "B one
+  card of choices".
+- **The scanner:** "A the bare camera" lost to "B a window to aim through".
 
 ## Do's and Don'ts
 

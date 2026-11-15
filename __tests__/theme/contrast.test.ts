@@ -84,7 +84,6 @@ const pairs = (t: Theme): [string, string, string][] => [
   ['onBlue on blue', t.onBlue, t.blue],
   // `onSolid` is white in BOTH themes, and these are the theme-independent fills it is white ON.
   // Derived from `avatarPalette.ts` rather than copied, so a new hue is covered the day it is added.
-  ['onSolid on brandTile', t.onSolid, t.brandTile],
   ...AVATAR_COLORS.map(
     (hue): [string, string, string] => [`onSolid on avatar ${hue}`, t.onSolid, hue],
   ),
@@ -97,7 +96,6 @@ const pairs = (t: Theme): [string, string, string][] => [
     t.onSolid,
     shade(hue, MONOGRAM_SHADE),
   ]),
-  ['onGold on gold', t.onGold, t.gold],
   ['warningInk on goldSoft', t.warningInk, t.goldSoft],
   ['testFg on testBg', t.testFg, t.testBg],
   // The two top-of-screen strips, read from the component's own tone table: a tone that is repainted

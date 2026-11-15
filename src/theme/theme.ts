@@ -40,20 +40,18 @@ export interface Theme {
    *
    *   * every avatar monogram, on the six fixed hues in `avatarPalette.ts` - **2.11–3.05:1** in dark mode,
    *     on the app's most repeated element, while `avatarPalette.ts` promised ≥4.5:1 in both themes;
-   *   * the `EmblemIcon` glyph on `brandTile` - 3.36:1, where its own docstring and `brandTile`'s
-   *     token comment both say "a white glyph";
+   *   * the `EmblemIcon` glyph on the brand tile - 3.36:1, where its own docstring and the tile's
+   *     token comment both said "a white glyph" (the tile went with the 031 logo);
    *   * the `Toggle` knob, documented as "near-white", rendering near-black at night.
    *
    * The lesson is in the name, not the value: an "on X" token is only safe on X. Anything painted on
    * a fill that does not change with the appearance takes THIS instead.
    */
   onSolid: string;
-  /** Solid brand-blue tile behind logo/lock marks - fixed in both modes so a white glyph stays AA. */
-  brandTile: string;
-  gold: string; // signature accent (compose FAB, unread)
   goldSoft: string;
   onGold: string; // text/icons on the bright gold (dark in both themes - gold stays light)
-  /** The design's brighter gold, used ONLY for a snackbar action label on `snackbarBg`. */
+  /** The design's brighter gold: a snackbar action's label on `snackbarBg`, and the unread count's
+   * disc on a box in the switcher (R14). */
   goldBright: string;
   /** Hairline on any goldSoft surface (test banner, paid-cost card) - design #EAD9A8. */
   goldBorder: string;
@@ -74,16 +72,16 @@ export interface Theme {
   /**
    * Gold at a strength that can carry MEANING rather than decoration.
    *
-   * `gold` is the design's accent and stays the fill everywhere it already is, but in light mode it
-   * measures **2.17:1** on `surface` and **1.91:1** on `bg` - under the 3:1 that WCAG 1.4.11 asks of
+   * The 009 design's gold (#E8A100; the token went on 2026-11-15, unused) measured, in light mode,
+   * **2.17:1** on `surface` and **1.91:1** on `bg` - under the 3:1 that WCAG 1.4.11 asks of
    * anything a user must see to understand a state or a value. Three places needed it and had
    * nothing else to fall back on: the unread dot (the only unread cue a sighted user gets), the
    * oversized attention numeral (a count stated nowhere else), and the compose FAB's boundary
    * against the paper. Each takes this as a ring, an ink, or an outline - never as a new fill, so
    * the design's gold is still the colour you see.
    *
-   * In dark mode `gold` already measures 6.26:1, so this IS `gold` there and every ring drawn with
-   * it is invisible by construction.
+   * In dark mode that gold already measures 6.26:1, so this IS it there and every ring drawn with it
+   * is invisible by construction.
    */
   goldInk: string;
 
@@ -230,8 +228,6 @@ export const lightTheme: Theme = {
   blueSoft: '#EEF4FB',
   onBlue: '#FFFFFF',
   onSolid: '#FFFFFF',
-  brandTile: '#2D6CB5',
-  gold: '#E8A100',
   goldSoft: '#FBEFD0',
   onGold: '#211B12',
   goldBright: '#FFC305', // R9 (2026-11-15): the flap's gold; it was #F5B81E
@@ -315,8 +311,6 @@ export const darkTheme: Theme = {
   // text. The warm near-black gives 6.79:1. Found by the T043 contrast audit, 2026-09-08.
   onBlue: '#1A1611',
   onSolid: '#FFFFFF', // white in BOTH themes - see the token's doc comment
-  brandTile: '#2D6CB5',
-  gold: '#E8A100',
   goldSoft: '#3A2F12', // derived dark gold surface
   onGold: '#211B12',
   goldBright: '#FFC305', // `snackbarBg` is dark in BOTH themes → same action gold
@@ -325,7 +319,7 @@ export const darkTheme: Theme = {
   violetSoft: '#2C2545', // derived tinted-dark violet surface
   trackOff: '#4A4236', // design dark `trackOff`
   trackOffBorder: '#8E7F62', // the boards' edge in both themes; 3.97:1 on surface
-  goldInk: '#E8A100', // = `gold`: it already measures 6.26:1 here, so every ring draws nothing
+  goldInk: '#E8A100', // the 009 gold: it already measures 6.26:1 here, so every ring draws nothing
   success: '#57B484',
   danger: '#E27A73',
   warning: '#E8A100',

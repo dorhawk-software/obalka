@@ -69,8 +69,9 @@ describe.each([
     expect(all.some(n => typeof style(n).filter === 'string' && /drop-shadow/.test(String(style(n).filter)))).toBe(
       true,
     );
-    // No rounded gold square any more: nothing in it is filled with the old gold.
-    expect(all.some(n => style(n).backgroundColor === theme.gold)).toBe(false);
+    // No rounded gold square any more: nothing in it is filled with the old gold (#E8A100, the
+    // `gold` token, removed with it on 2026-11-15).
+    expect(all.some(n => style(n).backgroundColor === '#E8A100')).toBe(false);
   });
 
   it('prints "Napsat" and the compose glyph on the gold, the glyph on a white plane and a heavier line', async () => {
