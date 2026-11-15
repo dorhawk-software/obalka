@@ -99,9 +99,10 @@ const pairs = (t: Theme): [string, string, string][] => [
   ['testFg on testBg', t.testFg, t.testBg],
   // The two top-of-screen strips, read from the component's own tone table: a tone that is repainted
   // there is measured here, not left to the pair above that happens to match it today.
-  ...(['chrome'] as const).map((tone): [string, string, string] => {
+  ...(['chrome', 'flap'] as const).map((tone): [string, string, string] => {
     const strip = statusStripColors(tone, t);
-    return [`status strip (${tone}) label`, strip.ink, strip.background];
+    // The flap tone has no ground of its own: it is printed on the inbox's flap.
+    return [`status strip (${tone}) label`, strip.ink, tone === 'flap' ? t.flap : strip.background];
   }),
   ['snackbarInk on snackbarBg', t.snackbarInk, t.snackbarBg],
   ['goldBright on snackbarBg', t.goldBright, t.snackbarBg],
@@ -289,13 +290,18 @@ describe('the printed objects', () => {
     expect(contrast(t.flap, over(t.envelopeWell, t.envelope))).toBeGreaterThanOrEqual(NON_TEXT);
   });
 
+  it.each(THEMES)('%s: the recording dot is told from the flap it is printed on (R14)', (_name, t) => {
+    // The dark theme's own `danger` measures 1.80 on the gold; this is 3.70.
+    expect(contrast(t.dangerOnFlap, t.flap)).toBeGreaterThanOrEqual(NON_TEXT);
+  });
+
   it.each(THEMES)('%s: the flap is told from the envelope under it', (_name, t) => {
     expect(contrast(t.flap, t.envelope)).toBeGreaterThanOrEqual(NON_TEXT);
   });
 
   it('keeps the envelope, its flap, the stamp and the seal the same in both themes', () => {
     const fixed = ['envelope', 'envelopeInkSoft', 'envelopeFold', 'envelopeWell', 'envelopeButton',
-      'envelopeInkFaint', 'envelopePlane', 'printShade', 'flap', 'flapFrame', 'lining', 'stampPaper',
+      'envelopeInkFaint', 'envelopePlane', 'printShade', 'flap', 'dangerOnFlap', 'flapFrame', 'lining', 'stampPaper',
       'stampFrame', 'stampInk', 'stampLabel', 'cancelInk', 'slipMark', 'sealLight', 'sealShade'] as const;
     for (const key of fixed) {
       expect([key, darkTheme[key]]).toEqual([key, lightTheme[key]]);

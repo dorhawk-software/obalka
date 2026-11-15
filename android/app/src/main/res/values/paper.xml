@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- `lightTheme.bg` from src/theme/theme.ts: the paper the window, the system splash and the first
+         blank frame are drawn on (031 I02). values-night holds `darkTheme.bg`. -->
+    <color name="paper">#F4EEE2</color>
+</resources>

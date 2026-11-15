@@ -20,6 +20,12 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Ikona aplikace má tmavou a tónovanou podobu.** Na iPhonu se v tmavém režimu ukáže modrá obálka se
+  zlatou chlopní na tmavém podkladu, v tónovaném režimu šedá; Android 13 a novější ji s tematickými
+  ikonami přebarví podle tapety.
+- **Aplikace se na Androidu otevírá na papíře.** Úvodní obrazovka systému už není šedobílá, takže
+  obrazovka po ní nepřebliká do barvy aplikace.
+- **Záznam režimu ladění je ve schránce na chlopni obálky.** Obálka tak dál sahá až k horní hraně.
 - **Záloha vypadá jako zbytek aplikace.** Zálohovat a ověřit jsou dvě stejná tlačítka, průběh
   zálohy se ukáže přímo pod přepínačem, zálohy v seznamu mají štítek s přílohami vpravo a otevřená
   záloha nabízí Smazat a Obnovit vedle sebe.

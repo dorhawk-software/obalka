@@ -16,6 +16,7 @@ import { objectShadow } from '../../../theme/depth';
 import { envelopeShape } from '../../../theme/print';
 import { boxColor } from '../../../theme/boxColor';
 import { useHeaderTop } from '../../../theme/useHeaderTop';
+import { FLAP_STRIP_SPACE, FlapRecordingStrip, useFlapRecordingStrip } from '../../../app/DebugRecordingStrip';
 import { space } from '../../../theme/spacing';
 import { TestTag } from '../../accounts/screens/BoxRow';
 import { BoxIdentityLine } from '../../accounts/screens/BoxIdentityLine';
@@ -59,8 +60,10 @@ export function InboxHeader({
   const theme = useTheme();
   const { width } = useWindowDimensions();
   // The board's window sits 16 below the status bar: the header gap and 4 more. The flap comes down
-  // to meet it.
-  const windowTop = useHeaderTop() + space.xs;
+  // to meet it. While Debug mode records, the strip is printed on the flap and the window moves down
+  // by its room (R14).
+  const recording = useFlapRecordingStrip();
+  const windowTop = useHeaderTop() + space.xs + (recording ? FLAP_STRIP_SPACE : 0);
   const flap = envelopeShape.headerFlap;
   const name = unified ? t('unified.title') : account.alias ?? account.label;
   return (
@@ -94,6 +97,7 @@ export function InboxHeader({
         <Path d={headerFlapPath(width, windowTop)} fill={theme.flap} />
         <Path d={headerFlapPath(width, windowTop)} fill="url(#sheen)" />
       </Svg>
+      <FlapRecordingStrip />
       <XStack alignItems="center" gap={10}>
         <Pressable
           style={({ pressed }) => ({ flex: 1, minWidth: 0, opacity: pressed ? 0.85 : 1 })}

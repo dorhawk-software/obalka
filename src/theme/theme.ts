@@ -168,6 +168,9 @@ export interface Theme {
   printPage: string;
   /** The flap, and the stamp-shaped compose button: the envelope's gold, fixed in both appearances. */
   flap: string;
+  /** The red printed on the flap (Debug mode's recording dot, 031 R14): fixed, as the flap is - the dark
+   * theme's lighter `danger` fades into the gold. */
+  dangerOnFlap: string;
   /** The frame printed inside the gold stamp of the compose button. */
   flapFrame: string;
   /** The plane under the offset glyph printed on the gold stamp. */
@@ -263,6 +266,7 @@ export const lightTheme: Theme = {
   printShade: '#000000',
   printPage: '#FFFFFF',
   flap: '#FFC305',
+  dangerOnFlap: '#B5362F',
   flapFrame: 'rgba(33,27,18,0.28)',
   flapPlane: 'rgba(255,255,255,0.55)',
   flapShade: 'rgba(33,27,18,0.14)',
@@ -349,6 +353,7 @@ export const darkTheme: Theme = {
   printShade: '#000000',
   printPage: '#FFFFFF',
   flap: '#FFC305',
+  dangerOnFlap: '#B5362F',
   flapFrame: 'rgba(33,27,18,0.28)',
   flapPlane: 'rgba(255,255,255,0.55)',
   flapShade: 'rgba(33,27,18,0.14)',

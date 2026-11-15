@@ -4,6 +4,11 @@
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+        <!-- The paper, not AppCompat's grey-white: the system splash (Android 12+) takes its ground
+             from here, then the blank frame and the app are paper too. Until 2026-11-15 the splash was
+             #FAFAFA and the screen turned to paper under it (031 I02). It follows the phone's
+             appearance; MainActivity repaints the window in the app's own once it runs. -->
+        <item name="android:windowBackground">@color/paper</item>
     </style>
 
 </resources>

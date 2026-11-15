@@ -35,6 +35,7 @@ colors:
   snackbar-ink: "#FBF6EA"
   envelope: "#2563A6"
   flap: "#FFC305"
+  danger-on-flap: "#B5362F"
   lining: "#9EC0EA"
   window: "#FFFDF8"
   icon-plane: "#CFE0F5"
@@ -289,6 +290,14 @@ edge) follows the appearance. `contrast.test.ts` holds both halves of that sente
 
 - **Print Page** (`#FFFFFF`, both appearances): the page of a PDF the app writes - the typed text's
   Czech letter (R12) - printed in the light palette's inks on white, whatever the screen shows.
+- **The app icon** (`scripts/gen-app-icons.py`, from `src/assets/logo.svg`): the white envelope with
+  the gold flap on the envelope's blue. iOS has a dark version - the app's own envelope, blue with the
+  gold flap and its two folds, on `#17140F` - and a tinted one, greyscale on black for the system to
+  tint; Android 13 has a monochrome layer, the envelope in outline (031 I65.1, board R8, built
+  2026-11-15). Every variant is drawn from the one envelope; only the colours change.
+- **Before the first frame** the phone draws the paper and the icon: the iOS launch screen, the
+  Android system splash (the window background, `res/values*/paper.xml`, since 2026-11-15) and both
+  privacy covers, each in the appearance the phone is in.
 
 ### Named Rules
 
@@ -666,9 +675,13 @@ moves without being asked.
   for that, so its row is the same as every other strip's.
 - **Tone:** `chrome` - `surface-alt` fill, `ink`, `hairline`, and a `muted-ink` chevron when the strip
   opens something; its label pair is measured in `contrast.test.ts`, read from the component's own
-  tone table. (The `test` tone went with the soft-gold banner in 031.)
+  tone table. (The `test` tone went with the soft-gold banner in 031.) `flap` - on the inbox the
+  recording strip is printed on the flap under the status bar (031 R14, built 2026-11-15): no fill and
+  no hairline, `on-gold` words and chevron, and the dot in `danger-on-flap`, fixed in both themes
+  because the dark `danger` measures 1.80 on the gold. The envelope still reaches the top; its window
+  moves down 32 (the strip's row and `xs`), so the flap's point stays 20 under the strip.
 - **Placement:** normal flow, never an overlay. The strip clears the status bar itself and the
-  screen under it is handed a spent top inset. It never appears or disappears on the screen in front
+  screen under it is handed a spent top inset - except on the inbox, whose flap carries it. It never appears or disappears on the screen in front
   of the person: the banner is fixed by the box, and the recording strip changes only while the Debug
   screen covers it.
 - **Label:** free to wrap. Pinned to one line, "Režim ladění zaznamenává" - 166dp in Public Sans Bold

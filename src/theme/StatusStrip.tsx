@@ -47,9 +47,10 @@ export const STATUS_STRIP_ROW = 2 * STATUS_STRIP_PADDING_VERTICAL + typeScale.ba
 
 /**
  * `chrome` - part of the app's own furniture: the header's `surfaceAlt` with a hairline under it, so
- * it reads as chrome rather than as an alert.
+ * it reads as chrome rather than as an alert. `flap` - printed on the inbox's flap, which is its
+ * ground: nothing of its own under it, the gold's ink for the words (031 R14).
  */
-export type StatusStripTone = 'chrome';
+export type StatusStripTone = 'chrome' | 'flap';
 
 export interface StatusStripColors {
   readonly background: string;
@@ -63,7 +64,10 @@ export interface StatusStripColors {
  * The colours a tone paints. Exported so `__tests__/theme/contrast.test.ts` measures the pairs a strip
  * actually draws rather than a transcription of them.
  */
-export function statusStripColors(_tone: StatusStripTone, theme: Theme): StatusStripColors {
+export function statusStripColors(tone: StatusStripTone, theme: Theme): StatusStripColors {
+  if (tone === 'flap') {
+    return { background: 'transparent', ink: theme.onGold, edge: 'transparent', chevron: theme.onGold };
+  }
   return {
     background: theme.surfaceAlt,
     ink: theme.text,
@@ -98,7 +102,7 @@ export function StatusStrip({
     <YStack
       paddingTop={inset}
       backgroundColor={colors.background}
-      borderBottomWidth={1}
+      borderBottomWidth={tone === 'flap' ? 0 : 1}
       borderColor={colors.edge}
       onPress={onPress}
       pressStyle={onPress ? { opacity: 0.65 } : undefined}

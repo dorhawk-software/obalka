@@ -37,7 +37,8 @@ import {
 } from 'react-native-safe-area-context';
 import { YStack } from '../theme/ui';
 import { useTheme } from '../theme/ThemeProvider';
-import { StatusStrip } from '../theme/StatusStrip';
+import { STATUS_STRIP_ROW, StatusStrip } from '../theme/StatusStrip';
+import { space } from '../theme/spacing';
 import { t } from '../i18n/strings';
 import { useLocale } from './settings/SettingsProvider';
 import {
@@ -55,14 +56,14 @@ export function useDebugRecording(): boolean {
 }
 
 /** The recording mark. The Debug screen's status line and the strip draw the same one. */
-export function RecordingDot() {
+export function RecordingDot({ onFlap = false }: { readonly onFlap?: boolean }) {
   const theme = useTheme();
   return (
     <YStack
       width={8}
       height={8}
       borderRadius={999}
-      backgroundColor={theme.danger}
+      backgroundColor={onFlap ? theme.dangerOnFlap : theme.danger}
     />
   );
 }
@@ -70,9 +71,20 @@ export function RecordingDot() {
 /** True inside a frame. A screen is framed once, however many of its ancestors ask for it. */
 const FramedContext = createContext(false);
 
+/**
+ * What a screen that prints the strip on its own flap is handed: how to open the Debug screen while a
+ * recording runs, null otherwise (and outside any frame).
+ */
+const FlapStripContext = createContext<{ readonly onOpen?: () => void } | null>(null);
+
 interface FrameProps {
   /** Leave the strip off this screen. The Debug screen passes it - see the header of this file. */
   readonly hidden?: boolean;
+  /**
+   * The screen prints the strip itself, on its flap (`FlapRecordingStrip`): the inbox, so the envelope
+   * still reaches the top of the screen (031 R14). The frame draws nothing and spends no inset.
+   */
+  readonly onFlap?: boolean;
   /**
    * Opens the Debug screen. Omitted where that screen cannot be reached - the sign-in flow, Welcome
    * and the help drawn over them are outside the navigator - and the strip is then a mark, not a button.
@@ -96,16 +108,17 @@ export function DebugRecordingFrame(props: FrameProps) {
   return framed ? <>{props.children}</> : <OutermostFrame {...props} />;
 }
 
-function OutermostFrame({ hidden = false, onOpen, children }: FrameProps) {
+function OutermostFrame({ hidden = false, onFlap = false, onOpen, children }: FrameProps) {
   // The label is the strip's own, not the screen's: it has to re-localize with the app like one.
   useLocale();
   const recording = useDebugRecording();
   const insets = useSafeAreaInsets();
-  const show = recording && !hidden;
+  const show = recording && !hidden && !onFlap;
   const inner = useMemo(
     () => (show ? { ...insets, top: 0 } : insets),
     [show, insets],
   );
+  const flap = useMemo(() => (recording && onFlap ? { onOpen } : null), [recording, onFlap, onOpen]);
   return (
     <YStack flex={1}>
       {/* Outside the provider below, so the strip reads the real inset and clears the status bar. */}
@@ -120,10 +133,44 @@ function OutermostFrame({ hidden = false, onOpen, children }: FrameProps) {
         />
       ) : null}
       <FramedContext.Provider value>
-        <SafeAreaInsetsContext.Provider value={inner}>
-          {children}
-        </SafeAreaInsetsContext.Provider>
+        <FlapStripContext.Provider value={flap}>
+          <SafeAreaInsetsContext.Provider value={inner}>
+            {children}
+          </SafeAreaInsetsContext.Provider>
+        </FlapStripContext.Provider>
       </FramedContext.Provider>
+    </YStack>
+  );
+}
+
+/**
+ * Whether the screen's flap carries the strip now. The inbox header moves its window down by the
+ * strip's row and 4 (`FLAP_STRIP_SPACE`) while it does: R14 draws the window 32 lower.
+ */
+export function useFlapRecordingStrip(): boolean {
+  return useContext(FlapStripContext) !== null;
+}
+
+/** The room the strip takes on the flap, R14's 32: the shared strip row (its 30 rounded to 28) and `xs`. */
+export const FLAP_STRIP_SPACE = STATUS_STRIP_ROW + space.xs;
+
+/** The strip printed on the inbox's flap, clearing the status bar as every strip does (031 R14). */
+export function FlapRecordingStrip() {
+  useLocale();
+  const strip = useContext(FlapStripContext);
+  if (strip === null) {
+    return null;
+  }
+  return (
+    <YStack position="absolute" top={0} left={0} right={0}>
+      <StatusStrip
+        tone="flap"
+        label={t('debug.indicator')}
+        glyph={<RecordingDot onFlap />}
+        onPress={strip.onOpen}
+        accessibilityHint={t('debug.indicator.hint')}
+        testID="debugRecordingStrip"
+      />
     </YStack>
   );
 }

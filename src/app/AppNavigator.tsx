@@ -569,6 +569,7 @@ const withRecordingStrip: NonNullable<
 > = ({ route, navigation, children }) => (
   <DebugRecordingFrame
     hidden={route.name === 'Debug'}
+    onFlap={route.name === 'Messages'}
     onOpen={() => navigation.navigate('Debug')}
   >
     {children}

@@ -11,7 +11,7 @@ enableScreens(false);
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
 import { useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { TamaguiProvider } from 'tamagui';
 import {
@@ -20,7 +20,9 @@ import {
 } from 'react-native-safe-area-context';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AppNavigator, type AppData } from '../../src/app/AppNavigator';
-import { DebugRecordingFrame } from '../../src/app/DebugRecordingStrip';
+import { DebugRecordingFrame, FLAP_STRIP_SPACE } from '../../src/app/DebugRecordingStrip';
+import { InboxHeader } from '../../src/features/messages/screens/InboxHeader';
+import { lightTheme } from '../../src/theme/theme';
 import { navigationRef } from '../../src/app/navigationRef';
 import { LoginFlow } from '../../src/features/accounts/screens/LoginFlow';
 import { Welcome } from '../../src/features/accounts/screens/Welcome';
@@ -359,5 +361,63 @@ describe('outside the navigator', () => {
     expect(navigationRef.getCurrentRoute()?.name).toBe('Faq');
     expect(view.getAllByTestId('debugRecordingStrip')).toHaveLength(1);
     expect(view.getByRole('button', { name: t('debug.indicator') })).toBeTruthy();
+  });
+});
+
+describe('on the inbox, printed on the flap (031 R14)', () => {
+  // Until 2026-11-15 the inbox wore the chrome strip above it like any screen, and the envelope no
+  // longer reached the top of the screen. R14 prints it on the flap, under the status bar.
+  const ACCOUNT = { boxId: 'k4m9xrt', label: 'Alpha', alias: null, dbType: 'FO', host: 'production' };
+
+  async function inbox(onOpen = jest.fn()) {
+    const view = await ui(
+      <DebugRecordingFrame onFlap onOpen={onOpen}>
+        <InsetProbe />
+        <InboxHeader
+          account={ACCOUNT as unknown as DataBoxAccount}
+          unified={null}
+          isTestBox={false}
+          folder="received"
+          onFolder={() => {}}
+          sentNews={0}
+          onOpenSwitcher={() => {}}
+          onSearch={() => {}}
+        />
+      </DebugRecordingFrame>,
+    );
+    return { view, onOpen };
+  }
+  function InsetProbe() {
+    const insets = useSafeAreaInsets();
+    return <Text testID="probe">{`${insets.top}/${insets.bottom}`}</Text>;
+  }
+  /** The header's own top padding: where its window starts. */
+  const windowTop = (view: Awaited<ReturnType<typeof render>>) =>
+    StyleSheet.flatten(view.getByTestId('boxSwitcher').parent?.parent?.props.style)?.paddingTop;
+
+  it('draws no strip above the inbox and leaves it the whole inset, for the flap to reach the top', async () => {
+    await act(async () => {
+      startDebugRecording('standard');
+    });
+    const { view } = await inbox();
+    expect(view.getAllByTestId('debugRecordingStrip')).toHaveLength(1);
+    expect(view.getByTestId('probe')).toHaveTextContent('47/34');
+  });
+
+  it('prints it on the gold, clearing the status bar, with the window 32 lower as R14 draws it', async () => {
+    const { view, onOpen } = await inbox();
+    // 47 + the header's 12 + 4.
+    expect(windowTop(view)).toBe(63);
+    expect(view.queryByTestId('debugRecordingStrip')).toBeNull();
+    await act(async () => {
+      startDebugRecording('standard');
+    });
+    expect(windowTop(view)).toBe(63 + FLAP_STRIP_SPACE);
+    expect(FLAP_STRIP_SPACE).toBe(32);
+    const strip = view.getByTestId('debugRecordingStrip');
+    expect(strip).toHaveStyle({ paddingTop: 47, backgroundColor: 'transparent', borderBottomWidth: 0 });
+    expect(view.getByTestId('debugRecordingStrip-label')).toHaveStyle({ color: lightTheme.onGold });
+    await fireEvent.press(strip);
+    expect(onOpen).toHaveBeenCalledTimes(1);
   });
 });

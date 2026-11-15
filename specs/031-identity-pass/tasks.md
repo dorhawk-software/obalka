@@ -48,10 +48,17 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 
 ### Shell and first run
 
-- [ ] I01 iOS launch screen (`LaunchScreen.storyboard`, logo 96 on paper, both appearances) - **M**: the
-  logo is the envelope mark (captured 2026-11-12, `cap/00`).
-- [ ] I02 Android launch (no splash theme; the system splash shows the adaptive icon on #2563A6) - **N**.
-- [ ] I02.1 Before the settings load: a blank view on the paper colour (`App.tsx` 178-186) - **N**.
+- [x] I01 iOS launch screen (`LaunchScreen.storyboard`, logo 96 on paper, both appearances) - **M**: the
+  logo is the envelope mark (captured 2026-11-12, `cap/00`). Walked 2026-11-15 on the iOS simulator, light
+  and dark: paper and the mark, then R1's welcome with nothing moving between them. It has no words, so
+  the language does not reach it.
+- [x] I02 Android launch (no splash theme; the system splash shows the adaptive icon on #2563A6) - **N**,
+  then **fixed**: captured 2026-11-15, the splash stood on AppCompat's #FAFAFA and the screen turned to
+  paper under it. Now the window background is the paper of each appearance (`res/values*/paper.xml`),
+  and the splash takes it: paper, the icon, the blank paper, the app, in light and dark (no words).
+  Held by `launchAndIcons.test.ts`, red on the old styles.
+- [x] I02.1 Before the settings load: a blank view on the paper colour (`App.tsx` 178-186) - **N**, then
+  **matches**: captured 2026-11-15 in both appearances, the same paper as the splash before it.
 - [x] I03 JS `LaunchScreen` (loading: logo 84 + name + platform spinner; failed: retry) - **X**: a generic
   spinner where the product waits. R8. Fixed 2026-11-13: the lockup centred over all but the bottom
   120, one `WaitingBar` 120 wide at 84 (spoken "Načítání schránek"), and on a failure the message and
@@ -551,17 +558,34 @@ surface below changes too, and the owner has seen none of them in the identity. 
   stopped" - **N**: R9. Seen 2026-11-15 through the same swap with the longest, the English failed
   prune: two lines, 16 over and under, the right side 16 with no action (R9's 6 makes room for one).
 - [x] I61 Shell notices (removal, alias - dialogs) - **D**: the dialog (I52). R9. Built 2026-11-15: they are I84-I86, each with its glyph. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
-- [ ] I62 Debug recording strip (takes the top inset on every screen) - **N**.
+- [x] I62 Debug recording strip (takes the top inset on every screen) - **N**, then **fixed** to R14:
+  captured 2026-11-15, the inbox wore the chrome strip above its envelope, which no longer reached the
+  top. Now the inbox prints it on the flap under the status bar (`StatusStrip` tone `flap`: no fill, no
+  hairline, `onGold` words and chevron, the dot in the new fixed `dangerOnFlap` because the dark
+  `danger` measures 1.80 on the gold), and the window moves down 32 as R14 draws it. Every other
+  screen keeps the chrome strip, the header's tone. Cropped beside R14 at full resolution; walked light
+  and dark, Czech and English, inbox and Settings, and the flap strip opens Debug. Roundings: the
+  strip's 30 to the shared 28 row, the 2 under it to `xs` 4 (the window's 32 kept).
 - [x] I63 Notifications: deadline reminder and password nudge (small icon `ic_notification`, colour
   #2A5C9A) - **D**: the accent becomes the envelope's #2563A6; the glyph is the envelope already.
   Built 2026-11-15: the tint is the theme's `envelope`, not a copy of it; held by a notifier test, red
   on the old blue. The shade's look is walked with I128.
 - [x] I64 `ic_notification_alert.xml`, referenced nowhere - **D**: delete. Deleted 2026-11-15.
-- [ ] I65 App icons (iOS set, Android adaptive on #2563A6) - **N**: envelope and flap; check the flap at
-  the smallest size.
-- [ ] I65.1 No dark or tinted iOS icon and no Android monochrome (themed) layer - **X**: the envelope
-  drawn for each; a board in R8.
-- [ ] I66 Privacy covers (iOS launch storyboard, Android cover below API 33) - **N**.
+- [x] I65 App icons (iOS set, Android adaptive on #2563A6) - **N**: envelope and flap; check the flap at
+  the smallest size. Seen 2026-11-15 on the launcher, the splash and at 40 px in every appearance:
+  **matches**, the flap reads at the smallest size. The iOS set became one 1024 per appearance; Xcode
+  draws the sizes (`actool` compiled it, the app's catalog holds all three).
+- [x] I65.1 No dark or tinted iOS icon and no Android monochrome (themed) layer - **X**: the envelope
+  drawn for each; a board in R8. Built 2026-11-15 by `scripts/gen-app-icons.py` from the shipped
+  envelope's paths in R8's colours: dark is the blue envelope, gold flap and two folds on #17140F,
+  tinted is greyscale on black; the Android monochrome layer is R8's outline as a vector. The board
+  draws its own envelope, rounder than the shipped one; the icon keeps the shipped drawing (one object,
+  one drawing), for the canvas to take back (T051). Seen on the Pixel launcher with themed icons on,
+  beside R8's drawing.
+- [x] I66 Privacy covers (iOS launch storyboard, Android cover below API 33) - **N**, then **matches**:
+  2026-11-15. iOS: the snapshot the system stored when the app went to the background is the paper and
+  the mark, in each appearance, never the screen. Android: a build that forced the cover on (reverted)
+  showed it in the overview, the paper and the round icon, light and dark. No words.
 
 ### Motion
 

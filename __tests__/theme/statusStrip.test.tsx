@@ -188,6 +188,13 @@ describe('both themes', () => {
         edge: theme.border,
         chevron: theme.textMuted,
       });
+      // Printed on the inbox's flap (031 R14): the gold is its ground, in the gold's ink both ways.
+      expect(statusStripColors('flap', theme)).toEqual({
+        background: 'transparent',
+        ink: theme.onGold,
+        edge: 'transparent',
+        chevron: theme.onGold,
+      });
     }
   });
 

@@ -15,9 +15,10 @@ blue square, with the envelope at ENVELOPE_SHARE of the VISIBLE icon width on ea
   * Android legacy (API 24-25): the full-bleed square, and a circle cut from it.
 
 Writes src/assets/app-icon.svg (the iOS artwork, for reference and the store listings), the iOS
-AppIcon set and every Android density.
+AppIcon set (light, dark and tinted) and every Android density. The Android monochrome layer is a
+vector, drawn by hand: res/drawable/ic_launcher_monochrome.xml.
 
-Requires: google-chrome-stable + Pillow. Run from the repo root:
+Requires: Chrome (google-chrome-stable, the macOS app, or $CHROME) + Pillow. Run from the repo root:
     python3 scripts/gen-app-icons.py
 """
 import os
@@ -33,6 +34,10 @@ ICON_SVG = os.path.join(ROOT, 'src/assets/app-icon.svg')
 RES = os.path.join(ROOT, 'android/app/src/main/res')
 IOS = os.path.join(ROOT, 'ios/ObalkaDatovaSchranka/Images.xcassets/AppIcon.appiconset')
 BLUE = '#2563A6'
+
+# Linux names Chrome on the PATH; macOS keeps it in the app bundle.
+_MAC_CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+CHROME = os.environ.get('CHROME') or (_MAC_CHROME if os.path.exists(_MAC_CHROME) else 'google-chrome-stable')
 
 # The envelope's width as a share of the visible icon, on both platforms. 62% is where a system Mail
 # icon sits; the old icon was 43%.
@@ -54,15 +59,36 @@ def envelope_paths():
     return body, gold[1]
 
 
-def icon_svg(envelope_width, background):
+# The iOS 18 appearances (031 I65.1, board R8 "The app icon in dark and tinted modes", agreed
+# 2026-11-12): the same envelope, recoloured. Dark is the app's own envelope - blue body, gold flap,
+# the two folds the dark envelope draws - on the dark paper; tinted is greyscale on black for the
+# system to tint. Each: (ground, body, flap, folds or None).
+LIGHT = (BLUE, '#FFFFFF', '#FFC305', None)
+DARK = ('#17140F', BLUE, '#FFC305', 'rgba(9,30,64,.35)')
+TINTED = ('#000000', '#9A9A9A', '#E6E6E6', None)
+
+
+def icon_svg(envelope_width, background, colours=LIGHT):
     """A 1024 square with the envelope centred at `envelope_width` px wide."""
+    ground, body_fill, flap_fill, folds = colours
     body, flap = envelope_paths()
     k = envelope_width / ENV_W
-    bg = f'<rect width="1024" height="1024" fill="{BLUE}"/>' if background else ''
+    bg = f'<rect width="1024" height="1024" fill="{ground}"/>' if background else ''
+    fold = ''
+    if folds:
+        # R8 draws them from the body's bottom corners to just short of its middle, 54% down it, 2 of
+        # its 66 wide; clipped to the body so the rounded corners stay round.
+        tip_y = ENV_Y0 + 0.54 * ENV_H
+        gap = ENV_W / 66
+        fold = (
+            f'<clipPath id="b"><path d="{body}"/></clipPath>'
+            f'<path clip-path="url(#b)" fill="none" stroke="{folds}" stroke-width="{2 * gap:.1f}" '
+            f'd="M{ENV_X0} {ENV_Y1}L{ENV_CX - gap:.1f} {tip_y:.1f}M{ENV_X1} {ENV_Y1}L{ENV_CX + gap:.1f} {tip_y:.1f}"/>'
+        )
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">'
         f'{bg}<g transform="translate(512 512) scale({k:.5f}) translate({-ENV_CX:.2f} {-ENV_CY:.2f})">'
-        f'<path fill="#FFFFFF" d="{body}"/><path fill="#FFC305" d="{flap}"/></g></svg>'
+        f'<path fill="{body_fill}" d="{body}"/>{fold}<path fill="{flap_fill}" d="{flap}"/></g></svg>'
     )
 
 
@@ -74,7 +100,7 @@ def render(svg, transparent):
         open(src, 'w', encoding='utf-8').write(svg)
         subprocess.run(
             [
-                'google-chrome-stable', '--headless=new', f'--screenshot={out}',
+                CHROME, '--headless=new', f'--screenshot={out}',
                 '--window-size=1024,1024',
                 f'--default-background-color={"00000000" if transparent else "ffffffff"}',
                 '--force-device-scale-factor=1', '--force-color-profile=srgb',
@@ -104,9 +130,13 @@ diagonal_dp = (fg_width / ENV_W) * (ENV_W ** 2 + ENV_H ** 2) ** 0.5 * 108 / 1024
 assert diagonal_dp <= 66, f'envelope diagonal {diagonal_dp:.1f} dp leaves the 66 dp safe zone'
 foreground = render(icon_svg(fg_width, background=False), transparent=True)
 
-for size in (40, 58, 60, 80, 87, 120, 180, 1024):
-    # No alpha channel: App Store Connect rejects an icon that has one.
-    full.resize((size, size), Image.LANCZOS).save(f'{IOS}/icon-{size}.png')
+# One 1024 per appearance; Xcode draws every smaller size from it (a single-size set, 2026-11-15).
+# No alpha channel: App Store Connect rejects an icon that has one.
+full.save(f'{IOS}/icon-1024.png')
+for name, colours in (('dark', DARK), ('tinted', TINTED)):
+    render(icon_svg(ENVELOPE_SHARE * 1024, True, colours), transparent=False).convert('RGB').save(
+        f'{IOS}/icon-1024-{name}.png'
+    )
 
 LEGACY = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}
 FOREGROUND = {'mdpi': 108, 'hdpi': 162, 'xhdpi': 216, 'xxhdpi': 324, 'xxxhdpi': 432}

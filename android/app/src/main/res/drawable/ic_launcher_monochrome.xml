@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launcher's themed-icon layer (Android 13+): one colour, outline only, which the launcher tints
+     from the wallpaper (031 I65.1, board R8 "Android monochrome", agreed 2026-11-12). Drawn on the
+     board's 120 circle, which is the 72 dp a launcher shows of the 108 dp layer: the 180 viewport
+     puts 120 of it at 72 dp, 30 in from each edge. Until 2026-11-15 there was no layer, and a themed
+     launcher showed a generic tile. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="180"
+    android:viewportHeight="180">
+    <group
+        android:translateX="30"
+        android:translateY="30">
+        <path
+            android:pathData="M37,36H83A9,9 0,0 1,92 45V75A9,9 0,0 1,83 84H37A9,9 0,0 1,28 75V45A9,9 0,0 1,37 36Z"
+            android:strokeWidth="5"
+            android:strokeColor="#FFFFFF" />
+        <path
+            android:pathData="M30,44L56,62Q60,65 64,62L90,44"
+            android:strokeWidth="5"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineJoin="round" />
+    </group>
+</vector>

@@ -20,6 +20,13 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The app icon has a dark and a tinted look.** On iPhone dark mode shows the blue envelope with its
+  gold flap on a dark ground, and tinted mode a grey one; Android 13 and later recolour it from the
+  wallpaper when themed icons are on.
+- **On Android the app opens on its paper.** The system's opening screen is no longer grey-white, so
+  the screen no longer flashes to the app's colour after it.
+- **In the inbox, Debug mode's recording notice sits on the envelope's flap.** The envelope still
+  reaches the top edge.
 - **The backup looks like the rest of the app.** Back up and verify are two matching buttons, a
   running backup shows its progress right under the switch, each backup in the list has its
   documents label at the end, and an opened backup offers Delete and Restore side by side.
