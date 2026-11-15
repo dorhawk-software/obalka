@@ -1290,6 +1290,14 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   7 and 15 (bb06b66), 10 (75b13b6), 11 (013bc4c), 14 (1ea5abe; MessageDetail now takes
   `ScreenHeader quiet`, its hairline at 274 px like Settings'), 12 (ec40d12, the bug drawn on the
   Icons board first). 6 is written in not-now.md as "left as it is".
+  The canvas took all 17 (version 35, 2026-11-15): 22 boards redrawn as built, each rendered and cropped
+  beside a device capture; the sync also found "Čtu zprávy", the last first-person string (23daa6c).
+  Open for the owner: on a 360 dp phone a sent envelope's postmark lies over the sender's name and ID,
+  on the sent result (envelope 310 wide: the postmark from 64 to 172, the sender's column 18 to 138)
+  and in the detail (328 wide: from 82). R2's wider stamp pushed it 36 further in; at 102 from the
+  right it already reached 20 into the column. Seen on Obalka_Demo at 360 dp; at 411 the detail
+  clears it. And the password field keeps a placeholder ("Heslo") that repeats its label, now that
+  the name field has none.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
