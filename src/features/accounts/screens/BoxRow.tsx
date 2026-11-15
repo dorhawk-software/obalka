@@ -157,12 +157,14 @@ export function BoxRow({
               </Text>
             </XStack>
           ) : null}
-          {/* Bottom-left, so it never collides with the unread badge at top-right: a box can be
-              both unread and unreachable, and that combination is precisely the one worth seeing. */}
+          {/* Top-left, over the flap, so it never collides with the unread badge at top-right: a box
+              can be both unread and unreachable, and that combination is precisely the one worth
+              seeing. Until 2026-11-15 it sat bottom-left, over the monogram's first letter; the
+              letters sit on the tile's lower half (the owner's answer 15). */}
           {broken ? (
             <XStack
               position="absolute"
-              bottom={-5}
+              top={-5}
               left={-5}
               width={22}
               height={22}
@@ -215,12 +217,17 @@ export function BoxRow({
             // boxes in the same state read differently, and the reader has no way to know the
             // difference is about the badge. Everything on this row comes from the last refresh that
             // worked - the counts, the credit, the lot - so the sentence is true either way.
+            //
+            // Only the problem is in its tone; "· Poslední známý stav" explains the numbers and is
+            // muted. All of it was red until 2026-11-15, and a sheet of signed-out boxes turned red
+            // (the owner's answer 7).
             <Meta
-              color={brokenTone.fg}
+              color={theme.textMuted}
               marginTop={2}
               testID={`syncState-${account.boxId}`}
             >
-              {`${brokenLabel} · ${t('box.sync.stale')}`}
+              <Meta color={brokenTone.fg}>{brokenLabel}</Meta>
+              {` · ${t('box.sync.stale')}`}
             </Meta>
           ) : creditLine ? (
             <Meta

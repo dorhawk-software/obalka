@@ -20,6 +20,7 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Méně červené v přepínači schránek.** U schránky s problémem je červeně jen to, co se stalo; „Poslední známý stav“ je šedě a výstražný odznak už nezakrývá písmena.
 - **Záloha bez opakování.** Obrazovka zálohy říká každou věc jednou; přepínač příloh má kratší popis. Přihlášení jménem používá slovo ISDS „Uživatelské jméno“.
 - **Aplikace mluví sama za sebe.** Texty, které dřív mluvily v první osobě („Ukládám…“, „pošleme“), teď říkají, co dělá aplikace, nebo co se právě děje („Ukládání…“).
 - **Nedoručitelná zpráva má v Odeslaných svou značku.** Před slovem „Nedoručitelné“ stojí plné kolečko

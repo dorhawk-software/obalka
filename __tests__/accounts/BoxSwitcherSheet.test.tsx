@@ -7,6 +7,8 @@ import { BoxSwitcherSheet } from '../../src/features/accounts/screens/BoxSwitche
 import type { DataBoxAccount } from '../../src/services/isds/types';
 import { t } from '../../src/i18n/strings';
 import { BOX_COLORS, boxColorKey } from '../../src/theme/boxColor';
+import { lightTheme } from '../../src/theme/theme';
+import { chipTone } from '../../src/theme/chipTone';
 
 // 011 inbox-first IA: the box-switcher bottom sheet replaces the retired box-list home + AppDrawer as
 // the SOLE multi-box surface. It lists boxes (active ✓), switches in place, and reaches add-box /
@@ -237,6 +239,25 @@ describe('a box that is not syncing', () => {
     expect(view.getByTestId('syncState-box1')).toHaveTextContent(
       new RegExp(t('box.sync.stale')),
     );
+  });
+
+  it('puts only the problem in red; the memory after it is muted (the owner, 2026-11-15)', async () => {
+    // All of "Přihlášení vypršelo · Poslední známý stav" was red, so a sheet with several signed-out
+    // boxes turned red; the second half explains the numbers, it is not a second error.
+    const { view } = await renderSheet({ accounts: [account('box1', { syncError: 'reauth' })] });
+    const problem = view.getByText(t('box.sync.reauth'));
+    const stale = view.getByText(new RegExp(t('box.sync.stale')));
+    expect(StyleSheet.flatten(problem.props.style).color).toBe(chipTone('dangerSoft', lightTheme).fg);
+    expect(StyleSheet.flatten(stale.props.style).color).toBe(lightTheme.textMuted);
+  });
+
+  it('wears the alert badge top-left, over the flap, clear of the letters', async () => {
+    // Bottom-left it covered the monogram's first letter; the letters sit on the tile's lower half.
+    const { view } = await renderSheet({ accounts: [account('box1', { syncError: 'reauth' })] });
+    const style = StyleSheet.flatten(view.getByTestId('syncError-box1').props.style);
+    expect(style.top).toBeLessThan(0);
+    expect(style.left).toBeLessThan(0);
+    expect(style.bottom).toBeUndefined();
   });
 
   it('replaces the credit line, which is a fact from the refresh that failed', async () => {

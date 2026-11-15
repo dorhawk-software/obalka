@@ -786,6 +786,9 @@ After the critique (2026-11-15), the owner's answers, one by one:
   holds every string.
 - **The sign-in name:** "Přihlašovací jméno" with a placeholder lost to ISDS's own "Uživatelské jméno",
   no placeholder; the alias field's example is "Např. Osobní, Firma…".
+- **The switcher's red:** a broken box's whole line in red lost to the problem alone in its tone
+  ("Přihlášení vypršelo"), "· Poslední známý stav" in the muted ink. The alert badge moved from the
+  monogram's bottom-left, over its first letter, to the top-left, over the flap.
 
 ## Do's and Don'ts
 

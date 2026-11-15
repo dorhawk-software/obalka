@@ -20,6 +20,7 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Less red in the box switcher.** A box with a problem shows only the problem in red; "Last known state" is grey, and the alert badge no longer covers the letters.
 - **A backup screen that says each thing once.** The paragraphs that repeated the card are gone and the attachments switch has a shorter line. The sign-in form calls the name "Username", as ISDS does.
 - **The app speaks for itself.** Texts that said "we" now say what the app does, or what is happening.
 - **An undeliverable message has its mark in Sent.** "Undeliverable" now follows the filled
