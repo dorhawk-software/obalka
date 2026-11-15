@@ -294,7 +294,12 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     the kind; the credit under Od only beneath a paid stamp; short credit is R12's danger strip and
     the footer's refusal with "Koupit kredit".
   - [ ] I38.5 Subject, text and its hint (the text becomes a PDF). The fields and hint are built on the
-    letter sheet (2026-11-15); open: the PDF itself as R12's Czech A4 letter.
+    letter sheet (2026-11-15). The PDF is R12's Czech A4 letter since the same day: 25 mm sides, 20 top
+    and bottom, the sender and the mark, the recipient a part per line, the date at the right, the
+    subject in Bricolage, the text in Public Sans 10.5 pt, the foot line at the page's bottom; its words
+    in the app's language. Rendered on Obalka_Demo, pulled and laid over R12's page at the same size:
+    every line in place. The place before the date is not printed (the app does not know it).
+    Open: the walk on iOS, where the page is laid out at one CSS pixel per point (assumed, unproven).
   - [x] I38.6 Attachments: rows with remove, reading with its progress and cancel, the dashed add. The
     reading card holds its place; the add link lies over it, so nothing moves when reading starts.
   - [x] I38.7 Footer: errors (too large, attach, PDF, sign in again, send), send busy. Busy is R12's
@@ -1053,6 +1058,8 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     text field or the attachments; the build keeps them. The window is 3 taller from the roundings.
     R2's paid question: 20 above the stamp and under it, the words 15/21; the build is R9's `Dialog`
     (24 above the object, 18 under it, the words in Small), one anatomy for every question.
+  - R12's letter: "V Praze" before the date; the app does not know the sender's place, so the date
+    stands alone at the right.
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).

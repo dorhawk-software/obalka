@@ -49,6 +49,9 @@ export const cs: Record<string, string> = {
   'send.body': 'Text zprávy',
   'send.body.placeholder': 'Napište zprávu…',
   'send.body.hint': 'Z textu vytvoříme přílohu „Textová zpráva.pdf".',
+  // The letter the text becomes (R12): the box ID under each name, and the foot line.
+  'send.letter.boxId': 'ID datové schránky {id}',
+  'send.letter.footer': 'Odesláno datovou zprávou z aplikace Obálka',
   'send.attachments': 'Přílohy',
   'send.attachments.add': 'Přidat přílohu',
   'send.attachments.remove': 'Odebrat přílohu',
@@ -140,6 +143,8 @@ export const en: Record<string, string> = {
   'send.body.placeholder': 'Write a message…',
   'send.body.hint':
     'We’ll turn the text into a “Textová zpráva.pdf” attachment.',
+  'send.letter.boxId': 'Data box ID {id}',
+  'send.letter.footer': 'Sent as a data message from the Obálka app',
   'send.attachments': 'Attachments',
   'send.attachments.add': 'Add attachment',
   'send.attachments.remove': 'Remove attachment',

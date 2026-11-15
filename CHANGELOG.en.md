@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The message text becomes a letter on A4.** The "Textová zpráva.pdf" attachment carries the
+  sender, the recipient with their address, the date and the subject, as a Czech letter does, set in
+  the app's own typeface.
 - **A paid message asks with the stamp you are paying for.** The question before a postal data
   message is sent shows the stamp with its price and the box's credit, and rises like every other
   question in the app.

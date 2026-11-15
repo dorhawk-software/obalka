@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Z textu zprávy je dopis na A4.** Příloha „Textová zpráva.pdf" má odesílatele, příjemce s adresou,
+  datum a předmět, jak bývá v českém dopise zvykem, a je psaná stejným písmem jako aplikace.
 - **Placená zpráva se ptá se známkou, kterou zaplatíte.** Otázka před odesláním poštovní datové
   zprávy ukáže známku s cenou a kredit schránky a vyjede stejně jako ostatní otázky v aplikaci.
 - **Nová zpráva je obálka, kterou posíláte.** Odesílatel je na obálce, příjemce v jejím okénku a

@@ -432,7 +432,7 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
           // off the JS thread); otherwise the first attachment is the main document. ISDS requires ≥1.
           let docs: OutgoingDocument[];
           try {
-            docs = hasBody ? [await textToPdf(bodyText), ...files] : files;
+            docs = hasBody ? [await textToPdf({ sender: account, recipient, subject, text: bodyText }), ...files] : files;
           } catch {
             setBusy(false);
             setSendError(t('send.error.pdf'));
