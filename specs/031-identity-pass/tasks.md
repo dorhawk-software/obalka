@@ -1241,6 +1241,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   reads every one) and the help link's target over Pokročilé's; the monogram took the degree ("Ing.
   Ondřej Dvořák" was IO); `success` 4.36:1 on the paper (now #2A744C, 4.91); "ID" parted from the ID in
   Compose. Reply is written down as not now.
+  Found in the sync-back (2026-11-15): a sent envelope pinned its window to the bottom, so a window
+  with the address grew upwards over the postmark's date and time; the sender's lines now keep the
+  room down to the Sent board's 120 and the envelope grows downwards (sentDetail.test).
   Raised for the owner (design, not built unasked): neutral buttons on the paper (the sunken fill is
   1.03:1 there, Backup's Zálohovat nyní / Ověřit zálohu / Zobrazit heslo read as bold words);
   Nedoručitelné has no glyph and is the quietest state; the backup screen's prose (15 lines before the
@@ -1250,8 +1253,11 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   film's glint in dark looks like a smudge; the crash-report row's bell glyph; "budeme"/"ani my" in
   telemetry and backup copy (plural, so within the voice rule, the owner's call); the detail header
   taller with a faint title (documented exemption); the broken-box badge covering the monogram's first
-  letter; the spinner sliding a primary button's label sideways; the sign-in field's label and
-  placeholder differing ("Přihlašovací" / "Uživatelské jméno"); the "DPFO" example.
+  letter; the sign-in field's label and placeholder differing ("Přihlašovací" / "Uživatelské jméno");
+  the "DPFO" example; the date form (the boards write both "12.11.2026 09:20" and "12. 11. 2026
+  09:20", and "29.08." in lists; I46.2 waits for one form).
+  Built as drawn: the busy primary button sets its ring and the busy words centred as one group (the
+  words change too), as R8 and R12 draw it; nothing outside the button moves.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the

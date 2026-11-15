@@ -124,6 +124,14 @@ describe('a sent message (R7)', () => {
     expect(JSON.stringify(view.toJSON())).toContain(t('send.sent.postmark.ring'));
   });
 
+  it('starts the window under the postmark, so a window with an address grows the envelope down (031 T050)', async () => {
+    // Pinned to the envelope's bottom, the window grew upwards with the address and covered the
+    // postmark's date and time (struck 20 down, 108 across).
+    const view = await open();
+    await waitFor(() => view.getByTestId('detailEnvelope'));
+    expect(flat(view.getByTestId('detailSenderBlock')).minHeight).toBe(100);
+  });
+
   it('keeps the steps on the slip: one row while ISDS gives one time, then what is still to come', async () => {
     const view = await open();
     await waitFor(() => view.getByTestId('deliveryRecord'));

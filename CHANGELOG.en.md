@@ -205,6 +205,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **A sent message's window no longer covers the postmark.** With an address it grew upwards over
+  the date and time it was sent; now the envelope grows downwards.
 - **The clock over the gold flap reads in dark mode.** The status bar was white on yellow.
 - **The box switcher shows every box.** A fourth box hid under the list's edge with nothing to say
   it was there.

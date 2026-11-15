@@ -93,6 +93,16 @@ function FormNote({
 /** The sent envelope's stamp: the board's 84, its blank face 64 by 70. */
 const SENT_STAMP_FACE = { width: 64, height: 70 } as const;
 
+/**
+ * Where a sent envelope's window starts, under its top edge: the Sent board's 196 envelope less its 14
+ * below and the 62 window. The sender's lines keep the room down to it, so a window that grows (the
+ * address, a long name) grows the envelope downwards; pinned to the bottom it grew upwards and its top
+ * went over the postmark's date and time (031 T050).
+ */
+const SENT_WINDOW_TOP = 120;
+/** The envelope's 12 above the sender and the 8 between the sender and the window. */
+const SENT_SENDER_ROOM = SENT_WINDOW_TOP - 12 - 8;
+
 /** The corner of a sent envelope: the stamp, and the postmark whose waves cancel it once ISDS took it. */
 function SentCorner({ sentAt }: { readonly sentAt: number | null }) {
   return (
@@ -202,7 +212,7 @@ export function DetailEnvelope({
             ) : null}
             {sent ? (
               // Under the stamp's corner, as narrow as the board's 120.
-              <YStack maxWidth={120} gap={2}>
+              <YStack maxWidth={120} minHeight={SENT_SENDER_ROOM} gap={2} testID="detailSenderBlock">
                 <Overline color={theme.envelopeInkSoft}>{t('detail.from')}</Overline>
                 <Subheading color={theme.onSolid} testID="detailSender">
                   {sender.name || account.label}

@@ -181,6 +181,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Okno odeslané zprávy už nezakryje razítko.** S adresou rostlo okno nahoru přes datum a čas
+  odeslání; teď se obálka prodlouží dolů.
 - **Hodiny nad zlatou chlopní jsou v tmavém režimu čitelné.** Stavový řádek byl bílý na žluté.
 - **Přepínač schránek ukáže všechny schránky.** Čtvrtá schránka se schovala pod okraj seznamu a nic
   neříkalo, že tam je.
