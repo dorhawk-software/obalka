@@ -349,7 +349,8 @@ export const RegisterRow = memo(function RegisterRowView({
       })}
       testID={`message-${message.id}`}
     >
-      <YStack width={34} alignItems="center">
+      {/* At least 34: at the largest text the numeral wrapped digit by digit (031 I135). */}
+      <YStack minWidth={34} alignItems="center" testID="register-day">
         {showDay && delivered != null ? (
           <>
             <Day>{String(new Date(delivered).getDate())}</Day>

@@ -366,7 +366,9 @@ used 14, 12 and 11 throughout - 150-odd call sites sized a 13 or 15 role by hand
 rendered on a 16 line in one row and a 17 in the next, depending on which role it had been squeezed out
 of. The design is the source of truth, so the scale grew to meet it: Small and Small Strong at 14, Meta at
 12, and Tag at 11 as the one exception below the floor - pill text, a word or two inside a coloured
-shape, never a sentence. Text still grows with the system text size. Weight is the one thing a screen
+shape, never a sentence. Text still grows with the system text size, up to twice its size (`MAX_TEXT_SCALE`,
+Android's largest; iOS's accessibility sizes stop there, 2026-11-15), and a part of a drawing - a tile's
+monogram, a badge's count - keeps the size it is drawn at while the name beside it grows. Weight is the one thing a screen
 may still change on a role (`fontWeight`, resolved to the right face centrally); size, line height, face
 and tracking belong to the role, and `obalka/role-typography` reports a screen that sets them.
 

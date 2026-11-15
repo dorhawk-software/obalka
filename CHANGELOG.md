@@ -172,6 +172,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Při největším písmu se nic neusekne.** Den v seznamu se už nelámal po číslicích, zkratky
+  v dlaždicích se vejdou, pole příjemce není useknuté. Písmo roste nejvýš na dvojnásobek, i na iPhonu.
 - **Zrušené ověření při zapínání zámku už netvrdí, že telefon nemá zámek obrazovky.** Telefon
   s PIN kódem bez otisku prstu dostal po zrušení hlášku „Biometrika není k dispozici“.
 - **Ukazatel obnovení v tmavém režimu už není bílý kotouč.** Na Androidu ho aplikace kreslí na

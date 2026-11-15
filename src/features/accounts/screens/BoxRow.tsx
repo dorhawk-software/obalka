@@ -152,7 +152,10 @@ export function BoxRow({
               justifyContent="center"
               testID={`unread-${account.boxId}`}
             >
+              {/* Part of the avatar's drawing: it keeps its size at the largest text, where it grew
+                  over half the avatar (031 I135); the row's label says the count. */}
               <Text
+                maxFontSizeMultiplier={1}
                 fontSize={11}
                 fontWeight="800"
                 color={theme.onGold}

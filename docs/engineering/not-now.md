@@ -284,6 +284,13 @@ they wait for their own work. The owner decided "not now" on 2026-11-12.
   scheduled in, so after a switch it still arrives in the old one. Plan: its own spec - the device's
   language on first run, dates per language, an English `.lproj`, pending notifications re-scheduled
   on a switch. ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I137)
+- **iOS's accessibility text sizes stop at 2x (2026-11-15).** Walked at iOS's largest (about 3x), the
+  first screen cut the segmented labels and the Compose stamp in their drawn frames and squeezed the
+  password strip's words to nothing beside its action. Text now grows to twice its size and no
+  further (`MAX_TEXT_SCALE`), Android's largest, the size every screen is walked at. Plan: grow each
+  drawn part with the text (the stamp, the segmented control, a strip whose action moves under its
+  words), walk every screen at 3x, then lift the cap. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
+  I135)
 - **No error boundary (2026-11-12).** A render error leaves an empty screen with no way on. Plan: a
   boundary at the root with a fallback screen that offers to start again, reported only with consent;
   the screen gets a board on the canvas first. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)

@@ -6,7 +6,7 @@
 // postmark lands on this same stamp (the sent result, Motion 2).
 
 import { useRef, useState, type ReactNode } from 'react';
-import { View, type TextInput } from 'react-native';
+import { View, useWindowDimensions, type TextInput } from 'react-native';
 import { Input, XStack, YStack } from '../../../theme/ui';
 import { Caption, Overline, Subheading, Tag, Title } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -332,6 +332,9 @@ export function SearchWindow({
   const [focused, setFocused] = useState(autoFocus);
   // What is typed is set as the name it will become (the window's 15/700); the hint stays the body's.
   const face = value === '' ? typeScale.body : typeScale.subheading;
+  // At least a line at the reader's text size, and free to grow: a height in dp does not scale with the
+  // text, and at the largest text it cut the field in half, then Android wrapped the hint (031 I135).
+  const line = face.lineHeight * useWindowDimensions().fontScale;
   return (
     <WindowFrame ring={focused}>
       <YStack onPress={() => field.current?.focus()}>
@@ -342,8 +345,9 @@ export function SearchWindow({
             <Input
               ref={field}
               flex={1}
-              height={face.lineHeight}
-              minHeight={face.lineHeight}
+              // `auto`, not none: Tamagui's Input brings a 44 of its own.
+              height="auto"
+              minHeight={line}
               paddingVertical={0}
               paddingHorizontal={0}
               backgroundColor="transparent"

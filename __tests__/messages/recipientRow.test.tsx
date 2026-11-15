@@ -15,11 +15,13 @@
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import type { ReactElement } from 'react';
+import { Dimensions, StyleSheet } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { SnackbarProvider } from '../../src/app/Snackbar';
 import type { DataBoxAccount } from '../../src/services/isds/types';
 import { t } from '../../src/i18n/strings';
+import { type as typeScale } from '../../src/theme/typeScale';
 
 const mockSearch = jest.fn();
 const mockGetCredit = jest.fn(async () => 250);
@@ -231,5 +233,20 @@ describe('PDZ credit refresh on compose', () => {
     // Give the effect a chance to fire before asserting it did not.
     await new Promise(r => setTimeout(r, 200));
     expect(mockGetCredit).not.toHaveBeenCalled();
+  });
+});
+
+// Walked 2026-11-15 at Android's largest text (2.0, 031 I135): the search field in the recipient's
+// window was a line's height in dp, so the text RN scaled with the system was cut in half.
+describe('the recipient field at the reader s text size', () => {
+  it('is at least a line tall at the font scale, and free to grow', async () => {
+    const { fontScale } = Dimensions.get('window');
+    expect(fontScale).not.toBe(1);
+    const view = await ui(<ComposeScreen account={account} onBack={() => {}} onOpenSent={() => {}} />);
+    const field = view.getByTestId('composeRecipientQuery');
+    const style = StyleSheet.flatten(field.props.style);
+    expect(style.minHeight).toBe(typeScale.body.lineHeight * fontScale);
+    // Free to grow: Android wraps the hint at the largest text ("Jméno nebo ID / schránky").
+    expect(style.height).toBe('auto');
   });
 });

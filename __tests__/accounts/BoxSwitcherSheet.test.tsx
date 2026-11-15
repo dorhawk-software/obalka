@@ -264,6 +264,13 @@ describe('a box with unread mail', () => {
       borderTopWidth: 2,
     });
   });
+
+  // Walked 2026-11-15 at Android's largest text (2.0, 031 I135): the count grew the disc over half of
+  // the box's avatar. The disc is part of the avatar's drawing; the row's spoken label says the count.
+  it('keeps its count at the size it is drawn, at the largest text too', async () => {
+    const { view } = await renderSheet({ accounts: [account('box1', { unreadCount: 3 })] });
+    expect(view.getByText('3')).toHaveProp('maxFontSizeMultiplier', 1);
+  });
 });
 
 // 024 cycle 2. "The Vse section should look slightly different in the boxes selector, as not to

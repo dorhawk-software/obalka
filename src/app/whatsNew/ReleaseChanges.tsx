@@ -6,6 +6,7 @@
 // component, so the two places cannot drift apart (constitution V).
 
 import { Fragment } from 'react';
+import { useWindowDimensions } from 'react-native';
 import { XStack, YStack } from '../../theme/ui';
 import { Overline, Small, SmallStrong, Subheading } from '../../theme/Typography';
 import { useTheme } from '../../theme/ThemeProvider';
@@ -65,10 +66,12 @@ function ChangeItem({ entry, testID }: { readonly entry: ChangelogEntry; readonl
   const theme = useTheme();
   // The language `t()` is speaking: this content is written per language and shown in the same one.
   const locale = getActiveLocale();
+  // The first line's height at the reader's text size, so the dot sits on its middle (031 I135).
+  const firstLine = typeScale.small.lineHeight * useWindowDimensions().fontScale;
   return (
     <XStack gap={space.md} alignItems="flex-start">
       <YStack
-        height={typeScale.small.lineHeight}
+        height={firstLine}
         justifyContent="center"
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"

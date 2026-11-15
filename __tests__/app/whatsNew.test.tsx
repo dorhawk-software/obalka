@@ -5,7 +5,7 @@
 // them over a library update - so it is tested first and on its own.
 
 import { fireEvent, render, within } from '@testing-library/react-native';
-import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
+import { Dimensions, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 import { type as typeScale } from '../../src/theme/typeScale';
 import { lightTheme } from '../../src/theme/theme';
 import { TamaguiProvider } from 'tamagui';
@@ -136,6 +136,19 @@ describe('the sheet', () => {
     expect(view.getAllByText('New')).toHaveLength(1);
     fireEvent.press(view.getByTestId('whats-new-continue'));
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  // Walked 2026-11-15 at Android's largest text (2.0, 031 I135): the dot's box was the first line's
+  // height at 100 %, so at a larger text the dot sat above the middle of its line.
+  it('centres each dot on its first line at the reader s text size', async () => {
+    setActiveLocale('en');
+    const { fontScale } = Dimensions.get('window');
+    expect(fontScale).not.toBe(1);
+    const view = await render(
+      themed(<WhatsNewSheet releases={releasesSince(RELEASES, '0.3.0', '0.1.0')} since="0.1.0" onClose={() => {}} />),
+    );
+    const dot = view.getByTestId('change-0.3.0-new-0-dot', { includeHiddenElements: true });
+    expect(StyleSheet.flatten(dot.props.style).height).toBe(typeScale.small.lineHeight * fontScale);
   });
 
   it('leaves out the release heading when there is one release, and counts in Czech', async () => {

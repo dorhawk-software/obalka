@@ -196,6 +196,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **Nothing is cut at the largest text size.** The day in the list no longer breaks between its
+  digits, the monograms fit their tiles and the recipient field is whole. Text grows to at most twice
+  its size, on iPhone too.
 - **Cancelling the prompt that turns the lock on no longer claims the phone has no screen lock.** A
   phone with a PIN and no fingerprint was told "Biometrics unavailable" after a cancel.
 - **The refresh indicator is no longer a white disc in dark mode.** On Android it now sits on the

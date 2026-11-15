@@ -80,6 +80,14 @@ export const fonts = {
   bodyXBold: 'PublicSans-ExtraBold', // 800
 } as const;
 
+/**
+ * How far text grows with the reader's setting: twice its size, Android's largest (031 I135, walked
+ * 2026-11-15). iOS's accessibility sizes reach about 3x, where drawn parts with a fixed frame - the
+ * Compose stamp, the segmented control - cut their words; growing each of them is not now
+ * (docs/engineering/not-now.md). A part of a drawing (a monogram, a badge) asks for 1 itself.
+ */
+export const MAX_TEXT_SCALE = 2;
+
 export const type: Record<TextRole, TypeStyle> = {
   display: { fontSize: 26, lineHeight: 31, fontWeight: '800', letterSpacing: -0.5, fontFamily: fonts.displayXBold },
   title: { fontSize: 21, lineHeight: 26, fontWeight: '800', letterSpacing: -0.4, fontFamily: fonts.displayXBold },

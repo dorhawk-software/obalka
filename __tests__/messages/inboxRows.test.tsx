@@ -166,3 +166,14 @@ describe('weekdayShort', () => {
     expect(weekdayShort(SUNDAY)).toBe('Sun');
   });
 });
+
+// Walked 2026-11-15 at Android's largest text (2.0, 031 I135): the day's numeral wrapped digit by
+// digit in its 34 column ("1" over "0"). The column is at least 34 now and grows with the numeral.
+describe('the register at the largest text size', () => {
+  it('lets the day column grow rather than break its numeral', async () => {
+    const view = await row(envelope());
+    const style = StyleSheet.flatten(view.getByTestId('register-day').props.style) as Record<string, unknown>;
+    expect(style.minWidth).toBe(34);
+    expect(style.width).toBeUndefined();
+  });
+});

@@ -10,7 +10,7 @@
 import { forwardRef, type ComponentType } from 'react';
 import { Text as RNText } from 'react-native';
 import { useTheme } from './ThemeProvider';
-import { fonts } from './typeScale';
+import { fonts, MAX_TEXT_SCALE } from './typeScale';
 import {
   Button as TButton,
   H2 as TH2,
@@ -80,6 +80,7 @@ const ThemedInput = forwardRef<unknown, any>(function ThemedInputField(props, re
       // back to the system's (Roboto on Android) beside Public Sans everywhere else - seen on the
       // search field against its board (031 R4, 2026-11-13).
       fontFamily={fonts.bodyRegular}
+      maxFontSizeMultiplier={MAX_TEXT_SCALE}
       {...props}
     />
   );
@@ -115,7 +116,10 @@ const ThemedButton = forwardRef<unknown, any>(function ThemedButtonControl(props
   const lineHeight = Math.ceil(size * 1.4);
   return (
     <BaseButton ref={ref} {...rest} noTextWrap>
-      <RNText style={{ fontFamily: face, fontSize: size, lineHeight, color, textAlign, letterSpacing }}>
+      <RNText
+        maxFontSizeMultiplier={MAX_TEXT_SCALE}
+        style={{ fontFamily: face, fontSize: size, lineHeight, color, textAlign, letterSpacing }}
+      >
         {children}
       </RNText>
     </BaseButton>
@@ -125,7 +129,13 @@ ThemedButton.displayName = 'Button';
 
 export const YStack = pressable(TYStack as unknown as ComponentType<any>, 'YStack');
 export const XStack = pressable(TXStack as unknown as ComponentType<any>, 'XStack');
-export const Text = TText as unknown as ComponentType<any>;
+/** Tamagui's Text, growing with the reader's setting up to `MAX_TEXT_SCALE` unless it asks otherwise. */
+const BaseText = TText as unknown as ComponentType<any>;
+const CappedText = forwardRef<unknown, any>(function CappedTextRun(props, ref) {
+  return <BaseText ref={ref} maxFontSizeMultiplier={MAX_TEXT_SCALE} {...props} />;
+});
+CappedText.displayName = 'Text';
+export const Text = CappedText as unknown as ComponentType<any>;
 export const Paragraph = TParagraph as unknown as ComponentType<any>;
 export const ScrollView = TScrollView as unknown as ComponentType<any>;
 export const H2 = TH2 as unknown as ComponentType<any>;

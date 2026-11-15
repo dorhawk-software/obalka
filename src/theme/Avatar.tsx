@@ -48,7 +48,10 @@ export function Avatar({
       alignItems="center"
       justifyContent="center"
     >
+      {/* Part of the drawing: the tile keeps its size at the largest text, so its monogram does too
+          (031 I135); the name beside it scales. */}
       <Text
+        maxFontSizeMultiplier={1}
         fontSize={identity ? 17 : size >= 42 ? 15 : size >= 36 ? 13 : 12}
         fontWeight="700"
         letterSpacing={0}

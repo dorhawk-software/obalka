@@ -118,8 +118,10 @@ export function EnvelopeTile({
           justifyContent: 'center',
         }}
       >
-        {/* The Tag role's face and size; only the face, never `fontWeight`, as Typography does. */}
+        {/* The Tag role's face and size; only the face, never `fontWeight`, as Typography does. Part
+            of the drawing, so it keeps its size at the largest text (031 I135). */}
         <Text
+          maxFontSizeMultiplier={1}
           style={{
             fontFamily: type.tag.fontFamily,
             fontSize: type.tag.fontSize,
@@ -170,8 +172,10 @@ export function EnvelopeTile({
           />
         </Svg>
       )}
-      {/* The line is the iOS clipping model's (inkClipping.ts): an accent like "Ů" needs it. */}
+      {/* The line is the iOS clipping model's (inkClipping.ts): an accent like "Ů" needs it. The
+          tile keeps its size at the largest text, so its monogram does too (031 I135). */}
       <Text
+        maxFontSizeMultiplier={1}
         style={{
           fontFamily: fonts.bodyBold,
           fontSize: large ? 15 : 13,

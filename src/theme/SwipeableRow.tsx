@@ -14,6 +14,7 @@ import { Text, View } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
 import { useReducedMotion } from 'react-native-reanimated';
 import { haptics } from '../services/haptics';
+import { MAX_TEXT_SCALE } from './typeScale';
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -100,6 +101,7 @@ export function SwipeableRow({
       >
         {rightAction.icon}
         <Text
+          maxFontSizeMultiplier={MAX_TEXT_SCALE}
           style={{ color: rightAction.color, fontWeight: '700', fontSize: 12 }}
           numberOfLines={1}
         >

@@ -878,9 +878,22 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 
 ### Platform variants
 
-- [ ] I135 Largest text size: fixed heights that may clip (segmented 34, FAB 54, badges 20/11, avatar
+- [x] I135 Largest text size: fixed heights that may clip (segmented 34, FAB 54, badges 20/11, avatar
   monograms, the deadline suggestion's min height, the lock's failure slot 17) - **N**: walked at the
   largest size on both platforms.
+  Walked 2026-11-15 on Obalka_Demo at Android's largest (2.0), Czech: inbox, switcher, detail, Settings,
+  Backup, What's new, sign-in, compose. Fixed, each held by a test that failed first: the register's day
+  numeral wrapped digit by digit in its 34 column (now at least 34, `inboxRows.test`); the monograms
+  spilled out of their tiles or were cut to one letter ("F" for FÚ) and the unread badge grew over half
+  the avatar - parts of a drawing, so they keep their size while the name beside them grows
+  (`fixedObjectText.test`, `BoxSwitcherSheet.test`); compose's recipient field was a line in dp, cut in
+  half (now at least a line at the font scale, `recipientRow.test`; pixel-identical at 1.0); What's
+  new's dots sat above their first line (`whatsNew.test`). The segmented control, the stamp, the lock's
+  slot (a `minHeight` already) and the deadline suggestion held. iOS at its largest accessibility size
+  (about 3x, the simulator with the demo archive) cut the segmented labels and the stamp and squeezed
+  the password strip's words to nothing: text now stops at 2x (`MAX_TEXT_SCALE`, `textScaleCap.test`),
+  after which the iOS inbox reads as Android's largest; growing every drawn part to 3x is not now
+  (not-now.md).
 - [ ] I136 Touch targets under 48: the box menu's trigger (38), header back (44) - **N**.
 - [ ] I137 Language: the app starts in Czech whatever the device says; dates are Czech in English too;
   the iOS permission texts are Czech only - **N**: walked in English; the gaps are behaviour, not
