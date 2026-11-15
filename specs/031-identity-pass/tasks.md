@@ -434,9 +434,11 @@ surface below changes too, and the owner has seen none of them in the identity. 
   prune: two lines, 16 over and under, the right side 16 with no action (R9's 6 makes room for one).
 - [x] I61 Shell notices (removal, alias - dialogs) - **D**: the dialog (I52). R9. Built 2026-11-15: they are I84-I86, each with its glyph. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
 - [ ] I62 Debug recording strip (takes the top inset on every screen) - **N**.
-- [ ] I63 Notifications: deadline reminder and password nudge (small icon `ic_notification`, colour
+- [x] I63 Notifications: deadline reminder and password nudge (small icon `ic_notification`, colour
   #2A5C9A) - **D**: the accent becomes the envelope's #2563A6; the glyph is the envelope already.
-- [ ] I64 `ic_notification_alert.xml`, referenced nowhere - **D**: delete.
+  Built 2026-11-15: the tint is the theme's `envelope`, not a copy of it; held by a notifier test, red
+  on the old blue. The shade's look is walked with I128.
+- [x] I64 `ic_notification_alert.xml`, referenced nowhere - **D**: delete. Deleted 2026-11-15.
 - [ ] I65 App icons (iOS set, Android adaptive on #2563A6) - **N**: envelope and flap; check the flap at
   the smallest size.
 - [ ] I65.1 No dark or tinted iOS icon and no Android monochrome (themed) layer - **X**: the envelope
@@ -473,7 +475,7 @@ surface below changes too, and the owner has seen none of them in the identity. 
   settings glyph) - **D** build.
 - [x] I79 Hero glyphs at 132 (Mail, Send, Search, CloudOff, stroke 1.25) - **X**: R4. Fixed 2026-11-13:
   every one is a pose; `HeroIcon`, the hero tier, `heroInk` and the unused `EmptyState` are deleted.
-- [ ] I80 `BrandHeader.tsx`, imported nowhere, with a stale TODO - **D**: delete.
+- [x] I80 `BrandHeader.tsx`, imported nowhere, with a stale TODO - **D**: delete. Deleted 2026-11-15.
 - [ ] I81 Every touched screen walked in English (the longest Czech strings are on the boards).
 
 ### Typesetting (found while drawing round 1)
@@ -603,8 +605,9 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 
 ### Leftovers found by the second inventory
 
-- [ ] I80.1 Unused: `useIsWideWindow`; icons Bell, Paperclip, Menu, Send, Sun, Moon, Refresh, SyncOn;
-  tokens `accentSun`, `accentMoon`, `accentDevice` - **D**: delete with I78.
+- [x] I80.1 Unused: `useIsWideWindow`; icons Bell, Paperclip, Menu, Send, Sun, Moon, Refresh, SyncOn;
+  tokens `accentSun`, `accentMoon`, `accentDevice` - **D**: delete with I78. Deleted 2026-11-15, ahead
+  of I78 (nothing they would map to): all but Bell, which the code-entry form has used since I09.
 
 ## Phase 2: Redraws, round 1 (on the canvas)
 

@@ -134,10 +134,6 @@ export interface Theme {
   snackbarBg: string;
   snackbarInk: string;
 
-  // Playful accents for the appearance/theme icons (sun = warm, moon = indigo, device = teal).
-  accentSun: string;
-  accentMoon: string;
-  accentDevice: string;
 
   // ── The printed objects (031, "Obálka is printed matter") ──────────────────────────────────────
   // Values read from the agreed canvas's source (`Main`, `InboxA`, `Detail`, `DetailDark`, `Sent`,
@@ -249,9 +245,6 @@ export const lightTheme: Theme = {
   avatarRing: 'rgba(255,255,255,0.5)',
   snackbarBg: '#211B12',
   snackbarInk: '#FBF6EA',
-  accentSun: '#E8920C',
-  accentMoon: '#7A6BC4',
-  accentDevice: '#0E8C8C',
   envelope: '#2563A6',
   envelopeCrease: 'rgba(9,30,64,0.22)',
   envelopeInkSoft: 'rgba(255,255,255,0.92)',
@@ -333,9 +326,6 @@ export const darkTheme: Theme = {
   avatarRing: 'rgba(0,0,0,0.28)',
   snackbarBg: '#211B12', // NOT inverted for dark - see the token's doc comment
   snackbarInk: '#FBF6EA',
-  accentSun: '#F2A93B',
-  accentMoon: '#9B8FE0',
-  accentDevice: '#39BDBD',
   // The objects are printed matter: the envelope, its flap, the stamp and the seal keep their colours
   // at night, as the agreed DetailDark board draws them. Only what is paper ON the screen - the window,
   // the planes, the sheet's edge - follows the appearance.

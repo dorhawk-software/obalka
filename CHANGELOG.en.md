@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Reminders and password alerts carry the envelope's blue in the notification shade,** the same as
+  the app icon.
 - **Every question shows what it is about.** A mark stands above its title: the lock, the backup, the
   attachment, the transfer or the alert; in a transfer the main answer is filled and comes first.
 - **The short notices at the bottom of the screen no longer cover the Compose button.** They stand above

@@ -17,7 +17,7 @@
 // without knowing about it. RN `Modal`s render outside that tree and carry the cap themselves.
 
 import type { ReactNode } from 'react';
-import { View, useWindowDimensions } from 'react-native';
+import { View } from 'react-native';
 import { useTheme } from './ThemeProvider';
 
 /**
@@ -56,13 +56,3 @@ export const sheetWidth = {
   width: '100%',
   maxWidth: MAX_CONTENT_WIDTH,
 } as const;
-
-/**
- * Whether this window is wide enough that the cap is actually doing something.
- *
- * For the rare case where a layout needs to KNOW, rather than merely be constrained - currently
- * nothing does, and that is the point: the cap alone should be enough almost everywhere.
- */
-export function useIsWideWindow(): boolean {
-  return useWindowDimensions().width > MAX_CONTENT_WIDTH;
-}

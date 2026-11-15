@@ -24,6 +24,7 @@ import notifee, {
 import { Linking, Platform } from 'react-native';
 import { reportFailure } from '../telemetry/telemetry';
 import { t } from '../../i18n/strings';
+import { lightTheme } from '../../theme/theme';
 import { reminderNotificationIds } from '../../features/messages/state/reminders';
 import {
   PASSWORD_NUDGE_PREFIX,
@@ -46,8 +47,8 @@ const CHANNEL_REMINDERS = 'reminders';
 const CHANNEL_PASSWORD = 'password';
 /** iOS: shapes the hidden-preview form (title kept, body replaced). */
 const CATEGORY_REDACTED = 'redacted';
-/** Brand blue - a date the user set. */
-const ACCENT = '#2A5C9A';
+/** The envelope's blue, the logo's own and fixed in both appearances, beside the envelope glyph. */
+const ACCENT = lightTheme.envelope;
 
 /** Channels retired along the way. An orphan channel keeps offering a switch nothing can send to. */
 const RETIRED_CHANNELS = ['sync', 'messages', 'receipts', 'alerts'];

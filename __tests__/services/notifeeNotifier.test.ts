@@ -19,6 +19,7 @@ import type {
   ScheduleReminderInput,
 } from '../../src/services/notifications/notifications';
 import { passwordNudgeIds } from '../../src/features/accounts/state/passwordNudge';
+import { darkTheme, lightTheme } from '../../src/theme/theme';
 
 jest.mock('../../src/services/telemetry/telemetry', () => ({
   reportFailure: jest.fn(),
@@ -258,6 +259,19 @@ describe('NotifeeNotifier - password nudges', () => {
       expect(n.body).toContain('9.\u00A02.\u00A02027');
       expect(trigger).not.toHaveProperty('alarmManager');
     }
+  });
+
+  it("tints both kinds in the envelope's blue, the logo's own (031 I63)", async () => {
+    // Until 2026-11-15 the tint was the old brand blue #2A5C9A, a shade off the icon beside it.
+    await new NotifeeNotifier().scheduleReminder({
+      boxId: 'b1',
+      messageId: 'm1',
+      subject: 'Výzva',
+      timers: { dayBefore: NOW + DAY, onDay: NOW + 2 * DAY },
+    });
+    await new NotifeeNotifier().syncPasswordNudges([nudge()]);
+    expect(create.mock.calls.map(([n]) => n.android.color)).toEqual(Array(4).fill(lightTheme.envelope));
+    expect(lightTheme.envelope).toBe(darkTheme.envelope);
   });
 
   it('skips a moment that has passed', async () => {

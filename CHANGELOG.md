@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Připomínky a upozornění na heslo mají v liště oznámení modrou barvu obálky,** stejnou jako ikona
+  aplikace.
 - **Každá otázka ukazuje, čeho se týká.** Nad nadpisem je značka: zámek, záloha, příloha, přenos nebo
   upozornění; při přenosu dat je hlavní odpověď zvýrazněná a stojí první.
 - **Krátká oznámení dole na obrazovce už nezakrývají tlačítko Napsat.** Stojí nad ním, odcházejí

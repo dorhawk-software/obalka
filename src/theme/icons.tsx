@@ -37,19 +37,12 @@ import {
   Layers,
   Lock,
   Mail,
-  Menu,
   Navigation,
-  Moon,
-  Paperclip,
   Pencil,
   Plus,
-  RefreshCw,
-  RotateCw,
   Search,
-  Send,
   ShieldCheck,
   Smartphone,
-  Sun,
   SlidersHorizontal,
   Timer,
   Trash,
@@ -92,10 +85,6 @@ export function LayersIcon({ size = 22, color = '#000' }: IconProps) {
 
 export function MailIcon({ size = 22, color = '#000' }: IconProps) {
   return <Mail size={size} color={color} strokeWidth={2} />;
-}
-
-export function PaperclipIcon({ size = 22, color = '#000' }: IconProps) {
-  return <Paperclip size={size} color={color} strokeWidth={2} />;
 }
 
 export function SearchIcon({ size = 22, color = '#000' }: IconProps) {
@@ -175,10 +164,6 @@ export function CheckIcon({ size = 18, color = '#000' }: IconProps) {
   return <Check size={size} color={color} strokeWidth={2} />;
 }
 
-export function MenuIcon({ size = 24, color = '#000' }: IconProps) {
-  return <Menu size={size} color={color} strokeWidth={2} />;
-}
-
 export function PlusIcon({ size = 24, color = '#000' }: IconProps) {
   return <Plus size={size} color={color} strokeWidth={2} />;
 }
@@ -193,19 +178,6 @@ export function ChevronRightIcon({ size = 20, color = '#000' }: IconProps) {
 
 export function ChevronDownIcon({ size = 20, color = '#000' }: IconProps) {
   return <ChevronDown size={size} color={color} strokeWidth={2} />;
-}
-
-/** Paper-plane - sent folder / send action. */
-export function SendIcon({ size = 22, color = '#000' }: IconProps) {
-  return <Send size={size} color={color} strokeWidth={2} />;
-}
-
-export function SunIcon({ size = 22, color = '#000' }: IconProps) {
-  return <Sun size={size} color={color} strokeWidth={2} />;
-}
-
-export function MoonIcon({ size = 22, color = '#000' }: IconProps) {
-  return <Moon size={size} color={color} strokeWidth={2} />;
 }
 
 export function SmartphoneIcon({ size = 22, color = '#000' }: IconProps) {
@@ -231,10 +203,6 @@ export function SettingsIcon({ size = 22, color = '#000' }: IconProps) {
   );
 }
 
-export function RefreshIcon({ size = 22, color = '#000' }: IconProps) {
-  return <RefreshCw size={size} color={color} strokeWidth={2} />;
-}
-
 /** Opens something outside the app - the source-code row. The design draws it at stroke-width 1.8. */
 export function ExternalLinkIcon({ size = 17, color = '#000' }: IconProps) {
   return <ExternalLink size={size} color={color} strokeWidth={1.8} />;
@@ -247,7 +215,7 @@ export function HelpIcon({ size = 16, color = '#000' }: IconProps) {
 
 /*
  * A sent message's delivery state, as a glyph - used by the sent list row and the sent detail's
- * timeline. Note these are NOT the Send/Check exported above: at 16px the design switches to a
+ * timeline. Note these are NOT the plain Lucide plane and check: at 16px the design switches to a
  * different plane (one closed outline, no fold stroke) and a heavier check, and it marks the terminal
  * state SOLID so legal delivery reads as "done" at a glance.
  */
@@ -333,11 +301,6 @@ export function VaultIcon({ size = 13, color = '#000' }: IconProps) {
   // lucide `archive` IS the design's safe: same lid rect + body + handle line, each pulled in ~1 unit
   // of the 24 viewBox (≈0.5px at 13px). Not worth a hand-drawn copy - cf. StatusSentIcon.
   return <Archive size={size} color={color} strokeWidth={2} />;
-}
-
-/** Background sync is running - the design draws a SINGLE-arc refresh, not the two-arc `RefreshCw`. */
-export function SyncOnIcon({ size = 19, color = '#000' }: IconProps) {
-  return <RotateCw size={size} color={color} strokeWidth={2} />;
 }
 
 export function ClockIcon({ size = 18, color = '#000' }: IconProps) {
