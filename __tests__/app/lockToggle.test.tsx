@@ -29,7 +29,6 @@ const mockSettings = {
 };
 
 const mockLock = {
-  isAvailable: jest.fn(async () => true),
   enable: jest.fn(async () => 'enabled' as const),
   disable: jest.fn(async () => {}),
 };
@@ -101,5 +100,44 @@ describe('switching the app lock off', () => {
     await waitFor(() => expect(mockSettings.setAppLock).toHaveBeenCalledWith(false));
     expect(mockLock.disable).toHaveBeenCalledTimes(1);
     expect(view.queryByTestId('lock-disable-failed-dialog')).toBeNull();
+  });
+});
+
+// Walked 2026-11-15 on a phone with a PIN and no fingerprint (031 I125): cancelling the PIN prompt
+// that turns the lock on opened "Biometrics unavailable - this device has no fingerprint, face, or
+// device code". A cancel is the person's answer; only a phone with no screen lock gets that sheet.
+describe('switching the app lock on', () => {
+  const off = () => {
+    mockSettings.appLock = false;
+  };
+  afterEach(() => {
+    mockSettings.appLock = true;
+  });
+
+  it('says nothing when the person cancels the prompt, biometric or not', async () => {
+    off();
+    mockLock.enable.mockResolvedValueOnce('cancelled' as never);
+    const view = await mount();
+
+    await act(async () => {
+      fireEvent.press(view.getByTestId('lock-toggle'));
+    });
+
+    await waitFor(() => expect(mockLock.enable).toHaveBeenCalled());
+    expect(view.queryByTestId('lock-unavailable-dialog')).toBeNull();
+    expect(mockSettings.setAppLock).not.toHaveBeenCalled();
+  });
+
+  it('explains when the phone has no screen lock to put the key behind', async () => {
+    off();
+    mockLock.enable.mockResolvedValueOnce('noScreenLock' as never);
+    const view = await mount();
+
+    await act(async () => {
+      fireEvent.press(view.getByTestId('lock-toggle'));
+    });
+
+    await waitFor(() => expect(view.getByTestId('lock-unavailable-dialog')).toBeTruthy());
+    expect(mockSettings.setAppLock).not.toHaveBeenCalled();
   });
 });

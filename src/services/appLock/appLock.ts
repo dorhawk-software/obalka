@@ -18,8 +18,6 @@ export type UnlockResult = 'unlocked' | 'failed' | 'noScreenLock' | 'keyUnreadab
 export type EnableResult = 'enabled' | 'cancelled' | 'noScreenLock';
 
 export interface AppLock {
-  /** Can the device gate the app (a biometric is enrolled)? Drives whether the toggle is offerable. */
-  isAvailable(): Promise<boolean>;
   /** Switch the lock on: the key goes behind the gate. One prompt. */
   enable(promptTitle: string): Promise<EnableResult>;
   /** Switch the lock off: the key goes back to the ungated item. No prompt; throws if it cannot. */

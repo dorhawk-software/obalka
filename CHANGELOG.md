@@ -170,6 +170,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Zrušené ověření při zapínání zámku už netvrdí, že telefon nemá zámek obrazovky.** Telefon
+  s PIN kódem bez otisku prstu dostal po zrušení hlášku „Biometrika není k dispozici“.
 - **Ukazatel obnovení v tmavém režimu už není bílý kotouč.** Na Androidu ho aplikace kreslí na
   barvu karet.
 - **Panel dole na Androidu zavřete stažením dolů.** Výběr schránky, výběr jazyka nebo lhůty i ostatní

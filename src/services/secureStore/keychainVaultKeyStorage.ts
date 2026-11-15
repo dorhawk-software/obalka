@@ -121,10 +121,6 @@ export class KeychainVaultKeyStorage implements VaultKeyStorage {
     return Keychain.isPasscodeAuthAvailable();
   }
 
-  async canUseBiometrics(): Promise<boolean> {
-    return (await Keychain.getSupportedBiometryType()) != null;
-  }
-
   async removeLegacyToken(): Promise<void> {
     await Keychain.resetGenericPassword({ service: LEGACY_LOCK_SERVICE });
   }

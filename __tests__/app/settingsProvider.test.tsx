@@ -27,7 +27,7 @@ jest.mock('../../src/features/accounts/deps', () => ({
       mockStore.set(k, v);
     },
   },
-  appLock: { isAvailable: async () => false },
+  appLock: {},
 }));
 
 function Probe() {

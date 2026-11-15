@@ -42,8 +42,6 @@ export interface VaultKeyStorage {
   hasGated(): Promise<boolean>;
   /** Whether the phone has a screen lock, without which no gated item can exist. */
   canGate(): Promise<boolean>;
-  /** Whether a biometric is enrolled - what decides if the Settings row offers the lock at all. */
-  canUseBiometrics(): Promise<boolean>;
   /** Delete the placeholder item the app lock used before the vault (`cz.obalka.applock`). */
   removeLegacyToken(): Promise<void>;
 }
@@ -264,17 +262,6 @@ export class Vault implements AppLock {
   }
 
   // --- AppLock -----------------------------------------------------------------------------------
-
-  async isAvailable(): Promise<boolean> {
-    try {
-      return await this.deps.storage.canUseBiometrics();
-    } catch (e) {
-      // `false` here hides the App-lock row entirely. A phone that HAS biometrics and reports that
-      // it does not is indistinguishable, to the user, from a phone that has none.
-      reportFailure('appLock.arm', e, { stage: 'native' });
-      return false;
-    }
-  }
 
   /**
    * Put the key behind the gate and switch the lock on. One prompt on either platform: Android asks
@@ -793,7 +780,6 @@ export class InMemoryVaultKeyStorage implements VaultKeyStorage {
   platform: 'ios' | 'android' = 'ios';
   /** Whether the phone has a screen lock. */
   screenLock = true;
-  biometrics = true;
   /** What the next prompt does. `invalidated` models a gated key the OS has permanently invalidated. */
   prompt: 'succeed' | 'cancel' | 'invalidated' = 'succeed';
   /** Prompts actually shown. */
@@ -893,10 +879,6 @@ export class InMemoryVaultKeyStorage implements VaultKeyStorage {
 
   async canGate(): Promise<boolean> {
     return this.screenLock;
-  }
-
-  async canUseBiometrics(): Promise<boolean> {
-    return this.biometrics;
   }
 
   async removeLegacyToken(): Promise<void> {

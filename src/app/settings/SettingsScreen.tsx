@@ -132,10 +132,9 @@ export function SettingsScreen({
         const result = await appLockService.enable(t('lock.prompt'));
         if (result === 'enabled') {
           setAppLock(true);
-        } else if (
-          result === 'noScreenLock' ||
-          !(await appLockService.isAvailable())
-        ) {
+        } else if (result === 'noScreenLock') {
+          // Only a phone with no screen lock. A cancel is the person's answer: until 2026-11-15 it also
+          // opened this sheet whenever no biometric was enrolled, on a phone that had a PIN (031 I125).
           setNoLock(true);
         }
       } else {

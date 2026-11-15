@@ -194,6 +194,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **Cancelling the prompt that turns the lock on no longer claims the phone has no screen lock.** A
+  phone with a PIN and no fingerprint was told "Biometrics unavailable" after a cancel.
 - **The refresh indicator is no longer a white disc in dark mode.** On Android it now sits on the
   colour of the cards.
 - **On Android, a sheet closes when you drag it down.** The box switcher, the language and deadline

@@ -17,4 +17,4 @@ src/i18n/strings.ts 1795
 src/services/db/messagesStore.ts 766
 src/services/isds/isdsTransport.ts 1201
 src/services/isds/soap.ts 717
-src/services/secureStore/vault.ts 916
+src/services/secureStore/vault.ts 898

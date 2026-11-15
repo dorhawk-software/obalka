@@ -63,7 +63,7 @@ jest.mock('../../src/features/accounts/deps', () => ({
       });
     },
   },
-  appLock: { isAvailable: async () => false },
+  appLock: {},
 }));
 
 /** A screen: its words, read when it renders, the way every screen reads them. */

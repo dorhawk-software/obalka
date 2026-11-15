@@ -22,7 +22,6 @@ function fakeLock(answer: UnlockResult): AppLock {
     throw new Error(`fakeLock was not told about ${name}`);
   };
   return {
-    isAvailable: refuse('isAvailable'),
     enable: refuse('enable'),
     disable: refuse('disable'),
     forget: refuse('forget'),

@@ -819,8 +819,15 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 
 ### What the system draws around the app
 
-- [ ] I125 Biometric and passcode prompts and their titles (`lock.prompt`, `backup.prompt.*`,
+- [x] I125 Biometric and passcode prompts and their titles (`lock.prompt`, `backup.prompt.*`,
   `transfer.prompt.keepKey`) - **N**: the words follow the Lock board ("Obálka je zapečetěná").
+  Walked 2026-11-15 on Obalka_Demo (a PIN, no fingerprint): the system's PIN screen says "Unlock
+  Obálka", the Lock board's verb; the backup and transfer prompts name what they open, as verbs. The
+  screen itself is the system's and cannot be captured (FLAG_SECURE), so the words were read from its
+  view tree. **Fixed** on the way: cancelling that prompt opened "Biometrics unavailable - no
+  fingerprint, face, or device code" on a phone with a PIN, because Settings asked after any cancel
+  whether a biometric was enrolled. Only a phone with no screen lock gets the sheet now
+  (`lockToggle.test`, red before); the biometric check had no other use and is gone.
 - [ ] I126 Notification permission: asked from the nudge (I86), the first reminder, and "alerts off" -
   **N**.
 - [ ] I127 Camera permission: asked when the scanner opens, with no word before it - **X**: the mobile
