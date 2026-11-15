@@ -1,27 +1,31 @@
-// The app's dialog (009 §3) - the shape every confirm in this app takes.
+// The app's dialog (009 §3) - the shape every question and notice in this app takes.
 //
 // Extracted from `RemoveBoxDialog`, which had it first, when the backup screen needed three more.
 // The point is not reuse for its own sake: the OS `Alert` is a different visual language entirely
 // (system fonts, system spacing, ALL-CAPS buttons), and one screen using it makes the app feel like
 // two apps stitched together. Reported plainly: "the default modal is ugly as heck".
 //
-// Metrics live here once, so a second dialog cannot drift from the first (constitution V).
+// Board R9 (031 I52, agreed 2026-11-12): "the paid-send sheet, for every question" - one anatomy, a
+// bottom sheet. The grabber, the object or glyph the question is about, the title, the words, and the
+// answers under the thumb, one above the other, the filled or danger answer first and the way out
+// last. It is `BottomSheet` itself, so it rises as every sheet does (240 ms; a fade under Reduce
+// Motion), closes as every sheet does - the scrim, a swipe, back - and its words scroll while its
+// answers never do: at the largest text sizes a long message used to push the buttons off the screen
+// (2026-09-15). Until 2026-11-15 it was a card in the middle of the screen with its answers in a row.
 //
-// The words scroll and the buttons do not. React Native scales a dialog's text with the system text size
-// and nothing else about it, so at the largest sizes a long message used to push the buttons below the
-// bottom of the screen: back and a tap on the dim still closed the dialog, but the choice it asked for
-// could not be made (2026-09-15). Where everything fits - the default text size, and every dialog in the
-// app at it - the scroll is exactly as tall as its words and the dialog is drawn as it always was.
+// Roundings from the board: the 22 above the object and above the answers is 24; the title stands 16
+// under a glyph's well and 18 under an object, as drawn.
 
-import { Modal, Pressable, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRef, type ReactNode } from 'react';
-import { XStack, YStack } from './ui';
-import { BodyStrong, Caption, Heading, Value } from './Typography';
+import type { ReactNode } from 'react';
+import { YStack } from './ui';
+import { Small, Title } from './Typography';
 import { useTheme } from './ThemeProvider';
-import { useScrim } from './useScrim';
-import { PressScale } from './PressScale';
-import { raised } from './depth';
+import { BottomSheet } from './BottomSheet';
+import { InkButton, inkButtonInk } from './InkButton';
+import { NeutralButton } from './NeutralButton';
+import { Well } from './Well';
+import type { OffsetGlyphName } from './offsetIcons';
+import { space } from './spacing';
 
 export interface DialogAction {
   label: string;
@@ -35,12 +39,19 @@ export interface DialogAction {
    */
   icon?: (color: string) => ReactNode;
   /**
-   * `primary` fills with ink, `danger` with the danger colour, `neutral` is the outlined one.
+   * `primary` fills with ink, `danger` with the danger colour, `neutral` is the sunken one.
    * A dialog has at most one primary and at most one danger - more than one filled button and the
    * user has to read all of them to find the safe way out.
    */
   tone?: 'primary' | 'danger' | 'neutral';
   testID?: string;
+}
+
+/** R9's order: the filled and danger answers first, under the words; the neutral ones last. */
+function inOrder(actions: readonly DialogAction[]): DialogAction[] {
+  const filled = actions.filter(a => (a.tone ?? 'neutral') !== 'neutral');
+  const neutral = actions.filter(a => (a.tone ?? 'neutral') === 'neutral');
+  return [...filled, ...neutral];
 }
 
 export function Dialog({
@@ -49,6 +60,8 @@ export function Dialog({
   body,
   actions,
   onDismiss,
+  glyph,
+  object,
   testID,
 }: {
   readonly title: string;
@@ -56,178 +69,91 @@ export function Dialog({
   readonly subtitle?: string;
   readonly body: ReactNode;
   readonly actions: DialogAction[];
-  /** Tapping the scrim or pressing back. Always the SAFE outcome, never the destructive one. */
+  /** Tapping the scrim, a swipe down, or back. Always the SAFE outcome, never the destructive one. */
   readonly onDismiss: () => void;
+  /**
+   * The glyph the question is about, drawn in a 56 well (R9's mobile data, a failed removal): an
+   * offset glyph by name, or any glyph drawn in the colour given.
+   */
+  readonly glyph?: OffsetGlyphName | ((color: string) => ReactNode);
+  /** The thing itself, drawn as it is (R9's box removal: the box's envelope tile). */
+  readonly object?: ReactNode;
   readonly testID?: string;
 }) {
   const theme = useTheme();
-  const scrim = useScrim(0.45);
-  const insets = useSafeAreaInsets();
-  // Two fit side by side; three do not, and a squeezed row of three is how people press the wrong one.
-  const stacked = actions.length > 2;
-  // How tall the scroll is drawn and how tall its words are, as last laid out, and whether the reader has
-  // been shown there is more. A message cut off at the bottom is only half a hint, and iOS draws no
-  // scroll indicator until something scrolls, so the indicators are flashed once when the words do not
-  // fit. Refs rather than state: none of it changes what is drawn.
-  const scrollRef = useRef<ScrollView>(null);
-  const drawnHeight = useRef(0);
-  const wordsHeight = useRef(0);
-  const hinted = useRef(false);
-  const hintIfCut = () => {
-    // A dp of slack: a scroll exactly as tall as its words can measure a fraction shorter than them.
-    if (!hinted.current && drawnHeight.current > 0 && wordsHeight.current - drawnHeight.current > 1) {
-      hinted.current = true;
-      scrollRef.current?.flashScrollIndicators();
-    }
-  };
+  let head: ReactNode = null;
+  if (object != null) {
+    head = <YStack marginTop={space.section}>{object}</YStack>;
+  } else if (glyph != null) {
+    head = (
+      <YStack marginTop={space.section}>
+        {typeof glyph === 'string' ? <Well large name={glyph} /> : <Well large>{glyph(theme.text)}</Well>}
+      </YStack>
+    );
+  }
+  let titleTop: number = space.inset;
+  if (object != null) {
+    titleTop = space.gutter;
+  }
   return (
-    <Modal
-      visible
-      transparent
-      animationType="fade"
-      statusBarTranslucent
-      onRequestClose={onDismiss}
+    <BottomSheet
+      onClose={onDismiss}
+      testID={testID}
+      footer={
+        // Never gives way: whatever the words take, the choice stays on the screen.
+        <YStack marginTop={space.section} gap={space.base} flexShrink={0} testID={testID ? `${testID}-answers` : undefined}>
+          {inOrder(actions).map(action => (
+            <Answer key={action.label} action={action} />
+          ))}
+        </YStack>
+      }
     >
-      {/* See the note on the inner Pressable below. The scrim keeps its own label so the
-          tap-outside-to-dismiss affordance is still announced. */}
-      <Pressable
-        accessible={false}
-        onPress={onDismiss}
-        style={{
-          flex: 1,
-          backgroundColor: scrim,
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingHorizontal: 24,
-          // The same margin above and below, past the larger of the two system bars. The modal is drawn
-          // under the status bar, so a card grown to the height of the screen would otherwise reach under
-          // the status bar or the notch, and down to the home indicator. Equal on both sides, a card that
-          // fits is centred exactly where it always was.
-          paddingVertical: 24 + Math.max(insets.top, insets.bottom),
-        }}
-      >
-        {/* Swallows presses inside the card so the dialog does not dismiss itself. */}
-{/* `accessible={false}`: RN's Pressable defaults `accessible` to TRUE, and on iOS an
-          accessibility element is a LEAF - VoiceOver stops descending into it. These two wrappers
-          span the whole overlay, so the dialog/sheet collapsed into a single element that read every
-          label at once and could only be activated as a whole: a VoiceOver user could dismiss but
-          never confirm. */}
-        <Pressable
-          accessible={false}
-          onPress={() => {}}
-          // `flexShrink` here, on the card and on the scroll: when the words outgrow the room the dim
-          // leaves, each gives way in turn, so that bound lands on the scroll and on nothing else.
-          style={{ width: '100%', maxWidth: 420, flexShrink: 1 }}
-        >
-          <YStack
-            backgroundColor={theme.surfaceAlt}
-            borderRadius={20}
-            paddingTop={22}
-            paddingHorizontal={20}
-            paddingBottom={18}
-            flexShrink={1}
-            style={{ boxShadow: raised(theme.name, 'float') }}
-            // Keeps the VoiceOver cursor inside the dialog instead of wandering the page behind it.
-            accessibilityViewIsModal
-            testID={testID}
-          >
-            {/* The title scrolls with the message. At the largest text sizes a long one - the file name
-                the Debug screen asks about deleting - takes half the screen by itself, and held above the
-                scroll it would leave the message a sliver. No taller than its words (`flexGrow: 0`), and
-                without the bounce iOS gives a scroll view whose words already fit. */}
-            <ScrollView
-              ref={scrollRef}
-              style={{ flexGrow: 0, flexShrink: 1 }}
-              alwaysBounceVertical={false}
-              onLayout={event => {
-                drawnHeight.current = event.nativeEvent.layout.height;
-                hintIfCut();
-              }}
-              onContentSizeChange={(_width, height) => {
-                wordsHeight.current = height;
-                hintIfCut();
-              }}
-            >
-              <Heading fontSize={18} marginBottom={10} accessibilityRole="header">
-                {title}
-              </Heading>
-              {subtitle ? (
-                <Value fontSize={13} numberOfLines={1} marginBottom={8}>
-                  {subtitle}
-                </Value>
-              ) : null}
-              {typeof body === 'string' ? (
-                <Caption fontSize={14} lineHeight={20}>
-                  {body}
-                </Caption>
-              ) : (
-                body
-              )}
-            </ScrollView>
-
-            {/* Never gives way: whatever the words take, the choice stays on the screen. */}
-            <YStack marginTop={20} gap={10} flexShrink={0}>
-              {stacked ? (
-                actions.map(action => (
-                  <ActionButton key={action.label} action={action} stacked />
-                ))
-              ) : (
-                <XStack gap={10} alignItems="center">
-                  {actions.map(action => (
-                    <ActionButton key={action.label} action={action} />
-                  ))}
-                </XStack>
-              )}
-            </YStack>
-          </YStack>
-        </Pressable>
-      </Pressable>
-    </Modal>
+      <YStack alignItems="center">
+        {head}
+        <Title textAlign="center" marginTop={titleTop} accessibilityRole="header">
+          {title}
+        </Title>
+        {subtitle ? (
+          <Small color={theme.textMuted} textAlign="center" numberOfLines={1} marginTop={space.xs}>
+            {subtitle}
+          </Small>
+        ) : null}
+        <YStack alignSelf="stretch" marginTop={space.base}>
+          {typeof body === 'string' ? (
+            <Small color={theme.bodyText} textAlign="center">
+              {body}
+            </Small>
+          ) : (
+            body
+          )}
+        </YStack>
+      </YStack>
+    </BottomSheet>
   );
 }
 
-function ActionButton({
-  action,
-  stacked,
-}: {
-  readonly action: DialogAction;
-  /** In a column each button owns a row of its own; `flex: 1` there makes them share - and overlap. */
-  readonly stacked?: boolean;
-}) {
+function Answer({ action }: { readonly action: DialogAction }) {
   const theme = useTheme();
   const tone = action.tone ?? 'neutral';
-  const fill =
-    tone === 'danger' ? theme.danger : tone === 'primary' ? theme.text : theme.surface;
-  const ink = tone === 'neutral' ? theme.text : theme.onBlue;
+  // Decorative: the label already says it, and a screen reader should hear it once.
+  const glyph = (color: string) =>
+    action.icon ? (
+      <YStack accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        {action.icon(color)}
+      </YStack>
+    ) : undefined;
+  if (tone === 'neutral') {
+    return (
+      <NeutralButton label={action.label} onPress={action.onPress} icon={glyph(theme.text)} testID={action.testID} />
+    );
+  }
   return (
-    <PressScale
-      fullWidth
+    <InkButton
+      label={action.label}
       onPress={action.onPress}
-      accessibilityLabel={action.label}
+      danger={tone === 'danger'}
+      icon={glyph(inkButtonInk(theme))}
       testID={action.testID}
-      style={stacked ? undefined : { flex: 1 }}
-    >
-      {/* Flat in a dialog - no shadow (design §3). */}
-      <XStack
-        minHeight={48}
-        borderRadius={14}
-        borderWidth={tone === 'neutral' ? 1 : 0}
-        borderColor={theme.borderStrong}
-        backgroundColor={fill}
-        alignItems="center"
-        justifyContent="center"
-        gap={8}
-      >
-        {action.icon ? (
-          // Decorative: the label already says it, and a screen reader should hear it once.
-          <YStack accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            {action.icon(ink)}
-          </YStack>
-        ) : null}
-        <BodyStrong color={ink} fontSize={14}>
-          {action.label}
-        </BodyStrong>
-      </XStack>
-    </PressScale>
+    />
   );
 }

@@ -3,7 +3,10 @@
 // is unmet is drawn at .55, as R10 draws Přijmout with an empty field, and still answers a press with
 // PressScale's refusal, so the reason is felt and heard rather than the press swallowed (019).
 // `small` is R13's half of a pair inside a card row: 40 tall, the 12 corner, the label 14/700.
+// `danger` is R9's `dbtn`, the answer a question's danger takes: the same button filled with the danger
+// colour, its glyph 10 before the words (the bin before Smazat).
 
+import type { ReactNode } from 'react';
 import { XStack } from './ui';
 import { BodyStrong, SmallStrong } from './Typography';
 import { useTheme } from './ThemeProvider';
@@ -16,6 +19,8 @@ export function InkButton({
   blockedReason,
   onBlockedPress,
   small = false,
+  danger = false,
+  icon,
   accessibilityLabel,
   testID,
 }: {
@@ -28,6 +33,10 @@ export function InkButton({
   readonly onBlockedPress?: () => void;
   /** R13's row button, one of two side by side: 40 tall, the 12 corner, 14/700. */
   readonly small?: boolean;
+  /** R9's danger answer: filled with the danger colour. */
+  readonly danger?: boolean;
+  /** A glyph before the words, 10 from them, inked by the caller in `inkButtonInk`. */
+  readonly icon?: ReactNode;
   /** What a screen reader hears when the words alone do not say what they act on. */
   readonly accessibilityLabel?: string;
   readonly testID?: string;
@@ -48,11 +57,13 @@ export function InkButton({
         width="100%"
         minHeight={small ? 40 : 52}
         borderRadius={small ? 12 : 14}
-        backgroundColor={theme.text}
+        backgroundColor={danger ? theme.danger : theme.text}
         alignItems="center"
         justifyContent="center"
+        gap={10}
         opacity={blocked ? 0.55 : 1}
       >
+        {icon}
         {small ? (
           <SmallStrong color={theme.surfaceAlt}>{label}</SmallStrong>
         ) : (
@@ -61,4 +72,13 @@ export function InkButton({
       </XStack>
     </PressScale>
   );
+}
+
+/**
+ * The words' colour on a filled button, for a glyph that has to match them: the paper. On R9's danger
+ * button the board writes white in light; the paper is the family's ink on a fill, and the two differ
+ * by less than the red under them shows.
+ */
+export function inkButtonInk(theme: { readonly surfaceAlt: string }): string {
+  return theme.surfaceAlt;
 }

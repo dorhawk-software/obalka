@@ -15,7 +15,7 @@
 // background is the caller's, with `useCloseOnBackground` - an RN `Modal` is a window of its own and
 // would otherwise sit over the lock screen.
 
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { Modal, Pressable, ScrollView } from 'react-native';
 import Animated, {
   SlideInDown,
@@ -66,6 +66,7 @@ export function BottomSheet({
   // `raised`: depth.lg carries an inset white top-highlight - a bevel on light surfaces, a harsh line along the
   // sheet's top edge against the dark scrim. Softened in dark mode, kept in light.
   const sheetShadow = raised(theme.name, 'sheet');
+  const hintIfCut = useScrollHint();
 
   const dragY = useSharedValue(0);
   const sheetStyle = useAnimatedStyle(() => ({
@@ -132,6 +133,10 @@ export function BottomSheet({
                     and 6 beside it (depth `sheet`): the view reaches past the content by that much and
                     pads it back, so the cards keep their shadow and nothing moves. */}
                 <ScrollView
+                  ref={hintIfCut.ref}
+                  onLayout={event => hintIfCut.drawn(event.nativeEvent.layout.height)}
+                  onContentSizeChange={(_width, height) => hintIfCut.words(height)}
+                  alwaysBounceVertical={false}
                   style={{
                     flexGrow: 0,
                     flexShrink: 1,
@@ -155,4 +160,35 @@ export function BottomSheet({
       </Pressable>
     </Modal>
   );
+}
+
+/**
+ * Shows once that the words go on. A message cut off at the bottom is only half a hint, and iOS draws
+ * no scroll indicator until something scrolls, so the indicators are flashed once when the words do
+ * not fit (from the dialog, 2026-09-15, where the largest text sizes first needed it). Refs rather than
+ * state: none of it changes what is drawn.
+ */
+function useScrollHint() {
+  const ref = useRef<ScrollView>(null);
+  const drawnHeight = useRef(0);
+  const wordsHeight = useRef(0);
+  const hinted = useRef(false);
+  const check = () => {
+    // A dp of slack: a scroll exactly as tall as its words can measure a fraction shorter than them.
+    if (!hinted.current && drawnHeight.current > 0 && wordsHeight.current - drawnHeight.current > 1) {
+      hinted.current = true;
+      ref.current?.flashScrollIndicators();
+    }
+  };
+  return {
+    ref,
+    drawn: (height: number) => {
+      drawnHeight.current = height;
+      check();
+    },
+    words: (height: number) => {
+      wordsHeight.current = height;
+      check();
+    },
+  };
 }

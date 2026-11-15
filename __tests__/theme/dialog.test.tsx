@@ -20,6 +20,8 @@ import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import { Dialog } from '../../src/theme/Dialog';
 import { Text } from '../../src/theme/ui';
 import { STRINGS_FOR_TEST } from '../../src/i18n/strings';
+import { lightTheme } from '../../src/theme/theme';
+import { type as typeScale } from '../../src/theme/typeScale';
 
 const wrap = (ui: React.ReactElement) =>
   render(
@@ -65,21 +67,19 @@ function pathTo(node: Json, match: (n: Json) => boolean): Json[] {
 const holdsText = (text: string) => (n: Json) => (n.children ?? []).includes(text);
 const withTestID = (id: string) => (n: Json) => n.props.testID === id;
 const isScroll = (n: Json) => n.type === 'RCTScrollView';
-/** Layout keys that take room: what a wrapper added around the words must not carry. */
-const TAKES_ROOM = /^(margin|padding|border\w*Width|gap|top|bottom|left|right|height|minHeight)/;
 
-// Every dialog in the app is this component with a string body - seventeen of them on 2026-09-15 - so
-// these metrics are how every one of them is drawn. They are the dialog's numbers from before its
-// message could scroll: making room for the largest text sizes must not move any of them at the
-// default one.
-describe('at the default text size', () => {
-  it('is drawn with the metrics it had before its message could scroll', async () => {
-    const view = await wrap(
+// R9 (031 I52, agreed 2026-11-12): every question is a bottom sheet - the object or glyph it is about,
+// the title, the words, and the answers one above the other under the thumb, the filled or danger one
+// first. Until 2026-11-15 the dialog was a card in the middle of the screen, its answers in a row.
+describe('as R9 draws it', () => {
+  const mount = () =>
+    wrap(
       <Dialog
         title="Odebrat schránku?"
         subtitle="Jan Novák"
         body="Zprávy zůstanou v archivu."
         onDismiss={() => {}}
+        glyph={color => <Text testID="dlg-glyph" color={color}>x</Text>}
         testID="dlg"
         actions={[
           { label: 'Ponechat', onPress: () => {}, testID: 'keep' },
@@ -87,59 +87,55 @@ describe('at the default text size', () => {
         ]}
       />,
     );
-    const root = view.toJSON() as Json;
-    const toCard = pathTo(root, withTestID('dlg'));
-    // The Modal, then the dim it lays the card out in.
-    const dim = styleOf(toCard[1]);
-    for (const side of ['Top', 'Bottom', 'Left', 'Right'] as const) {
-      expect({ side, padding: paddingOf(dim, side) }).toEqual({ side, padding: 24 });
-    }
 
-    const card = toCard[toCard.length - 1];
-    expect(styleOf(card)).toEqual(
+  it('is a sheet: the surface, the 24 corner, the sheet s sides', async () => {
+    const view = await mount();
+    const sheet = styleOf(view.getByTestId('dlg'));
+    expect(sheet).toEqual(
       expect.objectContaining({
-        borderTopLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        paddingTop: 22,
-        paddingLeft: 20,
-        paddingRight: 20,
-        paddingBottom: 18,
+        backgroundColor: lightTheme.surfaceAlt,
+        borderTopLeftRadius: 24,
+        paddingLeft: 24,
+        paddingRight: 24,
       }),
     );
-    expect(styleOf(view.getByRole('header', { name: 'Odebrat schránku?' }))).toEqual(
-      expect.objectContaining({ fontSize: 18, lineHeight: 23, marginBottom: 10 }),
-    );
-    expect(styleOf(view.getByText('Jan Novák'))).toEqual(
-      expect.objectContaining({ fontSize: 13, lineHeight: 18, marginBottom: 8 }),
-    );
-    expect(styleOf(view.getByText('Zprávy zůstanou v archivu.'))).toEqual(
-      expect.objectContaining({ fontSize: 14, lineHeight: 20 }),
-    );
+  });
 
-    // Whatever holds the words inside the card takes no room of its own.
-    for (const words of ['Odebrat schránku?', 'Jan Novák', 'Zprávy zůstanou v archivu.']) {
-      const path = pathTo(card, holdsText(words));
-      for (const between of path.slice(1, -1)) {
-        const room = Object.keys(styleOf(between)).filter(key => TAKES_ROOM.test(key));
-        expect({ words, room, content: between.props.contentContainerStyle }).toEqual({
-          words,
-          room: [],
-          content: undefined,
-        });
-      }
-    }
+  it('sets the title in the title role and the words in body text, centred', async () => {
+    const view = await mount();
+    const title = styleOf(view.getByRole('header', { name: 'Odebrat schránku?' }));
+    expect([title.fontSize, title.lineHeight, title.textAlign]).toEqual([
+      typeScale.title.fontSize,
+      typeScale.title.lineHeight,
+      'center',
+    ]);
+    const words = styleOf(view.getByText('Zprávy zůstanou v archivu.'));
+    expect([words.fontSize, words.color, words.textAlign]).toEqual([
+      typeScale.small.fontSize,
+      lightTheme.bodyText,
+      'center',
+    ]);
+    expect(view.getByTestId('dlg-glyph', { includeHiddenElements: true })).toBeTruthy();
+  });
 
-    // The buttons: 20 below the words, 10 apart, 48 tall on a 14 corner.
-    const toKeep = pathTo(card, withTestID('keep'));
-    const [group, row, button] = toKeep.slice(-3);
-    expect(styleOf(group)).toEqual(expect.objectContaining({ marginTop: 20, gap: 10 }));
-    expect(styleOf(row)).toEqual(expect.objectContaining({ gap: 10 }));
-    const face = ((button.children as Json[])[0].children as Json[])[0];
-    expect(styleOf(face)).toEqual(
-      expect.objectContaining({ minHeight: 48, borderTopLeftRadius: 14 }),
-    );
+  it('stacks the answers 8 apart, the danger one first, 24 under the words', async () => {
+    const view = await mount();
+    const answers = view.getByTestId('dlg-answers');
+    expect(styleOf(answers)).toEqual(expect.objectContaining({ marginTop: 24, gap: 8 }));
+    const ids = (view.toJSON() as Json | null) ? collectIDs(answers as unknown as Json) : [];
+    expect(ids.filter(id => id === 'keep' || id === 'remove')).toEqual(['remove', 'keep']);
   });
 });
+
+/** Every testID under `node`, in the order drawn. */
+function collectIDs(node: Json): string[] {
+  const own = typeof node.props?.testID === 'string' ? [node.props.testID as string] : [];
+  return own.concat(
+    ...((node.children ?? []) as (Json | string)[]).map(child =>
+      typeof child === 'string' ? [] : collectIDs(child),
+    ),
+  );
+}
 
 // React Native scales a dialog's words with the system text size and nothing else about it. At the
 // largest sizes a long message pushed the buttons below the bottom of the screen: back and a tap on the
@@ -192,46 +188,28 @@ describe('at the largest text sizes', () => {
     }
   });
 
-  it('gives the words the height the buttons leave, and the buttons all of theirs', async () => {
+  it('gives the words the height the answers leave, and the answers all of theirs', async () => {
     const view = await mount();
     const root = view.toJSON() as Json;
     const toScroll = pathTo(root, isScroll);
     expect(toScroll.length).toBeGreaterThan(0);
-
-    // Gives up height when the card is bound, and never takes more than its words need.
+    // Gives up height when the sheet reaches its cap, and never takes more than its words need.
     expect(styleOf(toScroll[toScroll.length - 1])).toEqual(
       expect.objectContaining({ flexShrink: 1, flexGrow: 0 }),
     );
-    // Every box between the dim (the Modal's child) and the scroll gives way, so the bound the dim
-    // sets reaches the scroll.
-    const between = toScroll.slice(2, -1);
-    expect(between.length).toBeGreaterThan(0);
-    for (const node of between) {
-      expect({ node: node.props.testID ?? node.type, flexShrink: styleOf(node).flexShrink }).toEqual({
-        node: node.props.testID ?? node.type,
-        flexShrink: 1,
-      });
-    }
-    // The buttons are the card's one other child, and they keep their whole height.
-    const card = between[between.length - 1];
-    expect(card.props.testID).toBe('dlg');
-    const others = (card.children ?? []).filter(
-      (child): child is Json => typeof child !== 'string' && !isScroll(child),
-    );
-    expect(others).toHaveLength(1);
-    expect(pathTo(others[0], withTestID('keep')).length).toBeGreaterThan(0);
-    expect(styleOf(others[0]).flexShrink).toBe(0);
+    // The sheet is capped below the status bar, and the scroll is one of its children.
+    const sheet = toScroll[toScroll.length - 2];
+    expect(sheet.props.testID).toBe('dlg');
+    expect(styleOf(sheet).maxHeight).toEqual(expect.any(Number));
+    // The answers are outside the scroll, and keep their whole height.
+    const answers = pathTo(sheet, withTestID('dlg-answers'));
+    expect(answers.some(isScroll)).toBe(false);
+    expect(styleOf(answers[answers.length - 1]).flexShrink).toBe(0);
   });
 
-  it('keeps the card clear of the status bar and the home indicator, centred where it was', async () => {
-    // The same margin above and below - the larger inset's - so a card that fits sits exactly where it
-    // always did, in the middle of the screen, and one that does not stops short of both bars.
+  it('keeps its answers clear of the home indicator', async () => {
     const view = await mount();
-    const dim = styleOf(pathTo(view.toJSON() as Json, withTestID('dlg'))[1]);
-    expect(paddingOf(dim, 'Top')).toBe(24 + insets.top);
-    expect(paddingOf(dim, 'Bottom')).toBe(24 + insets.top);
-    expect(paddingOf(dim, 'Left')).toBe(24);
-    expect(paddingOf(dim, 'Right')).toBe(24);
+    expect(paddingOf(styleOf(view.getByTestId('dlg')), 'Bottom')).toBe(insets.bottom + 18);
   });
 
   it('does not bounce words that fit, and shows once that words that do not fit go on', async () => {
@@ -322,36 +300,20 @@ describe('Dialog', () => {
 
   it('does not give stacked buttons a flex share - that made them overlap', async () => {
     // Found on the device: three actions in a column, each with `flex: 1`, drew on top of each other.
-    // The row layout still needs it (two buttons splitting the width), so the rule is per-layout.
-    const stacked = await wrap(
-      <Dialog
-        title="T"
-        body="B"
-        onDismiss={() => {}}
-        actions={[
-          { label: 'A', onPress: () => {}, testID: 'a' },
-          { label: 'B', onPress: () => {}, testID: 'b' },
-          { label: 'C', onPress: () => {}, testID: 'c' },
-        ]}
-      />,
-    );
-    for (const id of ['a', 'b', 'c']) {
-      expect(JSON.stringify(stacked.getByTestId(id).props.style)).not.toContain('"flex":1');
-    }
-
-    const row = await wrap(
-      <Dialog
-        title="T"
-        body="B"
-        onDismiss={() => {}}
-        actions={[
-          { label: 'A', onPress: () => {}, testID: 'ra' },
-          { label: 'B', onPress: () => {}, testID: 'rb' },
-        ]}
-      />,
-    );
-    for (const id of ['ra', 'rb']) {
-      expect(JSON.stringify(row.getByTestId(id).props.style)).toContain('"flex":1');
+    // Every answer is stacked now (R9), two of them as well as three.
+    for (const count of [2, 3]) {
+      const ids = ['a', 'b', 'c'].slice(0, count);
+      const view = await wrap(
+        <Dialog
+          title="T"
+          body="B"
+          onDismiss={() => {}}
+          actions={ids.map(id => ({ label: id, onPress: () => {}, testID: `${count}${id}` }))}
+        />,
+      );
+      for (const id of ids) {
+        expect(JSON.stringify(view.getByTestId(`${count}${id}`).props.style)).not.toContain('"flex":1');
+      }
     }
   });
 

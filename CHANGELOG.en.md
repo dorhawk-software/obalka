@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Questions and notices rise from the bottom like the other panels.** The answers stand one above
+  the other within reach of the thumb, the main one first, and above the question is what it is
+  about: the envelope of the box being removed, for one.
 - **What's new reads as text.** Each change is one paragraph with its first sentence in bold, grouped
   by kind, and the sheets from the bottom have a larger title and more room at the sides.
 - **Licences are easier to read.** Each licence is one row with its count of components, every

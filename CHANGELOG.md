@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Otázky a upozornění vyjíždějí zdola jako ostatní panely.** Odpovědi jsou pod sebou na dosah palce,
+  ta hlavní nahoře, a nad otázkou je to, čeho se týká: například obálka odebírané schránky.
 - **Co je nového se čte jako text.** Každá změna je jeden odstavec s tučnou první větou, seřazené podle
   druhu, a spodní okna mají větší nadpis a víc místa po stranách.
 - **Licence se čtou snáz.** Každá licence má na přehledu jeden řádek s počtem komponent, každá

@@ -363,14 +363,15 @@ describe('every Modal in the app', () => {
   );
 
   it('is found - the scan covers the overlays the render tests cover, and more', () => {
-    expect(found.length).toBeGreaterThanOrEqual(6);
+    expect(found.length).toBeGreaterThanOrEqual(5);
     expect(found.map(m => m.file)).toEqual(
       expect.arrayContaining([
-        'src/theme/Dialog.tsx',
+        // The dialog's Modal is the sheet's since 2026-11-15 (R9): `Dialog` is a `BottomSheet`.
         'src/features/accounts/screens/AliasEditor.tsx',
         'src/features/accounts/screens/BoxOverflowMenu.tsx',
         'src/features/accounts/screens/BoxSwitcherSheet.tsx',
-        // The Termín picker's Modal and the language picker's are this one (2026-09-24).
+        // The Termín picker's Modal and the language picker's are this one (2026-09-24), and every
+        // dialog's (2026-11-15).
         'src/theme/BottomSheet.tsx',
         // The paid-send confirmation, out of ComposeScreen since 2026-11-12.
         'src/features/messages/screens/PaidSendConfirm.tsx',

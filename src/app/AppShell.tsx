@@ -1180,7 +1180,7 @@ export function AppShell() {
     noticeDialog = (
       <Dialog
         key={`removal:${notice.boxId}`}
-        testID="removeFailed"
+        testID="removeFailed" glyph="boxes"
         title={t('box.removeFailed.title')}
         subtitle={notice.name ?? undefined}
         body={

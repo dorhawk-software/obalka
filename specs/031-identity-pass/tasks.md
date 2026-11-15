@@ -362,9 +362,17 @@ here "matches" from the code alone, without a drawing. With Cards B agreed (shee
 surface below changes too, and the owner has seen none of them in the identity. All go on board **R9**
 (round 2).
 
-- [ ] I52 `Dialog`, the anatomy (scrim .45, card max 420, radius 20, scrolling, actions in a row or
+- [x] I52 `Dialog`, the anatomy (scrim .45, card max 420, radius 20, scrolling, actions in a row or
   stacked above two, primary / danger / neutral, icon) - **D**: the sheet weight from Cards B; its fade
-  ignores Reduce Motion (I73). R9. Each use is a line, I84-I105.
+  ignores Reduce Motion (I73). R9. Each use is a line, I84-I105. Built 2026-11-15
+  as R9's "paid-send sheet, for every question": `Dialog` is a `BottomSheet` - the grabber, the
+  object (drawn as it is) or a glyph in a 56 well, the title in the title role, the words in body text,
+  all centred, and the answers stacked 8 apart under them, the filled or danger answer first and the
+  neutral last (`InkButton` gains `danger` and a glyph). It rises and closes as every sheet does, a
+  fade under Reduce Motion as R9 says; its words scroll and its answers never do (the 2026-09-15
+  guard, restated for the sheet). Roundings: the 22 above the object and the answers is 24; R9's 30
+  glyph is the well's 28 (R13 draws 28; one well). The uses R9 draws: I89 walked; I84 (`boxes`) and
+  I104 (`transfer`) have their glyphs, walked with their lines.
 - [x] I53 `BottomSheet` (Language, What's new, Term picker, Sender) - **D**: the grabber, the sheet's
   surface and shadow from Cards B. R9. Built 2026-11-15: 10 above and 24 at the sides (it was 14), the
   grabber alone at the top, the title in the title role 16 under it (it was Bricolage 16/700), an
@@ -461,7 +469,10 @@ and both languages when built.
 - [ ] I86 `notif.passwordAsk.title`, the nudge before the OS asks (`AppShell`).
 - [ ] I87 `vault.lost.title` - every box asks to sign in again (`VaultLostNotice`).
 - [ ] I88 `lock.reset.title` - cancel, danger confirm (`LockGate`).
-- [ ] I89 `box.removeTitle` - keep, danger delete with the bin (`RemoveBoxDialog`).
+- [x] I89 `box.removeTitle` - keep, danger delete with the bin (`RemoveBoxDialog`). Built 2026-11-15:
+  the box's envelope tile at 64, tilted 2 degrees, instead of its name (R9); Smazat first with its bin
+  at 18, Ponechat under it. Walked light and dark, Czech and English, against R9's two phones.
+  Rounding: the tile's 17 corner is 16.
 - [ ] I90 `detail.attachments` - no viewer, cannot open (`MessageDetail`).
 - [ ] I91 `detail.original.heading` - cannot open the signed original (`SignedOriginalSection`).
 - [ ] I92 `lock.unavailable.title` (`SettingsScreen`).
@@ -905,6 +916,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     The text is Public Sans at the Meta size, not monospace (the owner, 2026-11-15).
   - R9 Language: rows at 56; the same `OptionGroup` rows are 52 on R13 and in the build.
   - R9 What's new: 22 above Pokračovat; the build's scale step is 24.
+  - R9 questions: the failed removal names its box under the title (the switcher it came from has
+    closed, and two can follow each other); R9 draws none. The dark danger fill is the theme's
+    #E27A73 (R9 #E58A84); the light danger label is the paper (R9 white).
   - R13 scanner: the window's film and glint lie outside a `.win`, so the board's `.win .crk` rules
     miss them and the film's stroke runs past the window's edge; the build draws the window's own
     film and glint inside it. DESIGN.md to record `cameraDim` and the 56 well (`Well large`).

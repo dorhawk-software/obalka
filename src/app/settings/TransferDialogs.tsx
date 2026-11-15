@@ -42,6 +42,7 @@ export function TransferDialogs({
     <>
     {meteredAsk != null ? (
       <Dialog
+        glyph="transfer"
         title={t('transfer.metered.title')}
         body={t('transfer.metered.body', { size: formatBytes(meteredAsk) })}
         onDismiss={onMeteredCancel}
