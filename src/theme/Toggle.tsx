@@ -39,6 +39,10 @@ export function Toggle({
   readonly testID?: string;
 }) {
   const theme = useTheme();
+  // A switch that cannot be used takes the off track whatever its value, and its knob keeps its side
+  // to show the value is kept for later: a faded blue track still read as on and active (Material 3's
+  // disabled selected switch; the owner's answer 10, 2026-11-15).
+  const blue = value && !disabled;
   return (
     <XStack
       width={48}
@@ -48,14 +52,14 @@ export function Toggle({
       // has to fit in. Padding drops to 2 there to pay for it: border 1 + padding 2 leaves the knob
       // exactly 22 tall and its outer edge exactly 3 from the track edge - the ON state's geometry,
       // unchanged. Typing `padding={3}` beside the border instead would clip the knob by 2px.
-      padding={value ? 3 : 2}
+      padding={blue ? 3 : 2}
       justifyContent={value ? 'flex-end' : 'flex-start'}
-      backgroundColor={value ? theme.blue : theme.trackOff}
+      backgroundColor={blue ? theme.blue : theme.trackOff}
       // The OFF track is 1.70:1 on `surface` (1.54 in dark) - no discernible boundary at all, which
       // is the state half of WCAG 1.4.11. Outlined rather than darkened, so the design's track colour
       // survives; Material 3's own unselected switch carries the same outline.
-      borderWidth={value ? 0 : 1}
-      borderColor={value ? 'transparent' : theme.trackOffBorder}
+      borderWidth={blue ? 0 : 1}
+      borderColor={blue ? 'transparent' : theme.trackOffBorder}
       opacity={disabled && !rowDims ? 0.6 : 1}
       // 28 tall is the design's switch, not the target a finger gets: the slop takes it to 48 without
       // touching a pixel of it.

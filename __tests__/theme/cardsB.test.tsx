@@ -113,6 +113,33 @@ describe('a row that cannot be used', () => {
   });
 });
 
+describe('a switch that cannot be used', () => {
+  it.each([
+    ['light', false],
+    ['dark', true],
+  ] as const)('takes the neutral off track whatever its value, the knob keeping its side, in %s', async (_, isDark) => {
+    // A faded blue track still read as on and active (the critique's Jen na Wi-Fi); the owner's answer
+    // 10, 2026-11-15, Material 3's disabled selected switch: the off track, the knob on its side.
+    const theme = isDark ? darkTheme : lightTheme;
+    const view = await themed(
+      <View>
+        <Toggle value onChange={() => {}} label="Jen na Wi-Fi" disabled rowDims testID="on" />
+        <Toggle value={false} onChange={() => {}} label="Zvuk" disabled rowDims testID="off" />
+        <Toggle value onChange={() => {}} label="Zámek" testID="live" />
+      </View>,
+      isDark,
+    );
+    const on = flat(view.getByTestId('on'));
+    expect(on.backgroundColor).toBe(theme.trackOff);
+    expect(on.justifyContent).toBe('flex-end');
+    expect(on.borderTopColor ?? on.borderColor).toBe(theme.trackOffBorder);
+    // Same box as the live one: border 1 and padding 2 keep the knob 22 and 3 from the edge.
+    expect(on.paddingTop).toBe(2);
+    expect(flat(view.getByTestId('off')).justifyContent).toBe('flex-start');
+    expect(flat(view.getByTestId('live')).backgroundColor).toBe(theme.blue);
+  });
+});
+
 describe('a well', () => {
   it('is 40 with the 12 corner, sunken, under a 24 glyph', async () => {
     const view = await themed(

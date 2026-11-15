@@ -789,6 +789,9 @@ After the critique (2026-11-15), the owner's answers, one by one:
 - **The switcher's red:** a broken box's whole line in red lost to the problem alone in its tone
   ("Přihlášení vypršelo"), "· Poslední známý stav" in the muted ink. The alert badge moved from the
   monogram's bottom-left, over its first letter, to the top-left, over the flap.
+- **A switch that cannot be used:** the faded blue track (it still read as on) lost to the off track
+  whatever the value, the knob keeping its side (Material 3's disabled selected switch); every
+  `Toggle`.
 
 ## Do's and Don'ts
 
