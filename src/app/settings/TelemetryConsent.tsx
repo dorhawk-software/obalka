@@ -13,13 +13,19 @@
 // freely given, and an interface where "yes" is a filled button and "no" is a grey link has not
 // obtained it. Same size, same shape, same weight, side by side, neither pre-selected.
 //
+// Drawn to the identity (031 I06, 2026-11-15): the two lists are one R3 sheet with the inset divider,
+// the notes R13's muted quiet lines, the longer answer R1's help link (44, the slop to the target), and
+// the answers R6's pair of sunken neutral buttons at 48 - alike, which the paragraph above asks for.
+// Until then yes was filled in ink and no outlined (50 tall), the divider ran the card's whole width,
+// the notes were faint, and the link was a 15 glyph over an 18 line.
+//
 // WHY IT IS SPECIFIC. The thing that earns a yes is saying exactly what goes and exactly what never
 // does - and this app can afford to, because `scrub.ts` is an allow-list rather than a filter, so
 // "what is sent" is a closed set rather than a hope.
 
 import { ScrollView, XStack, YStack } from '../../theme/ui';
-import { Body, BodyStrong, Display, Label, Meta } from '../../theme/Typography';
-import { PressScale } from '../../theme/PressScale';
+import { Body, Display, Label, Meta, SmallStrong } from '../../theme/Typography';
+import { NeutralButton } from '../../theme/NeutralButton';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useHeaderTop } from '../../theme/useHeaderTop';
 import { useContentBottom } from '../../theme/useContentBottom';
@@ -28,6 +34,10 @@ import { AlertIcon, CheckIcon, HelpIcon } from '../../theme/icons';
 import { t } from '../../i18n/strings';
 import { haptics } from '../../services/haptics';
 import { Card } from '../../theme/Card';
+import { RowDivider } from './SettingsSection';
+
+/** R1's help link: 44 tall, the slop takes it to the target. */
+const LINK_HEIGHT = 44;
 
 export function TelemetryConsent({
   onAnswer,
@@ -69,7 +79,7 @@ export function TelemetryConsent({
               {t('consent.sends')}
             </Label>
           </XStack>
-          <YStack height={1} backgroundColor={theme.border} />
+          <RowDivider />
           <XStack gap={12} padding={14} alignItems="flex-start">
             <AlertIcon size={17} color={theme.danger} />
             <Label fontWeight="400" flex={1} color={theme.bodyText}>
@@ -78,78 +88,54 @@ export function TelemetryConsent({
           </XStack>
         </Card>
 
-        <Meta color={theme.textFaint} marginBottom={6}>
+        <Meta color={theme.textMuted} marginBottom={6}>
           {t('consent.where')}
         </Meta>
-        <Meta color={theme.textFaint} marginBottom={16}>
+        <Meta color={theme.textMuted} marginBottom={6}>
           {t('consent.change')}
         </Meta>
 
         <XStack
           alignItems="center"
-          gap={8}
+          gap={6}
           alignSelf="flex-start"
-          marginBottom={28}
-          pressStyle={{ opacity: 0.6 }}
+          minHeight={LINK_HEIGHT}
+          marginBottom={18}
+          pressStyle={{ opacity: 0.5 }}
           onPress={onExplain}
           accessibilityRole="button"
           accessibilityLabel={t('consent.more')}
-          hitSlop={touchSlop({ height: 18 })}
+          hitSlop={touchSlop({ height: LINK_HEIGHT })}
           testID="consentMore"
         >
-          <HelpIcon size={15} color={theme.blue} />
-          <Label fontWeight="700" color={theme.blue}>
-            {t('consent.more')}
-          </Label>
+          <HelpIcon size={18} color={theme.blue} />
+          <SmallStrong color={theme.blue}>{t('consent.more')}</SmallStrong>
         </XStack>
 
-        {/* Equal weight, side by side. Not a primary and a get-out. */}
+        {/* Equal weight, side by side: two alike, not a primary and a get-out. */}
         <XStack gap={10}>
-          <PressScale
-            style={{ flex: 1 }}
-            onPress={() => {
-              haptics.selection();
-              onAnswer(false);
-            }}
-            accessibilityLabel={t('consent.no')}
-            testID="consentNo"
-          >
-            <XStack
-              minHeight={50}
-              borderRadius={14}
-              borderWidth={1}
-              borderColor={theme.borderStrong}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <BodyStrong color={theme.text}>
-                {t('consent.no')}
-              </BodyStrong>
-            </XStack>
-          </PressScale>
-          <PressScale
-            style={{ flex: 1 }}
-            onPress={() => {
-              haptics.selection();
-              onAnswer(true);
-            }}
-            accessibilityLabel={t('consent.yes')}
-            testID="consentYes"
-          >
-            <XStack
-              minHeight={50}
-              borderRadius={14}
-              borderWidth={1}
-              borderColor={theme.text}
-              backgroundColor={theme.text}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <BodyStrong color={theme.surfaceAlt}>
-                {t('consent.yes')}
-              </BodyStrong>
-            </XStack>
-          </PressScale>
+          <YStack flex={1}>
+            <NeutralButton
+              compact
+              label={t('consent.no')}
+              onPress={() => {
+                haptics.selection();
+                onAnswer(false);
+              }}
+              testID="consentNo"
+            />
+          </YStack>
+          <YStack flex={1}>
+            <NeutralButton
+              compact
+              label={t('consent.yes')}
+              onPress={() => {
+                haptics.selection();
+                onAnswer(true);
+              }}
+              testID="consentYes"
+            />
+          </YStack>
         </XStack>
       </ScrollView>
     </YStack>

@@ -6,11 +6,13 @@
 // which is the whole reason `telemetry` is tri-state rather than a boolean.
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import { t } from '../../src/i18n/strings';
+import { lightTheme } from '../../src/theme/theme';
 import { TelemetryConsent } from '../../src/app/settings/TelemetryConsent';
 
 const SAFE_AREA_METRICS = {
@@ -67,6 +69,37 @@ describe('freely given', () => {
     // Neither is hidden behind a scroll-to-reveal or a disabled state.
     expect(yes.props.accessibilityState?.disabled).toBeFalsy();
     expect(no.props.accessibilityState?.disabled).toBeFalsy();
+  });
+});
+
+type Host = { props: Record<string, unknown>; children: (Host | string)[] };
+
+/** The button's face: the first view under the press that has a fill. */
+function face(node: Host): Record<string, unknown> {
+  const style = (StyleSheet.flatten(node.props.style as never) ?? {}) as Record<string, unknown>;
+  if (style.backgroundColor != null) {
+    return style;
+  }
+  for (const child of node.children) {
+    if (typeof child !== 'string') {
+      const found = face(child);
+      if (Object.keys(found).length > 0) {
+        return found;
+      }
+    }
+  }
+  return {};
+}
+
+describe('freely given, as R6 pairs two answers (031 I06)', () => {
+  // Until 2026-11-15 yes was filled in ink and no outlined: the same size, but not the same weight
+  // this screen's own header asks for, and an outline where the identity draws in tone.
+  it('draws yes and no alike: two sunken buttons, 48 tall, the 14 corner, no outline', async () => {
+    const { view } = await mount();
+    const [yes, no] = ['consentYes', 'consentNo'].map(id => face(view.getByTestId(id) as unknown as Host));
+    expect(yes).toEqual(no);
+    expect(yes).toMatchObject({ backgroundColor: lightTheme.surfaceSunken, minHeight: 48, borderTopLeftRadius: 14 });
+    expect(yes.borderTopWidth ?? 0).toBe(0);
   });
 });
 

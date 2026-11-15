@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The error-report question offers both answers alike.** "Don't send" and "Send reports" are the
+  same button; before, agreeing was filled and refusing only outlined.
 - **The FAQ is headed as Settings is.** The note on the data-box answers is the quiet line under its
   group's heading, not a separate note with an icon.
 - **The welcome screen shows an envelope waiting for a box.** Its window is still empty; under it

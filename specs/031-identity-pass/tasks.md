@@ -72,7 +72,12 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   `GroupHead`, moved out of Licences for both: the overline 8 over the cards, the next group 18 under
   them (were 10 and 24), the ISDS disclaimer the muted quiet line under its overline (was a faint line
   with its own info icon). Walked light, dark and English; the overlay over sign-in is the same screen.
-- [ ] I06 `TelemetryConsent` (first run after the first box; two cards, two buttons) - **D** (cards).
+- [x] I06 `TelemetryConsent` (first run after the first box; two cards, two buttons) - **D** (cards).
+  Fixed 2026-11-15: the two lists one R3 sheet with the inset divider (was full width), the notes
+  R13's muted quiet lines (were faint), the longer answer R1's help link (44 with the slop; was a 15
+  glyph over an 18 line), and the answers R6's pair of sunken neutral buttons at 48 - alike, as the
+  screen's own rule asks; yes was filled in ink and no outlined, at 50. Walked light and dark (forced
+  on, reverted); the Czech answers are the longer pair.
 - [ ] I07 `BackupScreen` first run (restore) - see I45.
 - [x] I08 `AddBoxForm` - **D** (cards); the busy spinner is R8. The busy spinner went with I76.
   - [x] I08.1 Method step: three radio cards, Advanced (chevron, no animation), environment segmented,

@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Otázka na hlášení o chybách nabízí obě odpovědi stejně.** „Neodesílat“ i „Odesílat hlášení“
+  jsou stejná tlačítka; dřív bylo souhlasné vyplněné a odmítnutí jen orámované.
 - **Časté dotazy mají nadpisy jako Nastavení.** Upozornění u datových schránek je tichý řádek
   pod nadpisem skupiny, ne samostatná poznámka s ikonou.
 - **Úvodní obrazovka ukazuje obálku, která čeká na schránku.** Okénko je zatím prázdné, pod ním
