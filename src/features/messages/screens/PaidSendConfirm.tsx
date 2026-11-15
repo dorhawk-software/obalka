@@ -53,7 +53,7 @@ export function PaidSendConfirm({
           importantForAccessibility="no-hide-descendants"
           testID="composeConfirmStamp"
         >
-          <PriceStamp paid approxCzk={approxCzk} frame={STAMP_FRAME} shadow="stamp" />
+          <PriceStamp price={{ paid: true, czk: approxCzk }} frame={STAMP_FRAME} shadow="stamp" />
         </View>
       }
       body={

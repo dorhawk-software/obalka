@@ -1,7 +1,8 @@
 // Compose is the envelope you are sending (031 I38, boards R2 and R12, agreed 2026-11-12): Od on the
 // envelope, Komu in its window, the stamp in its corner. The stamp says what the send costs once a
-// recipient decides it - Zdarma for a public authority, Placená for a postal data message - and is a
-// blank dashed slot until then. The window is the recipient search's field while nobody is picked
+// recipient decides it - Zdarma for a public authority, Placená for a postal data message - and is the
+// same stamp blank and faded until then (the owner, 2026-11-15; R12's dashed slot read as a missing
+// picture). The window is the recipient search's field while nobody is picked
 // (R12, picked 2026-11-12), and the picked recipient after. When ISDS accepts the message the
 // postmark lands on this same stamp (the sent result, Motion 2).
 
@@ -26,8 +27,8 @@ import type { CostEstimate, DataBoxAccount, Recipient } from '../../../services/
 /** The window leaves the stamp's column free: R2's 44 to the envelope's right edge. */
 const WINDOW_RIGHT = 44;
 /** The stamp's printed frame (R2: 96 wide and 78 tall at the least, its 1 border included; the 12
- * perforated margin lies outside it). */
-const FRAME = { width: 96, height: 78 };
+ * perforated margin lies outside it). The sent envelope sticks on the same stamp. */
+export const STAMP_FRAME = { width: 96, height: 78 } as const;
 /** Od's place above the window: R2's 188 less 12 and 14 of margin, the 10 gap and the window's 72
  * (Komu, the name and one line under it). */
 const OD_HEIGHT = 80;
@@ -84,50 +85,59 @@ export function ComposeEnvelope({
   );
 }
 
-/** The stamp the send will take: blank until a recipient sets the price (R12), then R2's face. */
+/**
+ * The stamp the send will take: blank and at .55 until a recipient sets the price, then R2's face. The
+ * blank is the same stamp at the same size, so nothing moves when the words print in (the owner,
+ * 2026-11-15).
+ */
 function CostStamp({ estimate }: { readonly estimate: CostEstimate | null }) {
-  const theme = useTheme();
   if (!estimate) {
     return (
       <View
-        style={{ width: 84, height: 72 }}
+        // Faded as one picture, as every dimmed object (031 I38).
+        style={{ opacity: 0.55 }}
+        needsOffscreenAlphaCompositing
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
         testID="composeStampBlank"
       >
-        {/* R12's 1.4 dashed edge as the browser paints it there (2.1 on, 1.4 off, measured on the
-            board); its 3 corner rounded to the scale's 8. */}
-        <DashedOutline radius={8} strokeWidth={1.4} dash="2.1 1.4" color={theme.envelopeDash} />
+        <PriceStamp price={null} frame={STAMP_FRAME} shadow="stampOnEnvelope" />
       </View>
     );
   }
   return (
     <View testID="composeStamp" accessible accessibilityLabel={stampLabel(estimate)}>
-      <PriceStamp paid={estimate.paid} approxCzk={estimate.approxCzk ?? 0} frame={FRAME} shadow="stampOnEnvelope" />
+      <PriceStamp
+        price={{ paid: estimate.paid, czk: estimate.approxCzk ?? 0 }}
+        frame={STAMP_FRAME}
+        shadow="stampOnEnvelope"
+      />
     </View>
   );
 }
 
 /**
- * The stamp's face: ZDARMA or PLACENÁ, the price, and the kind. On the envelope it is R2's 96×78 stuck
- * on (`stampOnEnvelope`); the paid-send question lays it on its own at 112×92 (`stamp`), as R2 does.
- * Decorative where it stands: the caller says what it costs.
+ * The stamp's face: ZDARMA or PLACENÁ, the price, and the kind - or no words (`price` null) while the
+ * price is not known, or where the archive keeps no cost. On an envelope it is R2's 96×78 stuck on
+ * (`stampOnEnvelope`), in compose and cancelled on the sent envelope, one stamp (the owner, 2026-11-15);
+ * the paid-send question lays it on its own at 112×92 (`stamp`), as R2 does. Decorative where it
+ * stands: the caller says what it costs.
  */
 export function PriceStamp({
-  paid,
-  approxCzk,
+  price,
   frame,
   shadow,
+  cancelled = false,
 }: {
-  readonly paid: boolean;
-  readonly approxCzk: number;
+  readonly price: { readonly paid: boolean; readonly czk: number } | null;
   /** The printed frame, its 1 border included; the perforated margin lies outside it. */
   readonly frame: { readonly width: number; readonly height: number };
   readonly shadow: 'stamp' | 'stampOnEnvelope';
+  readonly cancelled?: boolean;
 }) {
   const theme = useTheme();
   return (
-    <Stamp kind="stamp" shadow={shadow}>
+    <Stamp kind="stamp" shadow={shadow} cancelled={cancelled}>
       {/* Inside the frame's 1 border. A word wider than the face widens the stamp rather than
           being cut. */}
       <YStack
@@ -136,16 +146,21 @@ export function PriceStamp({
         paddingVertical={8}
         paddingHorizontal={8}
         justifyContent="space-between"
+        testID="stampFace"
       >
-        <Tag color={theme.stampLabel}>
-          {(paid ? t('send.cost.paid.badge') : t('send.cost.free')).toLocaleUpperCase('cs')}
-        </Tag>
-        <Title color={theme.stampInk} numberOfLines={1} adjustsFontSizeToFit testID="composeStampPrice">
-          {paid ? t('send.sent.stamp.paid', { czk: approxCzk }) : t('send.sent.stamp.free')}
-        </Title>
-        <Tag fontWeight="400" color={theme.stampLabel}>
-          {paid ? t('send.stamp.paid.kind') : t('send.stamp.free.kind')}
-        </Tag>
+        {price ? (
+          <>
+            <Tag color={theme.stampLabel}>
+              {(price.paid ? t('send.cost.paid.badge') : t('send.cost.free')).toLocaleUpperCase('cs')}
+            </Tag>
+            <Title color={theme.stampInk} numberOfLines={1} adjustsFontSizeToFit testID="composeStampPrice">
+              {price.paid ? t('send.sent.stamp.paid', { czk: price.czk }) : t('send.sent.stamp.free')}
+            </Title>
+            <Tag fontWeight="400" color={theme.stampLabel}>
+              {price.paid ? t('send.stamp.paid.kind') : t('send.stamp.free.kind')}
+            </Tag>
+          </>
+        ) : null}
       </YStack>
     </Stamp>
   );

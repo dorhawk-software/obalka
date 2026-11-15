@@ -12,7 +12,7 @@ import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import { darkTheme, lightTheme } from '../../src/theme/theme';
-import { cancellation, postmarkPrint, recordRing } from '../../src/theme/print';
+import { cancellationWaves, perforation, postmarkPrint, recordRing } from '../../src/theme/print';
 import { setActiveLocale } from '../../src/i18n/strings';
 import { SentResult, sendMoment, sendMomentEnd, sentBody, sentSteps } from '../../src/features/messages/screens/SentResult';
 import type { DataBoxAccount, Recipient } from '../../src/services/isds/types';
@@ -76,13 +76,35 @@ const mount = (
     </SafeAreaProvider>,
   );
 
+/** Compose's stamp as it lies: R2's 96 x 78 frame in its 12 perforated margin. */
+const STAMP = { width: 96 + 2 * perforation.stamp.inset, height: 78 + 2 * perforation.stamp.inset };
+const WAVES = cancellationWaves(STAMP.width, STAMP.height).d;
+
 /** Lays out every node that waits for its size (the stamp, the slip), so they draw. */
 async function layOut(view: Awaited<ReturnType<typeof mount>>) {
+  // The stamp measures itself inside its corner; the waves are drawn to its size.
+  type Host = { props: Record<string, unknown>; children: readonly (Host | string)[] };
+  const measured = (n: Host): Host | null => {
+    if (n.props.onLayout) {
+      return n;
+    }
+    for (const c of n.children) {
+      const found = typeof c === 'string' ? null : measured(c);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
+  };
+  const stamp = measured(view.getByTestId('sentStamp', { includeHiddenElements: true }) as unknown as Host);
+  if (stamp) {
+    await fireEvent(stamp as never, 'layout', { nativeEvent: { layout: { x: 0, y: 0, ...STAMP } } });
+  }
   for (const id of ['sentStamp', 'sentStep-sent']) {
     let host = view.getByTestId(id, { includeHiddenElements: true });
     for (let i = 0; i < 6 && host.parent; i++) {
       if (host.props.onLayout) {
-        await fireEvent(host, 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 84, height: 90 } } });
+        await fireEvent(host, 'layout', { nativeEvent: { layout: { x: 0, y: 0, ...STAMP } } });
       }
       host = host.parent;
     }
@@ -113,7 +135,7 @@ describe.each([
     const all = nodes(view.toJSON());
     // The postmark's own waves are left off; the stamp carries them.
     expect(all.some(n => n.props.d === postmarkPrint.waves)).toBe(false);
-    const cancel = all.find(n => n.props.d === cancellation.d);
+    const cancel = all.find(n => n.props.d === WAVES);
     expect(JSON.stringify(cancel?.props.stroke)).toBe(brush(theme.cancelInk));
   });
 });
@@ -126,6 +148,26 @@ it('says a free send cost nothing on its stamp, and a paid one what it cost', as
   const paid = await mount({ paidCzk: 20 });
   expect(paid.getByText('PLACENÁ')).toBeTruthy();
   expect(paid.getByText('~20 Kč')).toBeTruthy();
+});
+
+it('cancels the stamp compose showed, kind line and all, not a smaller one (the owner, 2026-11-15)', async () => {
+  // Until 2026-11-15 the sent stamp was the Sent board's 76 x 70 without the kind line: the stamp
+  // shrank and lost a line the moment it was sent.
+  const free = await mount();
+  expect(free.getByText('datová zpráva')).toBeTruthy();
+  expect(free.getByTestId('composeStampPrice')).toBeTruthy();
+  await free.unmount();
+  const paid = await mount({ paidCzk: 20 });
+  expect(paid.getByText('PDZ')).toBeTruthy();
+});
+
+it('runs the cancelling waves from left of the stamp to just short of its right edge', () => {
+  // The Sent board: 96 of waves on its 84 stamp, from 14 left of it, 34 down its 88.
+  const board = cancellationWaves(84, 88);
+  expect([board.width, board.y]).toEqual([96, 34]);
+  const ours = cancellationWaves(STAMP.width, STAMP.height);
+  expect(ours.width - 14).toBeGreaterThanOrEqual(STAMP.width - 2);
+  expect(ours.width - 14).toBeLessThan(STAMP.width + 12);
 });
 
 it('says when ISDS took it, with the preposition Czech gives that hour', () => {
@@ -188,7 +230,7 @@ describe('the sending moment (board Motion 2)', () => {
   it('shows the stamp uncancelled first, then lands the postmark with one firm thump', async () => {
     const view = await mount();
     await layOut(view);
-    const cancelled = () => nodes(view.toJSON()).some(n => n.props.d === cancellation.d);
+    const cancelled = () => nodes(view.toJSON()).some(n => n.props.d === WAVES);
     expect(view.queryByTestId('sentPostmark', { includeHiddenElements: true })).toBeNull();
     expect(cancelled()).toBe(false);
     expect(trigger).not.toHaveBeenCalled();

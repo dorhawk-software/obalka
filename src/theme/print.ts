@@ -16,8 +16,8 @@ export const offsetPrint = {
  *
  * `inset` is the paper around the stamp's printed frame: the holes cut only that margin.
  *
- * - `stamp`: a stamp on its own (the cost of a send, board Main);
- * - `stampSmall`: the stamp stuck on a sent message's envelope (board Sent);
+ * - `stamp`: the stamp a send costs, R2's, in compose, on the paid question and cancelled on the sent
+ *   envelope (one stamp, the owner 2026-11-15; the Sent board's smaller `stampSmall` is gone);
  * - `fab`: the gold stamp of the compose button (boards InboxA, Empty);
  * - `slip`: the torn-off top of a slip (the delivery record, the recovery key, the transfer code), a
  *   row of holes centred on the top edge, the first `pitch / 2` in; its bottom corners round by
@@ -25,7 +25,6 @@ export const offsetPrint = {
  */
 export const perforation = {
   stamp: { radius: 4, pitch: 12, inset: 12 },
-  stampSmall: { radius: 3.5, pitch: 10, inset: 9 },
   fab: { radius: 3.5, pitch: 10, inset: 7 },
   slip: { radius: 5, pitch: 14, corner: 14 },
 } as const;
@@ -246,20 +245,30 @@ export const docSheet = {
 
 /**
  * The cancellation (board Sent): where a postmark lands on a stamp, its waves run across the stamp in
- * `cancelInk`, the postmark's white would not show on the stamp's paper. Two waves on a 108 x 18
- * drawing, `x`/`y` from the stamp's top left (it starts 14 to the left of the stamp). The board's
- * drawing is 96 wide on an 84 wide stamp; the stamp here is 96 (its labels did not fit on Android,
- * see `SentResult`), so the waves are one 12 wide period longer and still cross it.
+ * `cancelInk`, the postmark's white would not show on the stamp's paper. Two waves 18 tall, one period
+ * every 12, from 14 left of the stamp to at least 2 short of its right edge, their top 10 above the
+ * stamp's middle - the board's 96 of waves at 34 down its 84 x 88 stamp (`cancellationWaves`).
  */
 export const cancellation = {
-  width: 108,
   height: 18,
   x: -14,
-  y: 34,
-  d: 'M0 5q6-4 12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0M0 13q6-4 12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0',
+  period: 12,
   stroke: 1.5,
   opacity: 0.7,
 } as const;
+
+/** The cancellation's waves across a stamp of this size (its perforated margin included). */
+export function cancellationWaves(stampWidth: number, stampHeight: number) {
+  const { x, period } = cancellation;
+  const periods = Math.ceil((stampWidth - x - 2) / period);
+  const run = 't12 0'.repeat(periods - 1).replace(/t/g, ' t').trim();
+  const wave = (y: number) => `M0 ${y}q6-4 12 0 ${run}`;
+  return {
+    width: periods * period,
+    y: Math.round(stampHeight / 2) - 10,
+    d: `${wave(5)}${wave(13)}`,
+  };
+}
 
 /**
  * The sealed envelope of the lock (board "Lock - sealed"), on its 160 tile: `radius` corners, the gold

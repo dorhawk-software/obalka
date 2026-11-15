@@ -124,6 +124,14 @@ describe('a sent message (R7)', () => {
     expect(JSON.stringify(view.toJSON())).toContain(t('send.sent.postmark.ring'));
   });
 
+  it("cancels compose's stamp, R2's 96 x 78 frame, blank where the archive keeps no cost (the owner, 2026-11-15)", async () => {
+    const view = await open();
+    const face = await waitFor(() => within(view.getByTestId('detailStamp', { includeHiddenElements: true })).getByTestId('stampFace', { includeHiddenElements: true }));
+    const style = StyleSheet.flatten(face.props.style) as { minWidth?: number; minHeight?: number };
+    // The face sits inside the frame's 1 border, as compose's does.
+    expect([style.minWidth, style.minHeight]).toEqual([94, 76]);
+  });
+
   it('starts the window under the postmark, so a window with an address grows the envelope down (031 T050)', async () => {
     // Pinned to the envelope's bottom, the window grew upwards with the address and covered the
     // postmark's date and time (struck 20 down, 108 across).

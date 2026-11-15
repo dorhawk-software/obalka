@@ -17,14 +17,13 @@ import {
 import { useReducedMotion } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { XStack, YStack } from '../../../theme/ui';
-import { Body, BodyStrong, Caption, Hero, Label, Meta, Overline, Subheading, Tag, Title } from '../../../theme/Typography';
+import { Body, BodyStrong, Caption, Hero, Label, Meta, Overline, Subheading } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { chipTone } from '../../../theme/chipTone';
 import { depth } from '../../../theme/depth';
 import { PressScale } from '../../../theme/PressScale';
 import { Envelope } from '../../../theme/objects/Envelope';
 import { Postmark } from '../../../theme/objects/Postmark';
-import { Stamp } from '../../../theme/objects/Stamp';
 import { Slip } from '../../../theme/objects/Slip';
 import { Window } from '../../../theme/objects/Window';
 import { RecordRing, type RecordRingKind } from '../../../theme/objects/RecordRing';
@@ -34,15 +33,13 @@ import { haptics } from '../../../services/haptics';
 import type { DataBoxAccount, Recipient } from '../../../services/isds/types';
 import type { SentStatus } from '../state/sendController';
 import { MESSAGE_STATE } from '../state/messageState';
-import { dayMonth } from './DetailEnvelope';
+import { SENT_POSTMARK_RIGHT, dayMonth } from './DetailEnvelope';
+import { PriceStamp, STAMP_FRAME } from './ComposeEnvelope';
 import { dateAndTime } from './DeliveryRecord';
 import { takesVe } from './InboxRows';
 
 /** The record's ring on this screen (board Sent: 30, where the message's record has 34). */
 const RING = 30;
-
-/** The stamp's printed face: the longest label (Czech "PLACENÁ", 56 on Android) and its 8 margins. */
-const STAMP_FACE = 76;
 
 /**
  * The sending moment (031, board Motion 2): the stamp is seen uncancelled for `beatMs`; then the postmark
@@ -183,7 +180,7 @@ function SentEnvelope({
     >
       {/* The postmark ISDS struck when it took the message; its waves cancel the stamp beside it. */}
       {landed ? (
-        <Animated.View style={[{ position: 'absolute', right: 102, top: 20 }, postmarkStyle]} testID="sentPostmark">
+        <Animated.View style={[{ position: 'absolute', right: SENT_POSTMARK_RIGHT, top: 20 }, postmarkStyle]} testID="sentPostmark">
           <Postmark
             ring={t('send.sent.postmark.ring')}
             line1={dayMonth(sentAt)}
@@ -194,19 +191,15 @@ function SentEnvelope({
           />
         </Animated.View>
       ) : null}
-      {/* What the send cost, stuck in the corner and cancelled. The face is 76 wide where the board's is
-          64: Android draws "ZDARMA" 51 and "PLACENÁ" 56 wide, the board's face leaves them 48. */}
+      {/* What the send cost, stuck in the corner and cancelled: the stamp compose showed, kind line and
+          all (the owner, 2026-11-15). */}
       <View style={{ position: 'absolute', right: 14, top: 14, transform: [{ rotate: '2deg' }] }} testID="sentStamp">
-        <Stamp kind="stampSmall" shadow="stampOnEnvelope" cancelled={landed}>
-          <YStack width={STAMP_FACE} height={70} paddingVertical={8} paddingHorizontal={8} justifyContent="space-between">
-            <Tag color={theme.stampLabel}>
-              {(paidCzk != null ? t('send.cost.paid.badge') : t('send.cost.free')).toLocaleUpperCase('cs')}
-            </Tag>
-            <Title color={theme.stampInk} numberOfLines={1} adjustsFontSizeToFit>
-              {paidCzk != null ? t('send.sent.stamp.paid', { czk: paidCzk }) : t('send.sent.stamp.free')}
-            </Title>
-          </YStack>
-        </Stamp>
+        <PriceStamp
+          price={{ paid: paidCzk != null, czk: paidCzk ?? 0 }}
+          frame={STAMP_FRAME}
+          shadow="stampOnEnvelope"
+          cancelled={landed}
+        />
       </View>
       <YStack maxWidth={120} gap={2}>
         <Overline color={theme.envelopeInkSoft}>{t('detail.from')}</Overline>

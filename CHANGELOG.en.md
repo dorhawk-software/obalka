@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A sent message carries the stamp you saw while writing it.** The same size, kind line and
+  all, now cancelled. Until you pick a recipient, the envelope's corner holds a faded blank stamp
+  instead of a dashed frame.
 - **A Send you cannot use yet is dimmed like every other button.** Until the message has a
   recipient and content, the button looks the way other unavailable buttons do.
 - **A box's monogram leaves out the degree.** "Ing. Ondřej Dvořák" is OD, not IO, so one person's

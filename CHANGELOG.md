@@ -20,6 +20,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Odeslaná zpráva nese tutéž známku, jakou ukázalo psaní.** Stejně velkou, i s druhem zprávy,
+  jen orazítkovanou. Než vyberete adresáta, stojí v rohu obálky bledá prázdná známka místo
+  čárkovaného rámečku.
 - **Nedostupné Odeslat je stejně tlumené jako ostatní tlačítka.** Dokud zpráva nemá adresáta nebo
   obsah, vypadá tlačítko stejně jako jiná, která zatím nejdou použít.
 - **Monogram schránky vynechá titul.** „Ing. Ondřej Dvořák“ je OD, ne IO, takže dvě schránky

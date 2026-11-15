@@ -168,7 +168,7 @@ describe.each([
 
     it('stuck on an envelope casts no shadow of its own', async () => {
       const { all } = await draw(
-        <Stamp kind="stampSmall">
+        <Stamp kind="stamp">
           <Text>0 Kč</Text>
         </Stamp>,
         isDark,

@@ -1258,6 +1258,32 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   09:20", and "29.08." in lists; I46.2 waits for one form).
   Built as drawn: the busy primary button sets its ring and the busy words centred as one group (the
   words change too), as R8 and R12 draw it; nothing outside the button moves.
+  Answered by the owner, one by one (2026-11-15):
+  1. The stamp: R2's everywhere - the stamp compose shows (96x78, the kind line) is the one cancelled
+     on the sent envelope; an archived sent message keeps it blank at the same size.
+  2. The date form: the Czech standard, "12. 11. 2026 9:20", lists and the postmark "29. 8.", through
+     one formatter; English "12 Nov 2026, 9:20" and "29 Aug".
+  3. Neutral buttons: a deeper tone, one fill that separates from the paper and a card (tone, not
+     outlines).
+  4. Nedoručitelné: the stop disc (`StatusStopIcon`) at 15 before the words, in ink.
+  5. Backup's text: the two loose paragraphs go (the cloud sentence with them); the attachments line
+     becomes "Bez nich záloha ví jen, že příloha byla. Po obnovení si ji stáhnete znovu, dokud ji
+     ISDS má."
+  6. Settings: stays in the switcher (decided "left as it is").
+  7. The switcher's state line: only the problem in red, "· Poslední známý stav" muted.
+  8. "Naposledy": the verb named - "Aktualizováno …" in the inbox, "Zálohováno …" on the backup row.
+  9. The empty stamp slot: the blank stamp at .55; the price prints in once a recipient sets it.
+  10. A disabled switch: the neutral off track whatever its value, the knob keeps its side (every
+      Toggle).
+  11. The window film in dark: no glint.
+  12. The error-report row: a bug glyph in the offset family, on the Icons board first.
+  13. "we": all eight strings in the app's voice or impersonal; the SMS line no longer says the app
+      sent the code.
+  14. The detail header: the shared height; its title stays faint (the one exception, colour only).
+  15. The broken-box badge: top-left, over the flap; the letters stay clear.
+  16. The sign-in name: "Uživatelské jméno" (ISDS's word and the access letter's), no placeholder;
+      the box's "Přihlašovací jméno" line follows.
+  17. The alias example: "Např. Osobní, Firma…".
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the

@@ -12,7 +12,8 @@ import { useRef, useState } from 'react';
 import { Animated, Pressable, View, type LayoutChangeEvent } from 'react-native';
 import { XStack, YStack } from '../../../theme/ui';
 import { Caption, Display, Heading, Overline, Subheading } from '../../../theme/Typography';
-import { Stamp } from '../../../theme/objects/Stamp';
+import { PriceStamp, STAMP_FRAME } from './ComposeEnvelope';
+import { perforation } from '../../../theme/print';
 import { AddressLines } from './AddressLines';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Envelope } from '../../../theme/objects/Envelope';
@@ -90,8 +91,11 @@ function FormNote({
   );
 }
 
-/** The sent envelope's stamp: the board's 84, its blank face 64 by 70. */
-const SENT_STAMP_FACE = { width: 64, height: 70 } as const;
+/**
+ * Where the postmark stands on a sent envelope, from its right edge: past the stamp (14 in, the 96 frame
+ * in its 12 margins) and 4 more, the Sent board's gap; its waves reach across the stamp from there.
+ */
+export const SENT_POSTMARK_RIGHT = 14 + STAMP_FRAME.width + 2 * perforation.stamp.inset + 4;
 
 /**
  * Where a sent envelope's window starts, under its top edge: the Sent board's 196 envelope less its 14
@@ -109,7 +113,7 @@ function SentCorner({ sentAt }: { readonly sentAt: number | null }) {
     <>
       {sentAt != null ? (
         <View
-          style={{ position: 'absolute', right: 102, top: 20 }}
+          style={{ position: 'absolute', right: SENT_POSTMARK_RIGHT, top: 20 }}
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
           testID="detailPostmark"
@@ -130,9 +134,8 @@ function SentCorner({ sentAt }: { readonly sentAt: number | null }) {
         importantForAccessibility="no-hide-descendants"
         testID="detailStamp"
       >
-        <Stamp kind="stampSmall" shadow="stampOnEnvelope" cancelled={sentAt != null}>
-          <YStack {...SENT_STAMP_FACE} />
-        </Stamp>
+        {/* Compose's stamp, blank: the archive keeps no cost (the owner, 2026-11-13 and 2026-11-15). */}
+        <PriceStamp price={null} frame={STAMP_FRAME} shadow="stampOnEnvelope" cancelled={sentAt != null} />
       </View>
     </>
   );

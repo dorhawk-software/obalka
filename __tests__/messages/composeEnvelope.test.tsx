@@ -4,7 +4,7 @@
 // an outlined search field, a cost panel with a hairline, outlined result rows.
 
 import type { ReactElement } from 'react';
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor, within } from '@testing-library/react-native';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
@@ -102,9 +102,15 @@ async function pick(view: View, r: Recipient) {
 }
 
 describe('compose, the envelope you are sending (R2, R12)', () => {
-  it('leaves the stamp a blank slot until a recipient sets the price', async () => {
+  it('shows the same stamp blank and faded until a recipient sets the price (the owner, 2026-11-15)', async () => {
+    // Until 2026-11-15 an 84 x 72 dashed slot stood there, read as a missing picture.
     const view = await compose();
-    expect(view.getByTestId('composeStampBlank', hidden)).toBeTruthy();
+    const blank = view.getByTestId('composeStampBlank', hidden);
+    expect(StyleSheet.flatten(blank.props.style).opacity).toBe(0.55);
+    expect(blank.props.needsOffscreenAlphaCompositing).toBe(true);
+    const face = within(blank).getByTestId('stampFace', hidden);
+    expect(StyleSheet.flatten(face.props.style)).toMatchObject({ minWidth: 94, minHeight: 76 });
+    expect(within(blank).queryByTestId('composeStampPrice', hidden)).toBeNull();
     expect(view.queryByTestId('composeStamp')).toBeNull();
   });
 

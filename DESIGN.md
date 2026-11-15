@@ -761,6 +761,13 @@ from the canvas after the pick (versions 21, 23, 25).
   card of choices".
 - **The scanner:** "A the bare camera" lost to "B a window to aim through".
 
+After the critique (2026-11-15), the owner's answers, one by one:
+
+- **The stamp:** the Sent board's smaller stamp (76 by 70, no kind line) and R12's dashed slot before a
+  price lost to R2's stamp everywhere - 96 by 78 in its 12 perforated margin, blank at .55 until a
+  recipient sets the price, cancelled on the sent envelope (blank there when the archive keeps no
+  cost). The postmark stands 4 left of it; the waves run from 14 left of the stamp to its right edge.
+
 ## Do's and Don'ts
 
 ### Do
