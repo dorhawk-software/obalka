@@ -12,7 +12,7 @@ import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import { Body, Caption, Day, Overline, Title } from '../../src/theme/Typography';
-import { Button, Input, Text } from '../../src/theme/ui';
+import { Button, Input } from '../../src/theme/ui';
 import { MAX_TEXT_SCALE } from '../../src/theme/typeScale';
 
 const wrap = (child: ReactElement) => (
@@ -31,7 +31,6 @@ it.each([
   ['a caption', <Caption>Zpráva</Caption>],
   ['an overline', <Overline>Zpráva</Overline>],
   ['the day', <Day>10</Day>],
-  ['plain text', <Text>Zpráva</Text>],
   ['a button\'s words', <Button>Zpráva</Button>],
 ])('%s grows no further than that', async (_name, element) => {
   const view = await render(wrap(element));
@@ -44,6 +43,14 @@ it('a field grows no further than that', async () => {
 });
 
 it('a part of a drawing keeps the cap it asks for', async () => {
-  const view = await render(wrap(<Text maxFontSizeMultiplier={1}>OD</Text>));
+  const view = await render(wrap(<Body maxFontSizeMultiplier={1}>OD</Body>));
   expect(view.getByText('OD')).toHaveProp('maxFontSizeMultiplier', 1);
+});
+
+// Walked 2026-11-15: the cap first went in as a wrapper around Tamagui's Text, and on Android the text
+// set inside other text went blank - the message envelope's recipient read "Ing. Ondřej", its surname
+// and box ID missing with their space kept. The cap lives in the roles; the Text is Tamagui's own.
+it('leaves the Text the roles draw with as Tamagui\'s own component', () => {
+  const { Text: Tamagui } = jest.requireActual<typeof import('tamagui')>('tamagui');
+  expect(require('../../src/theme/ui').Text).toBe(Tamagui);
 });

@@ -14,6 +14,7 @@ import { inkLift } from './inkClipping';
 import type { Theme } from './theme';
 import {
   fonts,
+  MAX_TEXT_SCALE,
   metricLeading,
   type as typeScale,
   type TextRole,
@@ -119,6 +120,8 @@ function roleComponent(role: TextRole, colorKey: keyof Theme) {
 
     return (
       <Text
+        // Twice the size at most, Android's largest (typeScale.ts); a caller's own cap wins.
+        maxFontSizeMultiplier={MAX_TEXT_SCALE}
         fontSize={fontSize}
         lineHeight={margins ? designLine + 2 * lift : designLine}
         letterSpacing={s.letterSpacing}

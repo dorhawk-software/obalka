@@ -172,8 +172,8 @@ describe('weekdayShort', () => {
 describe('the register at the largest text size', () => {
   it('lets the day column grow rather than break its numeral', async () => {
     const view = await row(envelope());
-    const style = StyleSheet.flatten(view.getByTestId('register-day').props.style) as Record<string, unknown>;
-    expect(style.minWidth).toBe(34);
-    expect(style.width).toBeUndefined();
+    const column = StyleSheet.flatten(view.getByTestId('register-day').props.style) as Record<string, unknown>;
+    expect(column.minWidth).toBe(34);
+    expect(column.width).toBeUndefined();
   });
 });

@@ -129,13 +129,12 @@ ThemedButton.displayName = 'Button';
 
 export const YStack = pressable(TYStack as unknown as ComponentType<any>, 'YStack');
 export const XStack = pressable(TXStack as unknown as ComponentType<any>, 'XStack');
-/** Tamagui's Text, growing with the reader's setting up to `MAX_TEXT_SCALE` unless it asks otherwise. */
-const BaseText = TText as unknown as ComponentType<any>;
-const CappedText = forwardRef<unknown, any>(function CappedTextRun(props, ref) {
-  return <BaseText ref={ref} maxFontSizeMultiplier={MAX_TEXT_SCALE} {...props} />;
-});
-CappedText.displayName = 'Text';
-export const Text = CappedText as unknown as ComponentType<any>;
+/**
+ * Tamagui's own Text. The type roles (`Typography.tsx`) cap its growth at `MAX_TEXT_SCALE`; a wrapper
+ * here did it once and Tamagui stopped drawing text set inside other text (the recipient's surname
+ * and box ID went blank on the message's envelope, 2026-11-15).
+ */
+export const Text = TText as unknown as ComponentType<any>;
 export const Paragraph = TParagraph as unknown as ComponentType<any>;
 export const ScrollView = TScrollView as unknown as ComponentType<any>;
 export const H2 = TH2 as unknown as ComponentType<any>;
