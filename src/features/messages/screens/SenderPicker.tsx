@@ -1,31 +1,29 @@
 // Which box a message is sent from (027 US1, US2 - decision 1A).
 //
-// Compose sent from whichever box it was opened in and never said which. Here the sender is a card of
-// its own above the recipient, in the same shape, and "Změnit" opens a sheet of every box. The sender
+// Compose sent from whichever box it was opened in and never said which. The sender is Od on the
+// envelope (031 R2), and with another box to send from it opens a sheet of every box. The sender
 // matters beyond the label: recipient search, the paid-message credit and the send itself all go
 // through the sender's box, which is why compose opened from the merged view asks for it first
 // (`SenderGate`) and why, once chosen, it can change to another box but never back to none.
 
 import { ScrollView } from 'react-native';
 import { XStack, YStack } from '../../../theme/ui';
-import { Body, Label, Meta, SmallStrong, Value } from '../../../theme/Typography';
-import { Avatar } from '../../../theme/Avatar';
-import { ChevronDownIcon } from '../../../theme/icons';
+import { Meta, SmallStrong } from '../../../theme/Typography';
 import { BottomSheet } from '../../../theme/BottomSheet';
 import { space } from '../../../theme/spacing';
-import { DashedOutline } from '../../../theme/DashedOutline';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useContentBottom } from '../../../theme/useContentBottom';
 import { boxColor } from '../../../theme/boxColor';
 import { boxTypeLabel } from '../../accounts/state/boxType';
 import { needsSignIn } from '../state/messagesController';
-import { creditState, type CreditState } from '../state/credit';
 import { t } from '../../../i18n/strings';
 import type { DataBoxAccount } from '../../../services/isds/types';
 import { Card } from '../../../theme/Card';
 import { EnvelopeTile } from '../../../theme/objects/Envelope';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
+import { ComposeEnvelope, WaitingWindow } from './ComposeEnvelope';
+import { WaitingLetter } from './ComposeParts';
 
 const boxName = (a: DataBoxAccount) => a.alias ?? a.label;
 
@@ -36,110 +34,6 @@ const boxName = (a: DataBoxAccount) => a.alias ?? a.label;
  */
 const SENDER_ROW = 60;
 
-
-/**
- * The "Od" card: the chosen sender. With another box to change to, the WHOLE card is the button and a
- * chevron says it opens a choice - the inbox's box selector, the same pattern (2026-10-04: a lone "Změnit"
- * as the only target, on a card that looked pressable, was reported as unintuitive).
- */
-export function SenderCard({
-  account,
-  credit = creditState(account.pdzCreditCzk, undefined),
-  onChange,
-}: {
-  readonly account: DataBoxAccount;
-  /**
-   * The box's credit, judged against this message's price (020). Shown on the card itself since
-   * 2026-10-04 - the paid-message notice used to repeat it ("Zbývá 30 Kč") right under a card that
-   * already said it. Unknown renders nothing: "never asked" is not "no money" (020 FR-003).
-   */
-  readonly credit?: CreditState;
-  /** Absent: nothing to change to (one box), or the message is already sent. */
-  readonly onChange?: () => void;
-}) {
-  const theme = useTheme();
-  const type = boxTypeLabel(account.dbType);
-  return (
-    <YStack marginBottom={18}>
-      <Label fontWeight="700" marginBottom={8}>
-        {t('send.from')}
-      </Label>
-      <Card flexDirection="row"
-        padding={12}
-        gap={12}
-        alignItems="center"
-        onPress={onChange}
-        pressStyle={onChange ? { backgroundColor: theme.surfaceAlt } : undefined}
-        accessibilityRole={onChange ? 'button' : undefined}
-        accessibilityLabel={[
-          `${t('send.from')} ${boxName(account)}`,
-          credit.kind === 'unknown' ? null : t('send.from.credit', { amount: credit.balance }),
-          credit.kind === 'short' ? t('send.credit.shortNote') : null,
-        ]
-          .filter(Boolean)
-          .join(', ')}
-        accessibilityHint={onChange ? t('send.from.change') : undefined}
-        testID="composeSender"
-      >
-        <Avatar name={boxName(account)} color={boxColor(account)} size={38} />
-        <YStack flex={1} minWidth={0}>
-          <SmallStrong color={theme.text} numberOfLines={1}>
-            {boxName(account)}
-          </SmallStrong>
-          {type ? (
-            <Meta color={theme.textFaint} numberOfLines={1}>
-              {type}
-            </Meta>
-          ) : null}
-        </YStack>
-        {credit.kind === 'unknown' ? null : (
-          <YStack alignItems="flex-end" flexShrink={0} testID="composeSenderCredit">
-            <Meta color={theme.textFaint}>{t('send.from.creditLabel')}</Meta>
-            <Value color={credit.kind === 'short' ? theme.danger : theme.text}>{credit.balance}</Value>
-          </YStack>
-        )}
-        {onChange ? (
-          <YStack testID="composeSenderChevron">
-            <ChevronDownIcon size={18} color={theme.textFaint} />
-          </YStack>
-        ) : null}
-      </Card>
-    </YStack>
-  );
-}
-
-/** No sender yet: the dashed prompt compose from "Vše" opens with. */
-export function SenderPrompt({ onPress }: { readonly onPress: () => void }) {
-  const theme = useTheme();
-  return (
-    <YStack marginBottom={18}>
-      <Label fontWeight="700" marginBottom={8}>
-        {t('send.from')}
-      </Label>
-      <XStack
-        position="relative"
-        borderRadius={14}
-        padding={12}
-        gap={12}
-        alignItems="center"
-        backgroundColor={theme.surfaceAlt}
-        pressStyle={{ opacity: 0.7 }}
-        onPress={onPress}
-        accessibilityRole="button"
-        accessibilityLabel={t('send.from.pick')}
-        testID="composePickSender"
-      >
-        <DashedOutline color={theme.borderStrong} />
-        <YStack width={38} height={38} borderRadius={11} position="relative">
-          <DashedOutline radius={11} color={theme.borderStrong} />
-        </YStack>
-        <Body fontWeight="600" flex={1} color={theme.warningInk}>
-          {t('send.from.pick')}
-        </Body>
-      </XStack>
-    </YStack>
-  );
-}
 
 /** The sheet of boxes to send from. A box waiting for a sign-in is listed and cannot be picked. */
 export function SenderSheet({
@@ -221,9 +115,10 @@ export function SenderSheet({
 }
 
 /**
- * Compose opened from the merged view, before a sender is chosen: the prompt, and the rest of the form
- * shown but inactive, so the person sees what they are about to fill in. Nothing can be typed yet, so
- * nothing is lost when the real compose takes over.
+ * Compose opened from the merged view, before a sender is chosen (R12 "No sender yet"): the envelope
+ * with Od as a dashed slot to choose the box in, the window and the letter dimmed, the stamp blank -
+ * the person sees what they are about to fill in. Nothing can be typed yet, so nothing is lost when
+ * the real compose takes over.
  */
 export function SenderGate({
   accounts,
@@ -242,37 +137,14 @@ export function SenderGate({
 }) {
   const theme = useTheme();
   const bottom = useContentBottom(24);
-  const placeholder = (label: string, hint: string) => (
-    <YStack marginBottom={18}>
-      <Label fontWeight="700" marginBottom={8}>
-        {label}
-      </Label>
-      <XStack
-        minHeight={50}
-        borderWidth={1}
-        borderColor={theme.borderStrong}
-        borderRadius={14}
-        paddingHorizontal={16}
-        alignItems="center"
-        backgroundColor={theme.surface}
-      >
-        <Body color={theme.textFaint}>{hint}</Body>
-      </XStack>
-    </YStack>
-  );
   return (
     <YStack flex={1} backgroundColor={theme.bg}>
       <ScreenHeader title={t('send.title')} onBack={onBack} testID="composeBack" />
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingTop: 18, paddingBottom: bottom }}>
-        <SenderPrompt onPress={onOpenPicker} />
-        <YStack
-          opacity={0.45}
-          accessibilityElementsHidden
-          importantForAccessibility="no-hide-descendants"
-        >
-          {placeholder(t('send.recipient'), t('send.from.first'))}
-          {placeholder(t('send.subject'), t('send.subject.placeholder'))}
-        </YStack>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: bottom }}>
+        <ComposeEnvelope account={null} estimate={null} onPickSender={onOpenPicker}>
+          <WaitingWindow />
+        </ComposeEnvelope>
+        <WaitingLetter />
       </ScrollView>
       {picking ? (
         <SenderSheet accounts={accounts} selected={null} onPick={onPick} onClose={onClosePicker} />

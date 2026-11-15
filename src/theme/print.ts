@@ -126,6 +126,8 @@ export const envelopeShape = {
   headerFlap: { side: 20, point: 3, shoulder: 7, half: 16, sheen: 0.12, shade: 0.07 },
   /** The two folds, on the message envelope's 358 x 150 sheet stretched over the envelope (Detail). */
   creases: { width: 358, height: 150, d: 'M0 150 L150 90 M358 150 L208 90', stroke: 1.5 },
+  /** The same folds on compose's taller envelope (R2: 358 x 188), meeting under the window. */
+  composeCreases: { width: 358, height: 188, d: 'M0 188 L150 118 M358 188 L208 118', stroke: 1.5 },
 } as const;
 
 /**

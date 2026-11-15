@@ -20,6 +20,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Nová zpráva je obálka, kterou posíláte.** Odesílatel je na obálce, příjemce v jejím okénku a
+  známka v rohu ukáže, zda bude zpráva zdarma, nebo placená, hned jak příjemce vyberete. Předmět a
+  text píšete na list zastrčený pod obálkou.
 - **Termín nalezený v příloze se nabízí klidněji.** Návrh je tichý podklad bez rámečku, uložit ho
   jako připomínku nebo skrýt jde odkazy pod ním a během hledání běží stejný pruh jako jinde v aplikaci.
 - **Anglické razítko obíhá celý kruh.** Jeho slova vyplní kruh stejně jako česká, nezůstane v něm

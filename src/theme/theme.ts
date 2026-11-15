@@ -157,6 +157,9 @@ export interface Theme {
   envelopeButton: string;
   envelopeInkFaint: string;
   envelopePlane: string;
+  /** A dashed slot printed on the envelope, waiting to be filled: compose's blank stamp before a
+   * recipient sets the price, and the sender to choose (R12). */
+  envelopeDash: string;
   /** The black of a shade printed over an object (the flap's lower half). Opaque; the drawing sets
    * how much of it (`print.ts`). */
   printShade: string;
@@ -252,6 +255,7 @@ export const lightTheme: Theme = {
   envelopeWell: 'rgba(9,30,64,0.3)',
   envelopeButton: 'rgba(255,255,255,0.14)',
   envelopeInkFaint: 'rgba(255,255,255,0.82)',
+  envelopeDash: 'rgba(255,255,255,0.75)',
   envelopePlane: 'rgba(255,255,255,0.2)',
   printShade: '#000000',
   flap: '#FFC305',
@@ -336,6 +340,7 @@ export const darkTheme: Theme = {
   envelopeWell: 'rgba(9,30,64,0.3)',
   envelopeButton: 'rgba(255,255,255,0.14)',
   envelopeInkFaint: 'rgba(255,255,255,0.82)',
+  envelopeDash: 'rgba(255,255,255,0.75)',
   envelopePlane: 'rgba(255,255,255,0.2)',
   printShade: '#000000',
   flap: '#FFC305',

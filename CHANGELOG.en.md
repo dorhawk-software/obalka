@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A new message is the envelope you are sending.** The sender is on the envelope, the recipient
+  in its window, and the stamp in the corner shows whether the message is free or paid as soon as
+  you pick the recipient. The subject and text go on a sheet tucked under the envelope.
 - **A deadline found in an attachment is offered more quietly.** The suggestion sits on a plain
   tinted panel with no outline, saving it as a reminder or hiding it are links under it, and while
   it looks, the same bar runs as elsewhere in the app.

@@ -267,25 +267,23 @@ describe('attaching files while composing', () => {
 
     // Idle: the row is laid out - it is what sizes the slot - but nobody can see, hear or reach it.
     const idle = box();
+    // R12's reading sheet: 46 at the least, a card's 14 corner.
     expect(idle).toMatchObject({
-      width: '100%',
       minHeight: 46,
-      borderTopLeftRadius: 13,
-      borderBottomRightRadius: 13,
+      borderTopLeftRadius: 14,
+      borderBottomRightRadius: 14,
     });
     expect(idle.position).not.toBe('absolute');
     expect(view.getByTestId('composeAttachReading', hidden)).not.toBeVisible();
     expect(view.queryByTestId('composeCancelAttach')).toBeNull();
-    // …and the button covers exactly that footprint.
+    // …and R2's link lies over that footprint, as tall as it, from its left edge.
     expect(
       StyleSheet.flatten(view.getByTestId('composeAddAttachment').props.style),
     ).toMatchObject({
       position: 'absolute',
       top: 0,
-      right: 0,
       bottom: 0,
       left: 0,
-      borderTopLeftRadius: 13,
     });
 
     const pick = await tapAdd(view);

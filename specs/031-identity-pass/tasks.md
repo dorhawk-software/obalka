@@ -275,16 +275,34 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     the owner's test box, a sent message, light and dark: the strip takes the status bar (132 px) and
     its band; the header's title sits 79 px under it, as it sits under the bare status bar.
 - [ ] I38 Compose - **X**: the envelope you are sending (R2, agreed A).
-  - [ ] I38.1 Sender gate (no box can send; dimmed placeholders).
-  - [ ] I38.2 Sender card and the change; recipient card, its type and the change.
-  - [ ] I38.3 Recipient search: searching, error, none, results, the same-name hint, the hint.
-  - [ ] I38.4 The stamp: free, paid, credit short with "buy credit".
-  - [ ] I38.5 Subject, text and its hint (the text becomes a PDF).
-  - [ ] I38.6 Attachments: rows with remove, reading with its progress and cancel, the dashed add.
-  - [ ] I38.7 Footer: errors (too large, attach, PDF, sign in again, send), send busy.
+  Built 2026-11-15 as R2 and R12: compose is one envelope (`ComposeEnvelope`, creases 358×188) with Od
+  on it, Komu in its window - the search field until someone is picked, ringed in the flap gold while it
+  has the caret - and the stamp in its corner, a blank dashed slot until a recipient sets the price.
+  The letter (subject, text, hint) is a sheet tucked under the envelope; results, drafts and attachments
+  are sheets below it; the footer is R12's (surfaceAlt, no hairline). ComposeScreen 1343 → 776 lines.
+  Walked at full resolution beside R2/R12 by swapping states in (all reverted): free light, paid dark,
+  credit short, searching, results with namesakes, reading and sending, no sender, drafts, English light
+  and dark. Rounded: 7→8, 9→10, gap 1→2; the stamp's corner 3→8, the letter's top 4→8; Od's name
+  16/800 → Subheading 15/700, the stamp's price 22 → Title 21, the window's name 15/20 → 15/19.
+  - [x] I38.1 Sender gate (no box can send; dimmed placeholders). R12 "No sender yet": the same envelope,
+    the stamp blank, Od a dashed slot to choose the box, the window and the letter faint (.55, .45).
+  - [x] I38.2 Sender card and the change; recipient card, its type and the change. Od on the envelope
+    with its chevron; the window holds the recipient's name and address (or kind and ID), tap to change.
+  - [x] I38.3 Recipient search: searching, error, none, results, the same-name hint, the hint. One line
+    under the window (R12's ring spinner, the muted none, the danger error); results as sheets.
+  - [x] I38.4 The stamp: free, paid, credit short with "buy credit". ZDARMA/PLACENÁ with the price and
+    the kind; the credit under Od only beneath a paid stamp; short credit is R12's danger strip and
+    the footer's refusal with "Koupit kredit".
+  - [ ] I38.5 Subject, text and its hint (the text becomes a PDF). The fields and hint are built on the
+    letter sheet (2026-11-15); open: the PDF itself as R12's Czech A4 letter.
+  - [x] I38.6 Attachments: rows with remove, reading with its progress and cancel, the dashed add. The
+    reading card holds its place; the add link lies over it, so nothing moves when reading starts.
+  - [x] I38.7 Footer: errors (too large, attach, PDF, sign in again, send), send busy. Busy is R12's
+    ring spinner in the button's ink; the dimmed button fades as one layer (Android).
 - [ ] I39 Compose sent state (emblem, ID, Done, Open sent) - **D**: board "Sent - the stamp is cancelled".
 - [ ] I40 Paid-send confirmation (modal, credit card tile) - **X**: R2.
-- [ ] I41 Draft rows (swipe to discard, snackbar Undo) - **X**: R2 (Koncept glyph).
+- [x] I41 Draft rows (swipe to discard, snackbar Undo) - **X**: R2 (Koncept glyph). Built 2026-11-15 as
+  R12's sheets (the glyph in a 36 well, Zahodit in danger), walked beside R12; the swipe and Undo kept.
 - [ ] I42 Search: hint, skeleton, no results, results - **X**: R4 (hint, no results), rows as I18.
   Part built 2026-11-13: the hint and no results draw the archive pose (a stack of three envelopes, a new
   `envelopeBehind` #22508A for the middle one); the field is a paper well with the offset search glyph
@@ -506,7 +524,8 @@ surface below changes too, and the owner has seen none of them in the identity. 
 - [ ] I76 Platform spinners in 11 places - **X**: R8 decides where an object waits instead. The Mobile Key wait's
   spinner is gone (I10, 2026-11-13), and the launch's (I03); the deadline scan's (I34, 2026-11-15)
   takes the waiting bar. Counted in the code that day, nine left: debug files, attachment opening,
-  the signed original, compose (2), re-auth, password change, add box, the SMS code.
+  the signed original, compose (2), re-auth, password change, add box, the SMS code. Compose's two
+  are R12's ring spinner (`ArcSpinner`, 2026-11-15); seven left.
 - [ ] I77 Press dip, refusal shake, FAB press, segmented slide, radio fill - **N**.
 - [ ] I77.1 Haptics: 31 call sites (selection, light, medium, success, warning, error) - **N**: listed
   against the motion rule (a thump where paper lands).
@@ -942,6 +961,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   Raised in I51: the scanner's sentence without the camera fits two lines under R13's 300 cap on the
   board and needs three on Android (the face 2 % wider); balanced, as the board's `text-wrap`, so no
   word stands alone.
+  Raised in I38: Android fades a dimmed button's words apart from its ink (they sank to nothing on
+  Odeslat until its layer was composited); check the other dimmed buttons (InkButton, the busy
+  download). The English credit reads "Kč" (formatCzk is Czech-only).
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
@@ -1022,6 +1044,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     open its own sheet at .55, and the gone original its seal, faint (I35, I36).
   - The postmark's English words (the boards are Czech): "DELIVERED · DATA BOX · ISDS ·" and
     "SENT · DATA BOX SYSTEM · ISDS ·", so the ring closes as the Czech does.
+  - R2/R12 compose: R2 lays the footer on the paper, R12 (newer) on surfaceAlt, built as R12. The
+    board gives namesakes two avatar colours; the build colours by name. Some derived phones omit the
+    text field or the attachments; the build keeps them. The window is 3 taller from the roundings.
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).

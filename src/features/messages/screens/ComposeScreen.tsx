@@ -13,40 +13,20 @@ import {
   useRef,
   useState,
 } from 'react';
-import {
-  KeyboardAvoidingView,
-  Linking,
-  Platform,
-} from 'react-native';
+import { KeyboardAvoidingView, Linking, Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
-import { textSlop, touchSlop } from '../../../theme/touchTarget';
-import { Button, Input, Spinner, XStack, YStack } from '../../../theme/ui';
+import { textSlop } from '../../../theme/touchTarget';
+import { XStack, YStack } from '../../../theme/ui';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
 import { PressScale } from '../../../theme/PressScale';
-import { Badge, BodyStrong, Caption, Label, Meta, Small, SmallStrong, Tag, Value } from '../../../theme/Typography';
+import { BodyStrong, Caption, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { chipTone } from '../../../theme/chipTone';
-import { AddressLines } from './AddressLines';
+import { ArcSpinner } from '../../../theme/ArcSpinner';
+import { ExternalLinkIcon } from '../../../theme/icons';
 import { markSameName } from '../state/addressParts';
 import { creditState } from '../state/credit';
 import { totalAttachmentBytes } from '../state/costModel';
-import { Avatar } from '../../../theme/Avatar';
-import { DashedOutline } from '../../../theme/DashedOutline';
-import { ProgressBar } from '../../../theme/ProgressBar';
-import {
-  CheckIcon,
-  CloseIcon,
-  CreditCardIcon,
-  EditIcon,
-  FileIcon,
-  PlusIcon,
-  SearchIcon,
-  TrashIcon,
-} from '../../../theme/icons';
-import { SwipeableRow } from '../../../theme/SwipeableRow';
-// gesture-handler Pressable for the inline trash so it coordinates with the row's swipe/tap gestures.
-import { Pressable as GHPressable } from 'react-native-gesture-handler';
 import { useSnackbar } from '../../../app/Snackbar';
 import { formatBytes, t } from '../../../i18n/strings';
 import { reauthKey } from '../../accounts/state/reauthCopy';
@@ -77,16 +57,21 @@ import { textToPdf } from '../../../services/files/textToPdf';
 import { haptics } from '../../../services/haptics';
 import { reportFailure } from '../../../services/telemetry/telemetry';
 import { useSingleFlight } from '../../../app/useSingleFlight';
-import { SenderCard, SenderSheet } from './SenderPicker';
-import { Card } from '../../../theme/Card';
-import { space } from '../../../theme/spacing';
+import { SenderSheet } from './SenderPicker';
 import { PaidSendConfirm } from './PaidSendConfirm';
+import { ComposeEnvelope, RecipientWindow, SearchWindow } from './ComposeEnvelope';
+import {
+  AttachmentList,
+  ComposeLetter,
+  CreditShortStrip,
+  DraftSheets,
+  RecipientSheet,
+  ResultsHead,
+  SearchLine,
+  type SearchState,
+} from './ComposeParts';
 
 /** A random id for a new draft (the app polyfills crypto.getRandomValues). */
-/** The search glyph inside the recipient field, and where it sits - as on the Licences search. */
-const SEARCH_ICON = 18;
-const SEARCH_ICON_LEFT = space.xl;
-
 function newDraftId(): string {
   const b = new Uint8Array(16);
   globalThis.crypto.getRandomValues(b);
@@ -573,18 +558,18 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
           })
         : t('send.attachments.readingStart');
 
-    const inputStyle = {
-      height: 50,
-      backgroundColor: theme.surface,
-      borderColor: theme.borderStrong,
-      borderWidth: 1,
-      borderRadius: 14,
-      paddingHorizontal: 16,
-      fontSize: 15,
-      color: theme.text,
-      placeholderTextColor: theme.textFaint,
-      focusStyle: { borderColor: theme.blue, borderWidth: 1.5 },
-    };
+    // The one line under the window (R12): each state takes the same place.
+    const searchState: SearchState = searching
+      ? 'searching'
+      : error
+        ? 'error'
+        : searched && results.length === 0
+          ? 'none'
+          : results.length > 0
+            ? 'results'
+            : query.trim() === ''
+              ? 'hint'
+              : 'idle';
 
     return (
       <YStack flex={1} backgroundColor={theme.bg}>
@@ -626,553 +611,81 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
               testID="composeScroll"
               // The KeyboardAvoidingView above handles the keyboard; a second inset double-adjusts.
               adjustKeyboardInsets={false}
-              contentContainerStyle={{
-                paddingHorizontal: 18,
-                paddingTop: 18,
-                paddingBottom: 24,
-              }}
+              contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 24, gap: 12 }}
             >
-              <SenderCard
-                account={account}
-                credit={credit}
-                onChange={
-                  onChangeSender && accounts.length > 1 ? () => setChoosingSender(true) : undefined
-                }
-              />
-              {recipient ? (
-                <YStack>
-                  <Label fontWeight="700"
-                    marginBottom={8}
-                  >
-                    {t('send.recipient')}
-                  </Label>
-                  {/* Selected recipient - avatar + identity + an inline "Změnit" link. */}
-                  <Card flexDirection="row"
-                    padding={12}
-                    gap={12}
-                    alignItems="flex-start"
-                  >
-                    <Avatar name={recipient.name} size={38} />
-                    <YStack flex={1} minWidth={0}>
-                      {/* No `numberOfLines`: this is the last moment a wrong recipient can be
-                          caught, so it must identify them at least as well as the search result
-                          that offered them (FR-005). */}
-                      <SmallStrong color={theme.text}>
-                        {recipient.name}
-                      </SmallStrong>
-                      <AddressLines address={recipient.address} />
-                      <Meta
-                        color={theme.textFaint}
-                        marginTop={6}
-                      >
-                        {t(`send.dbType.${recipient.dbType}`)} ·{' '}
-                        {recipient.boxId}
-                      </Meta>
-                    </YStack>
-                    <XStack
-                      hitSlop={textSlop('badge', { paddingVertical: 4 })}
-                      paddingHorizontal={4}
-                      paddingVertical={4}
-                      pressStyle={{ opacity: 0.5 }}
-                      onPress={() => {
+              {/* The envelope you are sending, and the letter tucked under its edge (R2). */}
+              <YStack>
+                <ComposeEnvelope
+                  account={account}
+                  // Only under a paid stamp: the credit is what a postal data message is paid from (R2).
+                  credit={estimate?.paid ? credit : undefined}
+                  estimate={estimate}
+                  onChangeSender={
+                    onChangeSender && accounts.length > 1 ? () => setChoosingSender(true) : undefined
+                  }
+                >
+                  {recipient ? (
+                    <RecipientWindow
+                      recipient={recipient}
+                      onChange={() => {
                         setRecipient(null);
                         setResults([]);
                         setSearched(false);
                       }}
-                      accessibilityRole="button"
-                      accessibilityLabel={t('send.recipient.change')}
-                      testID="composeChangeRecipient"
-                    >
-                      <Badge color={theme.warningInk} numberOfLines={1}>
-                        {t('send.recipient.change')}
-                      </Badge>
-                    </XStack>
-                  </Card>
-
-                  {/* Live cost preview - the cost model made visible (green free / amber paid) */}
-                  {estimate
-                    ? (() => {
-                        const tone = chipTone(
-                          estimate.paid ? 'costPaid' : 'costFree',
-                          theme,
-                        );
-                        return (
-                          <YStack
-                            backgroundColor={tone.bg}
-                            borderWidth={1}
-                            borderColor={tone.border ?? tone.accent}
-                            borderRadius={14}
-                            paddingVertical={13}
-                            paddingHorizontal={14}
-                            marginTop={14}
-                            testID="composeCost"
-                            // Announce the cost (the key free-vs-paid decision) as one unit, not two.
-                            accessible
-                            accessibilityRole="summary"
-                            accessibilityLabel={
-                              estimate.paid
-                                ? `${t('send.cost.paid', {
-                                    czk: estimate.approxCzk ?? 0,
-                                  })}. ${t('send.cost.paid.note')}`
-                                : `${t('send.cost.free')}. ${t(
-                                    'send.cost.free.note',
-                                  )}`
-                            }
-                          >
-                            <XStack gap={12} alignItems="flex-start">
-                              {estimate.paid ? (
-                                <CreditCardIcon size={20} color={tone.fg} />
-                              ) : (
-                                <CheckIcon size={20} color={tone.fg} />
-                              )}
-                              <YStack flex={1} gap={4}>
-                                <Small fontWeight="800"
-                                  color={tone.fg}
-                                >
-                                  {estimate.paid
-                                    ? t('send.cost.paid', {
-                                        czk: estimate.approxCzk ?? 0,
-                                      })
-                                    : t('send.cost.free')}
-                                </Small>
-                                <Meta
-                                  color={theme.textMuted}
-                                >
-                                  {estimate.paid
-                                    ? t('send.cost.paid.note')
-                                    : t('send.cost.free.note')}
-                                </Meta>
-                                {/* The balance itself is on the sender card above (2026-10-04);
-                                    here only what changes the decision - that it may not be
-                                    enough. Judged on a KNOWN balance only (020 FR-003). */}
-                                {estimate.paid && credit.kind === 'short' ? (
-                                  <Meta fontWeight="700" color={theme.danger} testID="composeCredit">
-                                    {t('send.credit.shortNote')}
-                                  </Meta>
-                                ) : null}
-                              </YStack>
-                            </XStack>
-                          </YStack>
-                        );
-                      })()
-                    : null}
-
-                  <Label fontWeight="700"
-                    marginTop={18}
-                    marginBottom={8}
-                  >
-                    {t('send.subject')}
-                  </Label>
-                  <Input
-                    {...inputStyle}
-                    value={subject}
-                    onChangeText={setSubject}
-                    placeholder={t('send.subject.placeholder')}
-                    accessibilityLabel={t('send.subject')}
-                    testID="composeSubject"
-                  />
-
-                  {/* Message text → turned into a "Textová zpráva.pdf" on send (no need to make a PDF) */}
-                  <Label fontWeight="700"
-                    marginTop={16}
-                    marginBottom={8}
-                  >
-                    {t('send.body')}
-                  </Label>
-                  <Input
-                    {...inputStyle}
-                    minHeight={120}
-                    paddingTop={13}
-                    lineHeight={21}
-                    multiline
-                    numberOfLines={6}
-                    textAlignVertical="top"
-                    value={bodyText}
-                    onChangeText={setBodyText}
-                    placeholder={t('send.body.placeholder')}
-                    accessibilityLabel={t('send.body')}
-                    testID="composeBody"
-                  />
-                  <Meta
-                    color={theme.textFaint}
-                    marginTop={8}
-                  >
-                    {t('send.body.hint')}
-                  </Meta>
-
-                  {/* Attachments - read + base64-encoded off the JS thread (Principle I) */}
-                  <Label fontWeight="700"
-                    marginTop={18}
-                    marginBottom={8}
-                  >
-                    {t('send.attachments')}
-                  </Label>
-                  {files.length > 0 ? (
-                    <YStack gap={8} marginBottom={8}>
-                      {files.map((f, i) => (
-                        <XStack
-                          key={`${f.fileName}-${i}`}
-                          backgroundColor={theme.surface}
-                          borderWidth={1}
-                          borderColor={theme.border}
-                          borderRadius={13}
-                          paddingHorizontal={12}
-                          paddingVertical={10}
-                          gap={12}
-                          alignItems="center"
-                        >
-                          {/* Neutral sunken tile + a plain file glyph - the design draws the SAME
-                              tile for every file type (no coloured extension badge). */}
-                          <YStack
-                            width={34}
-                            minHeight={34}
-                            borderRadius={11}
-                            backgroundColor={theme.surfaceSunken}
-                            alignItems="center"
-                            justifyContent="center"
-                          >
-                            <FileIcon size={17} color={theme.textMuted} />
-                          </YStack>
-                          <YStack flex={1} minWidth={0}>
-                            <Label
-                              color={theme.text}
-                              numberOfLines={1}
-                            >
-                              {f.fileName}
-                            </Label>
-                            <Tag fontWeight="500" color={theme.textFaint}>
-                              {formatBytes(f.sizeBytes)}
-                            </Tag>
-                          </YStack>
-                          <XStack
-                            width={30}
-                            height={30}
-                            alignItems="center"
-                            justifyContent="center"
-                            // Was `hitSlop={6}` - a 42pt target for the button that removes an
-                            // attachment. Derived from the drawn size instead.
-                            hitSlop={touchSlop({ width: 30, height: 30 })}
-                            pressStyle={{ opacity: 0.5 }}
-                            // By the file, not by its index: the index is the one this render
-                            // drew, and a double tap runs both presses against the list as the
-                            // FIRST removal left it - so removing index i twice took the file
-                            // after it too. A file already gone is simply not found again.
-                            onPress={() =>
-                              setFiles(prev => prev.filter(x => x !== f))
-                            }
-                            accessibilityRole="button"
-                            accessibilityLabel={t('send.attachments.remove')}
-                            testID={`composeRemoveFile-${i}`}
-                          >
-                            <CloseIcon size={16} color={theme.textFaint} />
-                          </XStack>
-                        </XStack>
-                      ))}
-                    </YStack>
-                  ) : null}
-                  {/* The attachment slot: "Přidat přílohu", or - while a pick reads - its progress
-                      row, and nothing around the slot may move when one becomes the other, at ANY
-                      system text size (constitution V). Giving the two boxes the same dp metrics
-                      only holds at the default size: the row's caption line plus its bar grow
-                      faster than the button's single line, so from ~1.2x text the row came out a
-                      few dp taller and the form below it jumped. So the progress row is ALWAYS laid
-                      out and alone sizes the slot - invisible, silent and untouchable while idle -
-                      and the button is drawn over that same footprint. The row always needs at
-                      least the button's height (its 13pt line + 6 + a 6dp bar, inside 6 + 6 and a
-                      1px edge, against one 14pt line), so the button's label always fits. */}
-                  <YStack width="100%" position="relative">
-                    {/* At the default size 6 + a 30pt control + 6 inside a 1px edge is 44, so the
-                        46 minimum sets the height. The row is an attachment row's surface and edge,
-                        and its cancel is drawn exactly like the remove control on those rows. */}
-                    <XStack
-                      width="100%"
-                      minHeight={46}
-                      borderRadius={13}
-                      borderWidth={1}
-                      borderColor={theme.border}
-                      backgroundColor={theme.surface}
-                      paddingLeft={12}
-                      paddingRight={8}
-                      paddingVertical={6}
-                      gap={10}
-                      alignItems="center"
-                      opacity={reading ? 1 : 0}
-                      pointerEvents={reading ? 'auto' : 'none'}
-                      accessibilityElementsHidden={!reading}
-                      importantForAccessibility={
-                        reading ? 'auto' : 'no-hide-descendants'
-                      }
-                      testID="composeAttachReading"
-                    >
-                      <YStack flex={1} minWidth={0} gap={6}>
-                        <Caption
-                          color={theme.textMuted}
-                          numberOfLines={1}
-                          testID="composeAttachReadingLabel"
-                        >
-                          {readingLabel}
-                        </Caption>
-                        <ProgressBar
-                          fraction={
-                            reading != null && reading.totalBytes > 0
-                              ? reading.readBytes / reading.totalBytes
-                              : 0
-                          }
-                          label={t('send.attachments.readingStart')}
-                          testID="composeAttachProgress"
-                        />
-                      </YStack>
-                      <XStack
-                        width={30}
-                        height={30}
-                        alignItems="center"
-                        justifyContent="center"
-                        hitSlop={touchSlop({ width: 30, height: 30 })}
-                        pressStyle={{ opacity: 0.5 }}
-                        onPress={reading ? cancelReading : undefined}
-                        accessibilityRole="button"
-                        accessibilityLabel={t('send.attachments.cancel')}
-                        testID="composeCancelAttach"
-                      >
-                        <CloseIcon size={16} color={theme.textFaint} />
-                      </XStack>
-                    </XStack>
-                    {reading ? null : (
-                      /* Design: full-width, 46px tall, 1.5px DASHED bds, radius 13, gap 8 - the same
-                         outline as the switcher's "Přidat datovou schránku", so the two affordances
-                         read identically. It has to be drawn as SVG (DashedOutline): RN cannot render
-                         borderStyle:'dashed' together with a borderRadius on Android - it silently
-                         falls back to a SOLID border, which is what this was doing. Its size is the
-                         slot's (see above): 46 tall at the default text size, as designed. */
-                      <XStack
-                        position="absolute"
-                        top={0}
-                        right={0}
-                        bottom={0}
-                        left={0}
-                        borderRadius={13}
-                        alignItems="center"
-                        justifyContent="center"
-                        gap={8}
-                        opacity={busy ? 0.5 : 1}
-                        pressStyle={{ opacity: 0.6 }}
-                        onPress={busy ? undefined : addAttachment}
-                        accessibilityRole="button"
-                        accessibilityState={{ disabled: busy }}
-                        accessibilityLabel={t('send.attachments.add')}
-                        testID="composeAddAttachment"
-                      >
-                        <DashedOutline radius={13} color={theme.borderStrong} />
-                        <PlusIcon size={18} color={theme.warningInk} />
-                        <SmallStrong color={theme.warningInk}>
-                          {t('send.attachments.add')}
-                        </SmallStrong>
-                      </XStack>
-                    )}
-                  </YStack>
-                  {/* No manual "save draft" - the draft auto-saves on exit (FR-007), with an undoable
-                  "Koncept uložen" snackbar shown by the route. Send lives in the pinned footer. */}
-                </YStack>
-              ) : (
-                <YStack>
-                  {drafts.length > 0 ? (
-                    <YStack marginBottom={24}>
-                      <Label fontWeight="700"
-                        marginBottom={8}
-                      >
-                        {t('send.drafts')}
-                      </Label>
-                      <YStack gap={8}>
-                        {drafts.map(d => (
-                          // Trailing swipe → Zahodit (undoable); the inline "Zahodit" is the discoverable
-                          // a11y fallback and runs the same undoable discard (US4).
-                          <SwipeableRow
-                            key={d.id}
-                            onPress={() => resumeDraft(d)}
-                            accessibilityLabel={
-                              d.recipientLabel ?? t('send.draft.empty')
-                            }
-                            pressTestID={`draft-${d.id}`}
-                            rightAction={{
-                              label: t('send.draft.discard'),
-                              icon: (
-                                <TrashIcon size={20} color={theme.onBlue} />
-                              ),
-                              color: theme.onBlue,
-                              background: theme.danger,
-                              onPress: () => void discardDraft(d),
-                              testID: `draftSwipeDiscard-${d.id}`,
-                            }}
-                          >
-                            <XStack
-                              backgroundColor={theme.surface}
-                              borderWidth={1}
-                              borderColor={theme.border}
-                              borderRadius={13}
-                              paddingVertical={12}
-                              paddingHorizontal={13}
-                              gap={12}
-                              alignItems="center"
-                            >
-                              <YStack
-                                width={36}
-                                height={36}
-                                borderRadius={11}
-                                backgroundColor={theme.violetSoft}
-                                alignItems="center"
-                                justifyContent="center"
-                              >
-                                <EditIcon size={18} color={theme.violet} />
-                              </YStack>
-                              {/* The subject line is ALWAYS rendered (falling back to "(bez předmětu)")
-                                so every draft row keeps the same height (no layout jump). */}
-                              <YStack flex={1} minWidth={0}>
-                                <SmallStrong
-                                  color={theme.text}
-                                  numberOfLines={1}
-                                >
-                                  {d.recipientLabel ?? t('send.draft.empty')}
-                                </SmallStrong>
-                                <Meta
-                                  color={theme.textFaint}
-                                  numberOfLines={1}
-                                >
-                                  {d.subject.trim() === ''
-                                    ? t('messages.noSubject')
-                                    : d.subject}
-                                </Meta>
-                              </YStack>
-                              <GHPressable
-                                onPress={() => void discardDraft(d)}
-                                accessibilityRole="button"
-                                accessibilityLabel={t('send.draft.discard')}
-                                testID={`draftDelete-${d.id}`}
-                                hitSlop={textSlop('badge', { paddingVertical: 6 })}
-                                style={({ pressed }) => ({
-                                  paddingHorizontal: 6,
-                                  paddingVertical: 6,
-                                  opacity: pressed ? 0.5 : 1,
-                                })}
-                              >
-                                <Badge color={theme.danger}>
-                                  {t('send.draft.discard')}
-                                </Badge>
-                              </GHPressable>
-                            </XStack>
-                          </SwipeableRow>
-                        ))}
-                      </YStack>
-                    </YStack>
-                  ) : null}
-                  <Label fontWeight="700"
-                    marginBottom={8}
-                  >
-                    {t('send.recipient')}
-                  </Label>
-                  {/* No Find button - results auto-load as you type (debounced); Enter searches now.
-                    The leading magnifying glass marks it as a search field; it's decorative (taps
-                    pass through to the input). */}
-                  <YStack>
-                    <Input
-                      {...inputStyle}
-                      width="100%"
-                      paddingLeft={SEARCH_ICON_LEFT + SEARCH_ICON + space.base}
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      value={query}
-                      onChangeText={setQuery}
-                      placeholder={t('send.recipient.search.short')}
-                      returnKeyType="search"
-                      onSubmitEditing={() => void runSearch(query)}
-                      accessibilityLabel={t('send.recipient.search')}
-                      testID="composeRecipientQuery"
                     />
-                    <YStack
-                      position="absolute"
-                      left={SEARCH_ICON_LEFT}
-                      top={0}
-                      bottom={0}
-                      justifyContent="center"
-                      pointerEvents="none"
-                    >
-                      <SearchIcon size={SEARCH_ICON} color={theme.textFaint} />
-                    </YStack>
-                  </YStack>
-
-                  {searching ? (
-                    <XStack
-                      gap={8}
-                      alignItems="center"
-                      paddingVertical={10}
-                      marginTop={12}
-                    >
-                      <Spinner color={theme.blue} />
-                      <Caption color={theme.textMuted}>
-                        {t('send.recipient.searching')}
-                      </Caption>
-                    </XStack>
-                  ) : error ? (
-                    <Caption color={theme.danger} marginTop={12}>
-                      {error}
-                    </Caption>
-                  ) : searched && results.length === 0 ? (
-                    <Caption color={theme.textMuted} marginTop={12}>
-                      {t('send.recipient.none')}
-                    </Caption>
-                  ) : results.length > 0 ? (
-                    <YStack gap={8} marginTop={12}>
-                      {/* The count, and - only when the set actually contains namesakes - one line
-                          saying so. The user has to NOTICE two rows share a name before it occurs
-                          to them to compare addresses, and with a dozen results that is exactly
-                          what fails (015 FR-004a). */}
-                      <XStack
-                        flexWrap="wrap"
-                        alignItems="center"
-                        gap={8}
-                        paddingHorizontal={2}
-                      >
-                        <Meta fontWeight="700" color={theme.textFaint}>
-                          {t('recipient.found')} · {results.length}
-                        </Meta>
-                        {marked.some(m => m.sameName) ? (
-                          <Meta color={theme.textMuted}>
-                            {t('recipient.sameNameHint')}
-                          </Meta>
-                        ) : null}
-                      </XStack>
+                  ) : (
+                    <SearchWindow value={query} onChangeText={setQuery} onSubmit={() => void runSearch(query)} />
+                  )}
+                </ComposeEnvelope>
+                {recipient ? (
+                  <ComposeLetter subject={subject} onSubject={setSubject} body={bodyText} onBody={setBodyText} />
+                ) : null}
+              </YStack>
+              {recipient ? (
+                <>
+                  {/* Judged on a KNOWN balance only (020 FR-003); the balance itself is on the envelope. */}
+                  {estimate?.paid && credit.kind === 'short' ? <CreditShortStrip /> : null}
+                  <AttachmentList
+                    files={files}
+                    onRemove={f => setFiles(prev => prev.filter(x => x !== f))}
+                    reading={reading != null}
+                    readingLabel={readingLabel}
+                    fraction={reading != null && reading.totalBytes > 0 ? reading.readBytes / reading.totalBytes : 0}
+                    onCancel={cancelReading}
+                    onAdd={() => void addAttachment()}
+                    busy={busy}
+                  />
+                  {/* No manual "save draft" - the draft auto-saves on exit (FR-007), with an undoable
+                      "Koncept uložen" snackbar shown by the route. Send lives in the pinned footer. */}
+                </>
+              ) : (
+                <>
+                  <SearchLine state={searchState} error={error} />
+                  {searchState === 'results' ? (
+                    <>
+                      <ResultsHead count={results.length} sameName={marked.some(m => m.sameName)} />
                       {marked.map(r => (
-                        <RecipientRow
+                        <RecipientSheet
                           key={r.boxId}
                           recipient={r}
                           sameName={r.sameName}
-                          theme={theme}
                           onPick={() => setRecipient(r)}
                         />
                       ))}
-                    </YStack>
-                  ) : query.trim() === '' ? (
-                    // Initial state: tell the user how to start AND that subject/text/attachments come
-                    // after picking a recipient (give the task a shape).
-                    <Caption
-                      color={theme.textFaint}
-                      paddingVertical={14}
-                      paddingHorizontal={4}
-                    >
-                      {t('send.recipient.hint')}
-                    </Caption>
+                    </>
                   ) : null}
-                </YStack>
+                  {searchState === 'hint' ? (
+                    <DraftSheets drafts={drafts} onResume={resumeDraft} onDiscard={d => void discardDraft(d)} />
+                  ) : null}
+                </>
               )}
             </KeyboardAwareScrollView>
 
-            {/* Pinned send footer (design §3) - a surfaceAlt bar + top hairline holding the dark,
-              high-contrast primary action, so Send never scrolls away. Only once a recipient is
-              picked (before that there is nothing to send). */}
+            {/* The pinned footer (R12): Odeslat never scrolls away; what refused the send says so
+                above it. Only once a recipient is picked - before that there is nothing to send. */}
             {recipient ? (
               <YStack
                 backgroundColor={theme.surfaceAlt}
-                borderTopWidth={1}
-                borderTopColor={theme.border}
                 paddingHorizontal={16}
                 paddingTop={12}
                 paddingBottom={insets.bottom + 12}
@@ -1184,19 +697,23 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
                   </Caption>
                 ) : null}
                 {showBuyCredit ? (
-                  <Button
-                    chromeless
+                  <XStack
                     alignSelf="flex-start"
-                    color={theme.warningInk}
-                    fontWeight="700"
-                    paddingHorizontal={0}
+                    alignItems="center"
+                    gap={6}
+                    marginTop={-4}
+                    hitSlop={textSlop('smallStrong')}
+                    pressStyle={{ opacity: 0.6 }}
                     // Where to buy PDZ credit: the portal for the box's own environment, from
                     // `endpoints.ts`, so it follows the gov.cz migration with everything else.
-                    onPress={() => Linking.openURL(portalUrl(account.host))}
+                    onPress={() => void Linking.openURL(portalUrl(account.host))}
+                    accessibilityRole="link"
+                    accessibilityLabel={t('send.buyCredit')}
                     testID="composeBuyCredit"
                   >
-                    {t('send.buyCredit')}
-                  </Button>
+                    <SmallStrong color={theme.warningInk}>{t('send.buyCredit')}</SmallStrong>
+                    <ExternalLinkIcon size={16} color={theme.warningInk} />
+                  </XStack>
                 ) : null}
                 <PressScale
                   fullWidth
@@ -1206,23 +723,23 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
                   accessibilityLabel={t('send.send')}
                   testID="composeSend"
                 >
-                  <XStack
-                    width="100%"
-                    minHeight={52}
-                    borderRadius={14}
-                    backgroundColor={theme.text}
-                    alignItems="center"
-                    justifyContent="center"
-                    gap={10}
-                    opacity={canSend ? 1 : 0.45}
-                  >
-                    {busy ? (
-                      <Spinner size="small" color={theme.surfaceAlt} />
-                    ) : null}
-                    <BodyStrong color={theme.surfaceAlt}>
-                      {busy ? t('send.sending') : t('send.send')}
-                    </BodyStrong>
-                  </XStack>
+                  {/* Faded as one, as the board's group opacity does: without its own layer Android
+                      fades the words and the ink apart, and the words sink into the faded ink. */}
+                  <View style={{ width: '100%', opacity: canSend ? 1 : 0.45 }} needsOffscreenAlphaCompositing>
+                    <XStack
+                      width="100%"
+                      minHeight={52}
+                      borderRadius={14}
+                      backgroundColor={theme.text}
+                      alignItems="center"
+                      justifyContent="center"
+                      gap={10}
+                      testID="composeSendFace"
+                    >
+                      {busy ? <ArcSpinner track={theme.surfaceSunken} ink={theme.surfaceAlt} /> : null}
+                      <BodyStrong color={theme.surfaceAlt}>{busy ? t('send.sending') : t('send.send')}</BodyStrong>
+                    </XStack>
+                  </View>
                 </PressScale>
               </YStack>
             ) : null}
@@ -1257,87 +774,3 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
   },
 );
 ComposeScreen.displayName = 'ComposeScreen';
-
-/**
- * One search result (015, reworked to the design).
- *
- * Everything here follows from one fact: a search for a common surname returns several people with
- * the SAME name, identical in type and cost badge, and the address is the only thing that separates
- * them. The old row concatenated name and address onto one clipped line, so the address - always
- * last - was what got cut. Nothing in this row truncates now, and the meta line WRAPS so the cost
- * badge can never reclaim the width the address needs.
- */
-function RecipientRow({
-  recipient,
-  sameName,
-  theme,
-  onPick,
-}: {
-  readonly recipient: Recipient;
-  /** Another result in this same search shares this owner name (015 FR-004a). */
-  readonly sameName: boolean;
-  readonly theme: ReturnType<typeof useTheme>;
-  readonly onPick: () => void;
-}) {
-  const free = recipient.dbType === 'OVM';
-  const tone = chipTone(free ? 'costFree' : 'costPaid', theme);
-  return (
-    <XStack
-      backgroundColor={theme.surface}
-      borderWidth={1}
-      borderColor={theme.border}
-      borderRadius={13}
-      padding={12}
-      gap={12}
-      alignItems="flex-start"
-      pressStyle={{ opacity: 0.7 }}
-      onPress={onPick}
-      accessibilityRole="button"
-      accessibilityLabel={
-        recipient.address
-          ? `${recipient.name}, ${recipient.address}`
-          : recipient.name
-      }
-      testID={`recipient-${recipient.boxId}`}
-    >
-      {/* Initials come from the NAME. Derived from the old combined label they were computed from
-          "Jan Novak · Nová 1/777, 60200 Brno, CZ" (FR-006). */}
-      <Avatar name={recipient.name} size={38} />
-      <YStack flex={1} minWidth={0}>
-        <Value fontWeight="700" color={theme.text}>
-          {recipient.name}
-        </Value>
-        <AddressLines address={recipient.address} />
-        {/* Wraps: with a long box type, a cost badge and possibly the same-name tag, a fixed row
-            would start squeezing something - and the thing it squeezed last time was the address. */}
-        <XStack flexWrap="wrap" alignItems="center" gap={8} marginTop={8}>
-          <Meta color={theme.textFaint}>
-            {t(`send.dbType.${recipient.dbType}`)} · {recipient.boxId}
-          </Meta>
-          <YStack
-            paddingHorizontal={8}
-            paddingVertical={4}
-            borderRadius={8}
-            backgroundColor={tone.bg}
-          >
-            <Tag color={tone.fg}>
-              {free ? t('send.cost.free') : t('send.cost.paid.badge')}
-            </Tag>
-          </YStack>
-          {sameName ? (
-            <YStack
-              paddingHorizontal={8}
-              paddingVertical={4}
-              borderRadius={8}
-              backgroundColor={theme.surfaceSunken}
-            >
-              <Tag color={theme.textMuted}>
-                {t('recipient.sameName')}
-              </Tag>
-            </YStack>
-          ) : null}
-        </XStack>
-      </YStack>
-    </XStack>
-  );
-}

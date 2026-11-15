@@ -93,7 +93,7 @@ describe('the sender', () => {
     syncError: 'reauth',
   };
 
-  it('is shown above the recipient, with its credit when known', async () => {
+  it('is Od on the envelope, its credit not yet said: no stamp asks for it (R2)', async () => {
     const view = await ui(
       <ComposeScreen
         account={{ ...account, pdzCreditCzk: 120 }}
@@ -102,7 +102,7 @@ describe('the sender', () => {
       />,
     );
     expect(view.getByTestId('composeSender')).toHaveTextContent(/Sender/);
-    expect(view.getByTestId('composeSender')).toHaveTextContent(/120/);
+    expect(view.queryByTestId('composeSenderCredit')).toBeNull();
   });
 
   it('cannot be changed with one box - there is nothing to change to', async () => {
