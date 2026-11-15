@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Termín nalezený v příloze se nabízí klidněji.** Návrh je tichý podklad bez rámečku, uložit ho
+  jako připomínku nebo skrýt jde odkazy pod ním a během hledání běží stejný pruh jako jinde v aplikaci.
 - **Anglické razítko obíhá celý kruh.** Jeho slova vyplní kruh stejně jako česká, nezůstane v něm
   prázdné místo.
 - **Přílohy, které se nedaly stáhnout nebo otevřít, mají stejný vzhled jako ostatní.** Soubor zůstává

@@ -69,7 +69,17 @@ export function ProgressBar({
  * same height whether it waits or counts. Reduce Motion leaves the empty track: the stage line says
  * what is happening either way.
  */
-export function WaitingBar({ label, testID }: { readonly label?: string; readonly testID?: string }) {
+export function WaitingBar({
+  label,
+  onSunken = false,
+  testID,
+}: {
+  readonly label?: string;
+  /** Laid on the sunken paper (the scan estimate's tone), where its own sunken track would vanish:
+   *  the track is then the toggle's off track, `borderStrong`, which shows on it in both themes. */
+  readonly onSunken?: boolean;
+  readonly testID?: string;
+}) {
   const theme = useTheme();
   const reduceMotion = useReducedMotion();
   const [width, setWidth] = useState(0);
@@ -95,7 +105,7 @@ export function WaitingBar({ label, testID }: { readonly label?: string; readonl
     <YStack
       height={6}
       borderRadius={3}
-      backgroundColor={theme.surfaceSunken}
+      backgroundColor={onSunken ? theme.borderStrong : theme.surfaceSunken}
       overflow="hidden"
       onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}
       accessible

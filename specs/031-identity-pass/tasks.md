@@ -231,9 +231,22 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 - [x] I32 Fiction banner - **D**: board Message (gold band with "Připomenout"). Built in T032. Walked again 2026-11-15 at full resolution beside Detail and DetailDark, light and dark, Czech and English.
 - [x] I33 Delivery record (Doručenka card, dotted rail) - **D**: the slip, board Message. Built in T032.
   Walked again 2026-11-15 at full resolution beside Detail and DetailDark, light and dark, Czech and English.
-- [ ] I34 Term card, "alerts off" line, deadline suggestion (scan) - **X**: not on a board. R7.
+- [x] I34 Term card, "alerts off" line, deadline suggestion (scan) - **X**: not on a board. R7.
   2026-11-13: the reminder row matches R7 (56, 8/12, its glyph in a well, 14/600 over 13/500, the
   muted chevron), walked; the "alerts off" line and the scan suggestion are still today's.
+  Done 2026-11-15, no board drawing them (T051). The scan suggestion is R14's strip, the agreed tone
+  card with answers: the estimate's sunken tone with no outline (was a 1 px border on it), radius 12,
+  12/14 in, the offset deadline glyph at 20 (search while it looks), the bold small title, the
+  evidence in Meta, the disclaimer faint, and the answers as links under the words (`StripAction`):
+  taking it is the user's own reminder, so that link is in the reminder's blue; hiding it is muted.
+  It was two 40 buttons, a filled blue one and an outlined one. While the scan runs, the one waiting
+  bar (R8) in place of the platform's spinner (I76); laid on the sunken paper its own sunken track
+  vanished, so `WaitingBar onSunken` takes the toggle's off track, `borderStrong`. Both states keep
+  the 108 floor (constitution V). The "alerts off" line stays the card's footer under its hairline
+  with the link in the reminder's blue, as walked; its Lucide alert glyph goes with I78. Held by
+  `deadlineSuggestion.test` (no outline, radius 12, links without a fill; the waiting bar on the
+  `borderStrong` track, no spinner), red before. Walked through temporary swaps (removed), light
+  and dark, Czech and English, the suggestion and the scan.
 - [x] I35 Attachments: none, unavailable, downloading, not downloaded, missing, corrupt, opening, saved -
   **D** for the saved row (board Message); **X** for the other states, R7. 2026-11-13: not downloaded
   matches R7 (one card, the attach glyph in a well, the blue download inside it at 48 / 13 with the
@@ -491,7 +504,9 @@ surface below changes too, and the owner has seen none of them in the identity. 
 - [ ] I75 Skeleton pulse, waiting bar, sync bar - **N**: loop only while work runs. Under Reduce Motion
   the waiting bar is an empty track and the stage line beside it carries the meaning: shown on R8.
 - [ ] I76 Platform spinners in 11 places - **X**: R8 decides where an object waits instead. The Mobile Key wait's
-  spinner is gone (I10, 2026-11-13), and the launch's (I03); nine places left.
+  spinner is gone (I10, 2026-11-13), and the launch's (I03); the deadline scan's (I34, 2026-11-15)
+  takes the waiting bar. Counted in the code that day, nine left: debug files, attachment opening,
+  the signed original, compose (2), re-auth, password change, add box, the SMS code.
 - [ ] I77 Press dip, refusal shake, FAB press, segmented slide, radio fill - **N**.
 - [ ] I77.1 Haptics: 31 call sites (selection, light, medium, success, warning, error) - **N**: listed
   against the motion rule (a thump where paper lands).
@@ -987,6 +1002,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R9 questions: the failed removal names its box under the title (the switcher it came from has
     closed, and two can follow each other); R9 draws none. The dark danger fill is the theme's
     #E27A73 (R9 #E58A84); the light danger label is the paper (R9 white).
+  - I34 deadline suggestion and "alerts off" line: no board. Built as R14's strip (sunken tone, no
+    outline, glyph at 20, links under the words, accept in the reminder's blue) and R8's waiting bar on
+    a `borderStrong` track while it scans; draw both on R7 beside the term card.
   - R13 scanner: the window's film and glint lie outside a `.win`, so the board's `.win .crk` rules
     miss them and the film's stroke runs past the window's edge; the build draws the window's own
     film and glint inside it. DESIGN.md to record `cameraDim` and the 56 well (`Well large`).

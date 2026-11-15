@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A deadline found in an attachment is offered more quietly.** The suggestion sits on a plain
+  tinted panel with no outline, saving it as a reminder or hiding it are links under it, and while
+  it looks, the same bar runs as elsewhere in the app.
 - **The English postmark reads all the way round its ring.** Its words fill the ring as the Czech
   ones do, with no empty stretch left in it.
 - **Attachments that could not be downloaded or opened look like the rest.** A file stays a sheet

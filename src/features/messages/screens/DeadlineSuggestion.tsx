@@ -13,16 +13,22 @@
 //
 // It occupies a fixed minimum height across both its states, so the card that says "hledám" and the
 // card that says "termín 8. 7." are the same size and nothing below them moves (Principle V).
+//
+// No board draws it (031 I34), so it is R14's strip, the agreed tone card with answers: the estimate's
+// sunken tone with no outline, its glyph at 20, the words, and the answers as links under them. Taking
+// it is the user's own reminder, so that link is in the reminder's blue. While the scan runs, the one
+// waiting bar (R8), not the platform's spinner (I76).
 
-import { BodyStrong, Meta, Small, SmallStrong } from '../../../theme/Typography';
-import { Spinner, XStack, YStack } from '../../../theme/ui';
-import { PressScale } from '../../../theme/PressScale';
+import { Meta, Small, SmallStrong } from '../../../theme/Typography';
+import { XStack, YStack } from '../../../theme/ui';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { chipTone } from '../../../theme/chipTone';
-import { SearchIcon, TimerIcon } from '../../../theme/icons';
+import { OffsetIcon } from '../../../theme/offsetIcons';
+import { WaitingBar } from '../../../theme/ProgressBar';
 import { haptics } from '../../../services/haptics';
 import { t } from '../../../i18n/strings';
 import { formatTermDate } from './TermPicker';
+import { StripAction } from './InboxStrips';
 import type { ScanSuggestion } from '../../../services/scan/attachmentScan';
 
 /** Both states are the same box; only the contents change. */
@@ -49,27 +55,23 @@ export function DeadlineSuggestionCard({
   }
 
   return (
-    <YStack
+    <XStack
       marginTop={12}
       minHeight={MIN_HEIGHT}
-      justifyContent="center"
-      backgroundColor={tone.bg}
-      borderWidth={1}
-      borderColor={theme.border}
-      borderRadius={14}
-      paddingVertical={13}
+      alignItems={suggestion ? 'flex-start' : 'center'}
+      gap={10}
+      paddingVertical={12}
       paddingHorizontal={14}
-      gap={8}
+      borderRadius={12}
+      backgroundColor={tone.bg}
       testID="scan-suggestion"
     >
+      <OffsetIcon name={suggestion ? 'deadline' : 'search'} size={20} color={tone.fg} />
       {suggestion ? (
-        <>
-          <XStack alignItems="center" gap={8}>
-            <TimerIcon size={16} color={tone.fg} />
-            <BodyStrong color={theme.text} flex={1} minWidth={0}>
-              {t('scan.found', { d: formatTermDate(suggestion.date) })}
-            </BodyStrong>
-          </XStack>
+        <YStack flex={1} minWidth={0} gap={6} paddingTop={2}>
+          <SmallStrong color={theme.text}>
+            {t('scan.found', { d: formatTermDate(suggestion.date) })}
+          </SmallStrong>
           {/* The evidence, verbatim. Wraps rather than truncating - a clipped phrase is exactly the
               part the user needs in order to disagree with it (015's lesson, one screen over). */}
           <Meta color={theme.textMuted}>
@@ -78,77 +80,36 @@ export function DeadlineSuggestionCard({
               f: suggestion.fileName,
             })}
           </Meta>
-          <Meta color={theme.textFaint}>
-            {t('scan.disclaimer')}
-          </Meta>
-          <XStack gap={8} marginTop={4}>
-            {/* PressScale, not a Tamagui Button - the app's own press feedback since 019, so the
-                two actions here feel like every other action in the app. */}
-            <PressScale
-              fullWidth
-              style={{ flex: 1 }}
+          <Meta color={theme.textFaint}>{t('scan.disclaimer')}</Meta>
+          <XStack gap={18} flexWrap="wrap" marginTop={4}>
+            <StripAction
+              below
+              tone={chipTone('userBlue', theme)}
+              label={t('scan.accept')}
               onPress={() => {
                 haptics.selection();
                 onAccept(suggestion.date);
               }}
-              accessibilityLabel={t('scan.accept')}
               testID="scan-accept"
-            >
-              <XStack
-                width="100%"
-                // `minHeight`, never `height`: React Native scales BOTH `fontSize` and `lineHeight`
-                // by the system font scale (`TextAttributes.effectiveLineHeight` goes through
-                // `toPixelFromSP`), and a container measured in dp does not scale with them. At a
-                // large accessibility text size a fixed 40 crops the label it was drawn around.
-                // Nine boxes in the app had this; `SettingsScreen`'s header already carried the
-                // reasoning and the fix.
-                minHeight={40}
-                borderRadius={12}
-                backgroundColor={theme.blue}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <SmallStrong color={theme.onBlue}>
-                  {t('scan.accept')}
-                </SmallStrong>
-              </XStack>
-            </PressScale>
-            <PressScale
+            />
+            <StripAction
+              below
+              tone={tone}
+              label={t('scan.dismiss')}
               onPress={() => {
                 haptics.selection();
                 onDismiss();
               }}
-              accessibilityLabel={t('scan.dismiss')}
               testID="scan-dismiss"
-            >
-              <XStack
-                minHeight={40}
-                paddingHorizontal={18}
-                borderRadius={12}
-                backgroundColor={theme.surface}
-                borderWidth={1}
-                borderColor={theme.border}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <SmallStrong color={theme.text}>
-                  {t('scan.dismiss')}
-                </SmallStrong>
-              </XStack>
-            </PressScale>
+            />
           </XStack>
-        </>
+        </YStack>
       ) : (
-        <XStack alignItems="center" gap={10} testID="scan-running">
-          {/* Reduce-Motion: the spinner is the platform's own ActivityIndicator, which the OS setting
-              already governs - the icon beside it carries the meaning either way. */}
-          <SearchIcon size={16} color={tone.fg} />
-          <Small color={theme.textMuted} flex={1} minWidth={0}>
-            {t('scan.running')}
-          </Small>
-          <Spinner size="small" color={tone.fg} />
-        </XStack>
+        <YStack flex={1} minWidth={0} gap={10} testID="scan-running">
+          <Small color={theme.textMuted}>{t('scan.running')}</Small>
+          <WaitingBar label={t('scan.running')} onSunken testID="scan-waiting" />
+        </YStack>
       )}
-    </YStack>
+    </XStack>
   );
 }

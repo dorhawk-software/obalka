@@ -6,8 +6,10 @@
 // button does anything until it is pressed.
 
 import { act, fireEvent, render } from '@testing-library/react-native';
+import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
+import { lightTheme } from '../../src/theme/theme';
 import { DeadlineSuggestionCard } from '../../src/features/messages/screens/DeadlineSuggestion';
 
 const DATE = new Date(2026, 6, 8).getTime(); // 8. 7. 2026
@@ -78,5 +80,30 @@ describe('the deadline suggestion card', () => {
     const view = await card({ scanning: true, suggestion: null });
     expect(view.getByTestId('scan-running')).toBeTruthy();
     expect(view.queryByTestId('scan-accept')).toBeNull();
+  });
+
+  // 031 I34: no board draws it, so it takes the agreed anatomy of a tone card with answers, R14's
+  // strip: the estimate's tone with no outline, its glyph at 20, the words, and the answers as links
+  // under them; the one waiting bar where the platform's spinner turned (I76). Until 2026-11-15: a
+  // 1 px outline round the tone, a filled and an outlined button, a spinner.
+  const flat = (node: { props: { style?: unknown } }) =>
+    (StyleSheet.flatten(node.props.style as StyleProp<ViewStyle>) ?? {}) as Record<string, unknown>;
+
+  it('is the estimate tone with no outline, its answers links under the words', async () => {
+    const view = await card();
+    const box = flat(view.getByTestId('scan-suggestion'));
+    expect([box.borderTopWidth ?? 0, box.borderTopLeftRadius]).toEqual([0, 12]);
+    for (const id of ['scan-accept', 'scan-dismiss']) {
+      expect(flat(view.getByTestId(id)).backgroundColor).toBeUndefined();
+    }
+  });
+
+  it('waits on the waiting bar, not a spinner', async () => {
+    const view = await card({ scanning: true, suggestion: null });
+    // On the estimate's sunken tone the bar's own sunken track vanished; it takes the toggle's off
+    // track, the one that shows on the sunken paper in both themes.
+    expect(flat(view.getByTestId('scan-waiting')).backgroundColor).toBe(lightTheme.borderStrong);
+    // The platform spinner renders as React Native's own ActivityIndicator host view.
+    expect(JSON.stringify(view.toJSON())).not.toContain('"type":"ActivityIndicator"');
   });
 });
