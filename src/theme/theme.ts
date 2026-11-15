@@ -229,7 +229,7 @@ export const lightTheme: Theme = {
   gold: '#E8A100',
   goldSoft: '#FBEFD0',
   onGold: '#211B12',
-  goldBright: '#F5B81E',
+  goldBright: '#FFC305', // R9 (2026-11-15): the flap's gold; it was #F5B81E
   goldBorder: '#EAD9A8',
   violet: '#5A4CA8',
   violetSoft: '#E7E6F6',
@@ -313,7 +313,7 @@ export const darkTheme: Theme = {
   gold: '#E8A100',
   goldSoft: '#3A2F12', // derived dark gold surface
   onGold: '#211B12',
-  goldBright: '#F5B81E', // `snackbarBg` is dark in BOTH themes → same action gold
+  goldBright: '#FFC305', // `snackbarBg` is dark in BOTH themes → same action gold
   goldBorder: '#4A3D1C', // derived dark gold hairline
   violet: '#B0A4EE', // brightened for the warm-dark base (AA on violetSoft)
   violetSoft: '#2C2545', // derived tinted-dark violet surface

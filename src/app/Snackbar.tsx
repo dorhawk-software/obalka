@@ -2,6 +2,13 @@
 // ABOVE the navigator so it survives a screen transition - e.g. "Koncept uložen" appears after the
 // user leaves Compose (the compose screen has already popped). The action can re-`show()` a follow-up
 // snackbar, which is how discard → "Vrátit zpět" (undo) works. Pure UI; no I/O of its own.
+//
+// Board R9 (031 I60, agreed 2026-11-12): "ink with the gold action, above the stamp". 16 in from the
+// sides, 52 tall at the least, the 14 corner, its own soft shadow; the words in the bold small role,
+// the action in the flap's gold in a 44 row. It stands 6 over the compose stamp while the stamp is on
+// screen (`useSnackbarLift`), and 14 over the safe area's edge elsewhere. It rises 220 ms and fades out;
+// under Reduce Motion it only fades. Until 2026-11-15 it was 12 in from the sides, lay over the stamp,
+// left without a fade and, under Reduce Motion, appeared at once.
 
 import {
   createContext,
@@ -13,13 +20,15 @@ import {
   type ReactNode,
 } from 'react';
 import { AccessibilityInfo, Animated } from 'react-native';
-import { textSlop } from '../theme/touchTarget';
+import { touchSlop } from '../theme/touchTarget';
 import { useReducedMotion } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { XStack, YStack } from '../theme/ui';
-import { SmallStrong, Value } from '../theme/Typography';
+import { SmallStrong } from '../theme/Typography';
 import { useTheme } from '../theme/ThemeProvider';
 import { depth } from '../theme/depth';
+import { space } from '../theme/spacing';
+import { SnackbarLiftContext } from '../theme/snackbarLift';
 
 export interface SnackbarAction {
   label: string;
@@ -52,6 +61,13 @@ const SNACKBAR_MS = 4500;
  */
 const SNACKBAR_A11Y_MS = 10_000;
 
+/** Rising in and fading out (R9). */
+const MOTION_MS = 220;
+/** How far it rises from. */
+const RISE = 16;
+/** R9's bar: 52 tall at the least, the 14 corner; the action a 44 row. */
+const BAR = { minHeight: 52, radius: 14, action: 44 } as const;
+
 export function useSnackbar(): SnackbarApi {
   const ctx = useContext(SnackbarContext);
   if (!ctx) {
@@ -62,6 +78,10 @@ export function useSnackbar(): SnackbarApi {
 
 export function SnackbarProvider({ children }: { readonly children: ReactNode }) {
   const [snack, setSnack] = useState<SnackbarState | null>(null);
+  // Fading out: the bar stays mounted until the fade has run, then `gone` drops it.
+  const [leaving, setLeaving] = useState(false);
+  // How high the compose stamp reaches while it is on screen; 0 with no stamp.
+  const [lift, setLift] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // A ref, not state: only the timeout below reads it, and nothing on screen changes when it flips.
   const screenReader = useRef(false);
@@ -91,18 +111,24 @@ export function SnackbarProvider({ children }: { readonly children: ReactNode })
 
   const dismiss = useCallback(() => {
     clear();
-    setSnack(null);
+    setLeaving(true);
   }, [clear]);
+
+  const gone = useCallback(() => {
+    setSnack(null);
+    setLeaving(false);
+  }, []);
 
   const show = useCallback(
     (state: SnackbarState) => {
       clear();
       setSnack(state);
+      setLeaving(false);
       // Only an ACTIONABLE bar gets the longer window - a snackbar with nothing to tap has been fully
       // delivered by its announcement, so holding it open would only keep it in the way.
       const ms =
         screenReader.current && state.action ? SNACKBAR_A11Y_MS : SNACKBAR_MS;
-      timer.current = setTimeout(() => setSnack(null), ms);
+      timer.current = setTimeout(() => setLeaving(true), ms);
     },
     [clear],
   );
@@ -111,10 +137,14 @@ export function SnackbarProvider({ children }: { readonly children: ReactNode })
 
   return (
     <SnackbarContext.Provider value={{ show, dismiss }}>
-      <YStack flex={1}>
-        {children}
-        {snack ? <SnackbarHost snack={snack} onAction={dismiss} /> : null}
-      </YStack>
+      <SnackbarLiftContext.Provider value={setLift}>
+        <YStack flex={1}>
+          {children}
+          {snack ? (
+            <SnackbarHost snack={snack} leaving={leaving} lift={lift} onAction={dismiss} onGone={gone} />
+          ) : null}
+        </YStack>
+      </SnackbarLiftContext.Provider>
     </SnackbarContext.Provider>
   );
 }
@@ -128,26 +158,41 @@ export function SnackbarProvider({ children }: { readonly children: ReactNode })
 // actually wants, identically in both themes.
 function SnackbarHost({
   snack,
+  leaving,
+  lift,
   onAction,
+  onGone,
 }: {
   readonly snack: SnackbarState;
+  /** Fading out; `onGone` once the fade has run. */
+  readonly leaving: boolean;
+  /** How high the compose stamp reaches over the safe area's edge, while it is on screen; else 0. */
+  readonly lift: number;
   readonly onAction: () => void;
+  readonly onGone: () => void;
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const reduceMotion = useReducedMotion();
-  // Fade + slide up on appear (snappy, no bop). Reduce Motion → appears at rest.
-  const enter = useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
+  // Two values: it fades in AND out, but only rises in (R9), and under Reduce Motion only fades.
+  const opacity = useRef(new Animated.Value(0)).current;
+  const rise = useRef(new Animated.Value(reduceMotion ? 0 : RISE)).current;
   useEffect(() => {
-    if (reduceMotion) {
+    if (leaving) {
+      Animated.timing(opacity, { toValue: 0, duration: MOTION_MS, useNativeDriver: true }).start(
+        ({ finished }) => {
+          if (finished) {
+            onGone();
+          }
+        },
+      );
       return;
     }
-    Animated.timing(enter, {
-      toValue: 1,
-      duration: 220,
-      useNativeDriver: true,
-    }).start();
-  }, [enter, reduceMotion]);
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: MOTION_MS, useNativeDriver: true }),
+      Animated.timing(rise, { toValue: 0, duration: reduceMotion ? 0 : MOTION_MS, useNativeDriver: true }),
+    ]).start();
+  }, [leaving, opacity, rise, reduceMotion, onGone]);
 
   // A snackbar is the app talking, unprompted, somewhere the user is not looking - with a screen
   // reader on it is invisible unless it says so. Announced explicitly rather than through
@@ -167,51 +212,39 @@ function SnackbarHost({
       left={0}
       right={0}
       bottom={0}
-      paddingHorizontal={12}
-      paddingBottom={insets.bottom + 14}
+      paddingHorizontal={space.inset}
+      // Over the stamp while it is on screen, 6 above its top; at the bottom otherwise.
+      paddingBottom={insets.bottom + (lift > 0 ? lift + space.sm : space.xl)}
       pointerEvents="box-none"
+      testID="snackbarHost"
     >
-      <Animated.View
-        style={{
-          opacity: enter,
-          transform: [
-            {
-              translateY: enter.interpolate({
-                inputRange: [0, 1],
-                outputRange: [16, 0],
-              }),
-            },
-          ],
-        }}
-      >
+      <Animated.View style={{ opacity, transform: [{ translateY: rise }] }}>
         <XStack
           backgroundColor={theme.snackbarBg}
-          borderRadius={14}
-          paddingVertical={13}
-          paddingLeft={16}
-          paddingRight={14}
+          borderRadius={BAR.radius}
+          minHeight={BAR.minHeight}
+          paddingLeft={space.inset}
+          // R9's 6: the action brings its own 12. Words alone keep 16 on both sides.
+          paddingRight={snack.action ? space.sm : space.inset}
           alignItems="center"
-          gap={12}
-          style={{ boxShadow: depth.snackbar }}
+          gap={space.lg}
+          style={{ boxShadow: theme.name === 'dark' ? depth.snackbarDark : depth.snackbar }}
           testID="snackbarBar"
         >
-          <Value flex={1} color={theme.snackbarInk}>
+          {/* 16 over and under the words: one line makes R9's 52, and a backup message that runs to
+              three keeps the same room at its edges. */}
+          <SmallStrong flex={1} paddingVertical={space.inset} color={theme.snackbarInk}>
             {snack.message}
-          </Value>
+          </SmallStrong>
           {snack.action ? (
-            <SmallStrong
-              // The design sets this label on the font's own line, which on iOS cuts the ring off a
-              // capital Ů. A dense role keeps that line and gives the ink its room (Typography.tsx).
-              // On Android it draws the dense 16 itself, the design's line as every design row gets
-              // it; the raw Text this was had no line and got Android's font-padded one, about 19dp,
-              // which made the bar 3dp taller than the design and its target short of `textSlop`'s.
-              dense
-              color={theme.goldBright}
-              paddingVertical={2}
-              paddingHorizontal={4}
-              // Derived from the label's own line box, not typed: this was a 41dp target on a
-              // control that LEAVES ON A TIMER, which is a harder miss than one that waits.
-              hitSlop={textSlop('bodyStrong', { fontSize: 14, dense: true, paddingVertical: 2 })}
+            // R9's link: a 44 row, 12 at its sides, the words in the flap's gold. A target derived
+            // from that row, not typed: this control LEAVES ON A TIMER, which is a harder miss than
+            // one that waits (it was a 41 target once).
+            <XStack
+              minHeight={BAR.action}
+              paddingHorizontal={space.lg}
+              alignItems="center"
+              hitSlop={touchSlop({ height: BAR.action })}
               pressStyle={{ opacity: 0.6 }}
               onPress={() => {
                 const act = snack.action;
@@ -222,8 +255,8 @@ function SnackbarHost({
               accessibilityLabel={snack.action.label}
               testID="snackbarAction"
             >
-              {snack.action.label}
-            </SmallStrong>
+              <SmallStrong color={theme.goldBright}>{snack.action.label}</SmallStrong>
+            </XStack>
           ) : null}
         </XStack>
       </Animated.View>

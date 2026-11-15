@@ -10,6 +10,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from './ThemeProvider';
 import { Body } from './Typography';
 import { OffsetIcon } from './offsetIcons';
+import { useOnScreen } from './useOnScreen';
+import { useSnackbarLift } from './snackbarLift';
 import { Stamp } from './objects/Stamp';
 import { perforation } from './print';
 import { haptics } from '../services/haptics';
@@ -54,6 +56,8 @@ export function Fab({
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const reduceMotion = useReducedMotion();
+  // A snackbar stands over the stamp while it is on screen (R9), not on it.
+  useSnackbarLift(FAB_BOTTOM + FAB_HEIGHT, useOnScreen());
   const scale = useRef(new Animated.Value(1)).current;
   const animateTo = (v: number) => {
     if (reduceMotion) {

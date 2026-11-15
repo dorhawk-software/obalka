@@ -15,8 +15,13 @@ export const depth = {
   mark: '0px 18px 42px rgba(33,50,90,0.35)',
   /** The Welcome and Lock primary buttons. */
   primaryButton: '0px 6px 16px rgba(33,27,18,0.25)',
-  /** The snackbar, floating over content. */
-  snackbar: '0px 8px 24px rgba(33,27,18,0.32)',
+  /** The snackbar, floating over content (R9, 2026-11-15; it was 0 8 24 at .32). */
+  snackbar: '0px 10px 24px -10px rgba(33,27,18,0.6)',
+  /**
+   * The same at night: the ink bar is nearly the dark paper, so it takes the faint white edge R9 gives
+   * its dark popover (R9 draws no dark snackbar; for the canvas's sync-back).
+   */
+  snackbarDark: '0px 0px 0px 1px rgba(255,255,255,0.07), 0px 10px 24px -10px rgba(0,0,0,0.8)',
   /** The selected segment in a segmented control. */
   segment: '0px 1px 2px rgba(33,27,18,0.12)',
   /** The same, printed on the envelope (the inbox header): its shade is the envelope's ink. */

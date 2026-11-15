@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Krátká oznámení dole na obrazovce už nezakrývají tlačítko Napsat.** Stojí nad ním, odcházejí
+  pozvolna a v tmavém režimu mají jemný okraj, aby se neztrácela.
 - **Nabídka schránky se otevře vedle tlačítka ⋯ a úprava schránky vyjíždí zdola.** Úprava ukazuje
   obálku schránky se jménem a barvou tak, jak je píšete a vybíráte, a stačí jí jediné tlačítko Uložit.
 - **Připomínka a výběr odesílatele mají nový vzhled.** Termíny připomínky jsou jedna karta s výraznějšími

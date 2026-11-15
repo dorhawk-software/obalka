@@ -418,11 +418,20 @@ surface below changes too, and the owner has seen none of them in the identity. 
 
 ### Transient surfaces
 
-- [ ] I60 Snackbar (ink pill, gold action, 4.5 s, 10 s with a screen reader; enters 220 ms, no exit
-  animation) - **N**: R9.
-- [ ] I60.1 Draft snackbars: saved, discarded, Undo - **N**: R9.
-- [ ] I60.2 Backup snackbars: exported, imported, verified, verify failed, prune or settings failed, "not
-  stopped" - **N**: R9.
+- [x] I60 Snackbar (ink pill, gold action, 4.5 s, 10 s with a screen reader; enters 220 ms, no exit
+  animation) - **N**: R9. Built 2026-11-15: 16 in from the sides (it was 12), 52 at the least with
+  the 14 corner, R9's shadow, the words in smallStrong 16 over and under (it was the 15 Value role),
+  the action a 44 row 12 at its sides in the flap's gold (`goldBright` is now R9's #FFC305; it was
+  #F5B81E). It stands 6 over the compose stamp while the stamp is on screen (`useSnackbarLift`; it
+  lay over the stamp), 14 over the bottom edge elsewhere; it rises 220 ms and fades out 220 ms, and
+  under Reduce Motion only fades (it appeared at once). At night it takes a faint white edge (R9
+  draws no dark snackbar; T051). Measured: 52 tall, 16 in, 6 over the stamp.
+- [x] I60.1 Draft snackbars: saved, discarded, Undo - **N**: R9. Seen 2026-11-15 on the inbox over
+  the stamp, Czech and English, light and dark, through a temporary swap that shows "Koncept zahozen"
+  with its Vrátit zpět; line for line with R9.
+- [x] I60.2 Backup snackbars: exported, imported, verified, verify failed, prune or settings failed, "not
+  stopped" - **N**: R9. Seen 2026-11-15 through the same swap with the longest, the English failed
+  prune: two lines, 16 over and under, the right side 16 with no action (R9's 6 makes room for one).
 - [ ] I61 Shell notices (removal, alias - dialogs) - **D**: the dialog (I52). R9.
 - [ ] I62 Debug recording strip (takes the top inset on every screen) - **N**.
 - [ ] I63 Notifications: deadline reminder and password nudge (small icon `ic_notification`, colour
@@ -948,6 +957,8 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R9 alias editor: the identity line in the 13 Label role at 500; the build uses the switcher rows'
     `BoxIdentityLine` (Meta), so the box reads the same in both. Six swatches drawn; there are ten,
     on two rows. DESIGN.md to record the popover (`objectShadow('popover')`).
+  - R9 snackbar: drawn only light, with an action. At night the build gives it the dark popover's
+    faint white edge; words with no action keep 16 at the right, not 6.
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).

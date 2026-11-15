@@ -20,7 +20,7 @@ colors:
   on-solid: "#FFFFFF"
   gold: "#E8A100"
   gold-ink: "#A87400"
-  gold-bright: "#F5B81E"
+  gold-bright: "#FFC305"
   gold-soft: "#FBEFD0"
   gold-edge: "#EAD9A8"
   on-gold: "#211B12"
@@ -504,7 +504,8 @@ Shadow is reserved for objects that float, plus a few brand moments:
   ambient one - which is why it reads in both appearances: the dark shadows carry in light mode, the
   top highlight carries in dark. Bottom sheets in dark mode swap it for a faint highlight and a soft
   ambient lift.
-- **Snackbar** (`0 8px 24px rgba(33,27,18,.32)`): the toast that floats above the content.
+- **Snackbar** (`0 10px 24px -10px rgba(33,27,18,.6)`, R9): the toast that floats above the content, 6
+  over the compose stamp while the stamp is on screen.
 - **Emblem** (`0 14px 34px rgba(33,50,90,.32)`): the 96dp brand tile on a success screen and the
   104dp tile on the lock screen.
 - **Welcome logo** (`0 18px 42px rgba(33,50,90,.35)`) and the **Welcome and Lock primary button**
