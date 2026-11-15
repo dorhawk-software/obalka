@@ -2,6 +2,8 @@
 // register. These hold what makes a glyph an offset print, in both themes, for every glyph.
 
 import { render } from '@testing-library/react-native';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import { darkTheme, lightTheme } from '../../src/theme/theme';
 import { OFFSET_GLYPHS, OffsetIcon, type OffsetGlyphName } from '../../src/theme/offsetIcons';
@@ -44,12 +46,20 @@ async function draw(name: OffsetGlyphName, isDark: boolean, plane?: 'blue' | 'go
 }
 
 describe('the offset glyphs', () => {
-  it('are the twenty glyphs of the agreed board', () => {
+  it('are the twenty-one glyphs of the agreed board', () => {
     expect(NAMES).toEqual([
       'inbox', 'sent', 'compose', 'search', 'attach', 'seal', 'deadline', 'fiction', 'boxes', 'lock',
       'archive', 'transfer', 'settings', 'bell', 'download', 'receipt', 'postmark', 'opened', 'draft',
-      'remind',
+      'remind', 'bug',
     ]);
+  });
+
+  it('give the error-report row the bug, so the bell keeps one meaning', () => {
+    // The bell led "Posílat hlášení o chybách" as well as the notifications question and the SMS
+    // notice, and read as notifications; the owner's answer 12 (2026-11-15) drew a bug for it.
+    const src = readFileSync(join(__dirname, '../../src/app/settings/SettingsScreen.tsx'), 'utf8');
+    const row = src.slice(src.indexOf("t('settings.diagnostics')"), src.indexOf('telemetry-toggle'));
+    expect(row).toContain('<Well name="bug" />');
   });
 
   describe.each([

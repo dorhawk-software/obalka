@@ -287,7 +287,7 @@ export function SettingsScreen({
         <Section label={t('settings.diagnostics')}>
           <Card>
             <CardRow last={false}>
-              <Well name="bell" />
+              <Well name="bug" />
               <RowText
                 title={t('settings.telemetry.title')}
                 subtitle={t(telemetry ? 'settings.telemetry.desc' : 'settings.telemetry.desc.off')}

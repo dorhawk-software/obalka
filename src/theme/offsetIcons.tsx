@@ -233,6 +233,21 @@ export const OFFSET_GLYPHS = {
       { kind: 'path', d: 'M12 13.5V10M10 2.5h4M12 2.5v4M18.2 6.8l1.4-1.4' },
     ],
   },
+  // The error report's (Settings › Diagnostika), drawn 2026-11-15 so the bell keeps one meaning: a
+  // beetle, its body the plane, a head, two feelers, the wing seam and three legs a side.
+  bug: {
+    plane: [{ kind: 'rect', x: 7, y: 8.5, width: 10, height: 12, rx: 5 }],
+    ink: [
+      { kind: 'rect', x: 7, y: 8.5, width: 10, height: 12, rx: 5 },
+      { kind: 'path', d: 'M9 8.6a3 3 0 0 1 6 0' },
+      { kind: 'path', d: 'M10.2 5.9 8.8 3.8M13.8 5.9l1.4-2.1' },
+      { kind: 'path', d: 'M12 13v7.5' },
+      {
+        kind: 'path',
+        d: 'M7.2 11 4.8 9.6M7 14.5H3.8M7.6 18.3l-2.4 1.8M16.8 11l2.4-1.4M17 14.5h3.2M16.4 18.3l2.4 1.8',
+      },
+    ],
+  },
 } satisfies Record<string, Glyph>;
 
 export type OffsetGlyphName = keyof typeof OFFSET_GLYPHS;

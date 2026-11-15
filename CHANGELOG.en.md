@@ -20,6 +20,7 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Error reports have their own glyph.** In Settings › Diagnostics the error-report row leads with a bug instead of the bell; the bell stays with notifications.
 - **The message detail has the same header as every other screen.** Going from the list to a message and on to Settings, the header no longer jumps.
 - **A clean envelope window in dark.** The grey band and smudge that lay over the address window at night are gone.
 - **A switch you can't use doesn't look on.** It takes the grey track; its knob stays on its side, so you can see what will apply once it can be used.

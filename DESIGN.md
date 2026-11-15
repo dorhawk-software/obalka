@@ -798,6 +798,9 @@ After the critique (2026-11-15), the owner's answers, one by one:
   its inset edge. By day it is unchanged, and the scanner's sheen follows the same rule.
 - **The detail's header:** its own bar, 12 lower than every other, lost to the shared bar with a
   quiet title (`ScreenHeader quiet`); nothing jumps between the list, a message and Settings.
+- **The error-report glyph:** the bell (also the notifications question's and the SMS notice's) lost
+  to a bug in the offset family, drawn on the Icons board first: the body is the plane, with a head,
+  two feelers, the wing seam and three legs a side. The bell keeps one meaning.
 
 ## Do's and Don'ts
 
