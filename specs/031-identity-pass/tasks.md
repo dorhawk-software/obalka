@@ -274,7 +274,7 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     2026-11-13): the header straight under the strip, no second status-bar gap. Walked 2026-11-13 on
     the owner's test box, a sent message, light and dark: the strip takes the status bar (132 px) and
     its band; the header's title sits 79 px under it, as it sits under the bare status bar.
-- [ ] I38 Compose - **X**: the envelope you are sending (R2, agreed A).
+- [x] I38 Compose - **X**: the envelope you are sending (R2, agreed A).
   Built 2026-11-15 as R2 and R12: compose is one envelope (`ComposeEnvelope`, creases 358×188) with Od
   on it, Komu in its window - the search field until someone is picked, ringed in the flap gold while it
   has the caret - and the stamp in its corner, a blank dashed slot until a recipient sets the price.
@@ -293,13 +293,15 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   - [x] I38.4 The stamp: free, paid, credit short with "buy credit". ZDARMA/PLACENÁ with the price and
     the kind; the credit under Od only beneath a paid stamp; short credit is R12's danger strip and
     the footer's refusal with "Koupit kredit".
-  - [ ] I38.5 Subject, text and its hint (the text becomes a PDF). The fields and hint are built on the
+  - [x] I38.5 Subject, text and its hint (the text becomes a PDF). The fields and hint are built on the
     letter sheet (2026-11-15). The PDF is R12's Czech A4 letter since the same day: 25 mm sides, 20 top
     and bottom, the sender and the mark, the recipient a part per line, the date at the right, the
     subject in Bricolage, the text in Public Sans 10.5 pt, the foot line at the page's bottom; its words
     in the app's language. Rendered on Obalka_Demo, pulled and laid over R12's page at the same size:
     every line in place. The place before the date is not printed (the app does not know it).
-    Open: the walk on iOS, where the page is laid out at one CSS pixel per point (assumed, unproven).
+    Walked on iOS the same day (iPhone 18 Pro simulator, Xcode 27): laid out at a pixel a point it
+    printed 0.8 small - WebKit's print shrink - and on the library's off-white; now 1.25 px a point and
+    the `printPage` white, and the iOS page matches Android's line for line.
   - [x] I38.6 Attachments: rows with remove, reading with its progress and cancel, the dashed add. The
     reading card holds its place; the add link lies over it, so nothing moves when reading starts.
   - [x] I38.7 Footer: errors (too large, attach, PDF, sign in again, send), send busy. Busy is R12's

@@ -82,6 +82,17 @@ describe('the letter (R12)', () => {
     });
   });
 
+  it('prints on white, not the renderer\'s own off-white page (iOS fills #F6F5F0 unless told)', async () => {
+    mockGenerate.mockClear();
+    await textToPdf(letter());
+    expect(mockGenerate.mock.calls[0][0].bgColor).toBe('#FFFFFF');
+  });
+
+  it('sizes the type for WebKit\'s print shrink on iOS: 10.5 pt is 13.13 px, printed at 0.8 pt a pixel', () => {
+    // Jest runs as iOS. Laid out at a pixel a point, the letter printed 0.8 small (walked 2026-11-15).
+    expect(letterHtml(letter())).toMatch(/body\{[^}]*font-size:13\.13px/);
+  });
+
   it('runs in the Czech order: sender, recipient, date, subject, text, the foot line', () => {
     const html = letterHtml(letter());
     const at = (s: string) => html.indexOf(s);

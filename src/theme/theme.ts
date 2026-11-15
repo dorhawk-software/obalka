@@ -163,6 +163,9 @@ export interface Theme {
   /** The black of a shade printed over an object (the flap's lower half). Opaque; the drawing sets
    * how much of it (`print.ts`). */
   printShade: string;
+  /** The page of a PDF the app writes (the typed text's letter, R12): white, as printer paper is, in
+   * both appearances - the reader's PDF viewer, not the app, decides the room's light. */
+  printPage: string;
   /** The flap, and the stamp-shaped compose button: the envelope's gold, fixed in both appearances. */
   flap: string;
   /** The frame printed inside the gold stamp of the compose button. */
@@ -258,6 +261,7 @@ export const lightTheme: Theme = {
   envelopeDash: 'rgba(255,255,255,0.75)',
   envelopePlane: 'rgba(255,255,255,0.2)',
   printShade: '#000000',
+  printPage: '#FFFFFF',
   flap: '#FFC305',
   flapFrame: 'rgba(33,27,18,0.28)',
   flapPlane: 'rgba(255,255,255,0.55)',
@@ -343,6 +347,7 @@ export const darkTheme: Theme = {
   envelopeDash: 'rgba(255,255,255,0.75)',
   envelopePlane: 'rgba(255,255,255,0.2)',
   printShade: '#000000',
+  printPage: '#FFFFFF',
   flap: '#FFC305',
   flapFrame: 'rgba(33,27,18,0.28)',
   flapPlane: 'rgba(255,255,255,0.55)',

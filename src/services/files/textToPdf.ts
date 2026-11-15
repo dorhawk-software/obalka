@@ -40,10 +40,11 @@ const A4 = { width: 595, height: 842 };
 const MARGIN = { side: 71, edge: 57 };
 
 /**
- * CSS pixels per point. Android prints as a browser does, 96 px to the inch; iOS lays the page out in
- * the web view's own points, one to one.
+ * CSS pixels per point. Android prints as a browser does, 96 px to the inch. WebKit lays a printed page
+ * out 1.25 times as wide as it prints and shrinks it to fit (its minimum shrink factor), so on iOS a
+ * pixel prints at 0.8 pt (measured 2026-11-15: a page laid out at one pixel per point printed 0.8 small).
  */
-const PX_PER_PT = Platform.OS === 'ios' ? 1 : 96 / 72;
+const PX_PER_PT = Platform.OS === 'ios' ? 1.25 : 96 / 72;
 const pt = (n: number) => `${Math.round(n * PX_PER_PT * 100) / 100}px`;
 
 /**
@@ -152,6 +153,8 @@ export async function textToPdf(letter: Letter): Promise<OutgoingDocument> {
     paddingLeft: MARGIN.side,
     paddingRight: MARGIN.side,
     baseURL: Platform.OS === 'android' ? ANDROID_ASSETS : undefined,
+    // iOS fills the paper with its own off-white (#F6F5F0) unless told; Android prints no fill.
+    bgColor: lightTheme.printPage,
   });
   if (!result.base64) {
     throw new Error('PDF generation returned no content');

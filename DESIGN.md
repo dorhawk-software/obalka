@@ -287,6 +287,9 @@ The envelope, flap, stamp, slip mark and seal keep their colours at night - prin
 change with the room's light. Only what is paper on the screen (the window, the planes, the sheet's
 edge) follows the appearance. `contrast.test.ts` holds both halves of that sentence.
 
+- **Print Page** (`#FFFFFF`, both appearances): the page of a PDF the app writes - the typed text's
+  Czech letter (R12) - printed in the light palette's inks on white, whatever the screen shows.
+
 ### Named Rules
 
 **The One Job Rule.** Solid gold marks unread (the dot and the count badge) and the active box's check
