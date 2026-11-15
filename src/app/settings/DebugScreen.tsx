@@ -11,16 +11,21 @@
 // learns where the file went - see `services/debug/debugStore.ts`, and the structural test that
 // keeps it that way.
 //
-// Every spacing on this screen is a DESIGN.md step, named through `space`, and every note is the
-// Caption role at its own 13/17. Until 2026-09-15 the screen typed a 9 gap, 20 and 22 margins and 12pt
-// captions of its own. The settings furniture it sits in (`Section`, `CardRow`, `SubScreen`, shared with
-// three other screens) moved onto the same scales that day, keeping the values DESIGN.md records for it.
+// Every spacing on this screen is a DESIGN.md step, named through `space`. Until 2026-09-15 the screen
+// typed a 9 gap, 20 and 22 margins and 12pt captions of its own.
+//
+// As board R13 draws it (031 I47, agreed 2026-11-12): the intro in body text, the level as one sheet of
+// choices with its two notes as meta lines under it, and the start as the filled button. While
+// recording, one card holds the dot and the counter, the hint, the stop and the discard, and the
+// choices above it are dimmed, since they cannot change then. The saved notice and the files are in
+// `DebugFiles.tsx`.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Platform, useWindowDimensions } from 'react-native';
-import { Spinner, XStack, YStack } from '../../theme/ui';
-import { BodyStrong, Caption, Label, Small } from '../../theme/Typography';
-import { PressScale } from '../../theme/PressScale';
+import { XStack, YStack } from '../../theme/ui';
+import { Caption, Meta, Small, SmallStrong } from '../../theme/Typography';
+import { InkButton } from '../../theme/InkButton';
+import { NeutralButton } from '../../theme/NeutralButton';
 import { OptionGroup } from '../../theme/OptionGroup';
 import { Dialog } from '../../theme/Dialog';
 import { useTheme } from '../../theme/ThemeProvider';
@@ -29,7 +34,8 @@ import { type as typeScale } from '../../theme/typeScale';
 import { formatBytes, plural, t } from '../../i18n/strings';
 import { haptics } from '../../services/haptics';
 import { SubScreen } from './SubScreen';
-import { Card, CardRow, RowTitle, Section } from './SettingsSection';
+import { Card, Section } from './SettingsSection';
+import { NoticeStrip, SavedFilesSection, savedFilesError, type Notice, type SavedFiles } from './DebugFiles';
 import { RecordingDot, useDebugRecording } from '../DebugRecordingStrip';
 import {
   cancelDebug,
@@ -44,16 +50,10 @@ import {
   MAX_ENTRIES,
   type DebugLevel,
 } from '../../services/debug/debugLog';
-import {
-  deleteBundle,
-  listBundles,
-  shareBundle,
-  type SavedBundle,
-} from '../../services/debug/debugStore';
+import { deleteBundle, listBundles, shareBundle, type SavedBundle } from '../../services/debug/debugStore';
 import { useCloseOnBackground } from '../useCloseOnBackground';
 
 const MIB = 1024 * 1024;
-
 
 /** The status line while recording: "Zaznamenává se · 2 záznamy · 1 kB". */
 export function recordingCounter(entries: number, bytes: number): string {
@@ -64,8 +64,8 @@ export function recordingCounter(entries: number, bytes: number): string {
 /**
  * A number one character longer than any the counter can show, in the widest digit Public Sans has.
  * The counter's numbers run to four characters - `MAX_ENTRIES` entries, "1024" in front of a kB, "4.0"
- * in front of an MB under `MAX_BYTES` - and its digits are not equally wide: an 8 is 8.5dp at 13pt and
- * a 1 is 5.4, so "3888" is wider than "4000". The fifth character is margin against the kerning and
+ * in front of an MB under `MAX_BYTES` - and its digits are not equally wide: an 8 is wider than a 1 in
+ * every Public Sans face, so "3888" is wider than "4000". The fifth character is margin against the kerning and
  * hinting that the measurement behind this leaves out.
  */
 const RESERVE_NUMBER = '8'.repeat(
@@ -85,100 +85,8 @@ export function recordingCounterReserve(): string {
   return `${t('debug.recording')} · ${counted} · ${RESERVE_NUMBER}\u00A0MB`;
 }
 
-/** A caption's line box at the default text size: the Caption role, DESIGN.md 13/17. */
-const CAPTION_LINE = typeScale.caption.lineHeight;
-/**
- * Lines the notice reserves. It holds a saved file's name, and "Uloženo: obalka-debug-2026-09-15-1030-
- * standard-2.zip" is 345dp in Public Sans Medium 13, where a 360dp phone leaves it 324dp - so the name
- * takes a second line already at the default text size. Past two lines it is cut short; the file is
- * listed in full right below it.
- */
-const NOTICE_LINES = 2;
-
-/**
- * The saved files as last read: not read yet, read, or not readable (constitution II). A failed read
- * counts the failed reads in a row it ends, so trying again and failing again says something the screen
- * had not already said.
- */
-type SavedFiles =
-  | { readonly status: 'loading' }
-  | { readonly status: 'ready'; readonly bundles: readonly SavedBundle[] }
-  | { readonly status: 'failed'; readonly attempts: number };
-
-/**
- * What the saved files' row says after `attempts` failed reads in a row. Until 2026-09-15 a retry that
- * failed again put back the very words it had replaced: nothing on the screen changed and nothing was
- * announced, so "Zkusit znovu" looked like a press that had missed. The attempt is in the words now.
- */
-export function savedFilesError(attempts: number): string {
-  return attempts > 1 ? t('debug.saved.errorAgain', { n: attempts }) : t('debug.saved.error');
-}
-
-/**
- * A button at the end of a saved-files row. One size for every one of them - share, delete, and try
- * again when the list could not be read - so a row keeps its height whichever it carries.
- */
-function RowAction({
-  label,
-  accessibilityLabel,
-  tone,
-  onPress,
-  busy,
-  testID,
-}: {
-  readonly label: string;
-  readonly accessibilityLabel: string;
-  /** `plain` sits on the row's own fill in the danger ink; `filled` has a tile of its own. */
-  readonly tone: 'filled' | 'plain';
-  readonly onPress: () => void;
-  /**
-   * The action is running. The press is swallowed and a spinner stands in for the label, which keeps its
-   * room underneath, so the button keeps its width and the words beside it do not rewrap (constitution
-   * V). Disabled and nothing more, a try again that waited on a stuck folder looked like a press that had
-   * not landed.
-   */
-  readonly busy?: boolean;
-  readonly testID: string;
-}) {
-  const theme = useTheme();
-  const ink = tone === 'filled' ? theme.text : theme.danger;
-  return (
-    <PressScale
-      onPress={onPress}
-      busy={busy}
-      accessibilityLabel={accessibilityLabel}
-      testID={testID}
-    >
-      <XStack
-        minHeight={44}
-        minWidth={tone === 'filled' ? 72 : 44}
-        paddingHorizontal={space.lg}
-        borderRadius={11}
-        backgroundColor={tone === 'filled' ? theme.surfaceAlt : undefined}
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Label fontWeight="400" color={ink} opacity={busy ? 0 : 1}>
-          {label}
-        </Label>
-        {busy ? (
-          <YStack
-            position="absolute"
-            top={0}
-            right={0}
-            bottom={0}
-            left={0}
-            alignItems="center"
-            justifyContent="center"
-            testID={`${testID}-busy`}
-          >
-            <Spinner size="small" color={ink} />
-          </YStack>
-        ) : null}
-      </XStack>
-    </PressScale>
-  );
-}
+/** The counter's line box at the default text size: the SmallStrong role, DESIGN.md 14/20. */
+const COUNTER_LINE = typeScale.smallStrong.lineHeight;
 
 export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
   const theme = useTheme();
@@ -197,7 +105,7 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
   // read, answering first, handed the button back idle over the newer read (review, 2026-09-15). The
   // newest read always ends, within `LIST_TIMEOUT_MS`, so the button cannot stay busy.
   const [reading, setReading] = useState(false);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
   const [pendingDelete, setPendingDelete] = useState<SavedBundle | null>(null);
   // An RN Modal draws above the lock cover: a dialog the person opened closes as the app leaves.
   useCloseOnBackground(useCallback(() => setPendingDelete(null), []));
@@ -205,6 +113,10 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
   // answering (Principle I), so a press can now arrive mid-write - on this screen, or on this screen
   // opened again after someone left it during the save. Either way the buttons say so and wait.
   const [saving, setSaving] = useState(() => debugSaveInFlight() !== null);
+  // The notice strip's room, held from the press that starts a save - so the save's end, at a moment
+  // nobody picks, only fills it (constitution V) - until a new recording starts or one is thrown away,
+  // which are presses of their own. A notice from a share or a delete brings the strip with it.
+  const [held, setHeld] = useState(saving);
   // Reads of the folder can overlap - the one this screen opens with, and the one after a save that
   // ends straight away - and the older one can answer last. Only the newest read says what is in the
   // folder, or the file a save just wrote could drop out of the list again.
@@ -236,13 +148,17 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
   const follow = useCallback(
     async (save: Promise<StoppedBundle>) => {
       setSaving(true);
+      setHeld(true);
       try {
         const done = await save;
-        setNotice(t('debug.savedNotice').replace('{name}', done.path.split('/').pop() ?? ''));
+        setNotice({
+          text: t('debug.savedNotice').replace('{name}', done.path.split('/').pop() ?? ''),
+          tone: 'saved',
+        });
         await refresh();
       } catch {
         // Principle II: the recording is lost, the screen is not. The buffer is cleared either way.
-        setNotice(t('debug.error'));
+        setNotice({ text: t('debug.error'), tone: 'failed' });
       } finally {
         setSaving(false);
       }
@@ -270,7 +186,7 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
   // Never both: announcing on Android as well would have TalkBack read every notice twice.
   useEffect(() => {
     if (notice != null && Platform.OS === 'ios') {
-      AccessibilityInfo.announceForAccessibility(notice);
+      AccessibilityInfo.announceForAccessibility(notice.text);
     }
   }, [notice]);
 
@@ -294,6 +210,7 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
     haptics.selection();
     startDebug(level);
     setNotice(null);
+    setHeld(false);
   }, [level]);
 
   const onStop = useCallback(() => follow(stopDebugAndWrite()), [follow]);
@@ -301,13 +218,14 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
   const onDiscard = useCallback(() => {
     cancelDebug();
     setNotice(null);
+    setHeld(false);
   }, []);
 
   const onShare = useCallback(async (bundle: SavedBundle) => {
     try {
       await shareBundle(bundle.path, t('debug.shareTitle'));
     } catch {
-      setNotice(t('debug.shareError'));
+      setNotice({ text: t('debug.shareError'), tone: 'failed' });
     }
   }, []);
 
@@ -318,7 +236,7 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
       try {
         await deleteBundle(bundle.path);
       } catch {
-        setNotice(t('debug.deleteError'));
+        setNotice({ text: t('debug.deleteError'), tone: 'failed' });
       }
       await refresh();
     },
@@ -340,11 +258,7 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
     }
   }, [failedWords]);
 
-  // The label changes in place while saving; the button keeps its size, so nothing below it moves.
-  let toggleLabel = t(recording ? 'debug.stop' : 'debug.start');
-  if (saving) {
-    toggleLabel = t('debug.saving');
-  }
+  const strip = held || notice != null ? <NoticeStrip notice={notice} fontScale={fontScale} /> : null;
 
   return (
     <>
@@ -370,251 +284,122 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
         />
       ) : null}
 
-      <SubScreen title={t('debug.title')} onBack={onBack}>
-        <Label fontWeight="400"
-          color={theme.textMuted}
-          marginBottom={space.gutter}
-        >
+      <SubScreen title={t('debug.title')} onBack={onBack} paddingTop={space.inset}>
+        <Small color={theme.bodyText} testID="debug-intro">
           {t('debug.intro')}
-        </Label>
+        </Small>
 
         {/* The level, and it is only choosable BEFORE recording starts - changing what a bundle
             contains halfway through would produce a file whose manifest lies about it. */}
-        <Section label={t('debug.level')}>
-          <YStack gap={space.base}>
-            <OptionGroup
-              options={[
-                { value: 'standard' as const, label: t('debug.level.standard') },
-                { value: 'full' as const, label: t('debug.level.full') },
-              ]}
-              value={level}
-              onChange={recording ? () => {} : setLevel}
-              testIDPrefix="debug-level"
-            />
-            <Caption color={theme.textFaint} marginLeft={space.xs} testID="debug-level-desc">
-              {t(level === 'full' ? 'debug.level.full.desc' : 'debug.level.standard.desc')}
-            </Caption>
-            {/* Under both options, deliberately: it is the guarantee that does not vary, and it is
-                what makes choosing the detailed level a decision about mail rather than about
-                everything. */}
-            <Caption color={theme.textFaint} marginLeft={space.xs}>
-              {t('debug.creds')}
-            </Caption>
-          </YStack>
-        </Section>
-
-        <YStack gap={space.base} marginBottom={space.gutter} testID="debug-controls">
-          <PressScale
-            fullWidth
-            onPress={recording ? onStop : onStart}
-            busy={saving}
-            accessibilityLabel={toggleLabel}
-            testID="debug-toggle"
-          >
-            <XStack
-              width="100%"
-              minHeight={48}
-              borderRadius={14}
-              backgroundColor={theme.text}
-              alignItems="center"
-              justifyContent="center"
+        <YStack marginTop={space.base}>
+          <Section label={t('debug.level')}>
+            <YStack
+              opacity={recording ? 0.55 : 1}
+              // Faded as one picture, as the board's CSS opacity fades it (031 R13, as `CardRow`).
+              needsOffscreenAlphaCompositing={recording}
+              testID="debug-levels"
             >
-              <BodyStrong color={theme.surfaceAlt}>
-                {toggleLabel}
-              </BodyStrong>
-            </XStack>
-          </PressScale>
-
-          {/* Only while the recorder runs. It stops at the press on "Ukončit a uložit", so these go in
-              answer to that press - the mirror of "Spustit záznam" bringing them - and not when the
-              save it started ends, long after, under a finger that has moved on. */}
-          {recording ? (
-            <>
-              <XStack
-                alignItems="flex-start"
-                gap={space.base}
-                marginLeft={space.xs}
-                testID="debug-status-row"
-              >
-                {/* A dot, because a screen that is recording someone's mail should say so at a
-                    glance and not only in a sentence. The label carries it for a screen reader. Held
-                    to one caption line at the reader's text size, so it stays beside the first line
-                    however many lines the counter's room below takes. */}
-                <YStack
-                  minHeight={CAPTION_LINE * fontScale}
-                  justifyContent="center"
-                  testID="debug-status-dot"
-                >
-                  <RecordingDot />
-                </YStack>
-                {/* The counter's words grow while it records - "2 záznamy · 1 kB" to "4000 záznamů ·
-                    1024 kB" - and at a larger text size the longer ones take a second line part-way
-                    through, which pushed the hint, the discard button and everything under them down
-                    (constitution V). So the room is taken by the longest counter the recorder can
-                    reach, drawn invisibly at the reader's own text size and width, and the live counter
-                    is laid over it, taking no room of its own: however its words grow, nothing else on
-                    the screen can move.
-                    Both are broken into lines greedily, at spaces, on both platforms. A reserve that is
-                    word for word at least as wide takes at least as many lines only under that breaker,
-                    and it is the one `debugCounterReserve.test.ts` measures with. Android's own default
-                    (`highQuality`) weighs whole paragraphs and promises no such thing, so it is named
-                    here, with iOS's plain word wrap beside it, rather than left to each platform. */}
-                <YStack flex={1}>
-                  <Caption
-                    opacity={0}
-                    textBreakStrategy="simple"
-                    lineBreakStrategyIOS="none"
-                    accessibilityElementsHidden
-                    importantForAccessibility="no-hide-descendants"
-                    testID="debug-status-reserve"
-                  >
-                    {recordingCounterReserve()}
-                  </Caption>
-                  <Caption
-                    position="absolute"
-                    top={0}
-                    left={0}
-                    right={0}
-                    textBreakStrategy="simple"
-                    lineBreakStrategyIOS="none"
-                    color={theme.textMuted}
-                    testID="debug-status"
-                  >
-                    {recordingCounter(entries, bytes)}
-                  </Caption>
-                </YStack>
-              </XStack>
-              <Caption color={theme.textFaint} marginLeft={space.xs}>
-                {t('debug.recording.hint')}
-              </Caption>
-              <PressScale
-                fullWidth
-                onPress={onDiscard}
-                disabled={saving}
-                accessibilityLabel={t('debug.discard')}
-                testID="debug-discard"
-              >
-                <XStack
-                  width="100%"
-                  minHeight={44}
-                  borderRadius={14}
-                  borderWidth={1}
-                  borderColor={theme.border}
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <Small color={theme.textMuted}>
-                    {t('debug.discard')}
-                  </Small>
-                </XStack>
-              </PressScale>
-            </>
-          ) : null}
-
-          {/* Reserved whether or not there is a notice, at the reader's text size (constitution V). A
-              notice arrives when a save ends or the share sheet fails to open - moments nobody picks -
-              and drawn only then it pushed the saved files down under a finger that may be reaching
-              for one of them. Now only its words change.
-              Empty, VoiceOver is kept off it (an iOS Text is an element of its own). On Android it stays
-              in the accessibility tree: a Text there is no focus stop unless it can be pressed, so an
-              empty one is nothing to land on, and a view taken out of the tree gives TalkBack nothing to
-              read when its live region reports new words - the words and the tree would change in one
-              commit, in an order this screen does not control. */}
-          <Caption
-            minHeight={NOTICE_LINES * CAPTION_LINE * fontScale}
-            numberOfLines={NOTICE_LINES}
-            color={theme.textMuted}
-            marginLeft={space.xs}
-            accessibilityLiveRegion="polite"
-            accessibilityElementsHidden={notice == null}
-            testID="debug-notice"
-          >
-            {notice ?? ''}
-          </Caption>
+              <OptionGroup
+                options={[
+                  { value: 'standard' as const, label: t('debug.level.standard') },
+                  { value: 'full' as const, label: t('debug.level.full') },
+                ]}
+                value={level}
+                onChange={recording ? () => {} : setLevel}
+                testIDPrefix="debug-level"
+              />
+            </YStack>
+            <YStack gap={space.sm} marginHorizontal={space.xs}>
+              <Meta color={theme.textMuted} testID="debug-level-desc">
+                {t(level === 'full' ? 'debug.level.full.desc' : 'debug.level.standard.desc')}
+              </Meta>
+              {/* Under both options, deliberately: it is the guarantee that does not vary, and it is
+                  what makes choosing the detailed level a decision about mail rather than about
+                  everything. */}
+              <Meta color={theme.textMuted} testID="debug-creds">
+                {t('debug.creds')}
+              </Meta>
+            </YStack>
+          </Section>
         </YStack>
 
-        <Section label={t('debug.saved')}>
-          <Card>
-            {/* Before the first read answers there is nothing true to say: "Zatím tu nic není." would
-                be a guess. The row holds a caption line, the height the list most often settles to,
-                and has nothing to read. The list is the last thing on the screen, so whatever it
-                settles to moves nothing under it.
-                One row for a read not answered yet and a read that failed, and one caption in it: the
-                words a failure puts there, and the new words the next failure puts there, change in a
-                live region TalkBack already knows. A row drawn only once a read had failed would be a
-                view that appeared, which TalkBack does not read out. Empty, VoiceOver is kept off it. */}
-            {saved.status === 'ready' ? null : (
-              <CardRow
-                last
-                testID={saved.status === 'failed' ? 'debug-saved-failed' : 'debug-saved-loading'}
-              >
-                <Caption
-                  flex={1}
-                  minHeight={CAPTION_LINE * fontScale}
-                  color={theme.textMuted}
-                  accessibilityLiveRegion="polite"
-                  accessibilityElementsHidden={failedWords == null}
-                  testID="debug-saved-status"
-                >
-                  {failedWords ?? ''}
-                </Caption>
-                {saved.status === 'failed' ? (
-                  <RowAction
-                    tone="filled"
-                    label={t('debug.saved.retry')}
-                    accessibilityLabel={t('debug.saved.retry')}
-                    onPress={() => void refresh()}
-                    busy={reading}
-                    testID="debug-saved-retry"
-                  />
-                ) : null}
-              </CardRow>
-            )}
-            {saved.status === 'ready' && saved.bundles.length === 0 ? (
-              <CardRow last testID="debug-empty">
-                <Caption flex={1} color={theme.textFaint}>
-                  {t('debug.saved.empty')}
-                </Caption>
-              </CardRow>
-            ) : null}
-            {saved.status === 'ready'
-              ? saved.bundles.map((bundle, i) => (
-                  <CardRow key={bundle.path} last={i === saved.bundles.length - 1}>
-                    <YStack flex={1}>
-                      <RowTitle>{bundle.name}</RowTitle>
-                      <Caption
-                        marginTop={space.hair}
-                        color={theme.textFaint}
-                        testID={`debug-size-${i}`}
-                      >
-                        {/* Listed even when its size could not be read: it is still a file on the
-                            phone that may hold someone's mail, and this is where it gets deleted. */}
-                        {bundle.bytes == null
-                          ? t('debug.saved.sizeUnknown')
-                          : formatBytes(bundle.bytes)}
-                      </Caption>
-                    </YStack>
-                    <XStack gap={space.sm}>
-                      <RowAction
-                        tone="filled"
-                        label={t('debug.share')}
-                        accessibilityLabel={`${t('debug.share')}, ${bundle.name}`}
-                        onPress={() => void onShare(bundle)}
-                        testID={`debug-share-${i}`}
-                      />
-                      <RowAction
-                        tone="plain"
-                        label={t('debug.delete')}
-                        accessibilityLabel={`${t('debug.delete')}, ${bundle.name}`}
-                        onPress={() => setPendingDelete(bundle)}
-                        testID={`debug-delete-${i}`}
-                      />
-                    </XStack>
-                  </CardRow>
-                ))
-              : null}
-          </Card>
-        </Section>
+        <YStack gap={space.md} marginBottom={space.gutter} testID="debug-controls">
+          {/* Only while the recorder runs. It stops at the press on "Ukončit a uložit", so the card goes
+              in answer to that press - the mirror of "Spustit záznam" bringing it - and not when the
+              save it started ends, long after, under a finger that has moved on. Meanwhile the start
+              says the save is running, at the size it always has. */}
+          {recording ? (
+            <Card testID="debug-recording">
+              <YStack padding={space.xl} gap={space.md}>
+                <XStack alignItems="flex-start" gap={space.base} testID="debug-status-row">
+                  {/* A dot, because a screen that is recording someone's mail should say so at a
+                      glance and not only in a sentence. Held to the counter's first line at the
+                      reader's text size, however many lines the counter's room below takes. */}
+                  <YStack minHeight={COUNTER_LINE * fontScale} justifyContent="center" testID="debug-status-dot">
+                    <RecordingDot />
+                  </YStack>
+                  {/* The counter's words grow while it records - "2 záznamy · 1 kB" to "4000 záznamů ·
+                      1024 kB" - and at a larger text size the longer ones take a second line part-way
+                      through, which pushed the hint and the buttons under it down (constitution V).
+                      So the room is taken by the longest counter the recorder can reach, drawn
+                      invisibly at the reader's own text size and width, and the live counter is laid
+                      over it, taking no room of its own.
+                      Both are broken into lines greedily, at spaces, on both platforms. A reserve that
+                      is word for word at least as wide takes at least as many lines only under that
+                      breaker, and it is the one `debugCounterReserve.test.ts` measures with. Android's
+                      own default (`highQuality`) weighs whole paragraphs and promises no such thing. */}
+                  <YStack flex={1}>
+                    <SmallStrong
+                      opacity={0}
+                      textBreakStrategy="simple"
+                      lineBreakStrategyIOS="none"
+                      accessibilityElementsHidden
+                      importantForAccessibility="no-hide-descendants"
+                      testID="debug-status-reserve"
+                    >
+                      {recordingCounterReserve()}
+                    </SmallStrong>
+                    <SmallStrong
+                      position="absolute"
+                      top={0}
+                      left={0}
+                      right={0}
+                      textBreakStrategy="simple"
+                      lineBreakStrategyIOS="none"
+                      color={theme.text}
+                      testID="debug-status"
+                    >
+                      {recordingCounter(entries, bytes)}
+                    </SmallStrong>
+                  </YStack>
+                </XStack>
+                <Caption color={theme.textMuted}>{t('debug.recording.hint')}</Caption>
+                <YStack marginTop={space.xs}>
+                  <InkButton label={t('debug.stop')} onPress={onStop} testID="debug-toggle" />
+                </YStack>
+                <NeutralButton label={t('debug.discard')} onPress={onDiscard} testID="debug-discard" />
+              </YStack>
+            </Card>
+          ) : (
+            <InkButton
+              label={t(saving ? 'debug.saving' : 'debug.start')}
+              onPress={onStart}
+              busy={saving}
+              testID="debug-toggle"
+            />
+          )}
+          {strip}
+        </YStack>
+
+        <SavedFilesSection
+          saved={saved}
+          failedWords={failedWords}
+          reading={reading}
+          fontScale={fontScale}
+          onRetry={() => void refresh()}
+          onShare={bundle => void onShare(bundle)}
+          onDelete={setPendingDelete}
+        />
       </SubScreen>
     </>
   );

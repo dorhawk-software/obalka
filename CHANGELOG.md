@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Režim ladění je uspořádanější.** Probíhající záznam má vlastní kartu s počtem záznamů a oběma
+  tlačítky, uložení potvrdí modrý pruh a každý uložený soubor nabízí Sdílet a Smazat vedle sebe.
 - **Přenos do jiného telefonu je přehlednější.** Zálohy k odeslání jsou na jednom listu s velikostí
   a tím, co obsahují, a odeslání je jedno velké tlačítko. Přijímání má vlastní obrazovku: načtení kódu,
   pole pro heslo a tlačítko Přijmout, které počká, než heslo zadáte.

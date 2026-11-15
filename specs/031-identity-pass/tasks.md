@@ -314,8 +314,16 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     the half it happened in. Walked forced (done, stopped) beside R8 and R10, light, dark and English.
   - [ ] I46.6 First run, receive only - **N**: R9. The same receiving screen as I46.3 (built); still
     to walk on a first run, which needs a phone with no boxes.
-- [ ] I47 `DebugScreen` (level, start/stop/saving, counter, files: loading, failed, empty, rows with
-  share and delete) - **N** (cards).
+- [x] I47 `DebugScreen` (level, start/stop/saving, counter, files: loading, failed, empty, rows with
+  share and delete) - **N** (cards). Fixed 2026-11-15 to R13: the intro in body text, the two notes as
+  meta lines under the choices, Spustit záznam as the 52 filled button; while recording one card
+  (14 in, 10 apart) with the dot and the counter in 14/20 bold, the hint, Ukončit a uložit and Zahodit
+  záznam, the choices at .55 above it; the saved notice as the blue strip 10 under the start (a
+  failure in the danger tint), held from the stop press so the save's end only fills it; the files as
+  one card of name, size, and Sdílet beside Smazat (40, the 12 corner, 14/700, Smazat in the danger
+  ink); nothing saved is a muted line with no card. The failed read (not drawn) is that line's words
+  with Zkusit znovu as a link under them. Walked light and English against R13 (idle, recording,
+  saved, failed forced), and dark on the theme's tokens: R13 draws no dark debug phone.
 - [ ] I48 Licences (logo 40, search, no results, groups), licence group, licence text - **N** (cards).
 - [ ] I49 What's new sheet and Changelog - **D**: the sheet (I53). R9.
 - [ ] I50 Lock screen (brand tile 104, lock glyph, unlock, failure slot, reset link) - **D**: board
@@ -790,6 +798,11 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   knows one language.
   Raised in I11: R8's refusal card repeats its title as the first words of its body ("ISDS
   přihlášení odmítlo: …"), built as drawn; the error string could lose them.
+  Raised in I47: in R13's bold 14 the recording counter's reserve takes two lines at the default text
+  size on a 360dp phone (the longest count needs them), so a short count sits over an empty line
+  there; one line from 411dp. And the saved strip wraps after "Uloženo:" on the device where the board
+  fits one line (Android draws Public Sans about 2 % wider); the strip's height is held, so it moves
+  nothing.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
@@ -834,6 +847,13 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   - R7 not downloaded: no line under the card; the build keeps what the download does (it saves the
     message, and does not deliver it).
   - R7 download glyph plane at .28 white; the build takes `envelope-plane` (.2), the same blue under it.
+  - R13 debug: no failed read and no read in progress; the build says the failure in the empty
+    line's place with Zkusit znovu as a link under it, and holds that line empty while reading. A
+    failed share, delete or save takes the strip in the danger tint with the alert glyph (R13 draws
+    only the saved notice). No dark debug phone; the strip's dark tint is the theme's `blueSoft`
+    (#233140), the boards' `--bluesoft` is #1F2C3A. The strip's 13/19 is the Label role (13/17).
+  - R13's half-width row buttons are `InkButton small` and `NeutralButton small danger` (40, the 12
+    corner, 14/700); DESIGN.md to record them with R10's.
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).

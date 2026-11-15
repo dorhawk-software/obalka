@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Debug mode is tidier.** A running recording has a card of its own with the count and both
+  buttons, a blue strip confirms the save, and each saved file offers Share and Delete side by side.
 - **Moving to another phone is clearer.** The backups to send sit on one sheet with their size and
   what they hold, and sending is one large button. Receiving has a screen of its own: scan the code,
   the password field, and a Receive button that waits until the password is typed.

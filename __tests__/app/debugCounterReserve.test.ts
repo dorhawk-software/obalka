@@ -1,6 +1,6 @@
 // The room the Debug screen's recording counter reserves (023, constitution V).
 //
-// "Zaznamenává se · 2 záznamy · 1 kB" is one caption line whose words grow while a recording runs. At a
+// "Zaznamenává se · 2 záznamy · 1 kB" is one line of strong small text whose words grow while a recording runs. At a
 // larger text size the longer counters take a second line part-way through, and until 2026-09-15 that
 // pushed the hint, the discard button and everything under them down. The screen now lays the live
 // counter over an invisible reserve - the text `recordingCounterReserve()` returns - so the room is
@@ -22,14 +22,15 @@ import {
 import { MAX_BYTES, MAX_ENTRIES } from '../../src/services/debug/debugLog';
 import { fontMeasure, greedyLines } from '../helpers/fontMetrics';
 
-const CAPTION = typeScale.caption;
-const measure = fontMeasure(`${CAPTION.fontFamily}.ttf`);
+/** The counter's role since R13 (031 I47): 14/20 bold. */
+const COUNTER = typeScale.smallStrong;
+const measure = fontMeasure(`${COUNTER.fontFamily}.ttf`);
 
 /**
  * The width a 360dp phone leaves the counter's words: the settings gutter of 16 on each side, the
- * row's 4 inset, the 8dp dot and the 8 gap beside it.
+ * recording card's 14 on each side, the 8dp dot and the 8 gap beside it.
  */
-const PHONE_360 = 360 - 2 * 16 - 4 - 8 - 8;
+const PHONE_360 = 360 - 2 * 16 - 2 * 14 - 8 - 8;
 
 /** Every entry count the recorder can report. */
 const COUNTS = Array.from({ length: MAX_ENTRIES + 1 }, (_, n) => n);
@@ -52,7 +53,7 @@ function byteCounts(): number[] {
 }
 
 const words = (text: string) => text.split(' ');
-const widths = (text: string) => words(text).map(w => measure(w, CAPTION.fontSize));
+const widths = (text: string) => words(text).map(w => measure(w, COUNTER.fontSize));
 
 /** Word by word, the widest of `counters`. */
 function widestWords(counters: string[]): number[] {
@@ -101,14 +102,16 @@ describe('the recording counter s reserve', () => {
   });
 
   it('takes as many lines as the longest counter at every text size, on a 360dp phone', () => {
-    // The jump this closes, measured: at 130 % text the counter a recording starts with fits one line
-    // and a longer one it reaches later needs two. The reserve needs those two from the start.
+    // The jump this closes, measured: in R13's bold 14 (031 I47) the counter a recording starts with
+    // fits one line at the default text size and a longer one it reaches later needs two. The reserve
+    // needs those two from the start. (In the 13pt caption it was drawn in before, the jump came at
+    // 130 % text.)
     const start = recordingCounter(2, 1024);
     const longer = recordingCounter(3888, 1024 * 1024 - 1);
     const at = (text: string, scale: number) =>
-      greedyLines(text, PHONE_360, CAPTION.fontSize * scale, measure);
-    expect(at(start, 1.3)).toBe(1);
-    expect(at(longer, 1.3)).toBe(2);
+      greedyLines(text, PHONE_360, COUNTER.fontSize * scale, measure);
+    expect(at(start, 1)).toBe(1);
+    expect(at(longer, 1)).toBe(2);
 
     // Every system text size, up to the largest iOS accessibility size (about 3.6x).
     const short: number[] = [];
@@ -120,6 +123,6 @@ describe('the recording counter s reserve', () => {
       }
     }
     expect(short).toEqual([]);
-    expect(at(recordingCounterReserve(), 1.3)).toBe(2);
+    expect(at(recordingCounterReserve(), 1)).toBe(2);
   });
 });

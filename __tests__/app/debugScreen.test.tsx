@@ -104,7 +104,8 @@ const styleOf = (element: { props: Record<string, unknown> }) =>
 /**
  * Everything in the controls above the saved files that decides where those files sit: each element,
  * the style it is laid out with and how many lines it may take. Not the words, which are meant to
- * change, and not `transform`, where the press dip animates without taking any space.
+ * change; not `transform`, where the press dip animates without taking any space; and not the paint -
+ * the notice strip held empty while a save runs takes its tint and its glyph when the save ends.
  */
 function controlsLayout(view: View): unknown {
   const json = view.toJSON() as JsonNode | JsonNode[] | null;
@@ -113,7 +114,7 @@ function controlsLayout(view: View): unknown {
     type: node.type,
     style: Object.fromEntries(
       Object.entries(StyleSheet.flatten(node.props.style as StyleProp<ViewStyle>) ?? {}).filter(
-        ([key]) => key !== 'transform',
+        ([key]) => !['transform', 'opacity', 'backgroundColor', 'color'].includes(key),
       ),
     ),
     numberOfLines: node.props.numberOfLines,
@@ -327,7 +328,7 @@ describe('the recording counter', () => {
 
     expect(styleOf(view.getByTestId('debug-status-row')).alignItems).toBe('flex-start');
     expect(styleOf(view.getByTestId('debug-status-dot')).minHeight).toBe(
-      typeScale.caption.lineHeight * fontScale,
+      typeScale.smallStrong.lineHeight * fontScale,
     );
   });
 });
@@ -388,17 +389,30 @@ describe('when a save ends', () => {
     }
   });
 
-  it('holds the notice s two lines at the reader s text size before there is anything to say', async () => {
-    // RN scales a caption's line height with the system text size and a minHeight in dp does not
-    // scale, so the reserve follows the font scale - which Jest's window reports as 2.
+  it('holds the notice s room from the stop press, at two lines of the reader s text size', async () => {
+    // RN scales a line height with the system text size and a minHeight in dp does not scale, so the
+    // room follows the font scale - which Jest's window reports as 2. R13's strip is 44 at the least.
     const { fontScale } = Dimensions.get('window');
     expect(fontScale).not.toBe(1);
+    const hold = holdNextWrite();
     const view = await mount();
-    const notice = view.getByTestId('debug-notice', { includeHiddenElements: true });
-    expect(styleOf(notice).minHeight).toBe(2 * typeScale.caption.lineHeight * fontScale);
-    expect(notice.props.numberOfLines).toBe(2);
-    // Held, but with nothing to read, so nothing for a screen reader to land on.
-    expect(view.queryByTestId('debug-notice')).toBeNull();
+    await fireEvent.press(view.getByTestId('debug-toggle'));
+    const stopPress = fireEvent.press(view.getByTestId('debug-toggle'));
+    try {
+      await waitFor(() => expect(hold.writeFile).toHaveBeenCalledTimes(1));
+      const strip = view.getByTestId('debug-notice-strip', { includeHiddenElements: true });
+      expect(styleOf(strip).minHeight).toBe(Math.max(44, 2 * typeScale.label.lineHeight * fontScale));
+      const notice = view.getByTestId('debug-notice', { includeHiddenElements: true });
+      expect(notice.props.numberOfLines).toBe(2);
+      // Held, but with nothing to read, so nothing for VoiceOver to land on; kept in Android's tree, so
+      // TalkBack has a node to read when the words arrive.
+      expect(view.queryByTestId('debug-notice')).toBeNull();
+      expect(notice).toHaveProp('accessibilityLiveRegion', 'polite');
+      expect(notice.props.importantForAccessibility).toBeUndefined();
+    } finally {
+      await hold.release();
+      await stopPress;
+    }
   });
 
   it('adds the new file after the saved files, so none of them moves', async () => {
@@ -807,11 +821,6 @@ describe('a screen reader', () => {
     const spoken = announce();
     try {
       const view = await mount();
-      const empty = view.getByTestId('debug-notice', { includeHiddenElements: true });
-      expect(empty).toHaveProp('accessibilityLiveRegion', 'polite');
-      // Kept in Android's accessibility tree while empty, so there is a node to read when words arrive.
-      expect(empty.props.importantForAccessibility).toBeUndefined();
-
       await fireEvent.press(view.getByTestId('debug-toggle'));
       await fireEvent.press(view.getByTestId('debug-toggle'));
       await waitFor(() =>
@@ -828,7 +837,10 @@ describe('a screen reader', () => {
 
 describe('on DESIGN.md s scales', () => {
   const DESIGN = readFileSync(join(__dirname, '../../DESIGN.md'), 'utf8');
-  const SOURCE = readFileSync(join(__dirname, '../../src/app/settings/DebugScreen.tsx'), 'utf8');
+  // The screen and its lower half, out of it since R13 (031 I47).
+  const SOURCE = ['DebugScreen.tsx', 'DebugFiles.tsx']
+    .map(file => readFileSync(join(__dirname, '../../src/app/settings', file), 'utf8'))
+    .join('\n');
 
   it('names every spacing on the Debug screen from the scale and draws every note at the Caption step', () => {
     // Typed numbers are how a 9 gap, 20 and 22 margins and 12pt captions got onto this screen beside
