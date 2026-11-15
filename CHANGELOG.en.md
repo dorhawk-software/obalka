@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Waiting looks the same everywhere.** Wherever the app waits, its own small ring turns in place
+  of the system's spinner, the same on Android and iPhone.
 - **Search results look like the message list.** They carry the day and month, the sender, the
   clip, your reminder and the label of the box the message is in, and a sent message shows its
   delivery state.

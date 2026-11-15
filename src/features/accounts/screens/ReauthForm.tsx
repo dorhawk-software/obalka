@@ -6,7 +6,8 @@ import {
   type TextInput,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Input, Spinner, XStack, YStack } from '../../../theme/ui';
+import { Input, XStack, YStack } from '../../../theme/ui';
+import { ArcSpinner } from '../../../theme/ArcSpinner';
 import { PressScale } from '../../../theme/PressScale';
 import { OptionGroup } from '../../../theme/OptionGroup';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
@@ -270,7 +271,7 @@ export function ReauthForm({
             justifyContent="center"
             gap={10}
           >
-            {loading ? <Spinner size="small" color={theme.surfaceAlt} /> : null}
+            {loading ? <ArcSpinner track={theme.surfaceSunken} ink={theme.surfaceAlt} /> : null}
             <BodyStrong color={theme.surfaceAlt}>
               {loading ? t('login.authenticating') : t('reauth.submit')}
             </BodyStrong>

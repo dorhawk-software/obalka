@@ -18,7 +18,6 @@ import {
   Input as TInput,
   Paragraph as TParagraph,
   ScrollView as TScrollView,
-  Spinner as TSpinner,
   Text as TText,
   XStack as TXStack,
   YStack as TYStack,
@@ -133,4 +132,3 @@ export const H2 = TH2 as unknown as ComponentType<any>;
 export const H3 = TH3 as unknown as ComponentType<any>;
 export const Button = ThemedButton as unknown as ComponentType<any>;
 export const Input = ThemedInput as unknown as ComponentType<any>;
-export const Spinner = TSpinner as unknown as ComponentType<any>;

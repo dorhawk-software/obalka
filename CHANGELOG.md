@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Čekání vypadá všude stejně.** Kde aplikace na něco čeká, točí se její vlastní kroužek místo
+  systémového, na Androidu i na iPhonu stejně.
 - **Výsledky hledání vypadají jako seznam zpráv.** Mají den a měsíc, odesílatele, sponku, vlastní
   připomínku i štítek schránky, ve které zpráva je, a odeslanou zprávu poznáte podle stavu doručení.
 - **Z textu zprávy je dopis na A4.** Příloha „Textová zpráva.pdf" má odesílatele, příjemce s adresou,

@@ -15,7 +15,8 @@ import { useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, type TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
-import { Input, Spinner, XStack, YStack } from '../../../theme/ui';
+import { Input, XStack, YStack } from '../../../theme/ui';
+import { ArcSpinner } from '../../../theme/ArcSpinner';
 import { PressScale } from '../../../theme/PressScale';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
 import { Body, BodyStrong, Caption, Label, Meta, Small, SmallStrong, Title } from '../../../theme/Typography';
@@ -188,7 +189,7 @@ export function ChangePasswordForm({
           justifyContent="center"
           gap={space.md}
         >
-          {busy ? <Spinner size="small" color={theme.surfaceAlt} /> : null}
+          {busy ? <ArcSpinner track={theme.surfaceSunken} ink={theme.surfaceAlt} /> : null}
           <BodyStrong color={theme.surfaceAlt}>{busy ? t('pwdChange.busy') : label}</BodyStrong>
         </XStack>
       </PressScale>

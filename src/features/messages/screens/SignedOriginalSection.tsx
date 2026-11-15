@@ -19,7 +19,8 @@ import { AppState, useWindowDimensions } from 'react-native';
 // gesture-handler's Pressable, as the attachment rows use: a plain onPress can keep the JS touch
 // responder across the hop to an external viewer and freeze the whole screen on return.
 import { Pressable as GHPressable } from 'react-native-gesture-handler';
-import { Spinner, XStack, YStack } from '../../../theme/ui';
+import { XStack, YStack } from '../../../theme/ui';
+import { ArcSpinner } from '../../../theme/ArcSpinner';
 import { Caption, SmallStrong } from '../../../theme/Typography';
 import { Dialog } from '../../../theme/Dialog';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -294,7 +295,7 @@ export function SignedOriginalSection({
   // The trailing slot, 44 wide whatever it holds, so nothing moves when a spinner takes its place.
   const trailing = busy ? (
     <XStack width={44} height={44} marginRight={-10} alignItems="center" justifyContent="center">
-      <Spinner size="small" color={theme.blue} />
+      <ArcSpinner track={theme.surfaceSunken} ink={theme.blue} />
     </XStack>
   ) : row.kind === 'unavailable' ? null : (
     <XStack

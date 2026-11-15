@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useAutoFocus } from '../../../theme/useAutoFocus';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
-import { Button, Spinner, XStack, YStack } from '../../../theme/ui';
+import { Button, XStack, YStack } from '../../../theme/ui';
+import { ArcSpinner } from '../../../theme/ArcSpinner';
 import { PressScale } from '../../../theme/PressScale';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
 import { BodyStrong, Code, Display, Label, Value } from '../../../theme/Typography';
@@ -239,7 +240,7 @@ export function OtpForm({
               gap={10}
             >
               {loading ? (
-                <Spinner size="small" color={theme.surfaceAlt} />
+                <ArcSpinner track={theme.surfaceSunken} ink={theme.surfaceAlt} />
               ) : null}
               <BodyStrong color={theme.surfaceAlt}>
                 {t('login.otp.submit')}

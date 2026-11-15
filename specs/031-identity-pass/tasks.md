@@ -537,11 +537,15 @@ surface below changes too, and the owner has seen none of them in the identity. 
   Gone 2026-11-15 with I40: it rises as every sheet does (`BottomSheet`); the app has three Modals.
 - [ ] I75 Skeleton pulse, waiting bar, sync bar - **N**: loop only while work runs. Under Reduce Motion
   the waiting bar is an empty track and the stage line beside it carries the meaning: shown on R8.
-- [ ] I76 Platform spinners in 11 places - **X**: R8 decides where an object waits instead. The Mobile Key wait's
+- [x] I76 Platform spinners in 11 places - **X**: R8 decides where an object waits instead. The Mobile Key wait's
   spinner is gone (I10, 2026-11-13), and the launch's (I03); the deadline scan's (I34, 2026-11-15)
   takes the waiting bar. Counted in the code that day, nine left: debug files, attachment opening,
   the signed original, compose (2), re-auth, password change, add box, the SMS code. Compose's two
-  are R12's ring spinner (`ArcSpinner`, 2026-11-15); seven left.
+  are R12's ring spinner (`ArcSpinner`, 2026-11-15), and so are the other seven the same day: on the
+  paper in blue (debug files' retry, an attachment opening, the signed original), in an ink button in
+  its words (re-auth, password change, add box, the SMS code). Tamagui's `Spinner` is no longer
+  exported and `noPlatformSpinner.test` fails on any platform spinner in src. Walked on Obalka_Demo:
+  an attachment opening, and add box's busy button light and dark.
 - [ ] I77 Press dip, refusal shake, FAB press, segmented slide, radio fill - **N**.
 - [ ] I77.1 Haptics: 31 call sites (selection, light, medium, success, warning, error) - **N**: listed
   against the motion rule (a thump where paper lands).
@@ -981,6 +985,8 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   Raised in I38: Android fades a dimmed button's words apart from its ink (they sank to nothing on
   Odeslat until its layer was composited); check the other dimmed buttons (InkButton, the busy
   download). The English credit reads "Kč" (formatCzk is Czech-only).
+  Raised in I76: on an ink button R12's busy ring is the sunken paper (#F2EADB) with the quarter in
+  the button's words (#FBF6EA), 3 % apart, so the turn barely shows; built as drawn.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the

@@ -4,7 +4,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 import { Pressable as GHPressable } from 'react-native-gesture-handler';
-import { Spinner, XStack, YStack } from '../../../theme/ui';
+import { XStack, YStack } from '../../../theme/ui';
+import { ArcSpinner } from '../../../theme/ArcSpinner';
 import { Dialog } from '../../../theme/Dialog';
 import { Caption, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -163,7 +164,7 @@ export function AttachmentRow({
       </GHPressable>
       {blocked ? null : opening ? (
         <XStack width={44} height={44} marginRight={-10} alignItems="center" justifyContent="center">
-          <Spinner size="small" color={theme.blue} />
+          <ArcSpinner track={theme.surfaceSunken} ink={theme.blue} />
         </XStack>
       ) : (
         <XStack

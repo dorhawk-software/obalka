@@ -11,7 +11,8 @@
 // Roundings from the board: the strip's 13/19 600 is the Label role, 13/17; its check's 2.4 stroke is
 // the icon family's 2.
 
-import { Spinner, XStack, YStack } from '../../theme/ui';
+import { XStack, YStack } from '../../theme/ui';
+import { ArcSpinner } from '../../theme/ArcSpinner';
 import { Label, Meta, Small, SmallStrong } from '../../theme/Typography';
 import { PressScale } from '../../theme/PressScale';
 import { InkButton } from '../../theme/InkButton';
@@ -129,7 +130,7 @@ function RetryLink({ busy, onPress }: { readonly busy: boolean; readonly onPress
             justifyContent="center"
             testID="debug-saved-retry-busy"
           >
-            <Spinner size="small" color={theme.blue} />
+            <ArcSpinner track={theme.surfaceSunken} ink={theme.blue} />
           </YStack>
         ) : null}
       </XStack>

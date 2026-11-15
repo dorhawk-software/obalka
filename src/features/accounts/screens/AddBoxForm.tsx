@@ -3,7 +3,8 @@ import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { textSlop, touchSlop } from '../../../theme/touchTarget';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Input, Spinner, XStack, YStack } from '../../../theme/ui';
+import { Input, XStack, YStack } from '../../../theme/ui';
+import { ArcSpinner } from '../../../theme/ArcSpinner';
 import type { TextInput } from 'react-native';
 import { PressScale } from '../../../theme/PressScale';
 import { SegmentedControl } from '../../../theme/SegmentedControl';
@@ -449,7 +450,7 @@ export function AddBoxForm({
                 gap={10}
               >
                 {loading ? (
-                  <Spinner size="small" color={theme.surfaceAlt} />
+                  <ArcSpinner track={theme.surfaceSunken} ink={theme.surfaceAlt} />
                 ) : null}
                 <BodyStrong color={theme.surfaceAlt}>
                   {loading ? t('login.authenticating') : t('login.submit')}
