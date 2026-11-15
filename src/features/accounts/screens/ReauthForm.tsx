@@ -196,11 +196,8 @@ export function ReauthForm({
                 autoComplete={isMobileKey ? 'off' : 'current-password'}
                 value={password}
                 onChangeText={setPassword}
-                placeholder={
-                  isMobileKey
-                    ? t('login.commCode.placeholder')
-                    : t('login.password')
-                }
+                // The communication code's example; a password field takes its label alone (the owner, 2026-11-16).
+                placeholder={isMobileKey ? t('login.commCode.placeholder') : undefined}
                 accessibilityLabel={
                   isMobileKey ? t('login.commCode') : t('login.password')
                 }

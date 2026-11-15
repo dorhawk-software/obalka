@@ -20,6 +20,7 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The password field says its name once.** "Password" stands above the field and no longer inside it, as with the username.
 - **Error reports have their own glyph.** In Settings › Diagnostics the error-report row leads with a bug instead of the bell; the bell stays with notifications.
 - **The message detail has the same header as every other screen.** Going from the list to a message and on to Settings, the header no longer jumps.
 - **A clean envelope window in dark.** The grey band and smudge that lay over the address window at night are gone.

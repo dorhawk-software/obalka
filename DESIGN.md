@@ -803,6 +803,8 @@ After the critique (2026-11-15), the owner's answers, one by one:
   two feelers, the wing seam and three legs a side. The bell keeps one meaning.
 - **The way to Settings:** a gear in the header and a louder switcher row lost to the route as it is,
   the box pill then "Nastavení" at the switcher's foot (docs/engineering/not-now.md).
+- **The password field (2026-11-16):** a "Heslo" placeholder under its "Heslo" label lost to the label
+  alone, as the name field; the Mobile Key's communication code keeps its example.
 
 ## Do's and Don'ts
 

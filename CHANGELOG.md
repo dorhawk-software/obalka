@@ -20,6 +20,7 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Pole pro heslo bez opakovaného slova.** Nad polem stojí „Heslo“ a uvnitř už ne, stejně jako u uživatelského jména.
 - **Hlášení chyb má vlastní ikonu.** V Nastavení › Diagnostika vede řádek s hlášením chyb brouk místo zvonku; zvonek zůstává jen u upozornění.
 - **Detail zprávy má stejnou hlavičku jako ostatní obrazovky.** Při přechodu ze seznamu do zprávy a do Nastavení už hlavička neposkočí.
 - **Čisté okénko obálky v tmavém vzhledu.** Šedý pruh a šmouha, které v noci ležely na okénku s adresou, jsou pryč.

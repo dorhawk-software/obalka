@@ -82,6 +82,18 @@ describe.each(screens)('%s', (_name, build) => {
 
 });
 
+describe('a password field', () => {
+  // The label above names it; a placeholder saying "Heslo" again inside said it twice, and the name
+  // field above it has none since the owner's answer 16 (2026-11-15). The owner's answer to the
+  // follow-up (2026-11-16): no placeholder on any password field. The communication code keeps its
+  // example, which says what the code looks like.
+  it.each(['AddBoxForm', 'ReauthForm', 'ChangePasswordForm'])('carries none in %s', file => {
+    const src = readFileSync(`src/features/accounts/screens/${file}.tsx`, 'utf8');
+    expect(src).not.toMatch(/placeholder=\{[^}]*t\('login\.password'\)/);
+    expect(src).not.toMatch(/placeholder=\{label\}/);
+  });
+});
+
 describe('screen titles', () => {
   it('are announced as headings, so they can be jumped to', async () => {
     const view = await wrap(

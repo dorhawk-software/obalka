@@ -406,7 +406,6 @@ function PasswordField({
           autoCorrect={false}
           value={value}
           onChangeText={onChange}
-          placeholder={label}
           accessibilityLabel={label}
           testID={testID}
         />
