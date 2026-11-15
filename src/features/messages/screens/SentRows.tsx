@@ -13,7 +13,7 @@ import { memo, useCallback } from 'react';
 import { XStack, YStack } from '../../../theme/ui';
 import { Body, Day, Meta, Small, Tag } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { ChevronRightIcon, ContentErasedIcon, TimerIcon, VaultIcon } from '../../../theme/icons';
+import { ChevronRightIcon, ContentErasedIcon, VaultIcon } from '../../../theme/icons';
 import { OffsetIcon } from '../../../theme/offsetIcons';
 import { EnvelopeTile } from '../../../theme/objects/Envelope';
 import { avatarColor } from '../../../theme/avatarPalette';
@@ -154,8 +154,10 @@ export const SentRegisterRow = memo(function SentRegisterRowView({
           ) : null}
         </XStack>
         {countdown ? (
-          <XStack alignItems="center" gap={6} marginTop={4}>
-            <TimerIcon size={13} color={countdownInk} />
+          <XStack alignItems="center" gap={4} marginTop={4}>
+            {/* The fiction's own glyph, the envelope with its clock, as the inbox prints it (031 I78);
+                15 and 4 to the words, as the postmark on the line above. */}
+            <OffsetIcon name="fiction" size={15} color={countdownInk} />
             <Meta fontWeight="700" color={countdownInk} numberOfLines={1}>
               {sentCountdownLabel(countdown.daysRemaining)}
             </Meta>

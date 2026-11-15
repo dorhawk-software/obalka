@@ -659,9 +659,19 @@ surface below changes too, and the owner has seen none of them in the identity. 
 
 ### Icons and leftovers
 
-- [ ] I78 The offset icon family in `src/theme/` and the map from today's Lucide wrappers (Mail, Send,
+- [x] I78 The offset icon family in `src/theme/` and the map from today's Lucide wrappers (Mail, Send,
   Pencil, Search, Paperclip, ShieldCheck, Timer, Layers, Archive, Download, File and the custom
-  settings glyph) - **D** build.
+  settings glyph) - **D** build. **Fixed** 2026-11-15. The family is `offsetIcons.tsx` (21 glyphs);
+  the map, by what each Lucide glyph said: Mail → `inbox`, Send → `sent`, Pencil → `compose`, Search
+  → `search`, Paperclip → `attach`, ShieldCheck → `lock`, Layers → `boxes`, Archive → `archive`,
+  Download → `download`, File → `attach`, settings → `settings`, all moved over in the screens'
+  rounds. The last, Timer on a sent message's fiction countdown, takes `fiction`, the envelope with
+  its clock the inbox prints (15, 4 to the words, as the postmark above it; it was 13 and 6). Walked
+  on Obalka_Demo with the clock set to 12 Sep, light and dark. Deleted: 15 wrappers nothing imported
+  any more, the four raw glyphs and `iconTiers.tsx` (the emblem tier, unused since the postmark took
+  the sent result). Lucide stays for what the boards draw as plain lines: chevrons, close, check,
+  plus, the eye, ⋯, the ⋯ menu's pencil, lock and bin (R9), alert, info, help, the external link,
+  scan, the camera, the backup's file arrows (R10) and the delivery states.
 - [x] I79 Hero glyphs at 132 (Mail, Send, Search, CloudOff, stroke 1.25) - **X**: R4. Fixed 2026-11-13:
   every one is a pose; `HeroIcon`, the hero tier, `heroInk` and the unused `EmptyState` are deleted.
 - [x] I80 `BrandHeader.tsx`, imported nowhere, with a stale TODO - **D**: delete. Deleted 2026-11-15.

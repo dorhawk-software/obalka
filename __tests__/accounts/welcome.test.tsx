@@ -22,12 +22,6 @@ import { settingsStore } from '../../src/features/accounts/deps';
 import { STRINGS_FOR_TEST, setActiveLocale } from '../../src/i18n/strings';
 import { typesetCs } from '../../src/i18n/typeset';
 
-jest.mock('../../src/theme/icons', () => {
-  const actual = jest.requireActual('../../src/theme/icons');
-  const { View: MockView } = jest.requireActual('react-native');
-  return { ...actual, BackupIcon: () => <MockView testID="icon-backup" /> };
-});
-
 const { cs, en } = STRINGS_FOR_TEST;
 
 const wrap = (ui: React.ReactElement) =>

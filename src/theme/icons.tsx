@@ -11,9 +11,7 @@ import { Platform } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 import {
   Archive,
-  ArrowRight,
   Bell,
-  ScanQrCode,
   Camera,
   ScanLine,
   Check,
@@ -21,31 +19,19 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleQuestionMark,
-  Clock,
   CloudOff,
-  DatabaseBackup,
-  CreditCard,
-  Download,
   EllipsisVertical,
   ExternalLink,
   Eye,
   EyeOff,
-  File,
   FileDown,
   FileUp,
-  FlaskConical,
   Info,
-  Layers,
   Lock,
-  Mail,
   Navigation,
   Pencil,
   Plus,
-  Search,
-  ShieldCheck,
   Smartphone,
-  SlidersHorizontal,
-  Timer,
   Trash,
   TriangleAlert,
   X,
@@ -68,28 +54,6 @@ export function EyeIcon({
 
 export function BellIcon({ size = 22, color = '#000' }: IconProps) {
   return <Bell size={size} color={color} strokeWidth={2} />;
-}
-
-/** Test-environment (czebox) flask - the "Testovací" banner/tag mark. */
-export function FlaskIcon({ size = 18, color = '#000' }: IconProps) {
-  return <FlaskConical size={size} color={color} strokeWidth={2} />;
-}
-
-/**
- * Stacked layers - the merged inbox (024). Chosen because it says "several things shown as one",
- * which is exactly what the view is, and because it is nothing like an avatar: the box switcher's
- * whole risk is that a user who names a box "Vše" ends up with two rows that look alike.
- */
-export function LayersIcon({ size = 22, color = '#000' }: IconProps) {
-  return <Layers size={size} color={color} strokeWidth={1.8} />;
-}
-
-export function MailIcon({ size = 22, color = '#000' }: IconProps) {
-  return <Mail size={size} color={color} strokeWidth={2} />;
-}
-
-export function SearchIcon({ size = 22, color = '#000' }: IconProps) {
-  return <Search size={size} color={color} strokeWidth={2} />;
 }
 
 export function LockIcon({ size = 22, color = '#000' }: IconProps) {
@@ -183,25 +147,6 @@ export function ChevronDownIcon({ size = 20, color = '#000' }: IconProps) {
 
 export function SmartphoneIcon({ size = 22, color = '#000' }: IconProps) {
   return <Smartphone size={size} color={color} strokeWidth={2} />;
-}
-
-/**
- * Settings - the ONE lucide exception. The design does NOT draw lucide's cog; it draws a simplified
- * gear (a circle + eight straight spokes). Path copied verbatim from the design source so the glyph
- * matches pixel-for-pixel.
- */
-export function SettingsIcon({ size = 22, color = '#000' }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="3.2" stroke={color} strokeWidth={2} />
-      <Path
-        d="M12 3v2.5M12 18.5V21M21 12h-2.5M5.5 12H3M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8M18.4 18.4l-1.8-1.8M7.4 7.4 5.6 5.6"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
 }
 
 /** Opens something outside the app - the source-code row. The design draws it at stroke-width 1.8. */
@@ -304,36 +249,9 @@ export function VaultIcon({ size = 13, color = '#000' }: IconProps) {
   return <Archive size={size} color={color} strokeWidth={2} />;
 }
 
-export function ClockIcon({ size = 18, color = '#000' }: IconProps) {
-  return <Clock size={size} color={color} strokeWidth={2} />;
-}
-
-export function ArrowRightIcon({ size = 20, color = '#000' }: IconProps) {
-  return <ArrowRight size={size} color={color} strokeWidth={2} />;
-}
-
-export function DownloadIcon({ size = 18, color = '#000' }: IconProps) {
-  return <Download size={size} color={color} strokeWidth={2} />;
-}
-
 /** Offline strip - the design draws a slashed CLOUD (no sync), not a wifi mark. */
 export function WifiOffIcon({ size = 18, color = '#000' }: IconProps) {
   return <CloudOff size={size} color={color} strokeWidth={2} />;
-}
-
-/** A deadline / delivery-fiction countdown. The design draws a TIMER (stopwatch), not a wall clock. */
-/** The backup section's own three (006): the archive being copied, the key that locks it, the knobs. */
-export function BackupIcon({ size = 18, color = '#000' }: IconProps) {
-  return <DatabaseBackup size={size} color={color} strokeWidth={1.9} />;
-}
-
-export function ShieldKeyIcon({ size = 18, color = '#000' }: IconProps) {
-  return <ShieldCheck size={size} color={color} strokeWidth={1.9} />;
-}
-
-/** Reading a code off another phone's screen (025). Not a camera: this app never takes a photo. */
-export function CameraIcon({ size = 18, color = '#000' }: IconProps) {
-  return <ScanQrCode size={size} color={color} strokeWidth={1.9} />;
 }
 
 /**
@@ -349,24 +267,6 @@ export function ScanIcon({ size = 20, color = '#000' }: IconProps) {
   return <ScanLine size={size} color={color} strokeWidth={2} />;
 }
 
-export function TuneIcon({ size = 18, color = '#000' }: IconProps) {
-  return <SlidersHorizontal size={size} color={color} strokeWidth={1.9} />;
-}
-
-export function TimerIcon({ size = 18, color = '#000' }: IconProps) {
-  return <Timer size={size} color={color} strokeWidth={2} />;
-}
-
-/** Paid message (PDZ) - the design's cost card/sheet mark is a credit card, not a 🪙 emoji. */
-export function CreditCardIcon({ size = 20, color = '#000' }: IconProps) {
-  return <CreditCard size={size} color={color} strokeWidth={2} />;
-}
-
-/** A generic attachment file. The design's attachment tile is a neutral sunken square + this glyph. */
-export function FileIcon({ size = 18, color = '#000' }: IconProps) {
-  return <File size={size} color={color} strokeWidth={2} />;
-}
-
 /** Saving a backup out to a file (R10): the page with the arrow going down into it. */
 export function FileDownIcon({ size = 20, color = '#000' }: IconProps) {
   return <FileDown size={size} color={color} strokeWidth={2} />;
@@ -376,13 +276,3 @@ export function FileDownIcon({ size = 20, color = '#000' }: IconProps) {
 export function FileUpIcon({ size = 20, color = '#000' }: IconProps) {
   return <FileUp size={size} color={color} strokeWidth={2} />;
 }
-
-// Raw Lucide glyphs for the SCALE tiers (016). `iconTiers.tsx` applies the tier's size, stroke and
-// treatment, so those uses need the glyph itself rather than one of the wrappers above - every
-// wrapper hardcodes the inline stroke width the design gave it.
-export {
-  Mail as MailGlyph,
-  Send as SendGlyph,
-  Search as SearchGlyph,
-  CloudOff as CloudOffGlyph,
-} from 'lucide-react-native';

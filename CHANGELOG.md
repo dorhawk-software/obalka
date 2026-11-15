@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Odpočet fikce u odeslané zprávy má obálku s hodinami.** Stejnou značku, jakou fikci ukazují
+  přijaté zprávy, místo stopek.
 - **Ikona aplikace má tmavou a tónovanou podobu.** Na iPhonu se v tmavém režimu ukáže modrá obálka se
   zlatou chlopní na tmavém podkladu, v tónovaném režimu šedá; Android 13 a novější ji s tematickými
   ikonami přebarví podle tapety.

@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A sent message's fiction countdown carries the envelope with a clock.** The same mark received
+  messages show for fiction, in place of a stopwatch.
 - **The app icon has a dark and a tinted look.** On iPhone dark mode shows the blue envelope with its
   gold flap on a dark ground, and tinted mode a grey one; Android 13 and later recolour it from the
   wallpaper when themed icons are on.
