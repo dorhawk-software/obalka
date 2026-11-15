@@ -52,7 +52,7 @@ describe('the backup card (R10)', () => {
     const view = await mount(withBackups(row(manifest(1_000))));
     for (const id of ['backup-now', 'backup-verify']) {
       expect(face(view.getByTestId(id) as unknown as Host)).toMatchObject({
-        backgroundColor: lightTheme.surfaceSunken,
+        backgroundColor: lightTheme.neutralFill,
         minHeight: 48,
       });
     }
@@ -107,7 +107,7 @@ describe('the restore list (R10)', () => {
     });
     const remove = face(view.getByTestId('backup-delete-open') as unknown as Host);
     const restore = face(view.getByTestId('backup-restore-start') as unknown as Host);
-    expect(remove).toMatchObject({ backgroundColor: lightTheme.surfaceSunken, minHeight: 48 });
+    expect(remove).toMatchObject({ backgroundColor: lightTheme.neutralFill, minHeight: 48 });
     expect(restore).toMatchObject({ backgroundColor: lightTheme.text, minHeight: 48 });
     // The swipe behind the row says Smazat too, in white on red: this is the button's.
     expect(within(view.getByTestId('backup-delete-open')).getByText(t('backup.delete'), hidden)).toHaveStyle({

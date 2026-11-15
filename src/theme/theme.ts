@@ -14,6 +14,11 @@ export interface Theme {
   surfaceAlt: string;
   /** A recessed tonal panel - clearly distinct from bg, no border (segmented track, icon-button bg). */
   surfaceSunken: string;
+  /**
+   * The neutral button's fill: a step deeper than `surfaceSunken`, so a button reads as one on the paper
+   * as well as on a card (the owner, 2026-11-15; the sunken fill was 1.03:1 on the paper).
+   */
+  neutralFill: string;
   border: string;
   borderStrong: string;
 
@@ -217,6 +222,7 @@ export const lightTheme: Theme = {
   surface: '#FFFDF8',
   surfaceAlt: '#FBF6EA',
   surfaceSunken: '#F2EADB',
+  neutralFill: '#E9DFCD', // 1.14:1 on the paper, 1.30 on a card; ink 12.9:1, danger 4.5:1
   border: '#ECE3D2',
   borderStrong: '#DCD2BF',
   text: '#211B12',
@@ -294,6 +300,7 @@ export const darkTheme: Theme = {
   surface: '#2A251E',
   surfaceAlt: '#221E18',
   surfaceSunken: '#322C24',
+  neutralFill: '#373026', // 1.37:1 on the paper, 1.17 on a card; ink 11.1:1, danger 4.5:1
   border: '#3A332A',
   borderStrong: '#4A4236',
   text: '#F2ECE0',

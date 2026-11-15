@@ -132,7 +132,7 @@ describe('the QR plate', () => {
 });
 
 describe('the neutral button', () => {
-  it('is sunken tone with the 14 corner and an ink label, 48 in a pair and 52 alone', async () => {
+  it('is the neutral tone with the 14 corner and an ink label, 48 in a pair and 52 alone', async () => {
     const view = await themed(
       <>
         <NeutralButton compact label="Skrýt heslo" onPress={() => {}} testID="pair" />
@@ -142,7 +142,7 @@ describe('the neutral button', () => {
     const root = view.toJSON() as unknown as Json[];
     const face = (id: string) => flat(nodes(byId(root as never, id), n => flat(n).minHeight !== undefined)[0]);
     expect(face('pair')).toEqual(
-      expect.objectContaining({ minHeight: 48, borderTopLeftRadius: 14, backgroundColor: lightTheme.surfaceSunken }),
+      expect.objectContaining({ minHeight: 48, borderTopLeftRadius: 14, backgroundColor: lightTheme.neutralFill }),
     );
     expect(face('pair').borderTopWidth ?? 0).toBe(0);
     expect(face('alone').minHeight).toBe(52);
@@ -152,14 +152,14 @@ describe('the neutral button', () => {
 });
 
 describe('the neutral button under a failed state (R4)', () => {
-  it('is as wide as its words with 24 at each side, the same 52 sunken face', async () => {
+  it('is as wide as its words with 24 at each side, the same 52 neutral face', async () => {
     // The column's width inside a centred state is no width at all: the label drew off-centre (the
     // detail's error on Obalka_Demo, 2026-11-13).
     const view = await themed(<NeutralButton inline label="Zkusit znovu" onPress={() => {}} testID="inline" />);
     const root = view.toJSON() as unknown as Json;
     const face = flat(nodes(byId(root, 'inline'), n => flat(n).minHeight !== undefined)[0]);
     expect(face).toEqual(
-      expect.objectContaining({ minHeight: 52, paddingLeft: 24, paddingRight: 24, backgroundColor: lightTheme.surfaceSunken }),
+      expect.objectContaining({ minHeight: 52, paddingLeft: 24, paddingRight: 24, backgroundColor: lightTheme.neutralFill }),
     );
     expect(face.width).toBeUndefined();
     expect(flat(view.getByTestId('inline')).width).toBeUndefined();

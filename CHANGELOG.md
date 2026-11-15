@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Šedá tlačítka jsou zřetelná i na papíře.** „Zálohovat nyní“, „Ověřit zálohu“ a „Zobrazit heslo“
+  mají o tón tmavší výplň, takže už nevypadají jako tučný text.
 - **Řádky s časem říkají, co se tehdy stalo.** „Aktualizováno před 5 minutami“ nad zprávami
   a „Zálohováno 15. 11. 2026 17:13“ u zálohy místo nejasného „Naposledy“.
 - **Data se píšou podle normy.** „12. 11. 2026 9:20“ a „29. 8.“ všude stejně, v obálce, na doručence,

@@ -94,11 +94,11 @@ function face(node: Host): Record<string, unknown> {
 describe('freely given, as R6 pairs two answers (031 I06)', () => {
   // Until 2026-11-15 yes was filled in ink and no outlined: the same size, but not the same weight
   // this screen's own header asks for, and an outline where the identity draws in tone.
-  it('draws yes and no alike: two sunken buttons, 48 tall, the 14 corner, no outline', async () => {
+  it('draws yes and no alike: two neutral buttons, 48 tall, the 14 corner, no outline', async () => {
     const { view } = await mount();
     const [yes, no] = ['consentYes', 'consentNo'].map(id => face(view.getByTestId(id) as unknown as Host));
     expect(yes).toEqual(no);
-    expect(yes).toMatchObject({ backgroundColor: lightTheme.surfaceSunken, minHeight: 48, borderTopLeftRadius: 14 });
+    expect(yes).toMatchObject({ backgroundColor: lightTheme.neutralFill, minHeight: 48, borderTopLeftRadius: 14 });
     expect(yes.borderTopWidth ?? 0).toBe(0);
   });
 });

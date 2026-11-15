@@ -6,6 +6,7 @@ colors:
   surface: "#FFFDF8"
   surface-alt: "#FBF6EA"
   surface-sunken: "#F2EADB"
+  neutral-fill: "#E9DFCD"
   hairline: "#ECE3D2"
   hairline-strong: "#DCD2BF"
   ink: "#211B12"
@@ -166,7 +167,7 @@ components:
     rounded: "{rounded.card}"
     height: "48px"
   button-neutral:
-    backgroundColor: "{colors.surface-sunken}"
+    backgroundColor: "{colors.neutral-fill}"
     textColor: "{colors.ink}"
     rounded: "{rounded.card}"
     height: "52px"
@@ -597,7 +598,7 @@ moves without being asked.
   accepting a scan suggestion.
 - **Danger:** `InkButton danger` (R9's `dbtn`): `danger` fill, the label in the paper colour, the bin 10
   before Smazat. Used only where something is destroyed.
-- **Neutral** (`NeutralButton`, R6/R14/R4): `surface-sunken` fill, no border - tone, not an outline -
+- **Neutral** (`NeutralButton`, R6/R14/R4): `neutral-fill`, a step deeper than `surface-sunken` (dark `#373026`; the owner, 2026-11-15; as deep as R13's danger Smazat keeps 4.5:1), no border - tone, not an outline -
   and an `ink` label in `bodyStrong`. 52 alone across its column; 48 for two side by side
   (`compact`); under a failed state's words it is as wide as its label with 24 at each side
   (`inline`), as the failed list and a message the archive does not hold both draw it. `small danger`
@@ -773,6 +774,8 @@ After the critique (2026-11-15), the owner's answers, one by one:
   pass the inner ring (`postmarkDateSize`).
 - **Freshness:** "Naposledy …" lost to the verb named, "Aktualizováno …" in the inbox and "Zálohováno …"
   on the backup row.
+- **Neutral buttons:** the boards' sunken fill (1.03:1 on the paper) lost to a deeper `neutral-fill`
+  (`#E9DFCD`, dark `#373026`): 1.14 on the paper, 1.30 on a card, as deep as the danger words keep 4.5:1.
 
 ## Do's and Don'ts
 

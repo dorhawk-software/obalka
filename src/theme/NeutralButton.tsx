@@ -1,5 +1,6 @@
-// The neutral button (031, boards R6 and R14): a `sunken` fill with the card's 14 corner and the label
-// in ink, 15/700 - tone, not an outline. R14 draws it 52 tall on its own; R6 sets two side by side at
+// The neutral button (031, boards R6 and R14): the `neutralFill` tone with the card's 14 corner and the
+// label in ink, 15/700 - tone, not an outline. The fill is a step deeper than the boards' `sunken`,
+// which was 1.03:1 on the paper and read as bold words there (the owner, 2026-11-15). R14 draws it 52 tall on its own; R6 sets two side by side at
 // 48 (`compact`); R4 sizes it to its words, 24 at each side, under a failed state's words (`inline`);
 // R13 halves a card row with it at 40, the 12 corner and 14/700 (`small`), Smazat in the danger ink.
 // The press is PressScale's dip, as every button's. `disabled` draws it at .55, as R10 dims the backup's
@@ -59,7 +60,7 @@ export function NeutralButton({
         opacity={disabled ? 0.55 : 1}
         needsOffscreenAlphaCompositing={disabled}
         borderRadius={small ? 12 : 14}
-        backgroundColor={theme.surfaceSunken}
+        backgroundColor={theme.neutralFill}
         alignItems="center"
         justifyContent="center"
         paddingHorizontal={inline ? 24 : 12}

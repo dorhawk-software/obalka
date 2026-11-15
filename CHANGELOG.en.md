@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Grey buttons stand out on the paper too.** "Back up now", "Verify backup" and "Show password"
+  have a fill a tone deeper, so they no longer look like bold text.
 - **Time lines say what happened.** "Updated 5 minutes ago" above the messages and "Backed up
   15 Nov 2026, 17:13" on the backup, in place of a bare "Last".
 - **Dates are written the same way everywhere.** "12 Nov 2026, 9:20" and "29 Aug" on the envelope,

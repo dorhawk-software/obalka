@@ -167,6 +167,18 @@ describe.each(THEMES)('%s theme', (_name, theme) => {
     );
   });
 
+  // The neutral button is tone, not an outline (031 T050, the owner 2026-11-15): its fill has to stand
+  // off the ground it sits on. The boards' sunken fill was 1.03:1 on the paper, and Backup's three
+  // buttons read as bold words. 1.12, four times that step; the danger words below cap how deep it goes.
+  it.each(GROUNDS)('the neutral button stands off %s', (_g, ground) => {
+    expect(contrast(theme.neutralFill, ground)).toBeGreaterThanOrEqual(1.12);
+  });
+
+  it('the neutral button keeps its words AA', () => {
+    expect(contrast(theme.text, theme.neutralFill)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(theme.danger, theme.neutralFill)).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('the ON switch is distinguishable from the OFF switch', () => {
     // The two states must differ from each OTHER, not merely each be visible.
     expect(contrast(theme.blue, theme.trackOff)).toBeGreaterThanOrEqual(
