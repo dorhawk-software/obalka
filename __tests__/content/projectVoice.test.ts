@@ -25,10 +25,13 @@ const FIRST_PERSON_CS = new RegExp(
 );
 
 /**
- * "I" in a progress line opens it - "Ukládám zálohu", "Zjišťuji…" - and the same endings inside a
- * sentence are mostly a noun's case ("přihlášením", "schránkám"), so the singular is read only there.
+ * "I" in a progress line opens it - "Ukládám zálohu", "Zjišťuji…", "Čtu zprávy" - and the same endings
+ * inside a sentence are mostly a noun's case ("přihlášením", "schránkám"), so the singular is read only
+ * there. The -u verbs ("čtu", "píšu", "beru", "jdu", "můžu") are told from the nouns that also open a
+ * line in -u ("Přílohu", "Zálohu", "Komu") by the consonant before it; "Čtu zprávy" slipped past
+ * the first guard and was found by the canvas sync (2026-11-15).
  */
-const OPENS_IN_FIRST_PERSON = new RegExp(`^\\p{L}+(uji|uju|ám|ím)${E}`, 'u');
+const OPENS_IN_FIRST_PERSON = new RegExp(`^\\p{L}+(uji|uju|ám|ím|tu|šu|ru|du|žu)${E}`, 'u');
 
 const FIRST_PERSON_EN = /\b(we|we'll|we’ll|we've|we’ve|us|our|ours|I|I'm|I’m|I'll|I’ll|me|my)\b/g;
 

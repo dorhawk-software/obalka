@@ -524,7 +524,7 @@ const cs: Record<string, string> = {
   'backup.row.desc': 'Zašifrovaná záloha zpráv a nastavení v tomto telefonu.',
   'backup.working': 'Probíhá…',
   // The progress line. `x z y` are real counts - messages read, rows written - never an estimate.
-  'backup.stage.reading': 'Čtu zprávy',
+  'backup.stage.reading': 'Čtení zpráv',
   'backup.stage.sealing': 'Šifrování zálohy',
   'backup.stage.writing': 'Ukládání zálohy',
   'backup.stage.fetching': 'Stahování zálohy',
