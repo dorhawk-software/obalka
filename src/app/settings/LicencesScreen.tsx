@@ -12,7 +12,7 @@
 
 import { useMemo, useState } from 'react';
 import { XStack, YStack } from '../../theme/ui';
-import { Caption, Heading, Label, Meta, Overline, SmallStrong } from '../../theme/Typography';
+import { Caption, Heading, Label, Meta, SmallStrong } from '../../theme/Typography';
 import { useTheme } from '../../theme/ThemeProvider';
 import { ChevronRightIcon } from '../../theme/icons';
 import LogoMark from '../../assets/logo.svg';
@@ -28,7 +28,7 @@ import { APP_VERSION } from '../appInfo';
 import { useLocale } from './SettingsProvider';
 import { SubScreen } from './SubScreen';
 import { Card } from '../../theme/Card';
-import { RowDivider } from './SettingsSection';
+import { GroupHead, RowDivider } from './SettingsSection';
 import { space } from '../../theme/spacing';
 import { LicenceChip, LicenceRow, LicenceSearch, NoMatch, normalize } from './LicenceParts';
 
@@ -197,13 +197,3 @@ export function LicencesScreen({
   );
 }
 
-/** A section's overline and the quiet line under it (R13): 18 above, 4 between, 8 to the card. */
-function GroupHead({ label, note }: { readonly label: string; readonly note: string }) {
-  const theme = useTheme();
-  return (
-    <YStack paddingTop={space.gutter} paddingBottom={space.base} paddingHorizontal={space.xs} gap={space.xs}>
-      <Overline accessibilityRole="header">{label}</Overline>
-      <Meta color={theme.textMuted}>{note}</Meta>
-    </YStack>
-  );
-}

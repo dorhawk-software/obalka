@@ -12,7 +12,7 @@
 
 import type { ReactNode } from 'react';
 import { XStack, YStack } from '../../theme/ui';
-import { Caption, Overline, Small } from '../../theme/Typography';
+import { Caption, Meta, Overline, Small } from '../../theme/Typography';
 import { useTheme } from '../../theme/ThemeProvider';
 import { space } from '../../theme/spacing';
 
@@ -55,6 +55,37 @@ export function Section({
         </Overline>
       </XStack>
       {children}
+    </YStack>
+  );
+}
+
+/**
+ * A list's group head (R13): the overline and, if the group has one, the quiet line under it - 18 above,
+ * 4 between, 8 to the card. Licences and the FAQ head their groups with it; the first group of a screen
+ * takes no top, the screen's own 18 standing in for it.
+ */
+export function GroupHead({
+  label,
+  note,
+  first = false,
+  testID,
+}: {
+  readonly label: string;
+  readonly note?: ReactNode;
+  readonly first?: boolean;
+  readonly testID?: string;
+}) {
+  const theme = useTheme();
+  return (
+    <YStack
+      paddingTop={first ? 0 : space.gutter}
+      paddingBottom={space.base}
+      paddingHorizontal={space.xs}
+      gap={space.xs}
+      testID={testID}
+    >
+      <Overline accessibilityRole="header">{label}</Overline>
+      {note == null ? null : <Meta color={theme.textMuted}>{note}</Meta>}
     </YStack>
   );
 }

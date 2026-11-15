@@ -6,12 +6,16 @@
 // the chip is a fixed 22×22 box and the question keeps its own line height whether open or closed.
 //
 // Everything renders from `src/content/faq.ts` and never touches the network.
+//
+// The answers are R3's sheets, and the groups are headed as R13 heads a list (`GroupHead`): the overline
+// 8 over the cards, the next group 18 under them, the ISDS disclaimer the quiet muted line under its
+// overline. Until 2026-11-15 the heads were 10 over the cards and 24 apart, and the disclaimer a faint
+// line of its own with an info icon, between the overline and the cards.
 
 import { useCallback, useRef, useState } from 'react';
 import { XStack, YStack } from '../../theme/ui';
-import { BodyStrong, Label, Meta, Overline, Small } from '../../theme/Typography';
+import { BodyStrong, Label, Small } from '../../theme/Typography';
 import { useTheme } from '../../theme/ThemeProvider';
-import { InfoIcon } from '../../theme/icons';
 import { chipTone } from '../../theme/chipTone';
 import { DeliveryStateIcon } from '../../features/messages/screens/DeliveryStateIcon';
 import type { MessageStateKind } from '../../features/messages/state/messageState';
@@ -19,6 +23,7 @@ import { t } from '../../i18n/strings';
 import { typesetFor } from '../../i18n/typeset';
 import { useLocale } from './SettingsProvider';
 import { SubScreen } from './SubScreen';
+import { GroupHead } from './SettingsSection';
 import { DebugRecordingFrame } from '../DebugRecordingStrip';
 import {
   FAQ,
@@ -29,7 +34,6 @@ import {
   type FaqId,
 } from '../../content/faq';
 import { Card } from '../../theme/Card';
-import { LineIcon } from '../../theme/LineIcon';
 
 /**
  * The delivery-state legend, appended to the `deliveredVsServed` answer. It is the one answer whose
@@ -189,46 +193,18 @@ function FaqContent({ onBack, focus }: FaqScreenProps) {
 
   return (
     <SubScreen title={t('faq.title')} onBack={onBack} scrollRef={scrollRef}>
-        <GroupLabel>{t('faq.group.app')}</GroupLabel>
-        {renderGroup('app')}
+      <GroupHead first label={t('faq.group.app')} testID="faq-head-app" />
+      {renderGroup('app')}
 
-        <GroupLabel marginTop={24}>{t('faq.group.isds')}</GroupLabel>
-        {/* Scoped to this group deliberately (design): the ISDS answers are the ones making statements
-            about how delivery law works, and a notice at the top of the screen would read as a warning
-            about the app instead. */}
-        <XStack
-          gap={10}
-          paddingHorizontal={4}
-          marginBottom={12}
-          alignItems="flex-start"
-        >
-          <LineIcon role="meta">
-            <InfoIcon size={16} color={theme.textFaint} />
-          </LineIcon>
-          <Meta flex={1} color={theme.textFaint}>
-            {typesetFor(locale, FAQ_DISCLAIMER[locale])}
-          </Meta>
-        </XStack>
+      {/* The disclaimer is the ISDS group's quiet line, deliberately (design): those answers are the
+          ones making statements about how delivery law works, and a notice at the top of the screen
+          would read as a warning about the app instead. */}
+      <GroupHead
+        label={t('faq.group.isds')}
+        note={typesetFor(locale, FAQ_DISCLAIMER[locale])}
+        testID="faq-head-isds"
+      />
       {renderGroup('isds')}
     </SubScreen>
-  );
-}
-
-function GroupLabel({
-  children,
-  marginTop,
-}: {
-  readonly children: string;
-  readonly marginTop?: number;
-}) {
-  return (
-    <Overline
-      accessibilityRole="header"
-      marginLeft={4}
-      marginBottom={10}
-      marginTop={marginTop}
-    >
-      {children}
-    </Overline>
   );
 }

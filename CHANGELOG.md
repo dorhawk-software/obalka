@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Časté dotazy mají nadpisy jako Nastavení.** Upozornění u datových schránek je tichý řádek
+  pod nadpisem skupiny, ne samostatná poznámka s ikonou.
 - **Úvodní obrazovka ukazuje obálku, která čeká na schránku.** Okénko je zatím prázdné, pod ním
   název aplikace, tlačítka pro přidání schránky a obnovení a jazyk v rohu.
 - **Čekání vypadá všude stejně.** Kde aplikace na něco čeká, točí se její vlastní kroužek místo

@@ -67,7 +67,11 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   and dark, Czech and English (forced on, reverted); the window first came out 2.5 short (R1's rows are
   14 over a 2 dotted border) and the dots square, both fixed. Rounded: the pill's 9 to 10, the window's
   9 to 10, the actions' 16 labels to `bodyStrong` 15.
-- [ ] I05 FAQ overlay and `FaqScreen` (accordion cards, Overline groups) - **D** (cards).
+- [x] I05 FAQ overlay and `FaqScreen` (accordion cards, Overline groups) - **D** (cards). Fixed
+  2026-11-15: the answers are R3's sheets (`Card`), and the groups are headed as R13 heads a list -
+  `GroupHead`, moved out of Licences for both: the overline 8 over the cards, the next group 18 under
+  them (were 10 and 24), the ISDS disclaimer the muted quiet line under its overline (was a faint line
+  with its own info icon). Walked light, dark and English; the overlay over sign-in is the same screen.
 - [ ] I06 `TelemetryConsent` (first run after the first box; two cards, two buttons) - **D** (cards).
 - [ ] I07 `BackupScreen` first run (restore) - see I45.
 - [x] I08 `AddBoxForm` - **D** (cards); the busy spinner is R8. The busy spinner went with I76.
@@ -346,7 +350,10 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   the row now fades as one picture, as the board's CSS does. Roundings: none needed, every value is a
   step. Left as it is: Android draws Public Sans about 2.5% wider than Chrome (the same font file
   measures the same in Chrome), so a line can wrap one word earlier than on the board ("chyby:").
-- [ ] I44 FAQ entries and the delivery legend - **D** (cards; the legend's state glyphs follow I33).
+- [x] I44 FAQ entries and the delivery legend - **D** (cards; the legend's state glyphs follow I33).
+  Seen 2026-11-15 with I05: the entries are sheets, and the legend draws the five marks from the same
+  `DeliveryStateIcon` the rows and the slip use (sent, delivered, by sign-in, by fiction, stopped),
+  light and dark, on the sunken block.
   2026-11-13: the cards are sheets now (Card), walked dark; the line ticks with R13's rest.
 - [ ] I45 `BackupScreen` - **X** for the key and QR: a slip on the security tint (R6). The rest:
   - [x] I45.0 The key and its QR - **X**: R6. Fixed 2026-11-13: `SecureSlip` (the surface-alt panel,

@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The FAQ is headed as Settings is.** The note on the data-box answers is the quiet line under its
+  group's heading, not a separate note with an icon.
 - **The welcome screen shows an envelope waiting for a box.** Its window is still empty; under it
   are the app's name, the buttons to add a box or restore, and the language in the corner.
 - **Waiting looks the same everywhere.** Wherever the app waits, its own small ring turns in place
