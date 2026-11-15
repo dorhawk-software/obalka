@@ -35,7 +35,7 @@ import { SearchScreen } from '../features/messages/screens/SearchScreen';
 import { SettingsScreen } from './settings/SettingsScreen';
 import { FaqScreen } from './settings/FaqScreen';
 import type { FaqId } from '../content/faq';
-import { LicencesScreen } from './settings/LicencesScreen';
+import { LicencesScreen, type LicenceTextParams } from './settings/LicencesScreen';
 import { ChangelogScreen } from './whatsNew/ChangelogScreen';
 import type { BoxAttention } from '../features/messages/state/crossBox';
 import { BackupScreen } from './settings/BackupScreen';
@@ -77,7 +77,7 @@ export type RootStackParamList = {
   /** Every release's changes (029). */
   Changelog: undefined;
   LicenceGroup: { spdx: string };
-  LicenceDetail: { spdx: string };
+  LicenceDetail: LicenceTextParams;
 };
 
 export interface AppData {
@@ -355,7 +355,7 @@ function LicencesRoute({
     <LicencesScreen
       onBack={() => navigation.goBack()}
       onOpenGroup={spdx => navigation.navigate('LicenceGroup', { spdx })}
-      onOpenText={spdx => navigation.navigate('LicenceDetail', { spdx })}
+      onOpenText={text => navigation.navigate('LicenceDetail', text)}
     />
   );
 }
@@ -368,9 +368,7 @@ function LicenceGroupRoute({
     <LicenceGroupScreen
       spdx={route.params.spdx}
       onBack={() => navigation.goBack()}
-      onOpenText={() =>
-        navigation.navigate('LicenceDetail', { spdx: route.params.spdx })
-      }
+      onOpenText={text => navigation.navigate('LicenceDetail', text)}
     />
   );
 }
@@ -382,6 +380,7 @@ function LicenceDetailRoute({
   return (
     <LicenceDetailScreen
       spdx={route.params.spdx}
+      component={route.params.component}
       onBack={() => navigation.goBack()}
     />
   );

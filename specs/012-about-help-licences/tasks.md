@@ -141,4 +141,10 @@ Phase A/B/C ──────────────────────�
   case the spec requires, extend `design-prompts.md` and go back to the design rather than filling the
   gap in code.
 - `src/content/attributions.generated.ts` is generated. Edits belong in `scripts/gen-attributions.mjs`.
-- Licence texts are reproduced **verbatim**. Never reflow, re-wrap, summarize, or "clean up" a licence.
+- Licence texts are reproduced **verbatim**. Never reword, summarize, or "clean up" a licence. Until
+  2026-11-15 also never reflow or re-wrap it. Since then (the owner, 2026-11-15, choosing board R13's
+  flowing paragraphs for 031 I48) a sentence's hard-wrapped lines are joined with one space; the words
+  stay byte for byte, in order, and headings, rules and list items keep their lines
+  (`src/app/settings/licenceText.ts`, tested on every bundled text). Each component's copyright notice
+  is set inside its licence's text, which its row opens, rather than under the row (T023a, until the
+  same date).

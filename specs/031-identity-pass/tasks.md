@@ -324,7 +324,15 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   ink); nothing saved is a muted line with no card. The failed read (not drawn) is that line's words
   with Zkusit znovu as a link under them. Walked light and English against R13 (idle, recording,
   saved, failed forced), and dark on the theme's tokens: R13 draws no dark debug phone.
-- [ ] I48 Licences (logo 40, search, no results, groups), licence group, licence text - **N** (cards).
+- [x] I48 Licences (logo 40, search, no results, groups), licence group, licence text - **N** (cards).
+  Fixed 2026-11-15 to R13: the app's card (logo 40, the name in the heading role, Licence MIT, the
+  copyright, four meta lines of the licence) opens the whole text with its notice; the search 44 on the
+  page's tone with the offset glyph; the bundled components and one row per licence (the owner,
+  2026-11-15: no samples), each row a name over its line, the chip and the chevron; a licence's screen
+  titled with its count, the full-text link, its own search and its rows; one component's text titled
+  with its name over version and licence, the text flowed (the owner, 2026-11-15; spec 012 amended)
+  with its copyright under the licence's title; no results as the glyph in a 96 disc and one sentence.
+  Walked light against the four R13 phones, dark (no dark board) and in English.
 - [ ] I49 What's new sheet and Changelog - **D**: the sheet (I53). R9.
 - [ ] I50 Lock screen (brand tile 104, lock glyph, unlock, failure slot, reset link) - **D**: board
   "Lock - sealed" (tint, sealed envelope, wax seal).
@@ -803,6 +811,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   there; one line from 411dp. And the saved strip wraps after "Uloženo:" on the device where the board
   fits one line (Android draws Public Sans about 2 % wider); the strip's height is held, so it moves
   nothing.
+  Raised in I48: R13 sets a licence's text in monospace 12/18; the type scale has no monospaced role and
+  the rule is no new roles, so it is the Meta role in Public Sans (12/16). A monospaced role is the
+  owner's to add (DESIGN.md and the theme) if the board's look is wanted.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
@@ -854,6 +865,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     (#233140), the boards' `--bluesoft` is #1F2C3A. The strip's 13/19 is the Label role (13/17).
   - R13's half-width row buttons are `InkButton small` and `NeutralButton small danger` (40, the 12
     corner, 14/700); DESIGN.md to record them with R10's.
+  - R13 Licence: the third-party card ends after the MIT row and one component; built as one row per
+    licence (the owner, 2026-11-15). The app's card is a button opening the whole text (not drawn).
+    The licence texts flow and carry the component's notice (spec 012 amended the same day).
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).

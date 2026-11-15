@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Licence se čtou snáz.** Každá licence má na přehledu jeden řádek s počtem komponent, každá
+  komponenta otevře text své licence i se svým copyrightem a text plyne v odstavcích.
 - **Režim ladění je uspořádanější.** Probíhající záznam má vlastní kartu s počtem záznamů a oběma
   tlačítky, uložení potvrdí modrý pruh a každý uložený soubor nabízí Sdílet a Smazat vedle sebe.
 - **Přenos do jiného telefonu je přehlednější.** Zálohy k odeslání jsou na jednom listu s velikostí

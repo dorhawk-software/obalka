@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Licences are easier to read.** Each licence is one row with its count of components, every
+  component opens its licence's text with its own copyright notice, and the text flows in paragraphs.
 - **Debug mode is tidier.** A running recording has a card of its own with the count and both
   buttons, a blue strip confirms the save, and each saved file offers Share and Delete side by side.
 - **Moving to another phone is clearer.** The backups to send sit on one sheet with their size and

@@ -37,7 +37,6 @@ const COUNTED = [
   'backup.prune.held',
   'licences.count',
   'licences.groupCount',
-  'licences.showAll',
   'debug.recording.entries',
   'detail.attachments.incomplete',
 ];
