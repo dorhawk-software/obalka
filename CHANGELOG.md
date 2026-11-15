@@ -163,6 +163,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Na iPhonu se ze zprávy otevřené ze seznamu vrátíte přejetím od okraje.** Gesto na ní dřív
+  nedělalo nic; teď zpráva pod prstem zmizí a jste zpět ve schránce.
 - **Pokyn ve čtečce kódu je čitelný i v tmavém režimu.** Čtečka ukazuje okénko obálky, kam kód
   namířit, a pokyn se Zrušit leží na spodním panelu.
 - **Text na tlačítkách bez rámečku je v písmu aplikace.** Třeba Zrušit, Poslat SMS znovu nebo Koupit

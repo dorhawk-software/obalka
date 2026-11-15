@@ -221,6 +221,12 @@ describe('the screen', () => {
     });
   });
 
+  it('goes back on the edge swipe with the same fade (iOS took no swipe on it until 2026-11-15)', () => {
+    expect(screenOptions({ route: route({ boxId: 'a', messageId: '1', from: tile() }) })).toMatchObject({
+      animationMatchesGesture: true,
+    });
+  });
+
   it('is pushed as the platform pushes when opened from anywhere else', () => {
     expect(screenOptions({ route: route({ boxId: 'a', messageId: '1' }) }).animation).toBeUndefined();
     expect(screenOptions({ route: { key: 'k', name: 'Search' } as never }).animation).toBeUndefined();

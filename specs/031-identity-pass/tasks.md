@@ -112,7 +112,11 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   boxes' 10 corner to 11, the digit's 17 to the 20 `code` role, Confirm's 16 to 15. Walked light,
   dark, in English, empty, part and whole (forced on, reverted); the walk found the Android group-opacity fade
   and the system face on every Button.
-- [ ] I09.1 Android's SMS User Consent sheet over the code field (the system's) - **N**: seen in place.
+- [x] I09.1 Android's SMS User Consent sheet over the code field (the system's) - **N**: seen in place
+  2026-11-15, **matches**: the code form forced on (reverted) and an SMS sent to the emulator. The
+  system's sheet rises over the form, quoting the message; Allow fills all eight boxes and wakes
+  Confirm, which still waits for a tap. Light and dark (the sheet follows the phone); its words are
+  the phone's language, the form's were walked in both with I09.
 - [x] I10 Mobile Key waiting (brand tile 84, phone glyph, pulse ring loop 1800 ms) - **X**: a generic
   pulse. R8. Fixed 2026-11-13: `WaitingEnvelope`, the box's envelope (300 by 186, -1.5 degrees, the
   flap shut, the login name in the 200 window) over the title, the line, the 220 waiting bar and the
@@ -589,11 +593,15 @@ surface below changes too, and the owner has seen none of them in the identity. 
 
 ### Motion
 
-- [ ] I67 Opening a message: the letter rises out of its envelope (280 ms) - **X** build, board Motion.
-- [ ] I68 Sending: the postmark lands when ISDS accepts (haptic) - **X** build, board Motion.
-- [ ] I69 Unlocking: the seal breaks, the flap opens (cold start; later the flap only) - **X** build,
-  board Motion; replaces today's 250 ms panel fade and 260 + 240 ms cover fade.
-- [ ] I70 The window film's glint (tilt, `useAnimatedSensor`, only on screen) - **X** build, board Motion.
+- [x] I67 Opening a message: the letter rises out of its envelope (280 ms) - **X** build, board Motion.
+  Built and walked with T035 (below); on iOS too since 2026-11-15, where the swipe back was fixed.
+- [x] I68 Sending: the postmark lands when ISDS accepts (haptic) - **X** build, board Motion.
+  Built and walked with T035 (below), captured in T036.
+- [x] I69 Unlocking: the seal breaks, the flap opens (cold start; later the flap only) - **X** build,
+  board Motion; replaces today's 250 ms panel fade and 260 + 240 ms cover fade. Built and walked
+  with T035 (below), the lock captured in T034.
+- [x] I70 The window film's glint (tilt, `useAnimatedSensor`, only on screen) - **X** build, board Motion.
+  Built and walked with T035 (below), with the emulator's virtual sensor.
 - [ ] I71 Edge swipe back (160 ms settle) - **N**: follows the finger; its settle ignores Reduce Motion.
 - [ ] I71.1 Native-stack push and pop between screens - **N**: the platform's own; checked under
   Reduce Motion on both.
@@ -899,7 +907,7 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   - the brand lock tile (`BrandLockIcon`, `ICON_TIER.lock`) is gone, replaced by the sealed envelope;
   - not yet seen on iOS: the seal's face is React Native's own radial gradient, seen on Android; under
     it is `seal-shade`, should a platform not draw the gradient.
-- [ ] T035 Motion: I67-I70, each with its Reduce Motion form.
+- [x] T035 Motion: I67-I70, each with its Reduce Motion form.
   - I68 sending, done 2026-11-12: the stamp uncancelled for a 120 ms beat (the board names none; without
     it the stamp is never seen whole), the postmark landing at 1.06 to 1 in 140 ms with one firm haptic
     (`haptics.stamp`, impactHeavy - it replaces the success tap the send made before), its waves
@@ -954,8 +962,12 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
     Fabric's prop assertion and killed the app, so the styles stay on at their end (a test holds it);
     the letter's own delayed animation waited for JS while the message rendered, 3-4 frames late, so
     one clock on the UI thread drives both, the ease sampled into the interpolation; and styles made
-    on each render handed the view new nodes mid-flight, so they are made once. Not yet: iOS (the edge
-    swipe-back with the fade must be walked on an iOS build).
+    on each render handed the view new nodes mid-flight, so they are made once. Walked on the iOS
+    simulator 2026-11-15 (Maestro, the demo archive seeded locally and reverted): the tile flies and
+    the message fades in as on Android, but the edge swipe did nothing on it while it went back from
+    Settings - react-native-screens gives a custom animation's pop no driver unless the gesture is
+    told to use it. With `animationMatchesGesture` the swipe fades the message out under the finger
+    and lands on the inbox (a test holds the option, red before).
   - I67 the tuck, done 2026-11-12: no board drew "scrolling down tucks the envelope into a 54 dp band
     with the window still showing", so board "Message, scrolled" proposed three; the owner chose B, the
     bar becomes the envelope (2026-11-12). As the envelope's last 54 slide under the paper bar, a band

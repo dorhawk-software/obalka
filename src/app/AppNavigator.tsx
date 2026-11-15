@@ -121,8 +121,18 @@ export interface AppData {
 const AppDataContext = createContext<AppData | null>(null);
 
 const SCREEN_OPTIONS = { headerShown: false } as const;
-/** A message opened from its row fades in over the list, so the row's tile can grow into its envelope. */
-const OPENED_FROM_ROW: NativeStackNavigationOptions = { headerShown: false, animation: 'fade', animationDuration: 150 };
+/**
+ * A message opened from its row fades in over the list, so the row's tile can grow into its envelope.
+ * The swipe back fades it too (`animationMatchesGesture`): without it iOS took no edge swipe on this
+ * screen at all, react-native-screens leaving a custom animation's pop with nothing to drive it
+ * (walked on the iOS simulator, 2026-11-15; the same swipe went back from Settings).
+ */
+const OPENED_FROM_ROW: NativeStackNavigationOptions = {
+  headerShown: false,
+  animation: 'fade',
+  animationDuration: 150,
+  animationMatchesGesture: true,
+};
 
 /** The platform's push, except for a message opened from its row (board Motion 1). */
 export function screenOptions({ route }: { route: RouteProp<RootStackParamList> }): NativeStackNavigationOptions {
