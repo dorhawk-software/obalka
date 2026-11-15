@@ -1,5 +1,5 @@
 // The empty inbox (031, board Empty): the open envelope with nothing in it but its lining, "Ve schránce
-// nic není", what the app does about it, and when it last looked - "Naposledy dnes ve 14:02", the same
+// nic není", what the app does about it, and when it last looked - "Aktualizováno dnes ve 14:02", the same
 // words a list says at its end (I26). Czech says "ve" before some hours and "v" before the rest, and a
 // line under the envelope that gets it wrong is the first thing a new user reads.
 
@@ -21,39 +21,39 @@ describe('when the app last looked', () => {
   afterEach(() => setActiveLocale('cs'));
 
   it.each([
-    [14, 2, 'Naposledy dnes ve 14:02'],
-    [2, 15, 'Naposledy dnes ve 02:15'],
-    [3, 0, 'Naposledy dnes ve 03:00'],
-    [4, 0, 'Naposledy dnes ve 04:00'],
-    [12, 0, 'Naposledy dnes ve 12:00'],
-    [13, 0, 'Naposledy dnes ve 13:00'],
-    [20, 0, 'Naposledy dnes ve 20:00'],
-    [22, 10, 'Naposledy dnes ve 22:10'],
-    [1, 0, 'Naposledy dnes v\u00A001:00'],
-    [9, 5, 'Naposledy dnes v\u00A009:05'],
-    [10, 0, 'Naposledy dnes v\u00A010:00'],
-    [11, 0, 'Naposledy dnes v\u00A011:00'],
-    [15, 0, 'Naposledy dnes v\u00A015:00'],
-    [19, 0, 'Naposledy dnes v\u00A019:00'],
+    [14, 2, 'Aktualizováno dnes ve 14:02'],
+    [2, 15, 'Aktualizováno dnes ve 2:15'],
+    [3, 0, 'Aktualizováno dnes ve 3:00'],
+    [4, 0, 'Aktualizováno dnes ve 4:00'],
+    [12, 0, 'Aktualizováno dnes ve 12:00'],
+    [13, 0, 'Aktualizováno dnes ve 13:00'],
+    [20, 0, 'Aktualizováno dnes ve 20:00'],
+    [22, 10, 'Aktualizováno dnes ve 22:10'],
+    [1, 0, 'Aktualizováno dnes v\u00A01:00'],
+    [9, 5, 'Aktualizováno dnes v\u00A09:05'],
+    [10, 0, 'Aktualizováno dnes v\u00A010:00'],
+    [11, 0, 'Aktualizováno dnes v\u00A011:00'],
+    [15, 0, 'Aktualizováno dnes v\u00A015:00'],
+    [19, 0, 'Aktualizováno dnes v\u00A019:00'],
   ])('says %i:%i with the preposition Czech gives that hour', (h, m, said) => {
     expect(freshnessText(at(h, m), EVENING)).toBe(said);
   });
 
   it('counts the minutes of the last hour, and says a moment ago before that', () => {
-    expect(freshnessText(EVENING - 5 * 60_000, EVENING)).toBe('Naposledy před 5 minutami');
-    expect(freshnessText(EVENING - 60_000, EVENING)).toBe('Naposledy před 1 minutou');
-    expect(freshnessText(EVENING - 20_000, EVENING)).toBe('Naposledy před chvílí');
+    expect(freshnessText(EVENING - 5 * 60_000, EVENING)).toBe('Aktualizováno před 5 minutami');
+    expect(freshnessText(EVENING - 60_000, EVENING)).toBe('Aktualizováno před 1 minutou');
+    expect(freshnessText(EVENING - 20_000, EVENING)).toBe('Aktualizováno před chvílí');
   });
 
   it('gives a date before today, and admits it has never looked', () => {
-    expect(freshnessText(at(9, 0) - 24 * 3600_000, EVENING)).toMatch(/^Naposledy \d/);
+    expect(freshnessText(at(9, 0) - 24 * 3600_000, EVENING)).toMatch(/^Aktualizováno \d/);
     expect(freshnessText(null, EVENING)).toBe('Zatím neaktualizováno');
   });
 
   it('says it in English with one preposition for every hour', () => {
     setActiveLocale('en');
-    expect(freshnessText(at(14, 2), EVENING)).toBe('Last checked today at 14:02');
-    expect(freshnessText(at(9, 5), EVENING)).toBe('Last checked today at 09:05');
+    expect(freshnessText(at(14, 2), EVENING)).toBe('Updated today at 14:02');
+    expect(freshnessText(at(9, 5), EVENING)).toBe('Updated today at 9:05');
   });
 });
 
@@ -138,7 +138,7 @@ describe('an inbox with nothing in it', () => {
     const empty = await view.findByTestId('emptyInbox');
     expect(view.getByText('Ve schránce nic není')).toBeTruthy();
     expect(view.getByText('Obálka se podívá pokaždé, když ji otevřete.')).toBeTruthy();
-    expect(view.getByText(/^Naposledy /)).toBeTruthy();
+    expect(view.getByText(/^Aktualizováno /)).toBeTruthy();
     // The open envelope: the flap's gold, the deeper blue inside, the front pocket in the envelope's blue.
     const fills = nodes(empty.children as never)
       .concat(nodes(view.toJSON()))

@@ -8,15 +8,8 @@ import { formatBytes, t } from '../../i18n/strings';
 import type { ReceivedTransfer } from '../../features/transfer/state/transferController';
 import { useAppCovered } from '../lock/LockGate';
 import { useCloseOnBackground } from '../useCloseOnBackground';
+import { dateTime } from '../../i18n/dates';
 
-const pad = (n: number) => String(n).padStart(2, '0');
-
-export function formatDateTime(epochMs: number): string {
-  const d = new Date(epochMs);
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(
-    d.getHours(),
-  )}:${pad(d.getMinutes())}`;
-}
 
 
 export function TransferDialogs({
@@ -71,7 +64,7 @@ export function TransferDialogs({
         body={
           got.restorable
             ? t('transfer.got.body', {
-                when: formatDateTime(got.manifest.createdAt),
+                when: dateTime(got.manifest.createdAt),
                 size: formatBytes(got.manifest.sizeBytes),
               })
             : got.compatibility.kind === 'tooNew'

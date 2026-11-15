@@ -8,7 +8,7 @@ import { useTheme } from '../../../theme/ThemeProvider';
 import { chipTone } from '../../../theme/chipTone';
 import { OffsetIcon } from '../../../theme/offsetIcons';
 import { t } from '../../../i18n/strings';
-import { dayMonth } from './DetailEnvelope';
+import { fullDate, shortDate } from '../../../i18n/dates';
 import { touchSlop } from '../../../theme/touchTarget';
 
 /**
@@ -19,7 +19,7 @@ import { touchSlop } from '../../../theme/touchTarget';
  */
 export function fikceBannerLabel(servedAt: number, now: number = Date.now()): string {
   const year = new Date(servedAt).getFullYear();
-  const day = year === new Date(now).getFullYear() ? dayMonth(servedAt) : `${dayMonth(servedAt)}${year}`;
+  const day = year === new Date(now).getFullYear() ? shortDate(servedAt) : fullDate(servedAt);
   return `${t('status.byFiction')} ${day} · ${t('status.byFiction.withoutYou')}`;
 }
 

@@ -102,7 +102,7 @@ describe('how old a sent message’s state is', () => {
     const view = await open();
     await waitFor(() => view.getByTestId('state-as-of'));
     expect(view.getByTestId('state-as-of')).toHaveTextContent(
-      t('detail.stateAsOf', { d: '26.10.2026 21:05' }),
+      t('detail.stateAsOf', { d: '26.\u00A010.\u00A02026 21:05' }),
     );
   });
 

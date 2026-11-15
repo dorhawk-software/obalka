@@ -25,16 +25,11 @@ import { RecordRing, type RecordRingKind } from '../../../theme/objects/RecordRi
 import { t } from '../../../i18n/strings';
 import type { DeliveryRecord as Record, StepKind } from '../state/deliveryRecord';
 import { LineIcon } from '../../../theme/LineIcon';
+import { clock, fullDate } from '../../../i18n/dates';
 
-const pad = (n: number) => String(n).padStart(2, '0');
-
-/** "19.08.2026" over "11:24", as the board sets a step's moment. */
+/** "19. 8. 2026" over "11:24", as the board sets a step's moment (`dates.ts`). */
 export function dateAndTime(epochMs: number): [string, string] {
-  const d = new Date(epochMs);
-  return [
-    `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`,
-    `${pad(d.getHours())}:${pad(d.getMinutes())}`,
-  ];
+  return [fullDate(epochMs), clock(epochMs)];
 }
 
 /** A step's ring: an arrival is checked, fiction is the clock, a signed-for service is filled. */

@@ -28,8 +28,8 @@ import { formatBytes, t } from '../../i18n/strings';
 import type { BackupManifest } from '../../services/backup/schema';
 import { Card, CardRow, RowText, Section, Well } from './SettingsSection';
 import { documentsChipText, documentsMissingText } from './BackupDocumentsChip';
-import { formatDateTime } from './TransferDialogs';
 import { touchSlop } from '../../theme/touchTarget';
+import { dateTime } from '../../i18n/dates';
 
 /** R10's failure: a danger tone block, no outline and no icon, at the top of its half. */
 export function FailureBlock({ text, side }: { readonly text: string; readonly side: 'sending' | 'receiving' }) {
@@ -117,7 +117,7 @@ export function SendHalf({
             testIDPrefix="transfer-backup"
             options={backups.map(manifest => ({
               value: manifest.archiveName,
-              label: formatDateTime(manifest.createdAt),
+              label: dateTime(manifest.createdAt),
               description: [
                 formatBytes(manifest.sizeBytes + (manifest.documentBytes ?? 0)),
                 documentsChipText(manifest),

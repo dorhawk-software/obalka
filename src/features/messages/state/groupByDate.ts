@@ -4,6 +4,7 @@
 // order and omits empty buckets. Localisation of the labels lives in the screen (sectionTitle).
 
 import type { MessageEnvelope } from '../../../services/isds/types';
+import { clock, fullDate, shortDate } from '../../../i18n/dates';
 
 export type DateSectionLabel =
   | { kind: 'today' }
@@ -27,11 +28,9 @@ function startOfDay(t: number): number {
   return d.getTime();
 }
 
-const pad2 = (n: number) => String(n).padStart(2, '0');
-
 /**
  * Compact row date that pairs with the date grouping: today → time (14:32), earlier this year →
- * day.month (15.06.), older → full date (15.06.2024). So a row never repeats the year its section
+ * the day and month (15. 6.), older → the full date (15. 6. 2024), in `dates.ts`'s form. So a row never repeats the year its section
  * header already implies. Pure (takes `now`).
  */
 export function rowDate(epochMs: number | null, now: number): string {
@@ -45,12 +44,12 @@ export function rowDate(epochMs: number | null, now: number): string {
     d.getMonth() === n.getMonth() &&
     d.getDate() === n.getDate();
   if (sameDay) {
-    return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    return clock(epochMs);
   }
   if (d.getFullYear() === n.getFullYear()) {
-    return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.`;
+    return shortDate(epochMs);
   }
-  return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()}`;
+  return fullDate(epochMs);
 }
 
 export function groupByDate(
@@ -140,8 +139,7 @@ export function freshnessLabel(syncedAt: number | null, now: number): string | n
     return `min:${mins}`;
   }
   if (startOfDay(syncedAt) === startOfDay(now)) {
-    const d = new Date(syncedAt);
-    return `at:${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    return `at:${clock(syncedAt)}`;
   }
   return `on:${rowDate(syncedAt, now)}`;
 }

@@ -33,7 +33,8 @@ import { haptics } from '../../../services/haptics';
 import type { DataBoxAccount, Recipient } from '../../../services/isds/types';
 import type { SentStatus } from '../state/sendController';
 import { MESSAGE_STATE } from '../state/messageState';
-import { SENT_POSTMARK_RIGHT, dayMonth } from './DetailEnvelope';
+import { SENT_POSTMARK_RIGHT } from './DetailEnvelope';
+import { shortDate } from '../../../i18n/dates';
 import { PriceStamp, STAMP_FRAME } from './ComposeEnvelope';
 import { dateAndTime } from './DeliveryRecord';
 import { takesVe } from './InboxRows';
@@ -183,7 +184,7 @@ function SentEnvelope({
         <Animated.View style={[{ position: 'absolute', right: SENT_POSTMARK_RIGHT, top: 20 }, postmarkStyle]} testID="sentPostmark">
           <Postmark
             ring={t('send.sent.postmark.ring')}
-            line1={dayMonth(sentAt)}
+            line1={shortDate(sentAt)}
             line2={time}
             size={108}
             rotate={-6}

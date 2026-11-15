@@ -63,15 +63,16 @@ export const cs: Record<string, string> = {
   'messages.error.credentials':
     'Uložené přihlašovací údaje se teď nepodařilo načíst. Zkuste to znovu.',
   // How fresh the list is. The app syncs only when the user asks it to, so this is the one thing
-  // that tells them what their own last action bought them.
-  'messages.synced.now': 'Naposledy před chvílí',
-  'messages.synced.min.one': 'Naposledy před {n} minutou',
-  'messages.synced.min.few': 'Naposledy před {n} minutami',
-  'messages.synced.min.many': 'Naposledy před {n} minutami',
+  // that tells them what their own last action bought them. It names what happened - "Naposledy"
+  // alone said last what? (the owner, 2026-11-15).
+  'messages.synced.now': 'Aktualizováno před chvílí',
+  'messages.synced.min.one': 'Aktualizováno před {n} minutou',
+  'messages.synced.min.few': 'Aktualizováno před {n} minutami',
+  'messages.synced.min.many': 'Aktualizováno před {n} minutami',
   // "v 9:05", "ve 14:02": Czech says "ve" before dvě, tři, čtyři, dvanáct to čtrnáct and dvacet+.
-  'messages.synced.at': 'Naposledy dnes v {d}',
-  'messages.synced.at.ve': 'Naposledy dnes ve {d}',
-  'messages.synced.on': 'Naposledy {d}',
+  'messages.synced.at': 'Aktualizováno dnes v {d}',
+  'messages.synced.at.ve': 'Aktualizováno dnes ve {d}',
+  'messages.synced.on': 'Aktualizováno {d}',
   'messages.synced.never': 'Zatím neaktualizováno',
 };
 
@@ -127,11 +128,11 @@ export const en: Record<string, string> = {
   // See the Czech block.
   'messages.error.credentials':
     'Your saved sign-in details could not be read just now. Please try again.',
-  'messages.synced.now': 'Last checked a moment ago',
-  'messages.synced.min.one': 'Last checked {n} minute ago',
-  'messages.synced.min.other': 'Last checked {n} minutes ago',
-  'messages.synced.at': 'Last checked today at {d}',
-  'messages.synced.at.ve': 'Last checked today at {d}',
-  'messages.synced.on': 'Last checked {d}',
+  'messages.synced.now': 'Updated a moment ago',
+  'messages.synced.min.one': 'Updated {n} minute ago',
+  'messages.synced.min.other': 'Updated {n} minutes ago',
+  'messages.synced.at': 'Updated today at {d}',
+  'messages.synced.at.ve': 'Updated today at {d}',
+  'messages.synced.on': 'Updated {d}',
   'messages.synced.never': 'Not yet updated',
 };

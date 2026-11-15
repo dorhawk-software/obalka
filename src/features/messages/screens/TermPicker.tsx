@@ -31,6 +31,7 @@ import { haptics } from '../../../services/haptics';
 import { t } from '../../../i18n/strings';
 import { reminderPromise } from '../state/reminders';
 import { Card } from '../../../theme/Card';
+import { shortDate } from '../../../i18n/dates';
 
 /** R9's preset row: 50 tall at the least. */
 const PRESET_ROW = 50;
@@ -60,15 +61,14 @@ const PRESETS: Preset[] = [
 ];
 
 /**
- * "22. 8." - the compact Czech form the chips use.
+ * "22. 8.", "22 Aug" - the short form the chips use (`dates.ts`).
  *
- * The separator is a NON-BREAKING space (U+00A0). With an ordinary one, "11. 9." is two breakable
+ * Its separator is a NON-BREAKING space (U+00A0). With an ordinary one, "11. 9." is two breakable
  * tokens, and in the password-expiry strip at a large text size the day and the month wrapped onto
  * different lines with the action button between them. A date is one thing and must break as one.
  */
 export function formatTermDate(epochMs: number): string {
-  const d = new Date(epochMs);
-  return `${d.getDate()}.\u00A0${d.getMonth() + 1}.`;
+  return shortDate(epochMs);
 }
 
 /** The day-stepper buttons' drawn width - declared so the touch slop is derived, not guessed. */

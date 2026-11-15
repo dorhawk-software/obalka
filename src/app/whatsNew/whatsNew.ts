@@ -7,6 +7,7 @@
 // has not seen, and whether any of them is worth interrupting them for.
 
 import type { ChangelogRelease } from '../../content/changelog.generated';
+import { fullDate } from '../../i18n/dates';
 
 /** `a` is newer than `b` (plain 1.2.3 versions; anything else is never newer). */
 export function isNewerVersion(a: string, b: string): boolean {
@@ -84,5 +85,5 @@ export function decideWhatsNew(
 /** "2026-11-12" as the app writes a date: "12.11.2026" (the message list's form). */
 export function releaseDate(iso: string): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-  return m ? `${m[3]}.${m[2]}.${m[1]}` : iso;
+  return m ? fullDate(new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime()) : iso;
 }

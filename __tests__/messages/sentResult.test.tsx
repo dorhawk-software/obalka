@@ -130,7 +130,7 @@ describe.each([
     await layOut(view);
     const json = JSON.stringify(view.toJSON());
     expect(json).toContain('ODESLÁNO · DATOVÁ SCHRÁNKA ·');
-    expect(json).toContain('11.11.');
+    expect(json).toContain('11.\u00A011.');
     expect(json).toContain('14:02');
     const all = nodes(view.toJSON());
     // The postmark's own waves are left off; the stamp carries them.
@@ -172,11 +172,11 @@ it('runs the cancelling waves from left of the stamp to just short of its right 
 
 it('says when ISDS took it, with the preposition Czech gives that hour', () => {
   expect(sentBody(SENT_AT)).toBe(
-    'ISDS ji přijalo 11.11.2026 ve 14:02. Až ji adresát otevře, doručenka se doplní sama.',
+    'ISDS ji přijalo 11.\u00A011.\u00A02026 ve 14:02. Až ji adresát otevře, doručenka se doplní sama.',
   );
-  expect(sentBody(new Date(2026, 10, 11, 9, 5).getTime())).toMatch(/^ISDS ji přijalo 11\.11\.2026 v\u00A009:05\./);
+  expect(sentBody(new Date(2026, 10, 11, 9, 5).getTime())).toMatch(/^ISDS ji přijalo 11\.\u00A011\.\u00A02026 v\u00A09:05\./);
   setActiveLocale('en');
-  expect(sentBody(SENT_AT)).toMatch(/^ISDS accepted it on 11\.11\.2026 at 14:02\./);
+  expect(sentBody(SENT_AT)).toMatch(/^ISDS accepted it on 11\u00A0Nov\u00A02026 at 14:02\./);
 });
 
 it('draws only the sending as done until ISDS reports more, the rest as rings still to come', async () => {

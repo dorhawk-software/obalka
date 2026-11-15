@@ -44,17 +44,17 @@ afterEach(() => setActiveLocale('cs'));
 
 describe('the words', () => {
   it('gives the day the law signed for it, as the board does', () => {
-    expect(fikceBannerLabel(SERVED, NOW)).toBe('Doručeno fikcí 29.08. · bez vašeho přihlášení');
+    expect(fikceBannerLabel(SERVED, NOW)).toBe('Doručeno fikcí 29.\u00A08. · bez vašeho přihlášení');
   });
 
   it('says the year when it is not this one, so last August does not read as this August', () => {
     const lastYear = new Date(2025, 7, 29).getTime();
-    expect(fikceBannerLabel(lastYear, NOW)).toBe('Doručeno fikcí 29.08.2025 · bez vašeho přihlášení');
+    expect(fikceBannerLabel(lastYear, NOW)).toBe('Doručeno fikcí 29.\u00A08.\u00A02025 · bez vašeho přihlášení');
   });
 
   it('says it in English', () => {
     setActiveLocale('en');
-    expect(fikceBannerLabel(SERVED, NOW)).toMatch(/29\.08\./);
+    expect(fikceBannerLabel(SERVED, NOW)).toMatch(/29\u00A0Aug/);
   });
 });
 

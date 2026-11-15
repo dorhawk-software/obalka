@@ -88,8 +88,8 @@ describe('groupByDate', () => {
 describe('rowDate', () => {
   it('today → time, this year → day.month, older → full date', () => {
     expect(rowDate(new Date(2026, 5, 17, 14, 32).getTime(), NOW)).toBe('14:32');
-    expect(rowDate(at(2026, 5, 15), NOW)).toBe('15.06.');
-    expect(rowDate(at(2024, 4, 20), NOW)).toBe('20.05.2024');
+    expect(rowDate(at(2026, 5, 15), NOW)).toBe('15.\u00A06.');
+    expect(rowDate(at(2024, 4, 20), NOW)).toBe('20.\u00A05.\u00A02024');
   });
 
   it('returns empty for a null date', () => {
@@ -122,7 +122,7 @@ describe('freshnessLabel', () => {
     expect(freshnessLabel(1, now)).toBeNull();
     expect(freshnessLabel(-5 * MIN, now)).toBeNull();
     expect(freshnessLabel(Date.UTC(2019, 11, 31, 12), now)).toBeNull();
-    expect(freshnessLabel(Date.UTC(2020, 0, 2, 12), now)).toBe('on:02.01.2020');
+    expect(freshnessLabel(Date.UTC(2020, 0, 2, 12), now)).toBe('on:2.\u00A01.\u00A02020');
   });
 
   it('is "now" inside the first minute', () => {

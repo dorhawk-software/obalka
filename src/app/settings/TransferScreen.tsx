@@ -12,8 +12,7 @@
 //     shows a date and a size. The archive is only touched after a second tap.
 //   * THE BOXES STILL NEED SIGNING IN TO (FR-011). Said at the end, because that is where somebody
 //     stands who thinks the job is finished.
-//   * IT ONLY RUNS WHILE SOMEBODY IS WATCHING (FR-014). Leaving the app stops the transfer, and the
-//     reason is on screen when the user comes back.
+//   * IT ONLY RUNS WHILE SOMEBODY IS WATCHING (FR-014). Leaving stops it; the reason waits on screen.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
@@ -54,8 +53,9 @@ import { TransferDone, type TransferEnd } from './TransferDone';
 import { contentsText, doneParts, errorText, lastWord, routeText } from './transferWords';
 import { documentsChipText } from './BackupDocumentsChip';
 import { ReceiveForm, ReceiveRow, SendHalf, TransferUnavailable } from './TransferForms';
-import { TransferDialogs, formatDateTime } from './TransferDialogs';
+import { TransferDialogs } from './TransferDialogs';
 import { touchSlop } from '../../theme/touchTarget';
+import { dateTime } from '../../i18n/dates';
 
 type Mode = 'idle' | 'sending' | 'receiving';
 type Side = 'sending' | 'receiving';
@@ -635,7 +635,7 @@ export function TransferScreen({
                     {sendingManifest ? (
                       <Meta color={theme.textFaint} textAlign="center" testID="transfer-which">
                         {t('transfer.phrase.which', {
-                          when: formatDateTime(sendingManifest.createdAt),
+                          when: dateTime(sendingManifest.createdAt),
                           what: documentsChipText(sendingManifest),
                         })}
                       </Meta>

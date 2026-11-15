@@ -20,6 +20,10 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Řádky s časem říkají, co se tehdy stalo.** „Aktualizováno před 5 minutami“ nad zprávami
+  a „Zálohováno 15. 11. 2026 17:13“ u zálohy místo nejasného „Naposledy“.
+- **Data se píšou podle normy.** „12. 11. 2026 9:20“ a „29. 8.“ všude stejně, v obálce, na doručence,
+  v zálohách i na razítku; dřív měla každá obrazovka svůj tvar.
 - **Odeslaná zpráva nese tutéž známku, jakou ukázalo psaní.** Stejně velkou, i s druhem zprávy,
   jen orazítkovanou. Než vyberete adresáta, stojí v rohu obálky bledá prázdná známka místo
   čárkovaného rámečku.

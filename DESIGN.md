@@ -767,6 +767,12 @@ After the critique (2026-11-15), the owner's answers, one by one:
   price lost to R2's stamp everywhere - 96 by 78 in its 12 perforated margin, blank at .55 until a
   recipient sets the price, cancelled on the sent envelope (blank there when the archive keeps no
   cost). The postmark stands 4 left of it; the waves run from 14 left of the stamp to its right edge.
+- **Dates:** the compact "12.11.2026 09:20" lost to the Czech standard's "12. 11. 2026 9:20", "29. 8."
+  in rows and on the postmark (non-breaking spaces, the hour without its zero; English "12 Nov 2026,
+  9:20", "29 Aug"), all through `src/i18n/dates.ts`. The postmark sets its date smaller when it would
+  pass the inner ring (`postmarkDateSize`).
+- **Freshness:** "Naposledy …" lost to the verb named, "Aktualizováno …" in the inbox and "Zálohováno …"
+  on the backup row.
 
 ## Do's and Don'ts
 

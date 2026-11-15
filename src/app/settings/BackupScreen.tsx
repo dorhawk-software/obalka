@@ -86,17 +86,8 @@ import { doneText, errorText } from './transferWords';
 import { useSingleFlight } from '../useSingleFlight';
 import { ContinueButton } from './ContinueButton';
 import { reportFailure } from '../../services/telemetry/telemetry';
+import { dateTime } from '../../i18n/dates';
 
-const pad =(n: number) => String(n).padStart(2, '0');
-
-/** Same shape as the message list's timestamps - one app, one date format. */
-function formatDateTime(epochMs: number): string {
-  const d = new Date(epochMs);
-  return (
-    `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ` +
-    `${pad(d.getHours())}:${pad(d.getMinutes())}`
-  );
-}
 
 
 type Busy =
@@ -1086,7 +1077,7 @@ export function BackupScreen({
                 // The pressable's label is all a screen reader says for the row, so a held backup
                 // says why it stays in it too, as the caption does (2026-09-15, review).
                 accessibilityLabel={[
-                  formatDateTime(item.manifest.createdAt),
+                  dateTime(item.manifest.createdAt),
                   documentsChipText(item.manifest),
                   documentsMissingText(item.manifest),
                   item.held ? t('backup.restore.held') : null,
@@ -1111,7 +1102,7 @@ export function BackupScreen({
                   testID={`backup-row-${index}`}
                 >
                   <YStack flex={1} gap={2}>
-                    <RowTitle>{formatDateTime(item.manifest.createdAt)}</RowTitle>
+                    <RowTitle>{dateTime(item.manifest.createdAt)}</RowTitle>
                     <Caption color={theme.textMuted}>
                       {item.restorable
                         ? `${backupSizeText(item.manifest)} · ${t('backup.restore.version', { version: item.manifest.appVersion })}`
@@ -1407,7 +1398,7 @@ export function BackupScreen({
       {doomed && !locked ? (
         <Dialog
           title={t('backup.delete.title')}
-          glyph="archive" subtitle={formatDateTime(doomed.createdAt)}
+          glyph="archive" subtitle={dateTime(doomed.createdAt)}
           // Deleting a held backup is how it is let go, so the question says what goes with it.
           body={t(
             backups.some(b => b.held && b.manifest.archiveName === doomed.archiveName)
@@ -1538,12 +1529,12 @@ export function BackupScreen({
                       {status?.last
                         ? status.last.tiers.documents && status.last.documentBytes != null
                           ? t('backup.last.documents', {
-                              when: formatDateTime(status.last.createdAt),
+                              when: dateTime(status.last.createdAt),
                               size: formatBytes(status.last.sizeBytes),
                               docSize: formatBytes(status.last.documentBytes),
                             })
                           : t('backup.last', {
-                              when: formatDateTime(status.last.createdAt),
+                              when: dateTime(status.last.createdAt),
                               size: formatBytes(status.last.sizeBytes),
                             })
                         : t('backup.never')}

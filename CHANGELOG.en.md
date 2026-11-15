@@ -20,6 +20,10 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Time lines say what happened.** "Updated 5 minutes ago" above the messages and "Backed up
+  15 Nov 2026, 17:13" on the backup, in place of a bare "Last".
+- **Dates are written the same way everywhere.** "12 Nov 2026, 9:20" and "29 Aug" on the envelope,
+  the delivery record, the backups and the postmark; the English app used to show Czech numbers.
 - **A sent message carries the stamp you saw while writing it.** The same size, kind line and
   all, now cancelled. Until you pick a recipient, the envelope's corner holds a faded blank stamp
   instead of a dashed frame.

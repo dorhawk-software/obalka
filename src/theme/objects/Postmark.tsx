@@ -8,7 +8,7 @@
 
 import Svg, { Circle, Defs, G, Path, Text, TextPath } from 'react-native-svg';
 import { useTheme } from '../ThemeProvider';
-import { postmarkPrint } from '../print';
+import { postmarkDateSize, postmarkPrint } from '../print';
 import { fonts } from '../typeScale';
 
 export function Postmark({
@@ -66,7 +66,7 @@ export function Postmark({
         textAnchor="middle"
         fill={ink}
         fontFamily={fonts.bodyBold}
-        fontSize={p.line1.size}
+        fontSize={postmarkDateSize(line1)}
       >
         {line1}
       </Text>

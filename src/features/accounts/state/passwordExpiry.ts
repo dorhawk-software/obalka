@@ -11,6 +11,7 @@
 // something that is not a legal deadline would be a category error dressed up as consistency.
 
 import type { DataBoxAccount } from '../../../services/isds/types';
+import { fullDate } from '../../../i18n/dates';
 
 export type PasswordExpiry =
   | { kind: 'none' }
@@ -43,8 +44,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * months ahead, across a new year.
  */
 export function formatExpiryDate(epochMs: number): string {
-  const d = new Date(epochMs);
-  return `${d.getDate()}.\u00A0${d.getMonth() + 1}.\u00A0${d.getFullYear()}`;
+  return fullDate(epochMs);
 }
 
 /**

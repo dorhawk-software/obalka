@@ -228,5 +228,5 @@ describe.each([
 });
 
 it('sets the date as dd.mm.yyyy and the time as hh:mm', () => {
-  expect(dateAndTime(new Date(2026, 7, 9, 7, 5).getTime())).toEqual(['09.08.2026', '07:05']);
+  expect(dateAndTime(new Date(2026, 7, 9, 7, 5).getTime())).toEqual(['9.\u00A08.\u00A02026', '7:05']);
 });

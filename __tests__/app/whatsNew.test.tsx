@@ -85,7 +85,7 @@ describe('versions', () => {
   });
 
   it('writes a release date the way the app writes dates', () => {
-    expect(releaseDate('2026-11-12')).toBe('12.11.2026');
+    expect(releaseDate('2026-11-12')).toBe('12.\u00A011.\u00A02026');
   });
 });
 
@@ -130,8 +130,8 @@ describe('the sheet', () => {
     expect(view.getByText(t('whatsNew.title', { version: '0.3.0' }))).toBeTruthy();
     expect(view.getByText('Since 0.1.0, the version you had: 3 changes')).toBeTruthy();
     // Two releases: each under its own heading, its kinds under it.
-    expect(view.getByText('Version 0.3.0 · 01.12.2026')).toBeTruthy();
-    expect(view.getByText('Version 0.2.0 · 20.11.2026')).toBeTruthy();
+    expect(view.getByText('Version 0.3.0 · 1 Dec 2026')).toBeTruthy();
+    expect(view.getByText('Version 0.2.0 · 20 Nov 2026')).toBeTruthy();
     expect(view.getByTestId('change-0.3.0-new-0')).toHaveTextContent('A deadline reminder. Set it on a message.');
     expect(view.getAllByText('New')).toHaveLength(1);
     fireEvent.press(view.getByTestId('whats-new-continue'));
@@ -171,7 +171,7 @@ describe('Settings → Co je nového', () => {
     const view = await render(themed(<ChangelogScreen onBack={() => {}} />));
     const order = ['0.4.0', '0.3.0', '0.2.0', '0.1.0'].map(v => view.getByTestId(`release-${v}`));
     expect(order).toHaveLength(4);
-    expect(view.getByText('Verze 0.1.0 · 12.11.2026')).toBeTruthy();
+    expect(view.getByText('Verze 0.1.0 · 12. 11. 2026')).toBeTruthy();
     expect(view.getByText('Pod kapotou')).toBeTruthy();
   });
 

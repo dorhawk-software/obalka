@@ -33,23 +33,23 @@ const sent = (over: Partial<MessageEnvelope> = {}): MessageEnvelope => ({
 
 describe('what the end of a sent row says', () => {
   it('Dodáno with its date once ISDS delivered it to the box', () => {
-    expect(sentRowState(sent(), NOW)).toEqual({ kind: 'delivered', label: 'Dodáno 11.11.' });
+    expect(sentRowState(sent(), NOW)).toEqual({ kind: 'delivered', label: 'Dodáno 11.\u00A011.' });
   });
 
   it('Doručeno with the date it was signed for', () => {
     const m = sent({ state: MESSAGE_STATE.servedBySignIn, acceptanceTime: NOV_12 });
-    expect(sentRowState(m, NOW)).toEqual({ kind: 'accepted', label: 'Doručeno 12.11.' });
+    expect(sentRowState(m, NOW)).toEqual({ kind: 'accepted', label: 'Doručeno 12.\u00A011.' });
     expect(sentRowState({ ...m, state: MESSAGE_STATE.read }, NOW)?.kind).toBe('accepted');
   });
 
   it('Doručeno fikcí with the date the law signed for it', () => {
     const m = sent({ state: MESSAGE_STATE.servedByFiction, acceptanceTime: NOV_12 });
-    expect(sentRowState(m, NOW)).toEqual({ kind: 'fiction', label: 'Doručeno fikcí 12.11.' });
+    expect(sentRowState(m, NOW)).toEqual({ kind: 'fiction', label: 'Doručeno fikcí 12.\u00A011.' });
   });
 
   it('falls back to the delivery when ISDS gave no time for the signing', () => {
     const m = sent({ state: MESSAGE_STATE.servedBySignIn, acceptanceTime: null });
-    expect(sentRowState(m, NOW)).toEqual({ kind: 'delivered', label: 'Dodáno 11.11.' });
+    expect(sentRowState(m, NOW)).toEqual({ kind: 'delivered', label: 'Dodáno 11.\u00A011.' });
   });
 
   it('nothing while ISDS has not delivered it, and the stop for one it never will', () => {
@@ -74,7 +74,7 @@ describe('the row', () => {
     expect(view.getByText('11')).toBeTruthy();
     expect(view.getByText('Žádost o prodloužení lhůty')).toBeTruthy();
     expect(view.getByText('Finanční úřad pro Lesní kraj')).toBeTruthy();
-    expect(view.getByTestId('sentRowState')).toHaveTextContent('Dodáno 11.11.');
+    expect(view.getByTestId('sentRowState')).toHaveTextContent('Dodáno 11. 11.');
     // The one countdown left in the app: delivered, nobody has signed for it yet.
     expect(view.getByText(/fikce za 8 dní/)).toBeTruthy();
   });

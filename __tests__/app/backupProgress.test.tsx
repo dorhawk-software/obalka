@@ -29,7 +29,7 @@ describe('BackupScreen while it runs', () => {
       new RegExp(t('backup.stage.reading')),
     );
     expect(view.getByTestId('backup-stage')).toHaveTextContent(/Jan Novák/);
-    expect(view.getByTestId('backup-last')).toHaveTextContent(/Naposledy/);
+    expect(view.getByTestId('backup-last')).toHaveTextContent(/Zálohováno/);
     expect(view.getByTestId('backup-count')).toHaveTextContent('12 z 40');
     expect(view.getByTestId('backup-progress').props.accessibilityValue).toEqual({
       min: 0,
@@ -48,7 +48,7 @@ describe('BackupScreen while it runs', () => {
     });
     expect(view.queryByTestId('backup-progress')).toBeNull();
     expect(view.queryByTestId('backup-stage')).toBeNull();
-    expect(view.getByTestId('backup-last')).toHaveTextContent(/Naposledy/);
+    expect(view.getByTestId('backup-last')).toHaveTextContent(/Zálohováno/);
   });
 
   it('does not move the rest of the screen when a run starts', async () => {

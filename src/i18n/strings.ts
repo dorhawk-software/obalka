@@ -558,10 +558,10 @@ const cs: Record<string, string> = {
   'backup.leave.notStopped': 'Obnovu už nejde zastavit, dokončí se na pozadí.',
   'backup.cancelled': 'Záloha byla zrušena.',
   'backup.now': 'Zálohovat nyní',
-  'backup.last': 'Naposledy {when} · {size}',
+  'backup.last': 'Zálohováno {when} · {size}',
   // Se zapnutými přílohami znamená "zálohováno" něco jiného, a řádek to musí říct - jinak dvě zálohy
   // vypadají stejně a jedna z nich přílohy neobsahuje (FR-008).
-  'backup.last.documents': 'Naposledy {when} · {size} + přílohy {docSize}',
+  'backup.last.documents': 'Zálohováno {when} · {size} + přílohy {docSize}',
   // The same two sizes on each row of the backup list (2026-10-03): the row showed the archive alone, so
   // a backup chipped "Všechny přílohy" read as 14 kB.
   'backup.size.documents': '{size} + přílohy {docSize}',
@@ -1393,8 +1393,8 @@ const en: Record<string, string> = {
   'backup.leave.notStopped': 'The restore can no longer be stopped, so it will finish in the background.',
   'backup.cancelled': 'The backup was cancelled.',
   'backup.now': 'Back up now',
-  'backup.last': 'Last {when} · {size}',
-  'backup.last.documents': 'Last {when} · {size} + {docSize} of documents',
+  'backup.last': 'Backed up {when} · {size}',
+  'backup.last.documents': 'Backed up {when} · {size} + {docSize} of documents',
   'backup.size.documents': '{size} + {docSize} of documents',
   'backup.never': 'Not backed up yet',
   'backup.scope': 'What the backup holds',

@@ -65,6 +65,7 @@ import { Well } from '../../../theme/Well';
 import { NeutralButton } from '../../../theme/NeutralButton';
 import { EmptyObject } from '../../../theme/EmptyObject';
 import { EnvelopePose } from '../../../theme/objects/Envelope';
+import { dateTime } from '../../../i18n/dates';
 
 type State =
   | { status: 'loading' }
@@ -85,18 +86,9 @@ type State =
     }
   | { status: 'error'; messageKey: string };
 
-const pad = (n: number) => String(n).padStart(2, '0');
-
-/** Full "dd.mm.yyyy hh:mm" - message detail wants the time, not just the date. */
+/** The date and the time (`dates.ts`) - message detail wants the time, not just the date. */
 function formatDateTime(epochMs: number | null): string {
-  if (epochMs == null) {
-    return '—';
-  }
-  const d = new Date(epochMs);
-  return (
-    `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ` +
-    `${pad(d.getHours())}:${pad(d.getMinutes())}`
-  );
+  return epochMs == null ? '—' : dateTime(epochMs);
 }
 
 /**

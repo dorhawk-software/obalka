@@ -12,7 +12,8 @@ import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import { darkTheme, lightTheme } from '../../src/theme/theme';
 import { objectShadow } from '../../src/theme/depth';
 import { setActiveLocale } from '../../src/i18n/strings';
-import { DetailEnvelope, dayMonth } from '../../src/features/messages/screens/DetailEnvelope';
+import { DetailEnvelope } from '../../src/features/messages/screens/DetailEnvelope';
+import { shortDate } from '../../src/i18n/dates';
 import type { DataBoxAccount, MessageEnvelope } from '../../src/services/isds/types';
 
 const DELIVERED = new Date(2026, 7, 19, 9, 41).getTime();
@@ -109,12 +110,13 @@ describe.each([
 it('strikes the postmark with the day and the minute ISDS delivered it', async () => {
   const view = await mount();
   const said = JSON.stringify(view.toJSON());
-  expect(said).toContain('19.08.');
-  expect(said).toContain('09:41');
+  // The Czech standard's form, the hour without its zero (dates.ts, the owner 2026-11-15).
+  expect(said).toContain('19.\u00A08.');
+  expect(said).toContain('9:41');
   expect(said).toContain('DODÁNO · DATOVÁ SCHRÁNKA ·');
   // A picture of the record below, not a second reading of it.
   expect(view.getByTestId('detailPostmark', { includeHiddenElements: true }).props.accessibilityElementsHidden).toBe(true);
-  expect(dayMonth(new Date(2026, 0, 3, 23, 59).getTime())).toBe('03.01.');
+  expect(shortDate(new Date(2026, 0, 3, 23, 59).getTime())).toBe('3.\u00A01.');
 });
 
 it('strikes no postmark on a message ISDS has not delivered', async () => {

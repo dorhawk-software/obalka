@@ -26,19 +26,8 @@ import { boxTypeLabel, boxTypeShort } from '../../accounts/state/boxType';
 import { partyName } from '../state/partyName';
 import { textSlop } from '../../../theme/touchTarget';
 import { FlyingTile, useOpening, type TileRect } from './EnvelopeFlight';
+import { clock, shortDate } from '../../../i18n/dates';
 
-const pad = (n: number) => String(n).padStart(2, '0');
-
-/** "19.08.", the date a postmark strikes. */
-export function dayMonth(epochMs: number): string {
-  const d = new Date(epochMs);
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.`;
-}
-
-function hourMinute(epochMs: number): string {
-  const d = new Date(epochMs);
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
 
 /**
  * The quieter line by a name (the owner, 2026-11-13): the box's legal form short - "PFO" - then what
@@ -120,8 +109,8 @@ function SentCorner({ sentAt }: { readonly sentAt: number | null }) {
         >
           <Postmark
             ring={t('send.sent.postmark.ring')}
-            line1={dayMonth(sentAt)}
-            line2={hourMinute(sentAt)}
+            line1={shortDate(sentAt)}
+            line2={clock(sentAt)}
             size={108}
             rotate={-6}
             waves={false}
@@ -210,7 +199,7 @@ export function DetailEnvelope({
                 importantForAccessibility="no-hide-descendants"
                 testID="detailPostmark"
               >
-                <Postmark ring={t('detail.postmark.ring')} line1={dayMonth(delivered)} line2={hourMinute(delivered)} />
+                <Postmark ring={t('detail.postmark.ring')} line1={shortDate(delivered)} line2={clock(delivered)} />
               </View>
             ) : null}
             {sent ? (

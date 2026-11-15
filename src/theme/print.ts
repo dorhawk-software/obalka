@@ -107,9 +107,31 @@ export const postmarkPrint = {
   waves: 'M2 30q5-4 10 0t10 0M2 42q5-4 10 0t10 0M2 54q5-4 10 0t10 0',
   /** The words round the ring, and the two lines in its middle (the date, then the time). */
   ringText: { size: 6.6, spacing: 1.2 },
-  line1: { y: 39, size: 11 },
+  /** `max`: the widest date the inner ring holds at the cap's top, the "28.12." it was drawn for. */
+  line1: { y: 39, size: 11, max: 32 },
   line2: { y: 50, size: 9 },
 } as const;
+
+/**
+ * Public Sans Bold's advances, per 1000 of the size, for what a postmark's date can hold: the digits,
+ * the full stop, the spaces and the English months' letters (measured from the shipped font).
+ */
+const DATE_ADVANCE: Readonly<Record<string, number>> = {
+  '0': 644, '1': 428, '2': 635, '3': 665, '4': 656, '5': 675, '6': 660, '7': 626, '8': 671, '9': 659,
+  '.': 270, ' ': 226, '\u00A0': 226, J: 402, a: 566, n: 593, F: 614, e: 576, b: 608, M: 918, r: 412,
+  A: 726, p: 607, y: 563, u: 595, l: 329, g: 628, S: 692, O: 760, c: 547, t: 416, N: 782, o: 576,
+  v: 520, D: 720,
+};
+
+/**
+ * The postmark's date size: `line1.size`, or smaller when the words would pass the inner ring.
+ * "28. 12." and "30 Sep" (031 T050's date form) are wider than the "28.12." the ring was drawn for;
+ * SVG text does not fit itself.
+ */
+export function postmarkDateSize(date: string): number {
+  const em = [...date].reduce((width, c) => width + (DATE_ADVANCE[c] ?? 700), 0) / 1000;
+  return Math.min(postmarkPrint.line1.size, postmarkPrint.line1.max / em);
+}
 
 /** The envelope's corner, and the window's within it (inbox header and the large envelopes). */
 export const envelopeShape = {
