@@ -193,7 +193,11 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   paper can be drawn at the measured size, then all of it at once (`objects.test`, red before). A
   40 s screen recording of a cold start on Obalka_Demo: the stamp's first frame is whole, gold and
   words together. Walked at full resolution beside InboxA, light and dark, Czech and English.
-- [ ] I29 Message detail, received - **D**: boards "Message - the envelope it came in" and "Message - dark".
+- [x] I29 Message detail, received - **D**: boards "Message - the envelope it came in" and "Message - dark".
+  Built in T032. Walked again 2026-11-15 at full resolution beside Detail and DetailDark, light and dark, Czech and English: as T032 lists. Found: the English postmark's words ran round two thirds
+  of the ring (104 of its 157 against the Czech 135); they are "DELIVERED · DATA BOX · ISDS ·" (133),
+  and the sent one "SENT · DATA BOX SYSTEM · ISDS ·" (145, the Czech 145; it was 79). Held by
+  `postmarkRingWords.test`, red before.
 - [x] I30 Message detail, sent (recipient card, delivery timeline) - **X**: R7. Fixed 2026-11-13: the
   Sent board's envelope in `DetailEnvelope` (`sent`): from this box with its ID, the recipient with
   their ID and address in the 236 window (015 US3), the 84 stamp blank and cancelled by the postmark
@@ -224,16 +228,30 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     `__tests__/dev/demoData.test.ts` (red with `DEMO_DATA` on). Walked light and dark: the three
     details as R7's slip draws them, and the undeliverable row, whose "Nedoručitelné" was the stop
     chip's paper on the paper - invisible - and is now the stop's ink.
-- [ ] I32 Fiction banner - **D**: board Message (gold band with "Připomenout").
-- [ ] I33 Delivery record (Doručenka card, dotted rail) - **D**: the slip, board Message.
+- [x] I32 Fiction banner - **D**: board Message (gold band with "Připomenout"). Built in T032. Walked again 2026-11-15 at full resolution beside Detail and DetailDark, light and dark, Czech and English.
+- [x] I33 Delivery record (Doručenka card, dotted rail) - **D**: the slip, board Message. Built in T032.
+  Walked again 2026-11-15 at full resolution beside Detail and DetailDark, light and dark, Czech and English.
 - [ ] I34 Term card, "alerts off" line, deadline suggestion (scan) - **X**: not on a board. R7.
   2026-11-13: the reminder row matches R7 (56, 8/12, its glyph in a well, 14/600 over 13/500, the
   muted chevron), walked; the "alerts off" line and the scan suggestion are still today's.
-- [ ] I35 Attachments: none, unavailable, downloading, not downloaded, missing, corrupt, opening, saved -
+- [x] I35 Attachments: none, unavailable, downloading, not downloaded, missing, corrupt, opening, saved -
   **D** for the saved row (board Message); **X** for the other states, R7. 2026-11-13: not downloaded
   matches R7 (one card, the attach glyph in a well, the blue download inside it at 48 / 13 with the
   offset download glyph, 15/700), walked; the other states are still today's.
-- [ ] I36 Signed original (ZFO) row - **D**: board Message (Pečeť glyph in a well).
+  Done 2026-11-15, no board drawing them (T051): R7's card anatomy for each. The files that went
+  missing keep the soft-gold notice DESIGN.md gives them, its outlined surface button now R7's blue
+  download (`DownloadButton`, shared with the not-downloaded card); a message gone from ISDS is R7's
+  card with the attach glyph in its well and nothing to press (its 22 above rounded to 24); a file
+  that cannot be opened (missing, undecodable) is its own sheet at the app's .55 dim with the red
+  words, no longer an alert glyph in a well. Downloading stays the quiet line over the progress bar
+  (R8); none stays the muted line; opening's spinner goes with I76. The cards moved to
+  `AttachmentCards.tsx` (MessageDetail 1053 -> 985 lines). Held by `messageDetailDownload.test` and
+  `attachmentRows.test`, red before. Walked through temporary swaps (removed), light and dark,
+  Czech and English.
+- [x] I36 Signed original (ZFO) row - **D**: board Message (Pečeť glyph in a well). Built in T032.
+  Walked again 2026-11-15 at full resolution beside Detail and DetailDark, light and dark, Czech and English; the stored row through a temporary swap (no demo message holds its original). The offer to
+  fetch it is the stored row's anatomy. Gone from ISDS, it kept a file-x glyph: it is the seal, faint
+  (`signedOriginalSection.test`, red before); `FileXIcon` is gone.
 - [x] I37 Test-environment banner (`StatusStrip` test tone, flask) - **X**: the airmail strip. R7. Fixed
   2026-11-13: `TestEnvBanner` lays the existing `AirmailStrip` over `surface-alt`, the band 28 with 16
   sides, the Badge label in ink taking the row's width (dark cut "prostředí" off before), no glyph or
@@ -980,6 +998,12 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     on two rows. DESIGN.md to record the popover (`objectShadow('popover')`).
   - R9 snackbar: drawn only light, with an action. At night the build gives it the dark popover's
     faint white edge; words with no action keep 16 at the right, not 6.
+  - InboxA's clip in the register has no text lines; the Icons board's attach glyph, built, has two.
+  - Message's attachments: only the saved row and R7's not-downloaded card are drawn; the build
+    gives the missing-files notice R7's blue download, the gone card R7's anatomy, a file it cannot
+    open its own sheet at .55, and the gone original its seal, faint (I35, I36).
+  - The postmark's English words (the boards are Czech): "DELIVERED · DATA BOX · ISDS ·" and
+    "SENT · DATA BOX SYSTEM · ISDS ·", so the ring closes as the Czech does.
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).

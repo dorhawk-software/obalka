@@ -39,7 +39,7 @@ export const en: Record<string, string> = {
     'ISDS accepted it on {date} at {time}. Once the recipient opens it, the delivery record fills in by itself.',
   'send.sent.body.ve':
     'ISDS accepted it on {date} at {time}. Once the recipient opens it, the delivery record fills in by itself.',
-  'send.sent.postmark.ring': 'SENT · DATA BOX ·',
+  'send.sent.postmark.ring': 'SENT · DATA BOX SYSTEM · ISDS ·',
   'send.sent.stamp.free': '0 CZK',
   'send.sent.stamp.paid': '~{czk} CZK',
   'send.sent.record.id': 'ID {id}',

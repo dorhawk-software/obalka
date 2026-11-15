@@ -23,7 +23,6 @@ import { Spinner, XStack, YStack } from '../../../theme/ui';
 import { Caption, SmallStrong } from '../../../theme/Typography';
 import { Dialog } from '../../../theme/Dialog';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { FileXIcon } from '../../../theme/icons';
 import { OffsetIcon } from '../../../theme/offsetIcons';
 import { t } from '../../../i18n/strings';
 import { haptics } from '../../../services/haptics';
@@ -248,11 +247,8 @@ export function SignedOriginalSection({
         alignItems="center"
         justifyContent="center"
       >
-        {row.kind === 'unavailable' ? (
-          <FileXIcon size={20} color={theme.textFaint} />
-        ) : (
-          <OffsetIcon name="seal" size={24} color={theme.text} />
-        )}
+        {/* One object, one drawing: the seal, faint once ISDS no longer has the original. */}
+        <OffsetIcon name="seal" size={24} color={row.kind === 'unavailable' ? theme.textFaint : theme.text} />
       </YStack>
       <YStack flex={1} minWidth={0}>
         <SmallStrong color={row.kind === 'unavailable' ? theme.textMuted : theme.text} numberOfLines={1}>

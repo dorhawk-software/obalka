@@ -9,6 +9,8 @@ import { Dimensions, StyleSheet } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { t } from '../../src/i18n/strings';
+import { OffsetIcon } from '../../src/theme/offsetIcons';
+import { lightTheme } from '../../src/theme/theme';
 import type {
   DataBoxAccount,
   MessageEnvelope,
@@ -141,6 +143,18 @@ describe('the signed original row', () => {
     expect(row.props.accessibilityRole).toBeUndefined();
     fireEvent.press(row);
     expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('keeps the seal in its well when gone, faint, not another glyph (031 I36)', async () => {
+    // One object, one drawing: until 2026-11-15 the gone original swapped the seal for a file-x.
+    const { view } = await section({ unavailable: true });
+    await view.findByTestId('signed-original');
+    const seal = await render(
+      <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
+        <OffsetIcon name="seal" size={24} color={lightTheme.textFaint} />
+      </TamaguiProvider>,
+    );
+    expect(JSON.stringify(view.toJSON())).toContain(JSON.stringify(seal.toJSON()));
   });
 
   it('says in the caption, in place, when a fetch failed', async () => {

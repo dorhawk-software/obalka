@@ -20,6 +20,10 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Anglické razítko obíhá celý kruh.** Jeho slova vyplní kruh stejně jako česká, nezůstane v něm
+  prázdné místo.
+- **Přílohy, které se nedaly stáhnout nebo otevřít, mají stejný vzhled jako ostatní.** Soubor zůstává
+  listem papíru, jen bledším, a chybějící přílohy stáhnete modrým tlačítkem jako celou zprávu.
 - **Přepínač Přijaté a Odeslané má písmo celé aplikace** a zvolená záložka i tlačítko Napsat se při
   spuštění objeví celé najednou, ne po kouscích.
 - **Připomínky a upozornění na heslo mají v liště oznámení modrou barvu obálky,** stejnou jako ikona

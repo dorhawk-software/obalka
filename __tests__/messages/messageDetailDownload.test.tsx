@@ -12,6 +12,7 @@ import { reauthKey } from '../../src/features/accounts/state/reauthCopy';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { t } from '../../src/i18n/strings';
+import { lightTheme } from '../../src/theme/theme';
 import type {
   DataBoxAccount,
   MessageEnvelope,
@@ -139,6 +140,8 @@ describe('the detail screen after a download that brought no attachments', () =>
   it('shows the files as no longer available only when the controller says ISDS deleted the message', async () => {
     const view = await downloadWith({ kind: 'gone' });
     await waitFor(() => view.getByText(t('detail.attachments.unavailable.title')));
+    // R7's card: the attach glyph in its well over the words (031 I35; a plain file-x glyph before).
+    expect(view.getByTestId('attachmentsUnavailable')).toBeTruthy();
     // Nothing left to press: ISDS said the message is gone, and asking again would not change that.
     expect(view.queryByTestId('downloadAttachments')).toBeNull();
     // The controller has recorded it already (`attachmentsGone`); the screen does not write it twice.
@@ -195,6 +198,20 @@ describe('the detail screen for a large-volume message with enclosures missing',
     // Whole again: no warning line, and each file says it lies in the archive (031).
     expect(view.queryByText(t('detail.attachments.partlySaved'))).toBeNull();
     expect(view.getAllByText(new RegExp(t('detail.attachment.inArchive').replace(/\u00A0/g, ' '))).length).toBeGreaterThan(0);
+  });
+
+  it('offers them on the blue download R7 draws, not an outlined button (031 I35)', async () => {
+    // Until 2026-11-15 the soft-gold notice held a surface button with a 1 px outline.
+    const view = await downloadWith({
+      kind: 'partial',
+      detail: partial,
+      failure: { kind: 'error', messageKey: 'detail.attachments.missingFailed' },
+    });
+    await waitFor(() => view.getByText(incompleteText));
+    const face = StyleSheet.flatten(
+      view.getByTestId('downloadMissingAttachments-face', { includeHiddenElements: true }).props.style as StyleProp<TextStyle>,
+    ) as Record<string, unknown>;
+    expect([face.backgroundColor, face.borderTopWidth ?? 0, face.minHeight]).toEqual([lightTheme.blue, 0, 48]);
   });
 
   it('says a lost session in the words that lead to signing in again', async () => {

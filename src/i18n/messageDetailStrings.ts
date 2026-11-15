@@ -133,7 +133,7 @@ export const en: Record<string, string> = {
   'detail.to': 'To',
   'detail.header.received': 'Received message',
   'detail.header.sent': 'Sent message',
-  'detail.postmark.ring': 'DELIVERED · DATA BOX ·',
+  'detail.postmark.ring': 'DELIVERED · DATA BOX · ISDS ·',
   'detail.attachments.count.one': '{n} attachment',
   'detail.attachments.count.other': '{n} attachments',
   'detail.fikce.remind': 'Remind me',

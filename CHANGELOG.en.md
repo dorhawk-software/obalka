@@ -20,6 +20,10 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The English postmark reads all the way round its ring.** Its words fill the ring as the Czech
+  ones do, with no empty stretch left in it.
+- **Attachments that could not be downloaded or opened look like the rest.** A file stays a sheet
+  of paper, only fainter, and missing ones come back with the same blue button as the whole message.
 - **The Received and Sent switch is set in the app's own typeface,** and at launch the chosen tab and
   the Compose button appear whole at once, not piece by piece.
 - **Reminders and password alerts carry the envelope's blue in the notification shade,** the same as

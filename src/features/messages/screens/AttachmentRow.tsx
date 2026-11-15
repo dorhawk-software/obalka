@@ -8,7 +8,6 @@ import { Spinner, XStack, YStack } from '../../../theme/ui';
 import { Dialog } from '../../../theme/Dialog';
 import { Caption, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { AlertIcon } from '../../../theme/icons';
 import { OffsetIcon } from '../../../theme/offsetIcons';
 import { DocSheet } from '../../../theme/objects/DocSheet';
 import { reportFailure } from '../../../services/telemetry/telemetry';
@@ -137,21 +136,11 @@ export function AttachmentRow({
         style={({ pressed }) => ({ flex: 1, opacity: pressed && !blocked ? 0.7 : 1 })}
       >
         <XStack alignItems="center" gap={12} minHeight={52}>
-          {blocked ? (
-            // A file that cannot be opened keeps the alert in its tile (the blocked states are R7's).
-            <YStack
-              width={40}
-              minHeight={40}
-              borderRadius={12}
-              backgroundColor={theme.surfaceSunken}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <AlertIcon size={20} color={theme.danger} />
-            </YStack>
-          ) : (
+          {/* One object, one drawing: a file it cannot open is still its sheet, faint; the red
+              words under its name say why (031 I35; it was an alert glyph in a well). */}
+          <YStack opacity={blocked ? 0.55 : 1} testID={`attachment-sheet-${index}`}>
             <DocSheet name={attachment.name} />
-          )}
+          </YStack>
           <YStack flex={1} minWidth={0}>
             <SmallStrong color={theme.text} numberOfLines={1}>
               {attachment.name || '—'}

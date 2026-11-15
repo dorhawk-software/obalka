@@ -2,16 +2,13 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { touchSlop } from '../../../theme/touchTarget';
 import { Animated } from 'react-native';
 import { XStack, YStack } from '../../../theme/ui';
-import { PressScale } from '../../../theme/PressScale';
 import { Skeleton } from '../../../theme/Skeleton';
 import { attachmentFileStore } from '../../../services/files/attachmentFileStore';
-import { Body, BodyStrong, Caption, Heading, Label, Meta, Small, SmallStrong } from '../../../theme/Typography';
+import { Body, Caption, Heading, Label, Meta, Small, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
   AlertIcon,
   ChevronLeftIcon,
-  DownloadIcon,
-  FileXIcon,
   ChevronRightIcon,
 } from '../../../theme/icons';
 import { useHeaderTop } from '../../../theme/useHeaderTop';
@@ -57,6 +54,7 @@ import { DetailEnvelope } from './DetailEnvelope';
 import { TileAtRest, type TileRect } from './EnvelopeFlight';
 import { FictionBanner } from './FictionBanner';
 import { SignedOriginalSection } from './SignedOriginalSection';
+import { AttachmentsUnavailableCard, DownloadButton } from './AttachmentCards';
 import {
   deliveryRecord,
   mergeSameTimeHead,
@@ -66,7 +64,6 @@ import { Well } from '../../../theme/Well';
 import { NeutralButton } from '../../../theme/NeutralButton';
 import { EmptyObject } from '../../../theme/EmptyObject';
 import { EnvelopePose } from '../../../theme/objects/Envelope';
-import { OffsetIcon } from '../../../theme/offsetIcons';
 
 type State =
   | { status: 'loading' }
@@ -582,36 +579,6 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
     envelope.state === MESSAGE_STATE.delivered;
   const stateAsOf = stateCanChange ? state.syncedAt : null;
 
-  // Standing "no longer in ISDS" notice (B2), wherever a re-download would be offered. Standalone it
-  // carries the section's top margin; inside the attachment stack the caller passes 0.
-  const renderUnavailableNotice = (marginTop: number) => (
-    <Card
-      marginTop={marginTop}
-      padding={16}
-    >
-      <XStack gap={12} alignItems="flex-start">
-        <YStack
-          width={40}
-          minHeight={40}
-          borderRadius={11}
-          backgroundColor={theme.surfaceSunken}
-          alignItems="center"
-          justifyContent="center"
-        >
-          <FileXIcon size={20} color={theme.textFaint} />
-        </YStack>
-        <YStack flex={1} gap={4}>
-          <SmallStrong color={theme.text}>
-            {t('detail.attachments.unavailable.title')}
-          </SmallStrong>
-          <Caption color={theme.textMuted}>
-            {t('detail.attachments.unavailable.body')}
-          </Caption>
-        </YStack>
-      </XStack>
-    </Card>
-  );
-
   // The soft-gold missing-attachments notice (DESIGN.md) with the download that brings them back - one
   // card, the same metrics, for files gone from the device and for enclosures that never arrived. The
   // last failure keeps its line while a retry runs, transparent and hidden from screen readers, so the
@@ -637,33 +604,13 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
           {downloadError}
         </Caption>
       ) : null}
-      <PressScale
-        fullWidth
+      <DownloadButton
+        label={actionLabel}
+        busyLabel={downloadingLabel}
         busy={downloading}
         onPress={downloadAttachments}
-        accessibilityLabel={actionLabel}
         testID={testID}
-      >
-        <XStack
-          width="100%"
-          minHeight={46}
-          borderRadius={13}
-          borderWidth={1}
-          borderColor={theme.borderStrong}
-          backgroundColor={theme.surface}
-          alignItems="center"
-          justifyContent="center"
-          gap={8}
-          opacity={downloading ? 0.55 : 1}
-        >
-          {downloading ? null : (
-            <DownloadIcon size={17} color={theme.text} />
-          )}
-          <SmallStrong color={theme.text}>
-            {downloading ? downloadingLabel : actionLabel}
-          </SmallStrong>
-        </XStack>
-      </PressScale>
+      />
       <ProgressBar
         downloading={downloading}
         fraction={downloadFraction}
@@ -674,7 +621,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
   const renderAttachmentsNotice = (count: number) => {
     const notice = attachmentsNotice({ incomplete, anyBlocked, unavailable });
     if (notice === 'unavailable') {
-      return renderUnavailableNotice(0);
+      return <AttachmentsUnavailableCard marginTop={0} />;
     }
     if (notice === 'incomplete') {
       return renderMissingNotice(
@@ -851,8 +798,9 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
               </Body>
             )
           ) : unavailable ? (
-            // Never downloaded AND now gone from ISDS → no point offering a download.
-            renderUnavailableNotice(22)
+            // Never downloaded AND now gone from ISDS → no point offering a download. 24 under the
+            // card above (22 before 031, off the scale).
+            <AttachmentsUnavailableCard marginTop={24} />
           ) : downloading ? (
             // Downloading → the design replaces the whole pending card + CTA with a quiet label over
             // the progress track (nothing else to act on while the fetch is in flight).
@@ -891,27 +839,11 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
                 ) : null}
                 {/* The download is what puts the whole message in the offline archive, so the label
                     and the quiet note under the card say exactly that. */}
-                <PressScale
-                  fullWidth
+                <DownloadButton
+                  label={t('detail.attachments.downloadFull')}
                   onPress={downloadAttachments}
-                  accessibilityLabel={t('detail.attachments.downloadFull')}
                   testID="downloadAttachments"
-                >
-                  <XStack
-                    width="100%"
-                    minHeight={48}
-                    borderRadius={13}
-                    backgroundColor={theme.blue}
-                    alignItems="center"
-                    justifyContent="center"
-                    gap={8}
-                  >
-                    <OffsetIcon name="download" size={20} color={theme.onBlue} plane="envelope" />
-                    <BodyStrong color={theme.onBlue}>
-                      {t('detail.attachments.downloadFull')}
-                    </BodyStrong>
-                  </XStack>
-                </PressScale>
+                />
               </Card>
               <Meta
                 marginTop={8}

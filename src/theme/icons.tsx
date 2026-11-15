@@ -31,7 +31,6 @@ import {
   Eye,
   EyeOff,
   File,
-  FileX,
   FlaskConical,
   Info,
   Layers,
@@ -313,11 +312,6 @@ export function ArrowRightIcon({ size = 20, color = '#000' }: IconProps) {
 
 export function DownloadIcon({ size = 18, color = '#000' }: IconProps) {
   return <Download size={size} color={color} strokeWidth={2} />;
-}
-
-/** Attachment no longer available (ISDS 90-day deletion). */
-export function FileXIcon({ size = 20, color = '#000' }: IconProps) {
-  return <FileX size={size} color={color} strokeWidth={2} />;
 }
 
 /** Offline strip - the design draws a slashed CLOUD (no sync), not a wifi mark. */

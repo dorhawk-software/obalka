@@ -4,7 +4,7 @@
 // These hold the drawing in both themes and that the two presses do their own thing.
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { processColor } from 'react-native';
+import { processColor, StyleSheet } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
@@ -164,6 +164,19 @@ it('says so when a copy could not be saved', async () => {
   const view = await themed(<AttachmentRow attachment={pdf} index={0} missing={false} />);
   fireEvent.press(view.getByTestId('attachment-save-0'));
   expect(await view.findByText('Přílohu se nepodařilo uložit.')).toBeTruthy();
+});
+
+it('draws a file it cannot open as its own sheet, faint, and says why in red (031 I35)', async () => {
+  // One object, one drawing: until 2026-11-15 a missing or undecodable file swapped its sheet for an
+  // alert glyph in a well.
+  for (const missing of [true, false]) {
+    const att = missing ? pdf : { ...pdf, localPath: undefined };
+    const view = await themed(<AttachmentRow attachment={att} index={0} missing={missing} />);
+    const all = nodes(view.toJSON());
+    expect(all.some(n => n.props.d === docSheet.sheet)).toBe(true);
+    const sheet = view.getByTestId('attachment-sheet-0', { includeHiddenElements: true });
+    expect(StyleSheet.flatten(sheet.props.style)?.opacity).toBe(0.55); // the app's one dim
+  }
 });
 
 it('offers no copy of a file that is missing from the phone', async () => {
