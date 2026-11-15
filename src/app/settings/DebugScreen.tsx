@@ -28,6 +28,7 @@ import { InkButton } from '../../theme/InkButton';
 import { NeutralButton } from '../../theme/NeutralButton';
 import { OptionGroup } from '../../theme/OptionGroup';
 import { Dialog } from '../../theme/Dialog';
+import { TrashIcon } from '../../theme/icons';
 import { useTheme } from '../../theme/ThemeProvider';
 import { space } from '../../theme/spacing';
 import { type as typeScale } from '../../theme/typeScale';
@@ -267,12 +268,14 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
           title={pendingDelete.name}
           body={t('debug.delete')}
           onDismiss={() => setPendingDelete(null)}
+          glyph="settings"
           testID="debug-delete-dialog"
           actions={[
             { label: t('common.cancel'), onPress: () => setPendingDelete(null) },
             {
               label: t('debug.delete'),
               tone: 'danger',
+              icon: color => <TrashIcon size={18} color={color} />,
               testID: 'debug-delete-confirm',
               onPress: () => {
                 const target = pendingDelete;

@@ -526,6 +526,7 @@ function LockScreen({
       </Animated.View>
       {confirmingReset ? (
         <Dialog
+          glyph="lock"
           testID="lock-reset-dialog"
           title={t('lock.reset.title')}
           body={t('lock.reset.body')}

@@ -198,6 +198,7 @@ export function AttachmentRow({
         title={t('detail.attachments')}
         body={attachmentAlert}
         onDismiss={() => setAttachmentAlert(null)}
+        glyph="attach"
         testID="attachment-alert"
         actions={[
           {

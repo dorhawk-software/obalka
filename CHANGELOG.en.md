@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Every question shows what it is about.** A mark stands above its title: the lock, the backup, the
+  attachment, the transfer or the alert; in a transfer the main answer is filled and comes first.
 - **The short notices at the bottom of the screen no longer cover the Compose button.** They stand above
   it, fade away instead of vanishing, and in dark mode have a faint edge so they don't get lost.
 - **The box menu opens beside its ⋯ button, and editing a box rises from the bottom.** The editor shows

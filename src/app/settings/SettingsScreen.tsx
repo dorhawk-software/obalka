@@ -362,6 +362,7 @@ export function SettingsScreen({
           title={t('lock.unavailable.title')}
           body={t('lock.unavailable.body')}
           onDismiss={() => setNoLock(false)}
+          glyph="lock"
           testID="lock-unavailable-dialog"
           actions={[
             {
@@ -379,6 +380,7 @@ export function SettingsScreen({
           title={t('lock.disableFailed.title')}
           body={t('lock.disableFailed.body')}
           onDismiss={() => setLockStayedOn(false)}
+          glyph="lock"
           testID="lock-disable-failed-dialog"
           actions={[
             {
@@ -393,6 +395,7 @@ export function SettingsScreen({
 
       {downloadAsk ? (
         <Dialog
+          glyph="download"
           title={t('settings.autoDownload.ask.title')}
           body={
             <YStack gap={12}>

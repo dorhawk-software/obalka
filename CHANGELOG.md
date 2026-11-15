@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Každá otázka ukazuje, čeho se týká.** Nad nadpisem je značka: zámek, záloha, příloha, přenos nebo
+  upozornění; při přenosu dat je hlavní odpověď zvýrazněná a stojí první.
 - **Krátká oznámení dole na obrazovce už nezakrývají tlačítko Napsat.** Stojí nad ním, odcházejí
   pozvolna a v tmavém režimu mají jemný okraj, aby se neztrácela.
 - **Nabídka schránky se otevře vedle tlačítka ⋯ a úprava schránky vyjíždí zdola.** Úprava ukazuje

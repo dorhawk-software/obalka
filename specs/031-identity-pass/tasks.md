@@ -432,7 +432,7 @@ surface below changes too, and the owner has seen none of them in the identity. 
 - [x] I60.2 Backup snackbars: exported, imported, verified, verify failed, prune or settings failed, "not
   stopped" - **N**: R9. Seen 2026-11-15 through the same swap with the longest, the English failed
   prune: two lines, 16 over and under, the right side 16 with no action (R9's 6 makes room for one).
-- [ ] I61 Shell notices (removal, alias - dialogs) - **D**: the dialog (I52). R9.
+- [x] I61 Shell notices (removal, alias - dialogs) - **D**: the dialog (I52). R9. Built 2026-11-15: they are I84-I86, each with its glyph. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
 - [ ] I62 Debug recording strip (takes the top inset on every screen) - **N**.
 - [ ] I63 Notifications: deadline reminder and password nudge (small icon `ic_notification`, colour
   #2A5C9A) - **D**: the accent becomes the envelope's #2563A6; the glyph is the envelope already.
@@ -493,31 +493,31 @@ surface below changes too, and the owner has seen none of them in the identity. 
 All **N**: R9 draws the anatomy once with the longest of each kind; each line is walked in both themes
 and both languages when built.
 
-- [ ] I84 `box.removeFailed.title` - kept, incomplete, unknown; close, retry (`AppShell`).
-- [ ] I85 `box.aliasFailed.title` (`AppShell`).
-- [ ] I86 `notif.passwordAsk.title`, the nudge before the OS asks (`AppShell`).
-- [ ] I87 `vault.lost.title` - every box asks to sign in again (`VaultLostNotice`).
-- [ ] I88 `lock.reset.title` - cancel, danger confirm (`LockGate`).
+- [x] I84 `box.removeFailed.title` - kept, incomplete, unknown; close, retry (`AppShell`). Glyph `boxes`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I85 `box.aliasFailed.title` (`AppShell`). Glyph `boxes`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I86 `notif.passwordAsk.title`, the nudge before the OS asks (`AppShell`). Glyph `bell` (it had none; the guard test found it). Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I87 `vault.lost.title` - every box asks to sign in again (`VaultLostNotice`). Glyph `lock`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I88 `lock.reset.title` - cancel, danger confirm (`LockGate`). Glyph `lock`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
 - [x] I89 `box.removeTitle` - keep, danger delete with the bin (`RemoveBoxDialog`). Built 2026-11-15:
   the box's envelope tile at 64, tilted 2 degrees, instead of its name (R9); Smazat first with its bin
   at 18, Ponechat under it. Walked light and dark, Czech and English, against R9's two phones.
   Rounding: the tile's 17 corner is 16.
-- [ ] I90 `detail.attachments` - no viewer, cannot open (`MessageDetail`).
-- [ ] I91 `detail.original.heading` - cannot open the signed original (`SignedOriginalSection`).
-- [ ] I92 `lock.unavailable.title` (`SettingsScreen`).
-- [ ] I93 `lock.disableFailed.title` (`SettingsScreen`).
-- [ ] I94 `settings.autoDownload.ask.title` with its option group (`SettingsScreen`).
-- [ ] I95 Debug: delete a recording, titled with the file name (`DebugScreen`).
-- [ ] I96 Backup: leave while working - restore, verify, default; background, cancel, stay.
-- [ ] I97 `backup.off.title`.
-- [ ] I98 `backup.prune.title`.
-- [ ] I99 `backup.docs.ask.title` / `backup.docs.change.title` with the document mode choice.
-- [ ] I100 `backup.delete.title` with the backup's date.
-- [ ] I101 `backup.noLock.title`.
-- [ ] I102 `transfer.outcome.title` (on the backup screen).
-- [ ] I103 `backup.restore.outcome.title`.
-- [ ] I104 `transfer.metered.title` - cancel, transfer anyway.
-- [ ] I105 `transfer.got.title` - what came, too new, unsupported.
+- [x] I90 `detail.attachments` - no viewer, cannot open (`MessageDetail`). Glyph `attach` (the dialog lives in `AttachmentRow`). Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I91 `detail.original.heading` - cannot open the signed original (`SignedOriginalSection`). Glyph `seal`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I92 `lock.unavailable.title` (`SettingsScreen`). Glyph `lock`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I93 `lock.disableFailed.title` (`SettingsScreen`). Glyph `lock`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I94 `settings.autoDownload.ask.title` with its option group (`SettingsScreen`). Glyph `download`; the tallest, its words and options scroll, its answers stay. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I95 Debug: delete a recording, titled with the file name (`DebugScreen`). Glyph `settings`; Smazat carries the bin at 18, as I89's. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I96 Backup: leave while working - restore, verify, default; background, cancel, stay. Glyph `archive`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I97 `backup.off.title`. Glyph `archive`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I98 `backup.prune.title`. Glyph `archive`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I99 `backup.docs.ask.title` / `backup.docs.change.title` with the document mode choice. Glyph `attach`; the choice scrolls with the words, the answers stay. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I100 `backup.delete.title` with the backup's date. Glyph `archive`; its bin was 16, now 18 as I89's. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I101 `backup.noLock.title`. Glyph `lock`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I102 `transfer.outcome.title` (on the backup screen). Glyph `transfer`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I103 `backup.restore.outcome.title`. Glyph `archive`. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I104 `transfer.metered.title` - cancel, transfer anyway. Glyph `transfer`; "Přenést i tak" is filled and first, as R9 draws it (it was neutral). Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
+- [x] I105 `transfer.got.title` - what came, too new, unsupported. Glyph `transfer`; the confirm is filled, as I104's. Walked 2026-11-15 light and dark, Czech and English, through a temporary gallery that opened all 22 in turn (removed).
 
 ### Controls and shared pieces (each with its states: rest, pressed, focus, selected, disabled, busy)
 
@@ -885,6 +885,8 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   part-way and stayed there, Pokračovat under the screen's edge (the sheet laid out at full height,
   drawn 980 px lower). Not seen again in seven launches; Reanimated's entering animation on the
   Modal is the suspect.
+  Raised in I95: the debug delete's words repeat its answer ("Smazat …?" over Smazat); a body that says
+  what goes would read better.
   Raised in I51: the scanner's sentence without the camera fits two lines under R13's 300 cap on the
   board and needs three on Android (the face 2 % wider); balanced, as the board's `text-wrap`, so no
   word stands alone.

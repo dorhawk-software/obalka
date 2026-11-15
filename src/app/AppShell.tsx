@@ -1213,7 +1213,7 @@ export function AppShell() {
     noticeDialog = (
       <Dialog
         key={`alias:${notice.boxId}`}
-        testID="aliasFailed"
+        testID="aliasFailed" glyph="boxes"
         title={t('box.aliasFailed.title')}
         subtitle={notice.name ?? undefined}
         body={t('box.aliasFailed.body')}
@@ -1432,7 +1432,7 @@ export function AppShell() {
       {noticeDialog}
       {nudgeAsk != null && notice == null && !covered ? (
         <Dialog
-          testID="nudgeAsk"
+          testID="nudgeAsk" glyph="bell"
           title={t('notif.passwordAsk.title')}
           subtitle={nudgeAsk.boxName}
           body={t('notif.passwordAsk.body', { date: formatExpiryDate(nudgeAsk.expiresAt) })}

@@ -55,6 +55,8 @@ export function TransferDialogs({
           },
           {
             label: t('transfer.metered.confirm'),
+            // R9 fills it: the answer the question is asking for, first under the words.
+            tone: 'primary',
             testID: 'transfer-metered-confirm',
             onPress: onMeteredConfirm,
           },
@@ -64,6 +66,7 @@ export function TransferDialogs({
 
     {got && !covered ? (
       <Dialog
+        glyph="transfer"
         title={t('transfer.got.title')}
         body={
           got.restorable
@@ -88,6 +91,7 @@ export function TransferDialogs({
                 },
                 {
                   label: t('transfer.got.confirm'),
+                  tone: 'primary',
                   testID: 'transfer-received-confirm',
                   onPress: onConfirm,
                 },

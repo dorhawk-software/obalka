@@ -39,6 +39,7 @@ export function VaultLostNotice({ source }: { readonly source: LostSecretsSource
   };
   return (
     <Dialog
+      glyph="lock"
       title={t('vault.lost.title')}
       body={t('vault.lost.body')}
       onDismiss={dismiss}

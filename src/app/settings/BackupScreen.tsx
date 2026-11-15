@@ -250,7 +250,7 @@ export function deleteDialogActions({
     {
       label: t('backup.delete'),
       tone: 'danger',
-      icon: color => <TrashIcon size={16} color={color} />,
+      icon: color => <TrashIcon size={18} color={color} />,
       testID: 'backup-delete-confirm',
       onPress: remove,
     },
@@ -1336,7 +1336,7 @@ export function BackupScreen({
           title={leaveCopy(leaving).title}
           body={leaveCopy(leaving).body}
           onDismiss={() => setDialog(null)}
-          testID="backup-leave-dialog"
+          testID="backup-leave-dialog" glyph="archive"
           // The tested builder, not a copy of it inline: the copy is where a change to what "cancel"
           // does would go untested (2026-09-15).
           actions={leaveDialogActions({
@@ -1354,7 +1354,7 @@ export function BackupScreen({
           title={t('backup.off.title')}
           body={t('backup.off.body')}
           onDismiss={() => setDialog(null)}
-          testID="backup-disable-dialog"
+          testID="backup-disable-dialog" glyph="archive"
           actions={[
             {
               label: t('common.cancel'),
@@ -1376,7 +1376,7 @@ export function BackupScreen({
           title={t('backup.prune.title')}
           body={pruneBody(unheld - pendingKeep, pendingKeep, backups.length - unheld)}
           onDismiss={() => setPendingKeep(null)}
-          testID="backup-prune-dialog"
+          testID="backup-prune-dialog" glyph="archive"
           actions={pruneDialogActions({
             close: () => setPendingKeep(null),
             confirm: () => {
@@ -1393,7 +1393,7 @@ export function BackupScreen({
           title={t(documentAsk.changing ? 'backup.docs.change.title' : 'backup.docs.ask.title')}
           body={<DocumentModeChoice ask={documentAsk} onChange={mode => setDocumentAsk({ ...documentAsk, mode })} />}
           onDismiss={() => setDocumentAsk(null)}
-          testID="backup-documents-dialog"
+          testID="backup-documents-dialog" glyph="attach"
           actions={[
             {
               label: t('common.cancel'),
@@ -1417,7 +1417,7 @@ export function BackupScreen({
       {doomed && !locked ? (
         <Dialog
           title={t('backup.delete.title')}
-          subtitle={formatDateTime(doomed.createdAt)}
+          glyph="archive" subtitle={formatDateTime(doomed.createdAt)}
           // Deleting a held backup is how it is let go, so the question says what goes with it.
           body={t(
             backups.some(b => b.held && b.manifest.archiveName === doomed.archiveName)
@@ -1454,7 +1454,7 @@ export function BackupScreen({
           title={t('backup.noLock.title')}
           body={t('backup.noLock.body')}
           onDismiss={() => setDialog(null)}
-          testID="backup-nolock-dialog"
+          testID="backup-nolock-dialog" glyph="lock"
           actions={[
             {
               label: t('common.ok'),
@@ -1479,7 +1479,7 @@ export function BackupScreen({
               : errorText(transferOutcome.error)
           }
           onDismiss={() => setTransferOutcome(null)}
-          testID="backup-transfer-outcome"
+          testID="backup-transfer-outcome" glyph="transfer"
           actions={[
             {
               label: t('common.ok'),
@@ -1503,7 +1503,7 @@ export function BackupScreen({
               : restoreErrorText(restoreOutcomes[0].error)
           }
           onDismiss={dismissRestoreOutcome}
-          testID="backup-restore-outcome"
+          testID="backup-restore-outcome" glyph="archive"
           actions={[
             {
               label: t('common.ok'),

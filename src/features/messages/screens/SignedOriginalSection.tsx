@@ -362,6 +362,7 @@ export function SignedOriginalSection({
           title={t('detail.original.heading')}
           body={alert}
           onDismiss={() => setAlert(null)}
+          glyph="seal"
           testID="signed-original-alert"
           actions={[
             {
