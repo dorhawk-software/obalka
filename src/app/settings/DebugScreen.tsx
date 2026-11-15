@@ -265,8 +265,9 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
     <>
       {pendingDelete ? (
         <Dialog
-          title={pendingDelete.name}
-          body={t('debug.delete')}
+          title={t('debug.delete.title')}
+          subtitle={pendingDelete.name}
+          body={t('debug.delete.body')}
           onDismiss={() => setPendingDelete(null)}
           glyph="settings"
           testID="debug-delete-dialog"

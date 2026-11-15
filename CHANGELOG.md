@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Smazání záznamu z režimu ladění se ptá jako smazání zálohy.** „Smazat záznam?“, pod tím název
+  souboru a co se stane; dřív byl nadpisem jen rozlomený název souboru.
 - **Počet nepřečtených u schránky svítí zlatou známky.** Je o kousek větší a stejně žlutý jako
   tlačítko Napsat; značka nedokončeného přihlášení má stejný lem.
 - **Stahování příloh neznámé velikosti ukazuje běžící pruh.** Dřív stál pruh napůl a nehýbal se.

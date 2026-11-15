@@ -220,16 +220,12 @@ const cs: Record<string, string> = {
   'box.reauth.passwordExpired':
     'Platnost hesla vypršela. Změňte ho v portálu ISDS a přihlaste se novým heslem.',
   'box.reauth.action': 'Přihlásit znovu',
-  // On the box ROW in the switcher, where the question is "which of my boxes is not working" rather
-  // than "what do I do about this one". Shorter than the inbox strip for that reason, and paired
-  // with a mark on the avatar so a broken box is findable without reading every row.
+  // The switcher ROW: "which box is not working", shorter than the inbox strip, beside the avatar's mark.
   'box.sync.reauth': 'Přihlášení vypršelo',
-  // The switcher row for a box whose password ran out (001 FR-009) - the fix starts on the portal,
-  // not with signing in again.
+  // A password that ran out (001 FR-009): the fix starts on the portal, not with signing in again.
   'box.sync.passwordExpired': 'Heslo vypršelo',
   'box.sync.error': 'Nepodařilo se načíst',
-  // The unread count next to a box we cannot reach is the LAST known one, and saying so is the
-  // difference between a number and a claim.
+  // The unread count of a box we cannot reach is the LAST known one; saying so keeps it a number.
   'box.sync.stale': 'Poslední známý stav',
 
   // 023 option C. The card above the inbox that says what the boxes you are NOT looking at hold.
@@ -361,6 +357,8 @@ const cs: Record<string, string> = {
   'debug.share': 'Sdílet',
   'debug.shareTitle': 'Sdílet soubor z režimu ladění',
   'debug.delete': 'Smazat',
+  'debug.delete.title': 'Smazat záznam?',
+  'debug.delete.body': 'Soubor z telefonu zmizí. Kopie, které jste už sdíleli, zůstanou.',
   'debug.deleteAll': 'Smazat vše',
   'debug.deleted': 'Smazáno',
   'debug.savedNotice': 'Uloženo: {name}',
@@ -1260,6 +1258,8 @@ const en: Record<string, string> = {
   'debug.share': 'Share',
   'debug.shareTitle': 'Share the debug file',
   'debug.delete': 'Delete',
+  'debug.delete.title': 'Delete this recording?',
+  'debug.delete.body': 'The file leaves the phone. Copies you have already shared stay.',
   'debug.deleteAll': 'Delete all',
   'debug.deleted': 'Deleted',
   'debug.savedNotice': 'Saved: {name}',

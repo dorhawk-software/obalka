@@ -132,6 +132,19 @@ describe('after a save, as R13 draws it', () => {
     expect(roleOf(del)).toEqual(role('smallStrong'));
   });
 
+  // Walked 2026-11-15 (031 I131): the question was the bare file name, broken mid-word on two lines,
+  // over a body that said only "Smazat". It now asks the way the backup's delete does.
+  it('asks before deleting as the backup does: the question, the file under it, what goes', async () => {
+    const name = 'obalka-debug-2026-11-12-0930-standard.zip';
+    await (RNBlobUtil.fs.writeFile as jest.Mock)(`${bundleDir()}/${name}`, 'UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA==', 'base64');
+    const view = await mount();
+    await fireEvent.press(view.getByTestId('debug-delete-0'));
+    const dialog = view.getByTestId('debug-delete-dialog');
+    expect(within(dialog).getByRole('header')).toHaveTextContent(t('debug.delete.title'));
+    expect(within(dialog).getByText(name)).toBeTruthy();
+    expect(within(dialog).getByText(t('debug.delete.body'))).toBeTruthy();
+  });
+
   it('says a failure in the danger tone, in the same strip', async () => {
     (RNBlobUtil.fs.unlink as jest.Mock).mockRejectedValueOnce(new Error('EACCES'));
     const name = 'obalka-debug-2026-11-12-0930-standard.zip';

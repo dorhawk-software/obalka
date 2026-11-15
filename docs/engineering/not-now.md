@@ -280,8 +280,10 @@ they wait for their own work. The owner decided "not now" on 2026-11-12.
   ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I127)
 - **English is a second language (2026-11-12).** The app starts in Czech whatever the device says,
   dates are written the Czech way in English too, and the iOS permission texts (camera, Face ID, local
-  network) exist only in Czech. Plan: its own spec - the device's language on first run, dates per
-  language, an English `.lproj`. ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I137)
+  network) exist only in Czech. Walked 2026-11-15 (I128): a reminder keeps the language it was
+  scheduled in, so after a switch it still arrives in the old one. Plan: its own spec - the device's
+  language on first run, dates per language, an English `.lproj`, pending notifications re-scheduled
+  on a switch. ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I137)
 - **No error boundary (2026-11-12).** A render error leaves an empty screen with no way on. Plan: a
   boundary at the root with a fallback screen that offers to start again, reported only with consent;
   the screen gets a board on the canvas first. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)

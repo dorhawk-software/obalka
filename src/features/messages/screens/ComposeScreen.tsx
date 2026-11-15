@@ -706,7 +706,7 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
                     pressStyle={{ opacity: 0.6 }}
                     // Where to buy PDZ credit: the portal for the box's own environment, from
                     // `endpoints.ts`, so it follows the gov.cz migration with everything else.
-                    onPress={() => void Linking.openURL(portalUrl(account.host))}
+                    onPress={() => void Linking.openURL(portalUrl(account.host)).catch(() => {})}
                     accessibilityRole="link"
                     accessibilityLabel={t('send.buyCredit')}
                     testID="composeBuyCredit"

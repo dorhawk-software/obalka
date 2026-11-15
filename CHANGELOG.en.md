@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Deleting a debug recording asks the way deleting a backup does.** "Delete this recording?", the
+  file under it and what happens; the title used to be just the file name, broken in two.
 - **A box's unread count shines in the stamp's gold.** A touch larger and the same yellow as the
   Compose button; the sign-in mark beside it has the same rim.
 - **Downloading attachments of unknown size shows a moving bar.** It used to stand half full.

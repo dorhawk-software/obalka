@@ -828,21 +828,53 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
   fingerprint, face, or device code" on a phone with a PIN, because Settings asked after any cancel
   whether a biometric was enrolled. Only a phone with no screen lock gets the sheet now
   (`lockToggle.test`, red before); the biometric check had no other use and is gone.
-- [ ] I126 Notification permission: asked from the nudge (I86), the first reminder, and "alerts off" -
+- [x] I126 Notification permission: asked from the nudge (I86), the first reminder, and "alerts off" -
   **N**.
+  Walked 2026-11-15 on Obalka_Demo, English: the first reminder's Uložit raises the system's question right after the sheet that
+  says "we will tell you the day before and on the day", so the reason is on screen as it asks; "Don't
+  allow" leaves the reminder set with the alerts-off line under it, and its "Turn on" opens the app's
+  page in the system settings. The nudge (I86) was walked with the dialogs. **M**.
 - [ ] I127 Camera permission: asked when the scanner opens, with no word before it - **X**: the mobile
   practice "Explain before the permission prompt"; behaviour, not now (owner, 2026-11-12, not-now.md).
-- [ ] I128 Notifications: Android channels, the iOS hidden-body placeholder, the reminder and password
+- [x] I128 Notifications: Android channels, the iOS hidden-body placeholder, the reminder and password
   texts - **N** (I63 is the colour).
-- [ ] I129 Opening an attachment: Android's chooser, iOS Quick Look, a ZFO's save sheet - **N**.
-- [ ] I130 File pickers and save sheets (backup export and import, compose attachments) - **N**.
-- [ ] I131 Sharing a debug recording - **N**.
+  Walked 2026-11-15 on Obalka_Demo, English and Czech: two channels, "Password expiry" and "Reminders"; a reminder (its
+  WorkManager job forced) shows the envelope on the envelope blue, the generic "Reminder for tomorrow"
+  and the subject as the body, which a hidden preview leaves out. **M**. A reminder keeps the language
+  it was scheduled in; channel names follow on the next one - with I137's language gaps, not now
+  (not-now.md). The iOS hidden-body placeholder and the password text were not seen live: no demo
+  box has an expiring password; `notifeeNotifier.test` holds their words.
+- [x] I129 Opening an attachment: Android's chooser, iOS Quick Look, a ZFO's save sheet - **N**.
+  Walked 2026-11-15 on Obalka_Demo, Czech: tapping the file hands it to the phone's PDF viewer (Drive, the only one, so no
+  chooser), which refuses the demo archive's placeholder file - the app's side is the system's; the
+  download glyph opens the system's save sheet with the file's own name, and a cancel says nothing.
+  The ZFO's save sheet is the same call (`attachmentOpener.ts`), not walked: it would ask ISDS. iOS
+  Quick Look was walked with I38.5. **M**.
+- [x] I130 File pickers and save sheets (backup export and import, compose attachments) - **N**.
+  Walked 2026-11-15 on Obalka_Demo, Czech: Načíst zálohu ze souboru opens the system picker on Recent, every type shown (a backup
+  file has no type Android knows, so a filter would hide it - left as it is); a cancel returns
+  quietly. Save to a file is I129's save sheet. Compose's attachment picker is the same
+  `@react-native-documents/picker` call and sits behind a recipient search, which asks ISDS. **M**.
+- [x] I131 Sharing a debug recording - **N**.
+  Walked 2026-11-15 on Obalka_Demo, Czech: a recording saved, Sdílet opens the system share sheet with the file by name. **Fixed**
+  on the way: deleting one asked with the bare file name as its title, broken mid-word on two lines,
+  over a body that said only "Smazat". It now asks the way the backup's delete does - "Smazat
+  záznam?", the file under it, what goes ("Kopie, které jste už sdíleli, zůstanou"); held by
+  `debugAsDrawn.test`, red before. Four comments in `strings.ts` shortened to stay at 1795 lines.
 - [x] I132 The PDF the app makes from typed text ("Textová zpráva.pdf", system font 14) - **X**: what the
   authority receives from Obálka; R9 shows it as printed matter. Built 2026-11-15 as R12's Czech A4
   letter and walked on Android and iOS (I38.5).
-- [ ] I133 External links: the ISDS portal (password, sign in again, buy credit), privacy, source, the
+- [x] I133 External links: the ISDS portal (password, sign in again, buy credit), privacy, source, the
   OS settings - **N**.
-- [ ] I134 Notification taps and cold start into a message or the password screen - **N**.
+  Walked 2026-11-15 on Obalka_Demo: privacy and source carry the external glyph and hand over to the system browser (Chrome's
+  first run on the clean emulator, gone no further); the portal links share `portalUrl`; the OS
+  settings is I126's. **Fixed** on the way: Compose's "buy credit" link was the one `openURL` that did
+  not catch a refusal (no browser, a blocked profile), an unhandled rejection; a guard test over every
+  `openURL` in `src` (`openUrlCatches.test`, red on it) holds all five.
+- [x] I134 Notification taps and cold start into a message or the password screen - **N**.
+  Walked 2026-11-15 on Obalka_Demo: the app killed, a tap on the reminder starts it on the paper (no white frame) and opens that
+  message directly. **M**. The password notification's route to the change screen is held by
+  `deeplink.test` and `shellRecovery.test`; no demo box has an expiring password to walk it.
 
 ### Platform variants
 
