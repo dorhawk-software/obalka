@@ -140,8 +140,9 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
 
 ### Messages
 
-- [ ] I14 Inbox header, one box (avatar 36, name, identity line, search, segmented) - **D**: board
-  "Inbox - the envelope front" (flap band, window switcher, segmented on blue).
+- [x] I14 Inbox header, one box (avatar 36, name, identity line, search, segmented) - **D**: board
+  "Inbox - the envelope front" (flap band, window switcher, segmented on blue). Built in T030. Walked again 2026-11-15 at full resolution, each part cropped beside the board, light and dark, Czech and English (InboxA, R5's dark phone): the walk found the segments' words in Roboto, now Public Sans Bold
+  (I107).
 - [x] I15 Inbox header, all boxes (Layers tile, subtitle) - **X**: R5. Fixed 2026-11-13: `BoxStackTile`, the
   boxes' envelopes fanned (3 and 8 degrees, the board's 10 corner rounded to 11), the count on the
   front one; "Sloučený archiv · 3 schránky", no unread count (the board's).
@@ -151,10 +152,12 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   at 800; an expired password's two actions under the message (the board's 11 padding rounded to 12).
   The stale line is a sunken card, centred, minimum 32, its 10 corner rounded to 11, 8 under a strip.
   Copy stays the app's own (the board: "copy is the app's own"). The debug strip on the flap is I62's.
-- [ ] I17 Attention block and its rows - **D**: board Inbox (sheets with the second envelope's edge,
-  flap tiles, fiction chip with the offset glyph).
-- [ ] I18 Received rows and month sections - **D**: board Inbox (day numeral, small sender tile, offset
-  attachment and reminder glyphs).
+- [x] I17 Attention block and its rows - **D**: board Inbox (sheets with the second envelope's edge,
+  flap tiles, fiction chip with the offset glyph). Built in T030. Walked again 2026-11-15 at full resolution, each part cropped beside the board, light and dark, Czech and English: as T030 lists; the English
+  fiction chip takes two lines, its glyph and "?" in place.
+- [x] I18 Received rows and month sections - **D**: board Inbox (day numeral, small sender tile, offset
+  attachment and reminder glyphs). Built in T030. Walked again 2026-11-15 at full resolution, each part cropped beside the board, light and dark, Czech and English. The clip is the Icons board's, with its two
+  lines; InboxA draws it without them (T051).
 - [x] I19 Sent rows (delivery state per row) - **X**: no board. R5. Fixed 2026-11-13: the register row
   (`SentRows.tsx`), "Dodáno 11.11." muted / "Doručeno 25.10." green / "Doručeno fikcí" gold with the
   postmark, only with a time ISDS certified; nothing while on its way, "Nedoručitelné" in stop ink.
@@ -172,17 +175,24 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
   sealed under its gold flap; the reason as before; Zkusit znovu a 52 sunken button (radius 14, 16/700).
   The flap and the creases are clipped to the round corners: the owner saw a blue rim above the flap and
   crease ends past the corners on the device (the board draws the same overshoot - canvas sync-back).
-- [ ] I22 Empty received - **D**: board "Empty inbox - the inside of the envelope".
+- [x] I22 Empty received - **D**: board "Empty inbox - the inside of the envelope". Built in T031. Walked again 2026-11-15 at full resolution, each part cropped beside the board, light and dark, Czech and English,
+  through a temporary swap that emptied the list (no demo box is empty; removed): the open envelope, its
+  lining and the words as the board's, the Czech hint on its two lines.
 - [x] I23 Empty sent (paper-plane hero) - **X**: R4. Fixed 2026-11-13: the unsent pose, a dashed blank
   stamp and an empty window with dotted address lines; the heading lost its full stop.
 - [x] I24 Empty, needs a new sign-in (CloudOff hero, "Zprávy zatím nejsou k dispozici") - **X**: R4.
   Fixed 2026-11-13: the addressed pose (an empty window, no stamp), 24 under the strip, not 60.
-- [ ] I25 Cross-box line ("Jinde: …") - **D**: board Inbox ("V ostatních schránkách …", Schránky glyph).
-- [ ] I26 Freshness line at the list's end - **D**: board Empty ("Naposledy dnes ve 14:02").
+- [x] I25 Cross-box line ("Jinde: …") - **D**: board Inbox ("V ostatních schránkách …", Schránky glyph).
+  Built in T030 ("Jinde:" when no whole clause fits). Walked again 2026-11-15 at full resolution, each part cropped beside the board, light and dark, Czech and English.
+- [x] I26 Freshness line at the list's end - **D**: board Empty ("Naposledy dnes ve 14:02"). Built in
+  T031. Walked again 2026-11-15 at full resolution, each part cropped beside the board, light and dark, Czech and English: under the last row and under the empty envelope.
 - [x] I27 Drafts entry above the list - **X**: R5. Fixed 2026-11-13: one sheet (`DraftsEntry`), the draft
   glyph in a 36 well.
-- [ ] I28 Compose FAB (gold extended, pencil) - **D**: the blank stamp, board Inbox. Its stamp draws a
-  frame late on a cold start (I107).
+- [x] I28 Compose FAB (gold extended, pencil) - **D**: the blank stamp, board Inbox. Its stamp draws a
+  frame late on a cold start (I107). Built in T030. Fixed 2026-11-15: a stamp shows nothing until its
+  paper can be drawn at the measured size, then all of it at once (`objects.test`, red before). A
+  40 s screen recording of a cold start on Obalka_Demo: the stamp's first frame is whole, gold and
+  words together. Walked at full resolution beside InboxA, light and dark, Czech and English.
 - [ ] I29 Message detail, received - **D**: boards "Message - the envelope it came in" and "Message - dark".
 - [x] I30 Message detail, sent (recipient card, delivery timeline) - **X**: R7. Fixed 2026-11-13: the
   Sent board's envelope in `DetailEnvelope` (`sent`): from this box with its ID, the recipient with
@@ -530,6 +540,12 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 - [ ] I107 `SegmentedControl` (height 34, 200 ms slide, the unseen dot) - inbox board shows it on blue;
   the backup and sign-in uses are on paper. Seen 2026-11-13: on a cold start the selected tab's fill
   draws a frame after the labels (it waits for the first layout); the FAB's stamp the same (I28).
+  2026-11-15: the words were in Roboto (a weight and no face); they are the `smallStrong` role,
+  Public Sans Bold 14, the boards' 14/700 on the envelope; R11's 13 on paper rounds to it (no 13/700
+  role). Held by `SegmentedControl.test`, red before. Walked on the inbox and the add-box form.
+  The cold start's late fill, fixed the same day: until the track is measured the selected tab
+  carries the fill itself (`SegmentedControl.test`, red before); the recording's first inbox frame
+  has it. Open: the backup's keep-count use, walked with I45.3.
 - [x] I108 `OptionGroup` radios (check 140 ms). Matches R13 2026-11-13: one card, rows 52, a 22 ring
   (2, `hs`), picked a blue ring with a 12 blue dot growing in over 140 ms; no tint.
 - [ ] I109 Buttons: primary, outline, link, danger; busy and blocked (warning haptic, shake).

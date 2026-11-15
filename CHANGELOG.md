@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Přepínač Přijaté a Odeslané má písmo celé aplikace** a zvolená záložka i tlačítko Napsat se při
+  spuštění objeví celé najednou, ne po kouscích.
 - **Připomínky a upozornění na heslo mají v liště oznámení modrou barvu obálky,** stejnou jako ikona
   aplikace.
 - **Každá otázka ukazuje, čeho se týká.** Nad nadpisem je značka: zámek, záloha, příloha, přenos nebo

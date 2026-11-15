@@ -147,6 +147,25 @@ describe.each([
       expect(frame[0].props.strokeWidth).toBe(1);
     });
 
+    it('shows nothing until its paper can be drawn, then all of it at once (031 I28)', async () => {
+      // The paper is drawn at the stamp's measured size; until 2026-11-15 the compose button's words
+      // showed a frame before their gold on a cold start.
+      const view = await render(
+        <AppThemeProvider isDark={isDark}>
+          <Stamp kind="fab" paper="flap" shadow="stampFab">
+            <Text>Napsat</Text>
+          </Stamp>
+        </AppThemeProvider>,
+      );
+      const root = () => nodes(view.toJSON())[0];
+      expect(style(root()).opacity).toBe(0);
+      if (view.root) {
+        await fireEvent(view.root, 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 140, height: 60 } } });
+      }
+      expect(style(root()).opacity).toBe(1);
+      expect(filled(nodes(view.toJSON()), theme.flap).length).toBe(2);
+    });
+
     it('stuck on an envelope casts no shadow of its own', async () => {
       const { all } = await draw(
         <Stamp kind="stampSmall">

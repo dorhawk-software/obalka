@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The Received and Sent switch is set in the app's own typeface,** and at launch the chosen tab and
+  the Compose button appear whole at once, not piece by piece.
 - **Reminders and password alerts carry the envelope's blue in the notification shade,** the same as
   the app icon.
 - **Every question shows what it is about.** A mark stands above its title: the lock, the backup, the

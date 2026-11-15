@@ -15,7 +15,8 @@ import {
   Pressable,
 } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
-import { Text, XStack } from './ui';
+import { XStack } from './ui';
+import { SmallStrong } from './Typography';
 import { useTheme } from './ThemeProvider';
 import { touchSlop } from './touchTarget';
 import { haptics } from '../services/haptics';
@@ -29,7 +30,7 @@ const GAP = isAndroid ? 3 : 2; // gap between segments
 const SEG_H = 34; // segment height
 const RADIUS = 8; // segment / indicator radius
 // Printed on the envelope (the inbox header, board InboxA): a deeper well with larger segments.
-const ON_ENVELOPE = { segH: 38, radius: 9, track: 13, fontSize: 14 } as const;
+const ON_ENVELOPE = { segH: 38, radius: 9, track: 13 } as const;
 const DOT = 7; // the unseen-news dot after a label - the unread dot's size
 
 
@@ -149,6 +150,14 @@ export function SegmentedControl<K extends string>({
               overflow: 'hidden', // clip the Android ripple to the rounded segment
               // iOS press feedback (Android uses the ripple instead of an opacity dim).
               opacity: !isAndroid && pressed ? 0.6 : 1,
+              // Until the track is measured the sliding fill cannot be placed, so the selected tab
+              // carries the same fill itself: a cold start showed bare words for a frame (031 I107).
+              ...(selected && segW <= 0
+                ? {
+                    backgroundColor: theme.surface,
+                    boxShadow: onEnvelope ? depth.segmentOnEnvelope : depth.segment,
+                  }
+                : null),
             })}
             accessibilityRole="tab"
             accessibilityState={{ selected }}
@@ -156,13 +165,13 @@ export function SegmentedControl<K extends string>({
             testID={`${testID}-${s.key}`}
           >
             <XStack>
-              <Text
-                fontSize={onEnvelope ? ON_ENVELOPE.fontSize : 13}
-                fontWeight="700"
+              {/* The boards' 14/700 in the body face (their `font:inherit`). R11 draws the paper
+                  uses 13; one role for both, its 14 the nearest (031 I107). */}
+              <SmallStrong
                 color={selected ? theme.text : onEnvelope ? theme.envelopeInkFaint : theme.textMuted}
               >
                 {s.label}
-              </Text>
+              </SmallStrong>
               {s.dot ? (
                 <XStack
                   position="absolute"

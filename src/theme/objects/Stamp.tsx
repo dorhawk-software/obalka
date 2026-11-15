@@ -46,7 +46,9 @@ export function Stamp({
     <View
       onLayout={onLayout}
       style={[
-        { padding: geometry.inset },
+        // Nothing until the paper can be drawn at the measured size, then the whole stamp at once:
+        // the compose button's words showed a frame before their gold on a cold start (031 I28).
+        { padding: geometry.inset, opacity: size ? 1 : 0 },
         shadow ? { filter: objectFilter(theme.name, shadow) } : null,
         style,
       ]}
