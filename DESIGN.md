@@ -776,6 +776,8 @@ After the critique (2026-11-15), the owner's answers, one by one:
   on the backup row.
 - **Neutral buttons:** the boards' sunken fill (1.03:1 on the paper) lost to a deeper `neutral-fill`
   (`#E9DFCD`, dark `#373026`): 1.14 on the paper, 1.30 on a card, as deep as the danger words keep 4.5:1.
+- **Nedoručitelné in Odeslané:** words alone lost to the stop disc (`StatusStopIcon`, 15) before them, in
+  the same ink - the FAQ legend's and the detail's glyph.
 
 ## Do's and Don'ts
 

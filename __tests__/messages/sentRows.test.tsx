@@ -2,7 +2,7 @@
 // name's line - "Dodáno 11.11." once ISDS delivered it, "Doručeno 25.10." once it was signed for -
 // with the postmark glyph only beside a time ISDS certified.
 
-import { render } from '@testing-library/react-native';
+import { render, within } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
@@ -108,5 +108,9 @@ describe('a sent message that was never delivered', () => {
     );
     const label = view.getByText('Nedoručitelné');
     expect(StyleSheet.flatten(label.props.style).color).toBe((isDark ? darkTheme : lightTheme).text);
+    // Its glyph is the stop disc the FAQ legend and the detail draw, in the same ink, where the other
+    // states print the postmark; until 2026-11-15 it had none and was the quietest line in the list
+    // (the owner's answer 4).
+    expect(within(view.getByTestId('sentRowState')).getByTestId('sentRowStop')).toBeTruthy();
   });
 });

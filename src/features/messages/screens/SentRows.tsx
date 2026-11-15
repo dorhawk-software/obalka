@@ -13,7 +13,8 @@ import { memo, useCallback } from 'react';
 import { XStack, YStack } from '../../../theme/ui';
 import { Body, Day, Meta, Small, Tag } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { ChevronRightIcon, ContentErasedIcon, VaultIcon } from '../../../theme/icons';
+import { ChevronRightIcon, ContentErasedIcon, StatusStopIcon, VaultIcon } from '../../../theme/icons';
+import { View } from 'react-native';
 import { OffsetIcon } from '../../../theme/offsetIcons';
 import { EnvelopeTile } from '../../../theme/objects/Envelope';
 import { avatarColor } from '../../../theme/avatarPalette';
@@ -146,7 +147,15 @@ export const SentRegisterRow = memo(function SentRegisterRowView({
           {boxAccount ? <BoxPill account={boxAccount} compact /> : null}
           {state ? (
             <XStack alignItems="center" gap={4} flexShrink={0} testID="sentRowState">
-              {state.kind === 'stop' ? null : <OffsetIcon name="postmark" size={15} color={stateInk} />}
+              {/* The stop takes its own disc, the FAQ legend's and the detail's, in the same ink (the
+                  owner, 2026-11-15); every other state the postmark. */}
+              {state.kind === 'stop' ? (
+                <View testID="sentRowStop">
+                  <StatusStopIcon size={15} color={stateInk} knockout={theme.bg} />
+                </View>
+              ) : (
+                <OffsetIcon name="postmark" size={15} color={stateInk} />
+              )}
               <Meta fontWeight="600" color={stateInk} numberOfLines={1}>
                 {state.label}
               </Meta>

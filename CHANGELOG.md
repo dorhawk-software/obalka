@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Nedoručitelná zpráva má v Odeslaných svou značku.** Před slovem „Nedoručitelné“ stojí plné kolečko
+  s přeškrtnutím, jako v nápovědě a v detailu zprávy; dřív to byl nejtišší řádek v seznamu.
 - **Šedá tlačítka jsou zřetelná i na papíře.** „Zálohovat nyní“, „Ověřit zálohu“ a „Zobrazit heslo“
   mají o tón tmavší výplň, takže už nevypadají jako tučný text.
 - **Řádky s časem říkají, co se tehdy stalo.** „Aktualizováno před 5 minutami“ nad zprávami

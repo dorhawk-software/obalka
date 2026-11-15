@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **An undeliverable message has its mark in Sent.** "Undeliverable" now follows the filled
+  disc with a slash, as in the help and the message detail; it used to be the quietest line in
+  the list.
 - **Grey buttons stand out on the paper too.** "Back up now", "Verify backup" and "Show password"
   have a fill a tone deeper, so they no longer look like bold text.
 - **Time lines say what happened.** "Updated 5 minutes ago" above the messages and "Backed up
