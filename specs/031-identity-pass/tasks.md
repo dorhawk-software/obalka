@@ -1260,7 +1260,7 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   words change too), as R8 and R12 draw it; nothing outside the button moves.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
-- [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
+- [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
   families and weights, each component's anatomy and the rejected variants.
   The sync-back, where the build is right and the board is not (collected as they are found):
   - R4: the creases run past the round corners and the sealed flap leaves a blue rim at the top; the
@@ -1351,4 +1351,11 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
   sent window's ID and address, the 4-module QR quiet zone, the full logo in the QR, the note under the
   download card; also the sender's 120 wrap on a sent envelope and the sunken bar track (R6).
+  Done 2026-11-15: every item above is redrawn on its board as built (R1-R15, Main, InboxA, Detail,
+  DetailDark; canvas version 34), each board re-rendered whole and checked for overflow; R8 widened to
+  4040 for the sending phone's done state. DESIGN.md took the parts and the rejected variants (7142188).
+  Still label notes, not phones: R4's no-results pose, R6's hidden key, the backup's Advanced row, the
+  debug delete question (DESIGN.md records its anatomy, R9's `Dialog`), R13's licence list (3 of 9
+  rows drawn, the rest the same row). Open for the owner, under T050: the stamp (R2 or Sent) and the
+  date form; each screen follows its own board until then. The dimmed Odeslat took .55 with the rest.
 - [ ] T052 Delete `docs/engineering/identity-pass.md` in the last commit.

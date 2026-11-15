@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Nedostupné Odeslat je stejně tlumené jako ostatní tlačítka.** Dokud zpráva nemá adresáta nebo
+  obsah, vypadá tlačítko stejně jako jiná, která zatím nejdou použít.
 - **Monogram schránky vynechá titul.** „Ing. Ondřej Dvořák“ je OD, ne IO, takže dvě schránky
   jednoho člověka nevypadají jako dva lidé.
 - **Zelená u doručených odeslaných zpráv je tmavší.** „Doručeno“ v Odeslaných je i drobným písmem

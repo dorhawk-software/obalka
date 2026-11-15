@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A Send you cannot use yet is dimmed like every other button.** Until the message has a
+  recipient and content, the button looks the way other unavailable buttons do.
 - **A box's monogram leaves out the degree.** "Ing. Ondřej Dvořák" is OD, not IO, so one person's
   two boxes no longer look like two people.
 - **The green of a delivered sent message is darker.** "Delivered" in Sent reads well even in small

@@ -725,7 +725,7 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
                 >
                   {/* Faded as one, as the board's group opacity does: without its own layer Android
                       fades the words and the ink apart, and the words sink into the faded ink. */}
-                  <View style={{ width: '100%', opacity: canSend ? 1 : 0.45 }} needsOffscreenAlphaCompositing>
+                  <View style={{ width: '100%', opacity: canSend ? 1 : 0.55 }} needsOffscreenAlphaCompositing>
                     <XStack
                       width="100%"
                       minHeight={52}

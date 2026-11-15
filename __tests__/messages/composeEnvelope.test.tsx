@@ -175,7 +175,8 @@ describe('compose, the envelope you are sending (R2, R12)', () => {
       layer = layer.parent;
     }
     expect(layer?.props.needsOffscreenAlphaCompositing).toBe(true);
-    expect(styleOf(layer as never).opacity).toBe(0.45);
+    // .55, as every blocked button (InkButton, R10, R12 and R14 since the sync-back); .45 until 2026-11-15.
+    expect(styleOf(layer as never).opacity).toBe(0.55);
   });
 });
 
