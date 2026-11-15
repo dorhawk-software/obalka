@@ -139,7 +139,11 @@ export function AttachmentRow({
         <XStack alignItems="center" gap={12} minHeight={52}>
           {/* One object, one drawing: a file it cannot open is still its sheet, faint; the red
               words under its name say why (031 I35; it was an alert glyph in a well). */}
-          <YStack opacity={blocked ? 0.55 : 1} testID={`attachment-sheet-${index}`}>
+          <YStack
+            opacity={blocked ? 0.55 : 1}
+            needsOffscreenAlphaCompositing={blocked}
+            testID={`attachment-sheet-${index}`}
+          >
             <DocSheet name={attachment.name} />
           </YStack>
           <YStack flex={1} minWidth={0}>

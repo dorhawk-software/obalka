@@ -70,6 +70,17 @@ describe('formatBytes', () => {
     expect(formatBytes(1536)).toBe(`2${NBSP}kB`);
     expect(formatBytes(Math.round(1.4 * 1024 * 1024))).toBe(`1,4${NBSP}MB`);
   });
+
+  // Raised in the English walk (031 I46.4): "2,6 MB of 4,2 MB" kept the Czech comma in English.
+  it('writes the decimal point in English', () => {
+    setActiveLocale('en');
+    try {
+      expect(formatBytes(Math.round(1.4 * 1024 * 1024))).toBe(`1.4${NBSP}MB`);
+      expect(formatBytes(1536)).toBe(`2${NBSP}kB`);
+    } finally {
+      setActiveLocale('cs');
+    }
+  });
 });
 
 describe('what the app says in Czech', () => {

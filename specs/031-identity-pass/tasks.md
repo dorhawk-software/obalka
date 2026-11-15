@@ -1222,6 +1222,10 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   download). The English credit reads "Kč" (formatCzk is Czech-only).
   Raised in I76: on an ink button R12's busy ring is the sunken paper (#F2EADB) with the quarter in
   the button's words (#FBF6EA), 3 % apart, so the turn barely shows; built as drawn.
+  Fixed 2026-11-15: I46.4 and I38's credit (formatBytes writes the English decimal point, formatCzk
+  "1,234 CZK"; the active language moved to src/i18n/activeLocale.ts so both read it); I11 (the
+  refusal's body starts with what is wrong); I38's dimmed buttons (InkButton, the busy download, the
+  attachment sheet and the waiting window composite their layer while faded, fadedAsOne.test).
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the

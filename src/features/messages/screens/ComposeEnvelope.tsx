@@ -384,7 +384,13 @@ export function WaitingWindow() {
   const theme = useTheme();
   return (
     <WindowFrame>
-      <View style={{ opacity: 0.55 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <View
+        style={{ opacity: 0.55 }}
+        // One picture: Android would fade the blank lines apart from the window under them (031 I38).
+        needsOffscreenAlphaCompositing
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
         <Window style={{ minHeight: 62, paddingTop: 8, paddingBottom: 10, paddingHorizontal: 12, gap: 2 }}>
           <Overline color={theme.textMuted}>{t('detail.to')}</Overline>
           <WindowBlankLine width="80%" />

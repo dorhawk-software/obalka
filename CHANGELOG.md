@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Odmítnuté přihlášení neopakuje svůj nadpis.** Text karty začíná rovnou tím, co je špatně:
+  „Jméno nebo heslo je špatně…“.
 - **Smazání záznamu z režimu ladění se ptá jako smazání zálohy.** „Smazat záznam?“, pod tím název
   souboru a co se stane; dřív byl nadpisem jen rozlomený název souboru.
 - **Počet nepřečtených u schránky svítí zlatou známky.** Je o kousek větší a stejně žlutý jako
@@ -172,6 +174,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Anglická aplikace píše velikosti a kredit anglicky.** „2.6 MB of 4.2 MB“ a „1,234 CZK“ místo
+  české desetinné čárky a „Kč“.
+- **Ztlumená tlačítka na Androidu blednou jako celek.** Slova na nich dřív zmizela do barvy tlačítka.
 - **Při největším písmu se nic neusekne.** Den v seznamu se už nelámal po číslicích, zkratky
   v dlaždicích se vejdou, pole příjemce není useknuté. Písmo roste nejvýš na dvojnásobek, i na iPhonu.
 - **Zrušené ověření při zapínání zámku už netvrdí, že telefon nemá zámek obrazovky.** Telefon

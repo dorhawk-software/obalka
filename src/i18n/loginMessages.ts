@@ -14,9 +14,10 @@ export const cs: Record<string, string> = {
   'login.refused.title': 'ISDS přihlášení odmítlo',
   'login.refused.edit': 'Upravit jméno nebo heslo',
   // 030 US1: ISDS refuses an expired password exactly like a wrong one (captured 2026-11-11), so a
-  // refusal with no stored date to tell them apart names both.
+  // refusal with no stored date to tell them apart names both. Shown only under the card's title, so it
+  // does not say "ISDS přihlášení odmítlo" again (031 I11).
   'login.error.invalidCredentials':
-    'ISDS přihlášení odmítlo: jméno nebo heslo je špatně, nebo heslu vypršela platnost - pak ho změňte v portálu ISDS. Po opakovaných pokusech může ISDS přístup zablokovat.',
+    'Jméno nebo heslo je špatně, nebo heslu vypršela platnost - pak ho změňte v portálu ISDS. Po opakovaných pokusech může ISDS přístup zablokovat.',
   'login.error.invalidOrExpiredOtp':
     'Neplatný nebo vypršelý jednorázový kód. Zkuste to znovu.',
   'login.error.smsNotDelivered':
@@ -45,7 +46,7 @@ export const en: Record<string, string> = {
   'login.refused.title': 'ISDS refused the sign-in',
   'login.refused.edit': 'Edit the name or password',
   'login.error.invalidCredentials':
-    'ISDS refused the sign-in: the name or password is wrong, or the password has expired - then change it in the ISDS portal. Repeated attempts can get the access blocked.',
+    'The name or password is wrong, or the password has expired - then change it in the ISDS portal. Repeated attempts can get the access blocked.',
   'login.error.invalidOrExpiredOtp':
     'Invalid or expired one-time code. Please try again.',
   'login.error.smsNotDelivered':

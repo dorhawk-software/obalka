@@ -7,6 +7,8 @@
 // produced by treating "we have not asked" and "you have nothing" as the same value. They are
 // different facts and only one of them is ours to state (Principle VI).
 
+import { getActiveLocale } from '../../../i18n/activeLocale';
+
 /**
  * The non-breaking space Czech typography sets between thousands, and between a value and its unit.
  * Spelled as an escape on purpose: as a literal it is indistinguishable from a plain space in a
@@ -15,15 +17,16 @@
  */
 const NBSP = '\u00A0';
 
-/** Whole koruny, grouped - ISDS reports a decimal balance nobody wants to read to the haléř. */
+/**
+ * Whole koruny, grouped - ISDS reports a decimal balance nobody wants to read to the haléř. Czech
+ * groups with a no-break space and writes Kč; English groups with a comma and writes the code, CZK
+ * (031 I38: the English credit read "1 234 Kč").
+ */
 export function formatCzk(czk: number): string {
   const whole = Math.round(czk);
-  // Narrow no-break space between groups, as Czech typography sets it.
-  const grouped = String(Math.abs(whole)).replace(
-    /\B(?=(\d{3})+(?!\d))/g,
-    NBSP,
-  );
-  return `${whole < 0 ? '\u2212' : ''}${grouped}${NBSP}Kč`;
+  const czech = getActiveLocale() === 'cs';
+  const grouped = String(Math.abs(whole)).replace(/\B(?=(\d{3})+(?!\d))/g, czech ? NBSP : ',');
+  return `${whole < 0 ? '\u2212' : ''}${grouped}${NBSP}${czech ? 'Kč' : 'CZK'}`;
 }
 
 export type CreditState =

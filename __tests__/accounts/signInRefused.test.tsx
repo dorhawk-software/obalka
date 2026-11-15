@@ -12,7 +12,7 @@ import { AccountsController } from '../../src/features/accounts/state/accountsCo
 import { InMemoryAccountsStore } from '../../src/services/db/accountsStore';
 import { InMemorySecureStore } from '../../src/services/secureStore/secureStore';
 import type { LoginErrorCode } from '../../src/services/isds/types';
-import { t } from '../../src/i18n/strings';
+import { setActiveLocale, t } from '../../src/i18n/strings';
 
 function refusing(code: LoginErrorCode, suggestOtp = false): LoginAuthService {
   return {
@@ -65,6 +65,17 @@ describe('a refused sign-in (R8)', () => {
     await fireEvent.press(view.getByTestId('retry'));
     expect(await view.findByTestId('loginName')).toHaveProp('value', 'k8tw2e');
     expect(view.getByTestId('password')).toHaveProp('value', 'heslo');
+  });
+
+  // Raised in I11 (031): the body began by repeating the title above it ("ISDS přihlášení odmítlo:
+  // jméno nebo heslo…"). It says what is wrong; the title says who refused.
+  it.each(['cs', 'en'] as const)('does not repeat its title in the words under it (%s)', async locale => {
+    setActiveLocale(locale);
+    try {
+      expect(t('login.error.invalidCredentials').startsWith(t('login.refused.title'))).toBe(false);
+    } finally {
+      setActiveLocale('cs');
+    }
   });
 
   it('for an expired password too', async () => {

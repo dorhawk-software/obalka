@@ -8,6 +8,7 @@ import {
   creditState,
   formatCzk,
 } from '../../src/features/messages/state/credit';
+import { setActiveLocale } from '../../src/i18n/strings';
 
 /** Czech typography separates thousands, and value from unit, with a NON-BREAKING space. Spelled as
  *  an escape here so an assertion failure is readable - the character itself looks like a space. */
@@ -21,6 +22,17 @@ describe('formatCzk', () => {
 
   it('rounds to whole koruny - ISDS gives a decimal balance', () => {
     expect(formatCzk(99.6)).toBe(`100${NB}Kč`);
+  });
+
+  // Raised in the English walk (031 I38): the credit read "1 234 Kč" in English.
+  it('writes English digits and the currency code in English', () => {
+    setActiveLocale('en');
+    try {
+      expect(formatCzk(1234)).toBe(`1,234${NB}CZK`);
+      expect(formatCzk(0)).toBe(`0${NB}CZK`);
+    } finally {
+      setActiveLocale('cs');
+    }
   });
 });
 

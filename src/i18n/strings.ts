@@ -3,6 +3,7 @@
 // changing language + remounting the tree re-localizes everything. Missing keys fall back cs → key.
 
 import { typesetCs } from './typeset';
+import { getActiveLocale, setActiveLocale } from './activeLocale';
 export { formatBytes } from './typeset';
 import { cs as errorCs, en as errorEn } from './loginMessages';
 import { cs as messagesCs, en as messagesEn } from './messageListStrings';
@@ -1738,15 +1739,8 @@ const MESSAGES: Record<Locale, Record<string, string>> = { cs, en };
  */
 export const STRINGS_FOR_TEST: Record<Locale, Record<string, string>> = MESSAGES;
 
-// The active UI locale; `t()` reads it live. Written only by the SettingsProvider, when it applies a
-// stored language and when one is chosen - never from a render (see `SettingsProvider`).
-let activeLocale: Locale = 'cs';
-export function setActiveLocale(next: Locale): void {
-  activeLocale = next;
-}
-export function getActiveLocale(): Locale {
-  return activeLocale;
-}
+// The active UI locale lives in `activeLocale.ts`, where the number formats can read it too.
+export { getActiveLocale, setActiveLocale };
 
 /**
  * Resolve a UI/error key to localized copy in the active locale; falls back to Czech, then the key
@@ -1756,7 +1750,7 @@ export function t(
   key: string,
   params?: Record<string, string | number>,
 ): string {
-  const own = MESSAGES[activeLocale][key];
+  const own = MESSAGES[getActiveLocale()][key];
   let s = own ?? MESSAGES.cs[key] ?? key;
   if (params) {
     for (const [k, v] of Object.entries(params)) {
@@ -1764,7 +1758,7 @@ export function t(
     }
   }
   // Czech on screen - the Czech locale, or a Czech fallback - is typeset (typeset.ts, 031 I82).
-  return activeLocale === 'cs' || own == null ? typesetCs(s) : s;
+  return getActiveLocale() === 'cs' || own == null ? typesetCs(s) : s;
 }
 
 type PluralCategory = 'one' | 'few' | 'many' | 'other';
@@ -1791,5 +1785,5 @@ const PLURAL_RULES: Record<Locale, (n: number) => PluralCategory> = {
  * t(`box.messages.${plural(n)}`, { n }). Each locale's string map must define the forms it uses.
  */
 export function plural(n: number): PluralCategory {
-  return PLURAL_RULES[activeLocale](n);
+  return PLURAL_RULES[getActiveLocale()](n);
 }

@@ -40,6 +40,8 @@ export function DownloadButton({
         justifyContent="center"
         gap={8}
         opacity={busy ? 0.55 : 1}
+        // One picture, or Android fades the words apart from the blue (031 I38).
+        needsOffscreenAlphaCompositing={busy}
         testID={testID ? `${testID}-face` : undefined}
       >
         {busy ? null : <OffsetIcon name="download" size={20} color={theme.onBlue} plane="envelope" />}

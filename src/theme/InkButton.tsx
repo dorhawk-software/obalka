@@ -66,6 +66,8 @@ export function InkButton({
         justifyContent="center"
         gap={10}
         opacity={blocked ? 0.55 : 1}
+        // One picture, or Android fades the words apart from the ink and they sink into it (031 I38).
+        needsOffscreenAlphaCompositing={blocked}
       >
         {icon}
         {small ? (

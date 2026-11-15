@@ -5,6 +5,8 @@
 // Applied where Czech text reaches the screen: every `t()` string (with its values filled in), the FAQ
 // answers and the in-app changelog. English is left alone: its "a" may end a line.
 
+import { getActiveLocale } from './activeLocale';
+
 const NBSP = ' ';
 
 /** A one-letter word, at the start or after a space or an opening mark, followed by a plain space. */
@@ -26,7 +28,7 @@ const MIB = 1024 * 1024;
 /**
  * B / kB / MB with the decimal comma, the number and its unit held together ("1,4 MB"), as every
  * board writes a size - on the detail, compose, backup, transfer and debug screens alike. One copy:
- * there were five, and the debug screen's wrote "1.4 MB".
+ * there were five, and the debug screen's wrote "1.4 MB". English takes its decimal point (031 I46.4).
  */
 export function formatBytes(n: number): string {
   if (n < 1024) {
@@ -35,5 +37,6 @@ export function formatBytes(n: number): string {
   if (n < MIB) {
     return `${Math.round(n / 1024)}${NBSP}kB`;
   }
-  return `${(n / MIB).toFixed(1).replace('.', ',')}${NBSP}MB`;
+  const mb = (n / MIB).toFixed(1);
+  return `${getActiveLocale() === 'cs' ? mb.replace('.', ',') : mb}${NBSP}MB`;
 }

@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A refused sign-in no longer repeats its title.** The card's text starts with what is wrong:
+  "The name or password is wrong…".
 - **Deleting a debug recording asks the way deleting a backup does.** "Delete this recording?", the
   file under it and what happens; the title used to be just the file name, broken in two.
 - **A box's unread count shines in the stamp's gold.** A touch larger and the same yellow as the
@@ -196,6 +198,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **The English app writes sizes and credit in English.** "2.6 MB of 4.2 MB" and "1,234 CZK"
+  instead of the Czech decimal comma and "Kč".
+- **Dimmed buttons on Android fade as a whole.** Their words used to sink into the button's colour.
 - **Nothing is cut at the largest text size.** The day in the list no longer breaks between its
   digits, the monograms fit their tiles and the recipient field is whole. Text grows to at most twice
   its size, on iPhone too.
