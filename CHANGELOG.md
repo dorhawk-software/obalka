@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Výsledky hledání vypadají jako seznam zpráv.** Mají den a měsíc, odesílatele, sponku, vlastní
+  připomínku i štítek schránky, ve které zpráva je, a odeslanou zprávu poznáte podle stavu doručení.
 - **Z textu zprávy je dopis na A4.** Příloha „Textová zpráva.pdf" má odesílatele, příjemce s adresou,
   datum a předmět, jak bývá v českém dopise zvykem, a je psaná stejným písmem jako aplikace.
 - **Placená zpráva se ptá se známkou, kterou zaplatíte.** Otázka před odesláním poštovní datové

@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Search results look like the message list.** They carry the day and month, the sender, the
+  clip, your reminder and the label of the box the message is in, and a sent message shows its
+  delivery state.
 - **The message text becomes a letter on A4.** The "Textová zpráva.pdf" attachment carries the
   sender, the recipient with their address, the date and the subject, as a Czech letter does, set in
   the app's own typeface.

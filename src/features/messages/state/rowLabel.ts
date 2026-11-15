@@ -61,7 +61,8 @@ export function receivedRowLabel(row: {
   unread: boolean;
   /** The user's own deadline on this message, already worded (`termChipLabel`), or null. */
   term: string | null;
-  /** The box it belongs to, in the merged view only - the pill shows just its initials. */
+  /** The box it belongs to, in the merged view and in search - the pill shows just its initials. A
+   * search hit is a received or sent row since 2026-11-15 (031 I42), said the same way. */
   box?: string | null;
 }): string {
   return sentence([
@@ -122,23 +123,5 @@ export function sentRowLabel(row: {
     row.status,
     ...row.notes,
     row.box ? t('messages.row.inBox', { name: row.box }) : null,
-  ]);
-}
-
-/**
- * A search hit. Same shape as a received row, plus the box it was found in - the one thing a hit
- * carries that an inbox row does not, and the reason the pill is on screen at all.
- */
-export function searchRowLabel(row: {
-  party: string;
-  subject: string;
-  date: string;
-  box: string;
-}): string {
-  return sentence([
-    row.party,
-    row.subject,
-    row.date,
-    t('messages.row.inBox', { name: row.box }),
   ]);
 }

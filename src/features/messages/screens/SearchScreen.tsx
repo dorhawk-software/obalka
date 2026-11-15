@@ -4,18 +4,16 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
-import { FlatList, type TextInput } from 'react-native';
+import { SectionList, type TextInput } from 'react-native';
 import { useContentBottom } from '../../../theme/useContentBottom';
 import { useAutoFocus } from '../../../theme/useAutoFocus';
 import { Input, XStack, YStack } from '../../../theme/ui';
-import { Badge, Meta, Title, Value } from '../../../theme/Typography';
+import { Meta, Title } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { EmptyObject } from '../../../theme/EmptyObject';
 import { EnvelopePose } from '../../../theme/objects/Envelope';
-import { Skeleton } from '../../../theme/Skeleton';
-import { Avatar } from '../../../theme/Avatar';
-import { rowDate } from '../state/groupByDate';
-import { searchRowLabel } from '../state/rowLabel';
+import { groupByDate, type DateSectionLabel } from '../state/groupByDate';
+import type { Reminder } from '../state/reminders';
 import { plural, t } from '../../../i18n/strings';
 import type { DataBoxAccount } from '../../../services/isds/types';
 import { SEARCH_LIMIT } from '../../../services/db/messagesStore';
@@ -23,10 +21,10 @@ import type {
   MessageFolder,
   MessageSearchHit,
 } from '../../../services/db/messagesStore';
-import { messagesController } from '../../accounts/deps';
-import { BoxPill } from './BoxPill';
+import { messagesController, remindersController } from '../../accounts/deps';
+import { RegisterRow, RegisterSkeleton, SectionHead } from './InboxRows';
+import { SentRegisterRow } from './SentRows';
 import { OffsetIcon } from '../../../theme/offsetIcons';
-import { partyName } from '../state/partyName';
 
 
 
@@ -53,9 +51,10 @@ export function SearchScreen({
   const contentBottom = useContentBottom(12);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<MessageSearchHit[]>([]);
-  /** What the list actually shows: never more than the cap, whatever the store handed back. */
-  const shown = results.slice(0, SEARCH_LIMIT);
   const [searching, setSearching] = useState(false);
+  // Every box's reminders, so a result shows its reminder as the register's row does. `null` until
+  // read: the rows wait for it, so a mark never appears after its row (Principle V).
+  const [reminders, setReminders] = useState<readonly Reminder[] | null>(null);
 
   // The search field is the whole point of this screen, so it opens focused. `autoFocus` cannot do
   // that - see `useAutoFocus` for the two reasons why.
@@ -69,6 +68,44 @@ export function SearchScreen({
     }
     return m;
   }, [accounts]);
+
+  useEffect(() => {
+    let alive = true;
+    Promise.all(accounts.map(a => remindersController.listForBox(a.boxId)))
+      .then(lists => {
+        if (alive) {
+          setReminders(lists.flat());
+        }
+      })
+      .catch(() => {
+        if (alive) {
+          // No marks beats no results (Principle II).
+          setReminders([]);
+        }
+      });
+    return () => {
+      alive = false;
+    };
+  }, [accounts]);
+
+  // The register's sections (I42, "rows as I18"): the hits by day and month, newest first as the
+  // store returns them, never more than the cap whatever the store handed back.
+  // The clock is read with the results, so a row's date and day stay put while the list is open.
+  const { sections, now } = useMemo(() => {
+    const at = Date.now();
+    const shown = results.slice(0, SEARCH_LIMIT);
+    const hitOf = new Map(shown.map(h => [h.envelope, h]));
+    const grouped = groupByDate(
+      shown.map(h => h.envelope),
+      at,
+    ).map(section => ({
+      key: section.key,
+      label: section.label,
+      data: section.data.map(envelope => hitOf.get(envelope) as MessageSearchHit),
+    }));
+    return { sections: grouped, now: at };
+  }, [results]);
+  const termDates = useMemo(() => new Map((reminders ?? []).map(r => [r.messageId, r.date])), [reminders]);
 
   // Debounced search - only the local cache, so no network and no abort handling needed.
   useEffect(() => {
@@ -138,37 +175,28 @@ export function SearchScreen({
 
       {!trimmed ? (
         <Hint />
-      ) : searching && results.length === 0 ? (
-        <YStack>
-          {[0, 1, 2, 3, 4].map(i => (
-            <ResultRowSkeleton key={i} />
-          ))}
-        </YStack>
+      ) : (searching && results.length === 0) || (results.length > 0 && reminders == null) ? (
+        <RegisterSkeleton />
       ) : results.length === 0 ? (
         <NoResults />
       ) : (
-        <FlatList
-          data={shown}
+        <SectionList<MessageSearchHit, SearchSection>
+          sections={sections}
           keyExtractor={h => `${h.boxId}:${h.envelope.id}`}
           keyboardShouldPersistTaps="handled"
           // The field is focused on open (`useAutoFocus`), so the keyboard is up before the first
-          // result exists and this
-          // list is the only thing under it. iOS lays a ScrollView out at full height regardless, so
-          // the bottom rows sat behind the keyboard with no way to reach them but dismissing it:
-          // `automaticallyAdjustKeyboardInsets` insets the content by the keyboard instead. (Android
-          // needs nothing - `adjustResize` shrinks the window, and the list with it.)
+          // result exists and this list is the only thing under it. iOS lays a ScrollView out at full
+          // height regardless, so the bottom rows sat behind the keyboard with no way to reach them
+          // but dismissing it: `automaticallyAdjustKeyboardInsets` insets the content by the keyboard
+          // instead. (Android needs nothing - `adjustResize` shrinks the window, and the list with it.)
           automaticallyAdjustKeyboardInsets
           // Scrolling the results puts the keyboard away, the iOS search convention - the list is
           // long, the query is already typed.
           keyboardDismissMode="on-drag"
+          stickySectionHeadersEnabled={false}
           contentContainerStyle={{ paddingBottom: contentBottom }}
           ListHeaderComponent={
-            <Meta fontWeight="700"
-              color={theme.textFaint}
-              paddingHorizontal={18}
-              paddingTop={14}
-              paddingBottom={6}
-            >
+            <Meta fontWeight="700" color={theme.textFaint} paddingHorizontal={16} paddingTop={14} testID="searchCount">
               {/* The store returns one past the cap so this can tell "exactly 100" from "at least
                   100" - the difference between a count and a claim. */}
               {results.length > SEARCH_LIMIT
@@ -178,15 +206,35 @@ export function SearchScreen({
                   })}
             </Meta>
           }
-          renderItem={({ item }) => (
-            <ResultRow
-              hit={item}
-              account={accountByBox.get(item.boxId)}
-              onPress={() =>
-                onOpenMessage(item.boxId, item.envelope.id, item.folder)
-              }
-            />
-          )}
+          renderSectionHeader={({ section }) => <SectionHead label={section.label} />}
+          renderItem={({ item, section, index }) => {
+            // The day is printed once, beside the first row of that day in the section.
+            const before = index > 0 ? section.data[index - 1] : null;
+            const showDay = before == null || !sameDay(before.envelope.deliveryTime, item.envelope.deliveryTime);
+            // A search spans every box, so every row says which one, as the merged view's rows do.
+            const box = accountByBox.get(item.boxId);
+            const open = () => onOpenMessage(item.boxId, item.envelope.id, item.folder);
+            return item.folder === 'sent' ? (
+              <SentRegisterRow
+                message={item.envelope}
+                now={now}
+                showDay={showDay}
+                onOpen={open}
+                folder={item.folder}
+                boxAccount={box}
+              />
+            ) : (
+              <RegisterRow
+                message={item.envelope}
+                now={now}
+                termDate={termDates.get(item.envelope.id) ?? null}
+                showDay={showDay}
+                onOpen={open}
+                folder={item.folder}
+                boxAccount={box}
+              />
+            );
+          }}
         />
       )}
     </YStack>
@@ -220,97 +268,15 @@ function NoResults() {
   );
 }
 
-/** Loading placeholder mirroring ResultRow (avatar + party/date + subject + box-name chip). */
-function ResultRowSkeleton() {
-  const theme = useTheme();
-  return (
-    <XStack
-      paddingHorizontal={18}
-      paddingVertical={13}
-      gap={12}
-      alignItems="flex-start"
-      borderTopWidth={1}
-      borderTopColor={theme.border}
-    >
-      <Skeleton width={38} height={38} radius={11} />
-      <YStack flex={1} gap={8} paddingTop={4}>
-        <XStack alignItems="center" justifyContent="space-between">
-          <Skeleton width={150} height={13} radius={6} />
-          <Skeleton width={62} height={11} radius={6} />
-        </XStack>
-        <Skeleton width="72%" height={13} radius={6} />
-        <Skeleton width={84} height={18} radius={8} />
-      </YStack>
-    </XStack>
-  );
+interface SearchSection {
+  key: string;
+  label: DateSectionLabel;
+  data: MessageSearchHit[];
 }
 
-function ResultRow({
-  hit,
-  account,
-  onPress,
-}: {
-  readonly hit: MessageSearchHit;
-  readonly account?: DataBoxAccount;
-  readonly onPress: () => void;
-}) {
-  const theme = useTheme();
-  const { envelope } = hit;
-  // The name alone: the legal form ISDS appends waits for the detail (`partyName`).
-  const party = partyName(envelope.sender).name;
-  const boxName = account?.alias ?? account?.label;
-  return (
-    <XStack
-      paddingHorizontal={18}
-      paddingVertical={13}
-      gap={12}
-      alignItems="flex-start"
-      borderTopWidth={1}
-      borderTopColor={theme.border}
-      pressStyle={{ backgroundColor: theme.surfaceAlt }}
-      onPress={onPress}
-      accessibilityRole="button"
-      // One sentence per hit, box included - a search that spans every box is only useful if the
-      // answer says WHICH box, and that fact is a pill a screen reader would otherwise read last and
-      // loose, if at all.
-      accessibilityLabel={searchRowLabel({
-        party: party || '—',
-        subject: envelope.subject || t('messages.noSubject'),
-        date: rowDate(envelope.deliveryTime, Date.now()),
-        box: boxName ?? hit.boxId,
-      })}
-      testID={`result-${hit.boxId}-${envelope.id}`}
-    >
-      <Avatar name={party} size={38} />
-      <YStack flex={1}>
-        <XStack alignItems="center" gap={8}>
-          <Value fontWeight="700"
-            flex={1}
-            minWidth={0}
-            color={theme.text}
-            numberOfLines={1}
-          >
-            {party || '—'}
-          </Value>
-          <Meta fontWeight="400"
-            color={theme.textFaint}
-          >
-            {rowDate(envelope.deliveryTime, Date.now())}
-          </Meta>
-        </XStack>
-        <Badge fontWeight="400"
-          color={theme.textMuted}
-          marginTop={2}
-          numberOfLines={1}
-        >
-          {envelope.subject || t('messages.noSubject')}
-        </Badge>
-        {/* Which box it is in - the merged list's own pill, in the box's colour (027 decision 3C), so a
-            result says its box the way every row in "Vše" does. */}
-        <XStack alignSelf="flex-start" marginTop={6} maxWidth="100%">
-          <BoxPill account={account} fallbackBoxId={hit.boxId} />
-        </XStack>
-      </YStack>
-    </XStack>
-  );
+function sameDay(a: number | null, b: number | null): boolean {
+  if (a == null || b == null) {
+    return false;
+  }
+  return new Date(a).toDateString() === new Date(b).toDateString();
 }

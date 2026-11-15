@@ -11,7 +11,6 @@
 import {
   attentionRowLabel,
   receivedRowLabel,
-  searchRowLabel,
   sentRowLabel,
   termChipLabel,
 } from '../../src/features/messages/state/rowLabel';
@@ -27,10 +26,12 @@ describe('the sentence rule', () => {
   it('never doubles a period after a part that already ends in one', () => {
     // "13.06." is what `rowDate` produces, and joining naively read "13.06.. Ve schránce…" out loud
     // on the device. Every builder below shares this join.
-    const label = searchRowLabel({
-      party: 'Úřad',
+    const label = receivedRowLabel({
+      sender: 'Úřad',
       subject: 'Sdělení',
       date: '13.06.',
+      unread: false,
+      term: null,
       box: 'Moje schránka',
     });
     expect(label).toBe('Úřad. Sdělení. 13.06. Ve schránce Moje schránka');
@@ -122,12 +123,15 @@ describe('a sent row', () => {
 });
 
 describe('a search hit', () => {
+  // A hit is the register's own row since 2026-11-15 (031 I42), so it is said as one, with its box.
   it('names the box it was found in', () => {
     expect(
-      searchRowLabel({
-        party: 'ČSSZ',
+      receivedRowLabel({
+        sender: 'ČSSZ',
         subject: 'Rozhodnutí',
         date: '1. 2.',
+        unread: false,
+        term: null,
         box: 'Moje firma',
       }),
     ).toBe('ČSSZ. Rozhodnutí. 1. 2. Ve schránce Moje firma');

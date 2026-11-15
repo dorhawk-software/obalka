@@ -12,6 +12,7 @@ import { fonts } from '../../src/theme/typeScale';
 
 jest.mock('../../src/features/accounts/deps', () => ({
   messagesController: { searchMessages: jest.fn(async () => []) },
+  remindersController: { listForBox: jest.fn(async () => []) },
 }));
 
 import { SearchScreen } from '../../src/features/messages/screens/SearchScreen';

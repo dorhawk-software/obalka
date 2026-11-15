@@ -306,20 +306,25 @@ written by reading; it missed whole kinds of surface and graded 15 lines "matche
     reading card holds its place; the add link lies over it, so nothing moves when reading starts.
   - [x] I38.7 Footer: errors (too large, attach, PDF, sign in again, send), send busy. Busy is R12's
     ring spinner in the button's ink; the dimmed button fades as one layer (Android).
-- [ ] I39 Compose sent state (emblem, ID, Done, Open sent) - **D**: board "Sent - the stamp is cancelled".
+- [x] I39 Compose sent state (emblem, ID, Done, Open sent) - **D**: board "Sent - the stamp is cancelled".
+  Built and walked as T033 (both themes, free and paid), the postmark landing as I68, the English ring
+  closing as the Czech (2026-11-13).
 - [x] I40 Paid-send confirmation (modal, credit card tile) - **X**: R2. Built 2026-11-15: R9's `Dialog`
   (R9 took this sheet as every question's shape) with R2's paid stamp on it at 112×92, tilted 2° in its
   own drop shadow, the question, the words, and the box's credit as a muted line (it was a sunken
   panel under a card glyph). Walked beside R2 aligned at the sheet's top, light and dark, English.
 - [x] I41 Draft rows (swipe to discard, snackbar Undo) - **X**: R2 (Koncept glyph). Built 2026-11-15 as
   R12's sheets (the glyph in a 36 well, Zahodit in danger), walked beside R12; the swipe and Undo kept.
-- [ ] I42 Search: hint, skeleton, no results, results - **X**: R4 (hint, no results), rows as I18.
+- [x] I42 Search: hint, skeleton, no results, results - **X**: R4 (hint, no results), rows as I18.
   Part built 2026-11-13: the hint and no results draw the archive pose (a stack of three envelopes, a new
   `envelopeBehind` #22508A for the middle one); the field is a paper well with the offset search glyph
   (18, muted), no outline, the placeholder muted, in Public Sans - every `Input` had fallen back to the
   system face (owner's catch). No results is not on the board: it takes the hint's pose. Rounded:
-  the no-results top 96 -> 60 (the empty step), the body width 280 -> 300 (the board's). Open: the
-  result rows and their skeleton (I18).
+  the no-results top 96 -> 60 (the empty step), the body width 280 -> 300 (the board's). The result
+  rows and their skeleton built 2026-11-15: the register's own (`RegisterRow`, `SentRegisterRow`,
+  `RegisterSkeleton`, the month heads), each with its box pill since a search spans every box, and the
+  reminder a hit has; the rows wait for the reminders so no mark arrives late. Walked on Obalka_Demo
+  beside the inbox, light and dark, English: the same rows. `searchRowLabel` went with the old row.
 
 ### Settings and the rest
 
@@ -653,8 +658,9 @@ All **N** unless a board shows them; R9 shows the ones no agreed board has.
 - [ ] I129 Opening an attachment: Android's chooser, iOS Quick Look, a ZFO's save sheet - **N**.
 - [ ] I130 File pickers and save sheets (backup export and import, compose attachments) - **N**.
 - [ ] I131 Sharing a debug recording - **N**.
-- [ ] I132 The PDF the app makes from typed text ("Textová zpráva.pdf", system font 14) - **X**: what the
-  authority receives from Obálka; R9 shows it as printed matter.
+- [x] I132 The PDF the app makes from typed text ("Textová zpráva.pdf", system font 14) - **X**: what the
+  authority receives from Obálka; R9 shows it as printed matter. Built 2026-11-15 as R12's Czech A4
+  letter and walked on Android and iOS (I38.5).
 - [ ] I133 External links: the ISDS portal (password, sign in again, buy credit), privacy, source, the
   OS settings - **N**.
 - [ ] I134 Notification taps and cold start into a message or the password screen - **N**.
@@ -1060,6 +1066,9 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     text field or the attachments; the build keeps them. The window is 3 taller from the roundings.
     R2's paid question: 20 above the stamp and under it, the words 15/21; the build is R9's `Dialog`
     (24 above the object, 18 under it, the words in Small), one anatomy for every question.
+  - The stamp before and after sending: R2 draws compose's at 96×78 with the kind line (PDZ, datová
+    zpráva), the Sent board the cancelled one smaller and without it. One stamp, two drawings: the
+    owner to pick one on the canvas; each screen follows its own board until then.
   - R12's letter: "V Praze" before the date; the app does not know the sender's place, so the date
     stands alone at the right.
   Confirmed by the owner 2026-11-13, each as built: the blank sent stamp, the merged first row, the
