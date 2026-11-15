@@ -801,6 +801,8 @@ After the critique (2026-11-15), the owner's answers, one by one:
 - **The error-report glyph:** the bell (also the notifications question's and the SMS notice's) lost
   to a bug in the offset family, drawn on the Icons board first: the body is the plane, with a head,
   two feelers, the wing seam and three legs a side. The bell keeps one meaning.
+- **The way to Settings:** a gear in the header and a louder switcher row lost to the route as it is,
+  the box pill then "Nastavení" at the switcher's foot (docs/engineering/not-now.md).
 
 ## Do's and Don'ts
 

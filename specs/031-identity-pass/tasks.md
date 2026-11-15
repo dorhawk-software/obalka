@@ -1284,6 +1284,12 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   16. The sign-in name: "Uživatelské jméno" (ISDS's word and the access letter's), no placeholder;
       the box's "Přihlašovací jméno" line follows.
   17. The alias example: "Např. Osobní, Firma…".
+  Built 2026-11-15, each with a test that failed first and a walk on Obalka_Demo in both themes:
+  1 and 9 (8c5ab03), 2 and 8 (12ab2d4), 3 (2df1baa), 4 (6601989), 5, 13, 16 and 17 (1aac45e; the
+  voice guard `projectVoice.test.ts` found 45 offenders, about 20 of them Czech "I" progress labels),
+  7 and 15 (bb06b66), 10 (75b13b6), 11 (013bc4c), 14 (1ea5abe; MessageDetail now takes
+  `ScreenHeader quiet`, its hairline at 274 px like Settings'), 12 (ec40d12, the bug drawn on the
+  Icons board first). 6 is written in not-now.md as "left as it is".
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the

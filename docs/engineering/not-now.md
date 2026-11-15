@@ -170,6 +170,12 @@ it is" marks a limitation kept on purpose. Done items leave the list.
   031 critique. Plan: an Odpovědět action at the foot of the detail that opens Compose with the sender
   as KOMU and the user's reference set to the sender's č. j.; a board on the canvas first.
   ([031/tasks.md](../../specs/031-identity-pass/tasks.md) T050)
+- **Settings is reached only through the box switcher. Decided: left as it is (2026-11-15).** The
+  031 critique found the route (the inbox's box pill, then "Nastavení" at the foot of the switcher)
+  hard to discover. The owner kept it: Gmail and Proton put settings behind the account menu too,
+  Settings is rarely needed, and a gear beside search would squeeze the pill on a 360 dp phone.
+  Revisit if people walking the app cannot find it. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
+  T050, the owner's answer 6)
 
 # Part B: from the practices adoption audit (2026-11-12)
 
