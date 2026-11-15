@@ -1,4 +1,5 @@
 import { render, fireEvent, act, within } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { tamaguiConfig } from '../../tamagui.config';
@@ -69,6 +70,19 @@ describe('BoxSwitcherSheet (011 inbox-first IA)', () => {
     expect(view.getByTestId('switchBox-box2')).toBeTruthy();
     expect(view.getByTestId('switcherAddBox')).toBeTruthy();
     expect(view.getByTestId('switcherSettings')).toBeTruthy();
+  });
+
+  it('names the list as a heading (031 T050)', async () => {
+    const { view } = await renderSheet();
+    expect(view.getByText('Schránky').props.accessibilityRole).toBe('header');
+  });
+
+  it('lets the boxes take the sheet\'s height, and says when they scroll (031 T050)', async () => {
+    // A fixed 360 held the merged row and three boxes: a fourth was under the edge, unannounced.
+    const { view } = await renderSheet({ accounts: ['b1', 'b2', 'b3', 'b4'].map(id => account(id)) });
+    const list = view.getByTestId('switcherBoxes');
+    expect(StyleSheet.flatten(list.props.style)?.maxHeight).toBeUndefined();
+    expect(list.props.showsVerticalScrollIndicator).not.toBe(false);
   });
 
   it('tapping a non-active box switches to it; the active row just dismisses', async () => {

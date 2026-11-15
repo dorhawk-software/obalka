@@ -36,6 +36,7 @@ import { unifiedAvailable } from '../state/activeBox';
 import { AliasEditor } from './AliasEditor';
 import { RemoveBoxDialog } from './RemoveBoxDialog';
 import { useSheetMaxHeight } from '../../../theme/useSheetMaxHeight';
+import { SheetStatusBar } from '../../../theme/SheetStatusBar';
 
 export function BoxSwitcherSheet({
   onClose,
@@ -106,6 +107,7 @@ export function BoxSwitcherSheet({
       {/* A gesture root of its own: on Android the Modal is a window outside the app's root, and the
           drag down was never recognised in it (until 2026-11-15). */}
       <GestureHandlerRootView style={{ flex: 1 }} testID="sheetGestureRoot">
+      <SheetStatusBar />
       {/* No `accessibilityLabel` here: with `accessible={false}` it is never announced, so it read
           as a dismiss affordance the screen reader offers and does not. The sheet's own Close
           control is the announced way out. */}
@@ -155,15 +157,18 @@ export function BoxSwitcherSheet({
                 />
                 {/* Design: title padding 0 6px 10px, Bricolage 16/700. */}
                 <YStack paddingHorizontal={6} paddingBottom={10}>
-                  <Heading>{t('home.title')}</Heading>
+                  <Heading accessibilityRole="header">{t('home.title')}</Heading>
                 </YStack>
 
                 {/* The boxes - scrollable so a long list never pushes the actions off-screen. */}
                 <ScrollView
-                  // Shrinks below 360 when the sheet reaches its cap (useSheetMaxHeight).
-                  style={{ maxHeight: 360, flexShrink: 1 }}
+                  // As tall as the sheet's own cap lets it be (useSheetMaxHeight), then it shrinks and
+                  // scrolls. Until 2026-11-15 it stopped at 360, which held the merged row and three
+                  // boxes exactly: a fourth box sat under the edge with nothing to say it was there
+                  // (031 T050). Where it does scroll, the indicator says so.
+                  style={{ flexShrink: 1 }}
                   bounces={false}
-                  showsVerticalScrollIndicator={false}
+                  testID="switcherBoxes"
                 >
                   {/* 024 cycle 2. Above the boxes and outside their group, because it is a MODE
                       rather than another box - see UnifiedRow for the four ways it is kept

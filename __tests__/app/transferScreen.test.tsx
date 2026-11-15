@@ -226,7 +226,7 @@ describe('choosing which backup goes (026 US3)', () => {
     const { controller } = fake();
     const view = await mountBoth(controller);
     expect(view.getByTestId(`transfer-backup-${newer.archiveName}`).props.accessibilityState).toEqual({
-      selected: true,
+      checked: true,
     });
     // The chip's words, as text after the size (031 R10).
     expect(view.getByText(new RegExp(` · ${t('backup.docs.chip.all')} · `))).toBeTruthy();

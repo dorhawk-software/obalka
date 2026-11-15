@@ -184,7 +184,7 @@ describe('the language picker', () => {
     for (const { code, name } of LANGUAGES) {
       const row = within(sheet).getByTestId(`lang-${code}`);
       expect(within(row).getByText(name)).toBeTruthy();
-      expect(row.props.accessibilityState).toEqual({ selected: code === 'cs' });
+      expect(row.props.accessibilityState).toEqual({ checked: code === 'cs' });
     }
   });
 

@@ -751,7 +751,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
               board's 20, on the scale). */}
           {attachments || !unavailable ? (
             <XStack marginTop={18} alignItems="baseline" gap={8}>
-              <Heading>{t('detail.attachments')}</Heading>
+              <Heading accessibilityRole="header">{t('detail.attachments')}</Heading>
               {attachments ? <Small color={theme.textMuted}>{String(attachments.length)}</Small> : null}
             </XStack>
           ) : null}

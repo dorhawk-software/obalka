@@ -29,6 +29,7 @@ import type { BackupManifest } from '../../services/backup/schema';
 import { Card, CardRow, RowText, Section, Well } from './SettingsSection';
 import { documentsChipText, documentsMissingText } from './BackupDocumentsChip';
 import { formatDateTime } from './TransferDialogs';
+import { touchSlop } from '../../theme/touchTarget';
 
 /** R10's failure: a danger tone block, no outline and no icon, at the top of its half. */
 export function FailureBlock({ text, side }: { readonly text: string; readonly side: 'sending' | 'receiving' }) {
@@ -95,6 +96,8 @@ export function SendHalf({
               alignItems="center"
               gap={6}
               minHeight={44}
+              // To the 48 target (031 T050).
+              hitSlop={touchSlop({ height: 44 })}
               pressStyle={{ opacity: 0.6 }}
               onPress={onOpenBackup}
               accessibilityRole="link"

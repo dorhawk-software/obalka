@@ -55,12 +55,36 @@ export function avatarTint(name: string | null | undefined, alpha: number): stri
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-/** 1–2 letter monogram: initials of the first two words (or first two letters of a single word). */
+/**
+ * Czech and common foreign academic degrees, as written before or after a name: "Ing. Ondřej Dvořák"
+ * is OD, not IO, and a person's two boxes (FO and PFO) no longer look like two people (031 T050).
+ * Matched with their dot (or a comma after them), so a word that only spells like one stays.
+ */
+const DEGREES = new Set([
+  'bc', 'mgr', 'ing', 'arch', 'mudr', 'mddr', 'mvdr', 'judr', 'phdr', 'rndr', 'pharmdr', 'thdr', 'paeddr',
+  'icdr', 'thlic', 'thmgr', 'dr', 'doc', 'prof', 'akad', 'phd', 'csc', 'drsc', 'dis', 'mba', 'llm', 'msc',
+]);
+const DOTLESS = new Set(['mba', 'msc']);
+
+function isDegree(word: string): boolean {
+  const bare = word.replace(/[.,]/g, '').toLowerCase();
+  return DEGREES.has(bare) && (/[.,]$/.test(word) || word.includes('.') || DOTLESS.has(bare));
+}
+
+/**
+ * 1–2 letter monogram: initials of the first two words of the name (or the first two letters of a
+ * single word), its degrees left out.
+ */
 export function monogram(name: string | null | undefined): string {
-  const words = (name ?? '')
+  const all = (name ?? '')
     .trim()
     .split(/\s+/)
     .filter(w => /[\p{L}\p{N}]/u.test(w));
+  // "et" joins two degrees ("Mgr. et Mgr."), and goes with them.
+  const named = all.filter(
+    (w, i) => !isDegree(w) && !(w === 'et' && isDegree(all[i - 1] ?? '') && isDegree(all[i + 1] ?? '')),
+  );
+  const words = named.length > 0 ? named : all;
   if (words.length === 0) {
     return '?';
   }

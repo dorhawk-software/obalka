@@ -1226,6 +1226,32 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   "1,234 CZK"; the active language moved to src/i18n/activeLocale.ts so both read it); I11 (the
   refusal's body starts with what is wrong); I38's dimmed buttons (InkButton, the busy download, the
   attachment sheet and the waiting window composite their layer while faded, fadedAsOne.test).
+  The critique (2026-11-15), two isolated reviewers on the walk's 24 captures (12 screens, light and
+  dark): A, the design review (Nielsen 28/40, "mostly authored for this product"; the identity drops
+  out on Settings, Backup, Add box and Sign-in); B, a native technical audit standing in for the
+  detector, which reads only the web. Fixed from it, each with a guard test proven able to fail:
+  the clock over the gold flap in dark (1.68:1; the inbox asks for dark icons, every overlay puts the
+  theme's back over its scrim); the switcher's list stopped at 360 and hid a fourth box; the compose
+  fields were leaves' children on iOS (wrappers now `accessible={false}`); the disabled switch was
+  not an element; radios said `selected` (now `checked`, in a `radiogroup`) and their ring measured
+  1.47:1 (now the switch's off edge, 3.63); six headings without the header role; Pokročilé and the
+  box-type line without `expanded`, the FAQ reading its +/−; the rename field without label, face or
+  cap; the test tag a raw 10 (now the tag role); TermPicker's 16 (now 15, bodyStrong); the recipient
+  search silent to a screen reader; ten presses drawn at 44 without slop (smallPressHasSlop.test now
+  reads every one) and the help link's target over Pokročilé's; the monogram took the degree ("Ing.
+  Ondřej Dvořák" was IO); `success` 4.36:1 on the paper (now #2A744C, 4.91); "ID" parted from the ID in
+  Compose. Reply is written down as not now.
+  Raised for the owner (design, not built unasked): neutral buttons on the paper (the sunken fill is
+  1.03:1 there, Backup's Zálohovat nyní / Ověřit zálohu / Zobrazit heslo read as bold words);
+  Nedoručitelné has no glyph and is the quietest state; the backup screen's prose (15 lines before the
+  status; the cloud sentence); Settings reached only through the switcher; the switcher's red line on
+  every box ("Poslední známý stav" in red too); "Naposledy 12.09." does not say what; the empty stamp
+  slot reads as an image placeholder; the disabled Jen na Wi-Fi shows a blue on switch; the window
+  film's glint in dark looks like a smudge; the crash-report row's bell glyph; "budeme"/"ani my" in
+  telemetry and backup copy (plural, so within the voice rule, the owner's call); the detail header
+  taller with a faint title (documented exemption); the broken-box badge covering the monogram's first
+  letter; the spinner sliding a primary button's label sideways; the sign-in field's label and
+  placeholder differing ("Přihlašovací" / "Uživatelské jméno"); the "DPFO" example.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [ ] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the

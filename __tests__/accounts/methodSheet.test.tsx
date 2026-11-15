@@ -22,15 +22,18 @@ describe('the method step (R11)', () => {
     for (const m of ['password', 'otp_totp', 'mobile_key']) {
       expect(view.getByTestId(`method-${m}`).props.accessibilityRole).toBe('radio');
     }
-    expect(view.getByTestId('method-password').props.accessibilityState).toEqual({ selected: true });
+    expect(view.getByTestId('method-password').props.accessibilityState).toEqual({ checked: true });
     await fireEvent.press(view.getByTestId('method-mobile_key'));
-    expect(view.getByTestId('method-mobile_key').props.accessibilityState).toEqual({ selected: true });
-    expect(view.getByTestId('method-password').props.accessibilityState).toEqual({ selected: false });
+    expect(view.getByTestId('method-mobile_key').props.accessibilityState).toEqual({ checked: true });
+    expect(view.getByTestId('method-password').props.accessibilityState).toEqual({ checked: false });
   });
 
   it('keeps the environment help open under the switch', async () => {
     const view = await form();
+    expect(view.getByTestId('advancedToggle').props.accessibilityState).toEqual({ expanded: false });
     await fireEvent.press(view.getByTestId('advancedToggle'));
+    // Says it is open (031 T050).
+    expect(view.getByTestId('advancedToggle').props.accessibilityState).toEqual({ expanded: true });
     expect(view.getByText(new RegExp(t('login.environment.help.czebox').slice(0, 30)))).toBeOnTheScreen();
     expect(view.queryByTestId('env-help')).toBeNull();
   });

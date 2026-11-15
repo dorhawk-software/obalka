@@ -25,6 +25,7 @@ import { haptics } from '../../../services/haptics';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 import { touchSlop } from '../../../theme/touchTarget';
 import { t } from '../../../i18n/strings';
+import { SheetStatusBar } from '../../../theme/SheetStatusBar';
 import type { DataBoxAccount } from '../../../services/isds/types';
 
 /** The ⋯ trigger's drawn size - declared once so its touch slop is derived, not guessed. */
@@ -131,6 +132,7 @@ export function BoxOverflowMenu({
 
       {open ? (
         <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={close}>
+          <SheetStatusBar />
           {/* The whole screen outside the menu: a tap there closes it. Clear - R9 draws no scrim. */}
           <Pressable accessible={false} onPress={close} style={{ flex: 1 }} testID="boxMenu-outside">
             {/* The press-eater: a tap on the menu's padding must not close it. */}

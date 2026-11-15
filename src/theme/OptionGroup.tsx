@@ -39,7 +39,8 @@ export function OptionGroup<T extends string>({
   readonly testIDPrefix?: string;
 }) {
   return (
-    <Card>
+    // One group: a screen reader says which of how many (031 T050).
+    <Card accessibilityRole="radiogroup">
       {options.map((opt, i) => {
         const selected = opt.value === value;
         return (
@@ -105,7 +106,8 @@ function OptionRow<T extends string>({
         pressStyle={{ opacity: 0.85 }}
         onPress={onPress}
         accessibilityRole="radio"
-        accessibilityState={{ selected }}
+        // `checked` is a radio's state; `selected` was read as a tab's (031 T050).
+        accessibilityState={{ checked: selected }}
         testID={testID}
       >
         {/* The leading mark (a flag) sits in the row's own 12 gap, as the boards draw it. */}
@@ -118,7 +120,8 @@ function OptionRow<T extends string>({
           {option.description ? <Caption color={theme.textMuted}>{option.description}</Caption> : null}
         </YStack>
         {option.trailing != null ? option.trailing : null}
-        {/* Radio: a 2 dp ring, `borderStrong`; selected, a blue ring with a 12 dp blue dot. */}
+        {/* Radio: a 2 dp ring in the switch's off edge (`borderStrong` measured 1.47:1, below 1.4.11's
+            3:1 - 031 T050); selected, a blue ring with a 12 dp blue dot. */}
         <YStack
           width={22}
           height={22}
@@ -127,7 +130,7 @@ function OptionRow<T extends string>({
           alignItems="center"
           justifyContent="center"
           overflow="hidden"
-          borderColor={selected ? theme.blue : theme.borderStrong}
+          borderColor={selected ? theme.blue : theme.trackOffBorder}
         >
           <Animated.View
             style={{

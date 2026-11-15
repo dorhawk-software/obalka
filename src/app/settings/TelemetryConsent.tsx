@@ -60,7 +60,7 @@ export function TelemetryConsent({
           paddingBottom: contentBottom,
         }}
       >
-        <Display color={theme.text} marginBottom={12}>
+        <Display accessibilityRole="header" color={theme.text} marginBottom={12}>
           {t('consent.title')}
         </Display>
         <Body color={theme.bodyText} marginBottom={24}>

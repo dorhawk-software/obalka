@@ -246,7 +246,7 @@ type Host = ReturnType<Awaited<ReturnType<typeof wrap>>['getByTestId']>;
 /** A number a host view was actually drawn with. One that is missing, or not a number, fails. */
 function px(
   node: Host,
-  key: 'width' | 'height' | 'top' | 'bottom' | 'paddingTop' | 'paddingBottom',
+  key: 'width' | 'height' | 'top' | 'bottom' | 'paddingTop' | 'paddingBottom' | 'marginTop',
 ): number {
   const value = StyleSheet.flatten(node.props.style)?.[key];
   expect([key, typeof value]).toEqual([key, 'number']);
@@ -333,10 +333,23 @@ describe('the help links', () => {
     expect(44 + slop.top + slop.bottom).toBe(MIN_TARGET);
   });
 
-  it('on the add-box form: a 20 line padded 20 above and 6 below reaches the target (R11)', async () => {
+  it('on the add-box form: a 20 line padded 6 below reaches the target, 20 under Pokročilé (R11)', async () => {
     const view = await wrap(
       <AddBoxForm onSubmit={() => {}} onBack={() => {}} onOpenFaq={() => {}} />,
     );
-    expectLinkTarget(view.getByTestId('login-faq'), [20, 6], 20);
+    const link = view.getByTestId('login-faq');
+    expectLinkTarget(link, [0, 6], 20);
+    expect(px(link, 'marginTop')).toBe(20);
+  });
+
+  it('on the add-box form: the help link\'s target and Pokročilé\'s do not overlap (031 T050)', async () => {
+    // The link was padded 20 above, its box reaching up over Pokročilé's slop, and won the tap there:
+    // Pokročilé, which reveals the test environment, was about 37 tall.
+    const view = await wrap(
+      <AddBoxForm onSubmit={() => {}} onBack={() => {}} onOpenFaq={() => {}} />,
+    );
+    const link = view.getByTestId('login-faq');
+    const advanced = (view.getByTestId('advancedToggle').props.hitSlop as Slop).bottom;
+    expect(advanced + (link.props.hitSlop as Slop).top).toBeLessThanOrEqual(px(link, 'marginTop'));
   });
 });

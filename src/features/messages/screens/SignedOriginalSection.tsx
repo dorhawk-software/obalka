@@ -51,6 +51,7 @@ import {
   type SignedOriginalRow,
 } from '../state/signedOriginal';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
+import { touchSlop } from '../../../theme/touchTarget';
 
 /** The caption's line height, as the attachment rows' 13pt caption sets it. */
 const CAPTION_LINE = 17;
@@ -304,6 +305,8 @@ export function SignedOriginalSection({
       marginRight={-10}
       alignItems="center"
       justifyContent="center"
+      // To the 48 target (031 T050).
+      hitSlop={touchSlop({ width: 44, height: 44 })}
       pressStyle={{ opacity: 0.5 }}
       onPress={() => {
         if (row.kind === 'stored') {

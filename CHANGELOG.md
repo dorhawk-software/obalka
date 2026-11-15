@@ -20,6 +20,13 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Monogram schránky vynechá titul.** „Ing. Ondřej Dvořák“ je OD, ne IO, takže dvě schránky
+  jednoho člověka nevypadají jako dva lidé.
+- **Zelená u doručených odeslaných zpráv je tmavší.** „Doručeno“ v Odeslaných je i drobným písmem
+  dobře čitelné.
+- **Nevybraná volba má zřetelný kroužek.** Kroužky ve Vzhledu, Jazyku a jinde mají stejný okraj jako
+  vypnutý přepínač.
+- **Štítek Testovací má o kousek větší písmo.** Je teď stejně velký jako ostatní štítky.
 - **Odmítnuté přihlášení neopakuje svůj nadpis.** Text karty začíná rovnou tím, co je špatně:
   „Jméno nebo heslo je špatně…“.
 - **Smazání záznamu z režimu ladění se ptá jako smazání zálohy.** „Smazat záznam?“, pod tím název
@@ -174,6 +181,14 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Hodiny nad zlatou chlopní jsou v tmavém režimu čitelné.** Stavový řádek byl bílý na žluté.
+- **Přepínač schránek ukáže všechny schránky.** Čtvrtá schránka se schovala pod okraj seznamu a nic
+  neříkalo, že tam je.
+- **Čtečka obrazovky dosáhne na pole zprávy a slyší víc.** Na iPhonu se dá dostat do polí Komu,
+  Předmět a Text; vypnutý přepínač se ozve, volby říkají „vybráno“, nadpisy jsou nadpisy, Pokročilé
+  říká, jestli je otevřené, a hledání příjemce oznámí, co dělá.
+- **Malá tlačítka mají plnou dotykovou plochu.** Stažení přílohy, odebrání přílohy, odkazy na portál
+  a další mají 48 bodů jako zbytek aplikace; Pokročilé a Nápověda se už neperou o stejné místo.
 - **Anglická aplikace píše velikosti a kredit anglicky.** „2.6 MB of 4.2 MB“ a „1,234 CZK“ místo
   české desetinné čárky a „Kč“.
 - **Ztlumená tlačítka na Androidu blednou jako celek.** Slova na nich dřív zmizela do barvy tlačítka.

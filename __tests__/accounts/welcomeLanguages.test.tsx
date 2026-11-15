@@ -56,9 +56,9 @@ it('lists every language in the list, not the one other than the current', async
 
   expect(within(sheet).getAllByRole('radio')).toHaveLength(3);
   expect(within(within(sheet).getByTestId('lang-uk')).getByText('Українська')).toBeTruthy();
-  expect(within(sheet).getByTestId('lang-cs').props.accessibilityState).toEqual({ selected: true });
+  expect(within(sheet).getByTestId('lang-cs').props.accessibilityState).toEqual({ checked: true });
   expect(within(sheet).getByTestId('lang-uk').props.accessibilityState).toEqual({
-    selected: false,
+    checked: false,
   });
 });
 

@@ -19,6 +19,7 @@ import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 import { formatBytes, t } from '../../../i18n/strings';
 import type { MessageAttachment } from '../../../services/isds/types';
 import { attachmentOpener, NoViewerError } from '../../../services/files/attachmentOpener';
+import { touchSlop } from '../../../theme/touchTarget';
 
 
 
@@ -177,6 +178,8 @@ export function AttachmentRow({
           marginRight={-10}
           alignItems="center"
           justifyContent="center"
+          // To the 48 target (031 T050).
+          hitSlop={touchSlop({ width: 44, height: 44 })}
           pressStyle={{ opacity: 0.5 }}
           onPress={save}
           accessibilityRole="button"

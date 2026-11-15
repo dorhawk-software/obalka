@@ -170,7 +170,8 @@ function SenderOnEnvelope({
   readonly onChange?: () => void;
 }) {
   const theme = useTheme();
-  const kind = [boxTypeLabel(account.dbType), `ID ${account.boxId}`].filter(Boolean).join(' · ');
+  // "ID" and the ID never part at the end of a line (031 T050: "p7wq2bs" stood alone under the rest).
+  const kind = [boxTypeLabel(account.dbType), `ID\u00A0${account.boxId}`].filter(Boolean).join(' · ');
   const known = credit && credit.kind !== 'unknown' ? credit : null;
   return (
     <YStack
@@ -201,7 +202,7 @@ function SenderOnEnvelope({
           </YStack>
         ) : null}
       </XStack>
-      <Caption fontWeight="400" color={theme.envelopeInkSoft}>
+      <Caption fontWeight="400" color={theme.envelopeInkSoft} testID="composeSenderKind">
         {kind}
       </Caption>
       {known ? (
@@ -275,7 +276,7 @@ export function RecipientWindow({
   readonly onChange: () => void;
 }) {
   const theme = useTheme();
-  const kind = `${t(`send.dbType.${recipient.dbType}`)} · ID ${recipient.boxId}`;
+  const kind = `${t(`send.dbType.${recipient.dbType}`)} · ID\u00A0${recipient.boxId}`;
   return (
     <WindowFrame>
       <XStack
@@ -337,7 +338,9 @@ export function SearchWindow({
   const line = face.lineHeight * useWindowDimensions().fontScale;
   return (
     <WindowFrame ring={focused}>
-      <YStack onPress={() => field.current?.focus()}>
+      {/* Not an element of its own: on iOS that would make it a leaf and the field inside it
+          unreachable to VoiceOver (031 T050). The tap still focuses the field. */}
+      <YStack accessible={false} onPress={() => field.current?.focus()}>
         <Window style={{ minHeight: 62, paddingTop: 8, paddingBottom: 10, paddingHorizontal: 12, gap: 2 }}>
           <Overline color={theme.textMuted}>{t('detail.to')}</Overline>
           <XStack alignItems="center" gap={8}>

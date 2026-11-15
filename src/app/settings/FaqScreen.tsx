@@ -152,6 +152,8 @@ function FaqContent({ onBack, focus }: FaqScreenProps) {
               pressStyle={{ backgroundColor: theme.surfaceAlt }}
               accessibilityRole="button"
               accessibilityState={{ expanded: isOpen }}
+              // The question alone: the state says open or closed, so the +/− is not read out (031 T050).
+              accessibilityLabel={entry.question}
               testID={`faq-${id}`}
             >
               <BodyStrong flex={1} color={theme.text}>

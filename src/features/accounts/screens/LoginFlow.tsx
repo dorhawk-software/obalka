@@ -27,6 +27,7 @@ import type {
 } from '../../../services/isds/types';
 import { portalUrl } from '../../../services/isds/endpoints';
 import type { Credentials } from '../state/loginController';
+import { touchSlop } from '../../../theme/touchTarget';
 
 export interface LoginFlowProps {
   readonly deps: UseLoginControllerDeps;
@@ -327,7 +328,14 @@ function MobileKeyWaiting({
 
       <YStack flex={1} alignItems="center" paddingTop={36} paddingHorizontal={24}>
         <WaitingEnvelope label={t('login.loginName')} name={loginName} testID="mobileKeyEnvelope" />
-        <Title fontWeight="700" textAlign="center" maxWidth={300} marginTop={36} textBreakStrategy="balanced">
+        <Title
+          accessibilityRole="header"
+          fontWeight="700"
+          textAlign="center"
+          maxWidth={300}
+          marginTop={36}
+          textBreakStrategy="balanced"
+        >
           {t('login.mobileKey.title')}
         </Title>
         <Small color={theme.textMuted} textAlign="center" maxWidth={290} marginTop={10} textBreakStrategy="balanced">
@@ -417,6 +425,8 @@ function SignInRefused({
               paddingHorizontal={4}
               gap={6}
               alignItems="center"
+              // To the 48 target (031 T050).
+              hitSlop={touchSlop({ height: 44 })}
               pressStyle={{ opacity: 0.6 }}
               onPress={onOpenPortal}
               accessibilityRole="link"

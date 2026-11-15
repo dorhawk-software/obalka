@@ -22,6 +22,7 @@ import { CheckIcon } from '../../../theme/icons';
 import { BOX_COLORS, boxColor, boxColorKey, type BoxColor } from '../../../theme/boxColor';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { space } from '../../../theme/spacing';
+import { fonts, MAX_TEXT_SCALE } from '../../../theme/typeScale';
 import { BoxIdentityLine } from './BoxIdentityLine';
 import { t } from '../../../i18n/strings';
 import type { DataBoxAccount } from '../../../services/isds/types';
@@ -102,6 +103,10 @@ export function AliasEditor({
         // a dark sheet when the two differ. See `theme/ui.tsx`.
         keyboardAppearance={theme.name === 'dark' ? 'dark' : 'light'}
         onSubmitEditing={save}
+        // What the themed Input gives every other field (031 T050): the label above it said aloud, the
+        // body face rather than the system's, and the text-size cap.
+        accessibilityLabel={t('alias.name')}
+        maxFontSizeMultiplier={MAX_TEXT_SCALE}
         testID="aliasName"
         style={{
           marginTop: space.sm,
@@ -111,6 +116,7 @@ export function AliasEditor({
           borderRadius: 14,
           paddingHorizontal: space.inset,
           fontSize: 15,
+          fontFamily: fonts.bodyRegular,
           color: theme.text,
           backgroundColor: theme.surface,
         }}

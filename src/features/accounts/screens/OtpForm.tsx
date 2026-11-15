@@ -15,6 +15,7 @@ import { useContentBottom } from '../../../theme/useContentBottom';
 import type { ServerNotice } from '../../../services/isds/types';
 import { listenForSmsCode } from '../../../services/sms/smsUserConsent';
 import { useSingleFlight } from '../../../app/useSingleFlight';
+import { touchSlop } from '../../../theme/touchTarget';
 
 /**
  * ISDS's SMS code is eight digits: `otpFromSms.ts` quotes one message, and the owner checked the rest
@@ -253,6 +254,8 @@ export function OtpForm({
               chromeless
               alignSelf="center"
               minHeight={44}
+              // To the 48 target (031 T050).
+              hitSlop={touchSlop({ height: 44 })}
               paddingHorizontal={4}
               fontSize={14}
               color={theme.blue}

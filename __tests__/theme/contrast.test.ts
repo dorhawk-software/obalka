@@ -78,6 +78,9 @@ const pairs = (t: Theme): [string, string, string][] => [
   ['bodyText on bg', t.bodyText, t.bg],
   ['textMuted on surface', t.textMuted, t.surface],
   ['textFaint on surface', t.textFaint, t.surface],
+  // The sent register's "Doručeno" (12/600) on the paper and on the sunken row (031 T050).
+  ['success on bg', t.success, t.bg],
+  ['success on surfaceSunken', t.success, t.surfaceSunken],
   ['onBlue on blue', t.onBlue, t.blue],
   // `onSolid` is white in BOTH themes, and these are the theme-independent fills it is white ON.
   // Derived from `avatarPalette.ts` rather than copied, so a new hue is covered the day it is added.
@@ -159,7 +162,8 @@ describe.each(THEMES)('%s theme', (_name, theme) => {
     expect(contrast(theme.goldInk, ground)).toBeGreaterThanOrEqual(NON_TEXT);
   });
 
-  it.each(GROUNDS)('the OFF switch has a boundary on %s', (_g, ground) => {
+  // The unselected radio's ring is the same edge (031 T050).
+  it.each(GROUNDS)('the OFF switch and the empty radio have a boundary on %s', (_g, ground) => {
     expect(contrast(theme.trackOffBorder, ground)).toBeGreaterThanOrEqual(
       NON_TEXT,
     );

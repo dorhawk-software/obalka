@@ -20,6 +20,13 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **A box's monogram leaves out the degree.** "Ing. Ondřej Dvořák" is OD, not IO, so one person's
+  two boxes no longer look like two people.
+- **The green of a delivered sent message is darker.** "Delivered" in Sent reads well even in small
+  type.
+- **An unpicked option has a clear ring.** The rings in Appearance, Language and elsewhere have the
+  edge an off switch has.
+- **The Test tag's letters are a touch larger.** It is now the size of the other tags.
 - **A refused sign-in no longer repeats its title.** The card's text starts with what is wrong:
   "The name or password is wrong…".
 - **Deleting a debug recording asks the way deleting a backup does.** "Delete this recording?", the
@@ -198,6 +205,14 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **The clock over the gold flap reads in dark mode.** The status bar was white on yellow.
+- **The box switcher shows every box.** A fourth box hid under the list's edge with nothing to say
+  it was there.
+- **A screen reader reaches the message fields and hears more.** On iPhone it gets into To, Subject
+  and Text; a disabled switch is announced, options say "selected", headings are headings, Advanced
+  says whether it is open and the recipient search says what it is doing.
+- **Small buttons have the full touch area.** Saving and removing attachments, the portal links and
+  others reach 48 points like the rest of the app; Advanced and Help no longer share a spot.
 - **The English app writes sizes and credit in English.** "2.6 MB of 4.2 MB" and "1,234 CZK"
   instead of the Czech decimal comma and "Kč".
 - **Dimmed buttons on Android fade as a whole.** Their words used to sink into the button's colour.

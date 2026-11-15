@@ -4,7 +4,7 @@
 // search, change folder, and say when Odeslané has news.
 
 import { fireEvent, render } from '@testing-library/react-native';
-import { processColor, StyleSheet } from 'react-native';
+import { AppState, processColor, StatusBar, StyleSheet } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
@@ -143,5 +143,52 @@ describe.each([
     }
     expect(tile).toHaveTextContent('3');
     expect(v.getByText('Sloučený archiv · 3 schránky')).toBeTruthy();
+  });
+});
+
+// 031 T050 (the native audit): the flap is gold in both themes, but the app set the status bar from the
+// theme, so in dark the clock over the flap was white on gold - 1.68:1. A sheet's scrim darkens the
+// flap again, so each overlay puts the theme's style back while it is up.
+describe('the clock over the flap', () => {
+  // The bar is asked for only on a screen that is in front (`useOnScreen`), and Jest's app is not.
+  const appState = AppState as unknown as { currentState: string };
+  const before = appState.currentState;
+  beforeEach(() => {
+    appState.currentState = 'active';
+  });
+  afterEach(() => {
+    appState.currentState = before;
+  });
+  // What the mounted `StatusBar`s ask for - React Native's own stack of them.
+  const asked = () =>
+    (StatusBar as unknown as { _propsStack: { barStyle: { value: string } | null }[] })._propsStack.map(
+      entry => entry.barStyle?.value,
+    );
+
+  it.each([false, true])('is dark on the gold whichever the theme (dark: %s)', async isDark => {
+    const v = await header(isDark).view;
+    expect(asked()).toEqual(['dark-content']);
+    await v.unmount();
+    expect(asked()).toEqual([]);
+  });
+
+  it('goes back to the theme\'s style under every overlay\'s scrim', () => {
+    const { readFileSync, readdirSync, statSync } = jest.requireActual<typeof import('fs')>('fs');
+    const { join } = jest.requireActual<typeof import('path')>('path');
+    const files: string[] = [];
+    const walk = (dir: string) =>
+      readdirSync(dir).forEach(f => {
+        const p = join(dir, f);
+        if (statSync(p).isDirectory()) {
+          walk(p);
+        } else if (/\.tsx$/.test(f)) {
+          files.push(p);
+        }
+      });
+    walk(join(__dirname, '..', '..', 'src'));
+    const overlays = files.filter(f => readFileSync(f, 'utf8').includes('<Modal'));
+    expect(overlays.length).toBeGreaterThanOrEqual(3);
+    const without = overlays.filter(f => !readFileSync(f, 'utf8').includes('<SheetStatusBar />'));
+    expect(without).toEqual([]);
   });
 });

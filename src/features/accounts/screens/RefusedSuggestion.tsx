@@ -12,6 +12,7 @@ import { useTheme } from '../../../theme/ThemeProvider';
 import { Card } from '../../../theme/Card';
 import { Well } from '../../../theme/Well';
 import { SmartphoneIcon } from '../../../theme/icons';
+import { MIN_TARGET } from '../../../theme/touchTarget';
 import { t } from '../../../i18n/strings';
 
 export function RefusedSuggestion({
@@ -33,10 +34,12 @@ export function RefusedSuggestion({
         <YStack flex={1} gap={4}>
           <Subheading accessibilityRole="header">{t('login.otpSuggest.title')}</Subheading>
           <Caption color={theme.bodyText}>{t('login.otpSuggest.sub')}</Caption>
-          <YStack marginTop={-6}>
+          {/* The two links are drawn at the 48 target: stacked with no room between them, slop would
+              make their areas overlap (031 T050). The column is lifted by the first one's extra 2. */}
+          <YStack marginTop={-8}>
             <XStack
               alignSelf="flex-start"
-              minHeight={44}
+              minHeight={MIN_TARGET}
               alignItems="center"
               pressStyle={{ opacity: 0.6 }}
               onPress={onUseSms}
@@ -49,7 +52,7 @@ export function RefusedSuggestion({
             {onOpenPortal ? (
               <XStack
                 alignSelf="flex-start"
-                minHeight={44}
+                minHeight={MIN_TARGET}
                 alignItems="center"
                 pressStyle={{ opacity: 0.6 }}
                 onPress={onOpenPortal}

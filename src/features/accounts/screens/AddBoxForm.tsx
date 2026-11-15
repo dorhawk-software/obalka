@@ -34,8 +34,11 @@ const ENVIRONMENTS: Host[] = ['production', 'czebox'];
 const EYE_W = 40;
 /** How far in from the field's right edge the show-password button sits. */
 const EYE_RIGHT = space.xs;
-/** The help link's padding (R11): the column's 14 and its own 6 above, 6 below. */
-const FAQ_PAD_TOP = 20;
+/**
+ * The help link's room (R11): 20 above it - a margin, not padding, so its target does not reach up over
+ * Pokročilé's (they overlapped by about 12 and the link won the tap, 031 T050) - and 6 below.
+ */
+const FAQ_MARGIN_TOP = 20;
 const FAQ_PAD_BOTTOM = 6;
 
 /**
@@ -167,7 +170,7 @@ export function AddBoxForm({
             {/* Board R11 (agreed 2026-11-12): the question and its line, then the methods as one
                 sheet, a row each, the radio on the right - the anatomy of Settings' Vzhled. */}
             <YStack gap={4}>
-              <Heading>{t('login.method.choose')}</Heading>
+              <Heading accessibilityRole="header">{t('login.method.choose')}</Heading>
               <Caption>{t('login.method.chooseSub')}</Caption>
             </YStack>
             <OptionGroup
@@ -187,13 +190,17 @@ export function AddBoxForm({
                 alignSelf="flex-start"
                 alignItems="center"
                 gap={6}
-                paddingVertical={4}
+                // 8 of its own above and below, 4 of it given back by the margin: drawn where it was, its
+                // box larger and its slop smaller, so the help link's under it does not meet it (031 T050).
+                paddingVertical={8}
+                marginVertical={-4}
                 paddingHorizontal={2}
-                hitSlop={textSlop('label', { paddingTop: 4, paddingBottom: 4 })}
+                hitSlop={textSlop('label', { paddingTop: 8, paddingBottom: 8 })}
                 pressStyle={{ opacity: 0.6 }}
                 onPress={() => setShowAdvanced(v => !v)}
                 accessibilityRole="button"
                 accessibilityLabel={t('login.advanced')}
+                accessibilityState={{ expanded: showAdvanced }}
                 testID="advancedToggle"
               >
                 <Label fontWeight="700" color={theme.textMuted}>
@@ -384,11 +391,12 @@ export function AddBoxForm({
             alignSelf="flex-start"
             alignItems="center"
             gap={6}
-            paddingTop={FAQ_PAD_TOP}
+            marginTop={FAQ_MARGIN_TOP}
+            paddingTop={0}
             paddingBottom={FAQ_PAD_BOTTOM}
             paddingHorizontal={2}
             // The 14/20 line plus the padding actually drawn, so the target follows the type scale.
-            hitSlop={textSlop('smallStrong', { paddingTop: FAQ_PAD_TOP, paddingBottom: FAQ_PAD_BOTTOM })}
+            hitSlop={textSlop('smallStrong', { paddingBottom: FAQ_PAD_BOTTOM })}
             onPress={onOpenFaq}
             pressStyle={{ opacity: 0.5 }}
             accessibilityRole="button"

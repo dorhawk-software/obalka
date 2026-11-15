@@ -135,6 +135,16 @@ describe('compose, the envelope you are sending (R2, R12)', () => {
     expect(view.queryByTestId('composeRecipientQuery')).toBeNull();
   });
 
+  it('keeps "ID" and the box ID together, on Od and in the window (031 T050)', async () => {
+    // "p7wq2bs" stood alone on a line under "Podnikající fyzická osoba · ID". The matcher folds
+    // spaces by default, the no-break one with them.
+    const asIs = (text: string) => text;
+    const view = await compose();
+    expect(view.getByTestId('composeSenderKind')).toHaveTextContent(/ID\u00A0box1$/, { normalizer: asIs });
+    await pick(view, mockPerson);
+    expect(view.getByTestId('composeRecipientLine')).toHaveTextContent(/ID\u00A0fo1$/, { normalizer: asIs });
+  });
+
   it('rings the window in the flap gold while the search has the caret', async () => {
     const view = await compose();
     expect(view.queryByTestId('composeWindowRing')).toBeNull();

@@ -1,8 +1,8 @@
 // What compose shows around its envelope (031 I38, boards R2 and R12): the letter it carries, the line
 // under the window while a search runs, the results as sheets, the drafts, and the attachments.
 
-import { useRef, type ReactNode } from 'react';
-import { View, type TextInput } from 'react-native';
+import { useEffect, useRef, type ReactNode } from 'react';
+import { AccessibilityInfo, View, type TextInput } from 'react-native';
 // gesture-handler Pressable for the inline discard so it coordinates with the row's swipe/tap gestures.
 import { Pressable as GHPressable } from 'react-native-gesture-handler';
 import { Input, XStack, YStack } from '../../../theme/ui';
@@ -49,7 +49,9 @@ export function ComposeLetter({
   return (
     <LetterSheet>
       {/* The whole row takes the tap, the label too: the field alone is one line of type. */}
-      <YStack gap={2} onPress={() => subjectField.current?.focus()}>
+      {/* Not an element of its own: on iOS that would make it a leaf and the field inside it
+          unreachable to VoiceOver (031 T050). The tap still focuses the field. */}
+      <YStack gap={2} accessible={false} onPress={() => subjectField.current?.focus()}>
         <Label color={theme.textMuted}>{t('send.subject')}</Label>
         <Input
           ref={subjectField}
@@ -75,7 +77,7 @@ export function ComposeLetter({
         />
       </YStack>
       <YStack height={1} backgroundColor={theme.border} />
-      <YStack gap={2} onPress={() => bodyField.current?.focus()}>
+      <YStack gap={2} accessible={false} onPress={() => bodyField.current?.focus()}>
         <Label color={theme.textMuted}>{t('send.body')}</Label>
         <Input
           ref={bodyField}
@@ -164,6 +166,21 @@ export function SearchLine({
   readonly error: string | null;
 }) {
   const theme = useTheme();
+  // Said aloud as it changes: the line appears under the field, away from a screen reader's cursor,
+  // and nothing told it the search had started or found no one (031 T050).
+  const spoken =
+    state === 'searching'
+      ? t('send.recipient.searching')
+      : state === 'none'
+        ? t('send.recipient.none')
+        : state === 'error'
+          ? error
+          : null;
+  useEffect(() => {
+    if (spoken) {
+      AccessibilityInfo.announceForAccessibility(spoken);
+    }
+  }, [spoken]);
   if (state === 'searching') {
     return (
       <XStack alignItems="center" gap={8} paddingTop={10} paddingHorizontal={4} testID="composeSearching">
@@ -383,7 +400,7 @@ export function AttachmentList({
   return (
     <YStack gap={6} paddingTop={4}>
       <XStack gap={8} alignItems="baseline">
-        <Heading>{t('send.attachments')}</Heading>
+        <Heading accessibilityRole="header">{t('send.attachments')}</Heading>
         {files.length > 0 ? <Small color={theme.textMuted}>{files.length}</Small> : null}
       </XStack>
       {files.map((f, i) => (
@@ -400,6 +417,8 @@ export function AttachmentList({
             height={44}
             alignItems="center"
             justifyContent="center"
+            // To the 48 target (031 T050).
+            hitSlop={touchSlop({ width: 44, height: 44 })}
             pressStyle={{ opacity: 0.5 }}
             // By the file, not by its index: a double tap runs both presses against the list as the
             // first removal left it, so removing index i twice took the file after it too.

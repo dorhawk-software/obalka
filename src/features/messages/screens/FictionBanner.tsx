@@ -9,6 +9,7 @@ import { chipTone } from '../../../theme/chipTone';
 import { OffsetIcon } from '../../../theme/offsetIcons';
 import { t } from '../../../i18n/strings';
 import { dayMonth } from './DetailEnvelope';
+import { touchSlop } from '../../../theme/touchTarget';
 
 /**
  * "Doručeno fikcí 29.08. · bez vašeho přihlášení". The day the deadline started on, not the day the
@@ -49,6 +50,8 @@ export function FictionBanner({
         minHeight={44}
         paddingHorizontal={10}
         alignItems="center"
+        // To the 48 target (031 T050).
+        hitSlop={touchSlop({ height: 44 })}
         pressStyle={{ opacity: 0.5 }}
         onPress={onRemind}
         accessibilityRole="button"

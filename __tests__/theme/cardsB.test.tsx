@@ -70,8 +70,26 @@ describe('an option group', () => {
     const other = radio('lang-en');
     expect(picked.ring).toEqual(expect.objectContaining({ width: 22, height: 22, borderTopWidth: 2, borderTopColor: lightTheme.blue }));
     expect(picked.dot).toEqual(expect.objectContaining({ width: 12, height: 12, backgroundColor: lightTheme.blue, opacity: 1 }));
-    expect(other.ring.borderTopColor).toBe(lightTheme.borderStrong);
+    // The switch's off edge, not `borderStrong`: that measured 1.47:1 on the card (031 T050).
+    expect(other.ring.borderTopColor).toBe(lightTheme.trackOffBorder);
     expect(other.dot.opacity).toBe(0);
+  });
+
+  it('is one radio group, each option saying whether it is checked (031 T050)', async () => {
+    const view = await themed(
+      <OptionGroup
+        options={[
+          { value: 'cs', label: 'Čeština' },
+          { value: 'en', label: 'English' },
+        ]}
+        value="cs"
+        onChange={() => {}}
+        testIDPrefix="lang"
+      />,
+    );
+    expect(view.getByTestId('lang-cs').props.accessibilityState).toEqual({ checked: true });
+    expect(view.getByTestId('lang-en').props.accessibilityState).toEqual({ checked: false });
+    expect(JSON.stringify(view.toJSON())).toContain('"accessibilityRole":"radiogroup"');
   });
 });
 

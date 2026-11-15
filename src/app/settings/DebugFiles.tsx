@@ -25,6 +25,7 @@ import { type as typeScale } from '../../theme/typeScale';
 import { formatBytes, t } from '../../i18n/strings';
 import type { SavedBundle } from '../../services/debug/debugStore';
 import { Card, RowDivider, Section } from './SettingsSection';
+import { touchSlop } from '../../theme/touchTarget';
 
 /** The boards' `strip`: never shorter than this, whatever it says. */
 const STRIP_ROW = 44;
@@ -114,7 +115,14 @@ export function NoticeStrip({ notice, fontScale }: { readonly notice: Notice | n
 function RetryLink({ busy, onPress }: { readonly busy: boolean; readonly onPress: () => void }) {
   const theme = useTheme();
   return (
-    <PressScale onPress={onPress} busy={busy} accessibilityLabel={t('debug.saved.retry')} testID="debug-saved-retry">
+    <PressScale
+      onPress={onPress}
+      busy={busy}
+      // A 44 line, to the 48 target (031 T050).
+      hitSlop={touchSlop({ height: 44 })}
+      accessibilityLabel={t('debug.saved.retry')}
+      testID="debug-saved-retry"
+    >
       <XStack minHeight={44} alignItems="center">
         <SmallStrong color={theme.blue} opacity={busy ? 0 : 1}>
           {t('debug.saved.retry')}

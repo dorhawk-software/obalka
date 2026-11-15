@@ -54,3 +54,29 @@ it('leaves the Text the roles draw with as Tamagui\'s own component', () => {
   const { Text: Tamagui } = jest.requireActual<typeof import('tamagui')>('tamagui');
   expect(require('../../src/theme/ui').Text).toBe(Tamagui);
 });
+
+// 031 T050 (the native audit): the test box's tag was a raw 10 px Text - under the 11 px floor and
+// outside the cap - and the rename field a raw TextInput without it.
+it('the test box\'s tag is the tag role: 11 px, capped', async () => {
+  const { TestTag } = require('../../src/features/accounts/screens/BoxRow');
+  const view = await render(wrap(<TestTag />));
+  const tag = view.getByText('Testovací');
+  expect(tag).toHaveProp('maxFontSizeMultiplier', MAX_TEXT_SCALE);
+  expect(tag).toHaveStyle({ fontSize: 11 });
+});
+
+it('the rename field is capped and named', async () => {
+  const { AliasEditor } = require('../../src/features/accounts/screens/AliasEditor');
+  const view = await render(
+    wrap(
+      <AliasEditor
+        account={{ boxId: 'k4m9xrt', label: 'Ondřej Dvořák', alias: null, dbType: 'FO', host: 'production' }}
+        onSave={() => {}}
+        onClose={() => {}}
+      />,
+    ),
+  );
+  const field = view.getByTestId('aliasName');
+  expect(field).toHaveProp('maxFontSizeMultiplier', MAX_TEXT_SCALE);
+  expect(field).toHaveProp('accessibilityLabel', 'Vlastní název');
+});

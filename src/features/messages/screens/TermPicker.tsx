@@ -210,7 +210,8 @@ export function TermPicker({
           borderRadius={12}
           backgroundColor={theme.surfaceSunken}
           color={theme.text}
-          fontSize={16}
+          // The bodyStrong size: 16 was off the scale (031 T050).
+          fontSize={15}
           fontWeight="700"
           // A 36×38 nudge button is under the target on both axes. The row's gap is 12, so
           // 5 each side keeps the two buttons' areas from touching.
@@ -236,7 +237,7 @@ export function TermPicker({
           borderRadius={12}
           backgroundColor={theme.surfaceSunken}
           color={theme.text}
-          fontSize={16}
+          fontSize={15}
           fontWeight="700"
           hitSlop={touchSlop({ width: STEPPER_W, height: 36 })}
           onPress={() => {

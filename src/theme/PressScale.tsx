@@ -24,7 +24,7 @@
 // action as unavailable - a button that is not coming back, where one was about to.
 
 import { useRef, type ReactNode } from 'react';
-import { Animated, Pressable, type ViewStyle } from 'react-native';
+import { Animated, Pressable, type Insets, type ViewStyle } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import { haptics } from '../services/haptics';
 
@@ -43,6 +43,7 @@ export function PressScale({
   testID,
   children,
   style,
+  hitSlop,
 }: {
   readonly onPress: () => void;
   /**
@@ -73,6 +74,8 @@ export function PressScale({
   readonly testID?: string;
   readonly children: ReactNode;
   readonly style?: ViewStyle;
+  /** For a press smaller than the target: from `touchSlop`, never typed by hand. */
+  readonly hitSlop?: Insets;
 }) {
   const reduceMotion = useReducedMotion();
   const scale = useRef(new Animated.Value(1)).current;
@@ -137,6 +140,7 @@ export function PressScale({
       }
       accessibilityHint={blocked ? blockedReason : undefined}
       testID={testID}
+      hitSlop={hitSlop}
       style={[fullWidth ? { width: '100%' } : null, style]}
     >
       <Animated.View

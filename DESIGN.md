@@ -26,7 +26,7 @@ colors:
   on-gold: "#211B12"
   violet: "#5A4CA8"
   violet-soft: "#E7E6F6"
-  success: "#2E7D52"
+  success: "#2A744C"
   danger: "#B5362F"
   warning-ink: "#8C6100"
   track-off: "#DCD2BF"

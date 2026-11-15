@@ -62,6 +62,9 @@ export function Toggle({
       hitSlop={touchSlop({ width: 48, height: 28 })}
       pressStyle={{ opacity: 0.85 }}
       onPress={disabled ? undefined : () => onChange(!value)}
+      // An element when it is disabled too: without an onPress the stack is not one by itself, and iOS
+      // left the dimmed switch out, its label and state never heard (031 T050).
+      accessible
       accessibilityRole="switch"
       accessibilityLabel={label}
       accessibilityState={{ checked: value, disabled: !!disabled }}

@@ -163,6 +163,13 @@ it is" marks a limitation kept on purpose. Done items leave the list.
 - **The credit's age isn't shown. Decided: left as it is (2026-08-17).** It is refreshed when a paid
   recipient is picked. Revisit if a stale figure ever misleads.
   ([020/tasks.md](../../specs/020-pdz-credit/tasks.md), Not done, deliberately)
+- **No reply from a received message (2026-11-15).** The detail offers Připomínka and the downloads;
+  answering the authority means going back to Compose and typing its name or box ID again, though the
+  app holds both and the reference numbers (č. j.). Designed in 009 ("Reply … still not built",
+  [009/design-sync-back.md](../../specs/009-visual-redesign/design-sync-back.md)) and found again by the
+  031 critique. Plan: an Odpovědět action at the foot of the detail that opens Compose with the sender
+  as KOMU and the user's reference set to the sender's č. j.; a board on the canvas first.
+  ([031/tasks.md](../../specs/031-identity-pass/tasks.md) T050)
 
 # Part B: from the practices adoption audit (2026-11-12)
 

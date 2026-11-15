@@ -4,9 +4,8 @@
 // any future surface render boxes identically. Visuals reuse the 009 tokens/Typography - no restyle.
 
 import { Text, XStack, YStack } from '../../../theme/ui';
-import { BodyStrong, Meta } from '../../../theme/Typography';
+import { BodyStrong, Meta, Tag } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { fonts } from '../../../theme/typeScale';
 import { AlertIcon, CheckIcon } from '../../../theme/icons';
 import { EnvelopeTile } from '../../../theme/objects/Envelope';
 import { BoxOverflowMenu } from './BoxOverflowMenu';
@@ -34,18 +33,11 @@ export function TestTag() {
       borderColor={theme.testBd}
       backgroundColor={theme.testBg}
     >
-      {/* No letterSpacing: at this size/weight RN clips the last glyph ("Testovac[í]"). */}
-      {/* The FACE, not just the weight: Public Sans ships as a 4-style group, so ExtraBold is a
-          separate family that `fontWeight` alone cannot reach - this rendered at the base weight
-          while claiming 800 (DESIGN.md's Face-Per-Weight Rule, found by the 2026-09-09 critique). */}
-      <Text
-        fontSize={10}
-        fontFamily={fonts.bodyXBold}
-        color={theme.testFg}
-        lineHeight={15}
-      >
+      {/* The tag role, 11/14: it was a raw 10, under the 11 px floor and outside the text-size cap
+          (031 T050). Its 800 is a face of its own, which the role picks from the weight. */}
+      <Tag fontWeight="800" color={theme.testFg}>
         {t('box.testEnv')}
-      </Text>
+      </Tag>
     </XStack>
   );
 }

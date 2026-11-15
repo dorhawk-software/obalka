@@ -82,7 +82,7 @@ describe('signing in again (R11)', () => {
     const sheet = await view.findByTestId('otpSuggestion');
     expect(within(sheet).getByText(t('login.otpSuggest.title'))).toBeOnTheScreen();
     expect(view.getByTestId('password')).toHaveProp('value', 'nove-heslo');
-    expect(view.getByTestId('useSms')).toHaveStyle({ minHeight: 44 });
-    expect(view.getByTestId('refusedPortal')).toHaveStyle({ minHeight: 44 });
+    expect(view.getByTestId('useSms')).toHaveStyle({ minHeight: 48 });
+    expect(view.getByTestId('refusedPortal')).toHaveStyle({ minHeight: 48 });
   });
 });

@@ -79,6 +79,9 @@ function FormNote({
     <Pressable
       onPress={() => setFull(was => !was)}
       hitSlop={textSlop('caption')}
+      // A control that opens and closes, and says which it is (031 T050).
+      accessibilityRole="button"
+      accessibilityState={{ expanded: full }}
       accessibilityLabel={[boxTypeLabel(form), after].filter(part => part != null).join(', ')}
       testID={testID}
     >

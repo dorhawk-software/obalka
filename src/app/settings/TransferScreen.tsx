@@ -55,6 +55,7 @@ import { contentsText, doneParts, errorText, lastWord, routeText } from './trans
 import { documentsChipText } from './BackupDocumentsChip';
 import { ReceiveForm, ReceiveRow, SendHalf, TransferUnavailable } from './TransferForms';
 import { TransferDialogs, formatDateTime } from './TransferDialogs';
+import { touchSlop } from '../../theme/touchTarget';
 
 type Mode = 'idle' | 'sending' | 'receiving';
 type Side = 'sending' | 'receiving';
@@ -713,17 +714,15 @@ export function TransferScreen({
                 <WaitingBar label={t('transfer.phrase.waiting')} testID="transfer-waiting" />
               )}
 
-              {/* FR-014: leaving the app or locking the phone stops the transfer, and no app can
-                  forbid either. So it is said before, not only after. */}
+              {/* FR-014: leaving or locking the phone stops the transfer, so it is said before too. */}
               {saving ? null : (
                 <Meta color={theme.textFaint} testID="transfer-keep-open">
                   {t('transfer.keepOpen')}
                 </Meta>
               )}
 
-              {/* No cancel while it saves (025 review, 2026-09-15). The row used to stay, and pressing
-                  it put the screen back to idle while the save carried on - so the next receive
-                  swept the files the save was still reading. */}
+              {/* No cancel while it saves (025 review, 2026-09-15): it put the screen back to idle while
+                  the save carried on, and the next receive swept the files the save was reading. */}
               {saving ? null : (
                 <XStack
                   alignSelf="flex-start"
@@ -731,6 +730,7 @@ export function TransferScreen({
                   gap={6}
                   minHeight={44}
                   paddingHorizontal={4}
+                  hitSlop={touchSlop({ height: 44 })}
                   onPress={() => stopRun(cancel)}
                   accessibilityRole="button"
                   accessibilityLabel={t('transfer.cancel')}

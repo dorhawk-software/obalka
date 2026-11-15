@@ -66,6 +66,43 @@ describe('pressable stacks', () => {
     expect(node.props.accessibilityRole).toBe('switch');
     expect(node.props.accessibilityLabel).toBe('Zámek aplikace');
   });
+
+  it('keeps a disabled switch an element, its state said (031 T050)', async () => {
+    // Disabled, the switch has no onPress, and iOS left it out: "Jen na Wi-Fi" was never heard.
+    const view = await wrap(
+      <Toggle value onChange={() => {}} disabled label="Jen na Wi-Fi" testID="sw" />,
+    );
+    const node = view.getByTestId('sw');
+    expect(node.props.accessible).toBe(true);
+    expect(node.props.accessibilityState).toEqual({ checked: true, disabled: true });
+  });
+
+  it('never wraps a text field in an element: a stack that focuses its field opts out (031 T050)', () => {
+    // On iOS the wrapper would be a leaf and the field inside it unreachable to VoiceOver - the
+    // compose recipient, subject and body were.
+    const { readFileSync, readdirSync, statSync } = jest.requireActual<typeof import('fs')>('fs');
+    const { join, relative } = jest.requireActual<typeof import('path')>('path');
+    const root = join(__dirname, '..', '..');
+    const found: string[] = [];
+    const walk = (dir: string) =>
+      readdirSync(dir).forEach(f => {
+        const p = join(dir, f);
+        if (statSync(p).isDirectory()) {
+          walk(p);
+        } else if (f.endsWith('.tsx')) {
+          readFileSync(p, 'utf8')
+            .split('\n')
+            .forEach((line, i) => {
+              if (/<[XY]Stack\b.*onPress=\{\(\) => \w+\.current\?\.focus\(\)\}/.test(line)) {
+                found.push(`${relative(root, p)}:${i + 1}${line.includes('accessible={false}') ? '' : ' (an element)'}`);
+              }
+            });
+        }
+      });
+    walk(join(root, 'src'));
+    expect(found.length).toBeGreaterThanOrEqual(3);
+    expect(found.filter(l => l.endsWith('(an element)'))).toEqual([]);
+  });
 });
 
 describe('overlay wrappers', () => {

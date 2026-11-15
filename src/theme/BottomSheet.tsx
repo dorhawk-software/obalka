@@ -34,6 +34,7 @@ import { useScrim } from './useScrim';
 import { SheetDismissGesture } from './SheetDismissGesture';
 import { raised } from './depth';
 import { useSheetMaxHeight } from './useSheetMaxHeight';
+import { SheetStatusBar } from './SheetStatusBar';
 
 /** Room the scrolling content keeps for a card's shadow, which a scroll view would otherwise cut. */
 const SHADOW_ROOM = { side: space.base, below: space.inset } as const;
@@ -79,6 +80,7 @@ export function BottomSheet({
       {/* A gesture root of its own: on Android the Modal is a window outside the app's root, and the
           drag down was never recognised in it (until 2026-11-15). */}
       <GestureHandlerRootView style={{ flex: 1 }} testID="sheetGestureRoot">
+      <SheetStatusBar />
       {/* A sheet with a field in it (the alias editor) rises over the keyboard rather than under it;
           one without changes nothing, since no keyboard comes up. */}
       <KeyboardAvoidingView

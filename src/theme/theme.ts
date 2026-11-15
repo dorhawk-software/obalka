@@ -241,7 +241,8 @@ export const lightTheme: Theme = {
   trackOff: '#DCD2BF',
   trackOffBorder: '#8E7F62', // 3.63:1 on surface/surfaceAlt - the OFF switch's only boundary
   goldInk: '#A87400', // 3.40:1 on every ground - rings/inks the gold that has to be seen
-  success: '#2E7D52',
+  // Was #2E7D52, 4.36:1 on the paper: the sent register's "Doručeno" is 12/600 and missed AA (031 T050).
+  success: '#2A744C',
   danger: '#B5362F',
   warning: '#E8A100',
   warningInk: '#8C6100', // dark amber, AA (≥4.5) on light + goldSoft (T043)

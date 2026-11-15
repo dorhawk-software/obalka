@@ -2,7 +2,7 @@
 // envelope. The flap runs across the top, the box is named in the envelope's window (tap it to switch
 // boxes), search sits beside it, and Přijaté | Odeslané is printed on the blue below.
 
-import { Pressable, useWindowDimensions, View } from 'react-native';
+import { Pressable, StatusBar, useWindowDimensions, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 import { XStack, YStack } from '../../../theme/ui';
 import { Caption, Heading } from '../../../theme/Typography';
@@ -16,6 +16,7 @@ import { objectShadow } from '../../../theme/depth';
 import { envelopeShape } from '../../../theme/print';
 import { boxColor } from '../../../theme/boxColor';
 import { useHeaderTop } from '../../../theme/useHeaderTop';
+import { useOnScreen } from '../../../theme/useOnScreen';
 import { FLAP_STRIP_SPACE, FlapRecordingStrip, useFlapRecordingStrip } from '../../../app/DebugRecordingStrip';
 import { space } from '../../../theme/spacing';
 import { TestTag } from '../../accounts/screens/BoxRow';
@@ -65,6 +66,7 @@ export function InboxHeader({
   const recording = useFlapRecordingStrip();
   const windowTop = useHeaderTop() + space.xs + (recording ? FLAP_STRIP_SPACE : 0);
   const flap = envelopeShape.headerFlap;
+  const onScreen = useOnScreen();
   const name = unified ? t('unified.title') : account.alias ?? account.label;
   return (
     <View
@@ -80,6 +82,9 @@ export function InboxHeader({
         zIndex: 1,
       }}
     >
+      {/* The flap is gold in both themes, so the clock over it is dark in both: white measured 1.68:1
+          in dark (031 T050). A sheet puts the theme's style back over its scrim (SheetStatusBar). */}
+      {onScreen ? <StatusBar barStyle="dark-content" /> : null}
       <Svg
         width={width}
         height={windowTop}

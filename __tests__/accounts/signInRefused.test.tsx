@@ -105,9 +105,10 @@ describe('after a refused password (R11)', () => {
     expect(within(sheet).getByText(t('login.otpSuggest.title'))).toBeOnTheScreen();
     expect(within(sheet).getByText(t('login.otpSuggest.sub'))).toBeOnTheScreen();
     expect(view.getByTestId('loginName')).toHaveProp('value', 'k8tw2e');
-    // Two links, one under the other: each is a whole 44 row, so neither's target covers the other.
+    // Two links, one under the other: each is a whole 48 row - the target, with no slop to cover the
+    // other (44 until 2026-11-15, under the target, 031 T050).
     for (const id of ['useSms', 'refusedPortal']) {
-      expect(view.getByTestId(id)).toHaveStyle({ minHeight: 44 });
+      expect(view.getByTestId(id)).toHaveStyle({ minHeight: 48 });
       expect(view.getByTestId(id).props.hitSlop).toBeUndefined();
     }
   });

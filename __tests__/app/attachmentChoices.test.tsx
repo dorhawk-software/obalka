@@ -83,7 +83,7 @@ describe('"Zálohovat i přílohy?" (026 US1)', () => {
     });
     await waitFor(() => expect(view.getByText(t('backup.docs.change.title'))).toBeTruthy());
     expect(view.getByTestId('backup-documents-mode-all').props.accessibilityState).toEqual({
-      selected: true,
+      checked: true,
     });
     expect(view.getByTestId('backup-documents-confirm').props.accessibilityLabel).toBe(
       t('backup.docs.ask.save'),
