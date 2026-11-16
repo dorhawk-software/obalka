@@ -23,10 +23,16 @@ describe('raised', () => {
     expect(raised('light', 'sheet')).toBe(depth.lg);
   });
 
-  it('draws a dark card with an even edge all round - no top-only highlight', () => {
+  // No top-only highlight (the owner, 2026-11-11: "non uniform top and bottom"), and since 2026-11-16
+  // no hairline either (T050.8): the card's tone above the scrim is its edge.
+  it('draws a dark card with no top-only highlight and no ring', () => {
     const dark = raised('dark', 'float');
-    expect(dark).toMatch(/inset 0px 0px 0px 1px/);
     expect(dark).not.toMatch(/inset 0px 1px/);
+    expect(dark).not.toMatch(/0px 0px 0px \d/);
+  });
+
+  it('draws no ring round the dark snackbar', () => {
+    expect(depth.snackbarDark).not.toMatch(/0px 0px 0px \d/);
   });
 
   it('gives a dark sheet the soft edge it had', () => {

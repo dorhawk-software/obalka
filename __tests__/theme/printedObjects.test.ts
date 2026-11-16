@@ -40,9 +40,14 @@ describe('object shadows', () => {
     }
   });
 
-  it('gives a dark sheet a faint edge in place of the light theme\'s shadow', () => {
+  it('gives a dark sheet its own shadow, its tone being its edge', () => {
     expect(objectShadow('dark', 'sheet')).not.toBe(objectShadow('light', 'sheet'));
-    expect(objectShadow('dark', 'sheet')).toMatch(/^0px 0px 0px 1px rgba\(255,255,255,/);
+  });
+
+  // Tone, not outlines (practices; the owner, 2026-11-16, T050.8 "no hairline"): until then every dark
+  // sheet, envelope and menu drew a 4-6% white ring as its shadow's first layer.
+  it.each(['sheet', 'envelope', 'popover'] as const)('draws no ring round a dark %s', kind => {
+    expect(objectShadow('dark', kind)).not.toMatch(/0px 0px 0px \d/);
   });
 });
 

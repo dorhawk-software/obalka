@@ -18,10 +18,10 @@ export const depth = {
   /** The snackbar, floating over content (R9, 2026-11-15; it was 0 8 24 at .32). */
   snackbar: '0px 10px 24px -10px rgba(33,27,18,0.6)',
   /**
-   * The same at night: the ink bar is nearly the dark paper, so it takes the faint white edge R9 gives
-   * its dark popover (R9 draws no dark snackbar; for the canvas's sync-back).
+   * The same at night: a black shadow and no edge line - tone and shadow carry a dark surface's edge
+   * (the owner, 2026-11-16, T050.8 "no hairline"; a 7% white ring until then).
    */
-  snackbarDark: '0px 0px 0px 1px rgba(255,255,255,0.07), 0px 10px 24px -10px rgba(0,0,0,0.8)',
+  snackbarDark: '0px 10px 24px -10px rgba(0,0,0,0.8)',
   /** The selected segment in a segmented control. */
   segment: '0px 1px 2px rgba(33,27,18,0.12)',
   /** The same, printed on the envelope (the inbox header): its shade is the envelope's ink. */
@@ -31,12 +31,12 @@ export const depth = {
   /** A bottom sheet's edge in dark mode: `lg`'s white bevel is a harsh line against the dark scrim. */
   sheetDark: 'inset 0px 1px 1px rgba(255,255,255,0.06), 0px -2px 18px rgba(0,0,0,0.45)',
   /**
-   * A floating card's edge in dark mode - a dialog, the rename box: one even hairline all round. `lg`'s
-   * top-only bevel, bent round the corners, read as a bright top edge fading out down the sides and gone
-   * at the bottom (owner, 2026-11-11, on the notification dialog: "the border looks weird, non uniform
-   * top and bottom").
+   * A floating card's edge in dark mode - a dialog, the rename box: the shadow alone, even all round.
+   * `lg`'s top-only bevel read as a bright top edge fading out down the sides (owner, 2026-11-11: "the
+   * border looks weird, non uniform top and bottom"); the even 7% hairline that replaced it went on
+   * 2026-11-16 (T050.8, "no hairline"): the card's tone above the scrim is its edge.
    */
-  floatDark: 'inset 0px 0px 0px 1px rgba(255,255,255,0.07), 0px 8px 24px rgba(0,0,0,0.5)',
+  floatDark: '0px 8px 24px rgba(0,0,0,0.5)',
   sm:
     'inset 0px 1px 2px rgba(255,255,255,0.18), ' +
     '0px 1px 2px rgba(0,0,0,0.18), 0px 2px 4px rgba(0,0,0,0.08)',
@@ -93,10 +93,11 @@ const OBJECT_SHADOWS: Record<'light' | 'dark', Record<ObjectShadow, string>> = {
     popover: '0px 1px 2px rgba(33,27,18,0.08), 0px 24px 40px -20px rgba(33,27,18,0.5)',
   },
   dark: {
-    // A dark sheet is lighter than the paper already; the shadow fades to a faint edge (R3).
-    sheet: '0px 0px 0px 1px rgba(255,255,255,0.04), 0px 8px 16px -10px rgba(0,0,0,0.7)',
+    // A dark sheet is lighter than the paper already: that step of tone is its edge, no hairline
+    // (the owner, 2026-11-16, T050.8; a 4% white ring until then).
+    sheet: '0px 8px 16px -10px rgba(0,0,0,0.7)',
     sheetEdge: '0px 1px 2px rgba(33,27,18,0.12)',
-    envelope: '0px 0px 0px 1px rgba(255,255,255,0.06), 0px 22px 34px -24px rgba(0,0,0,0.9)',
+    envelope: '0px 22px 34px -24px rgba(0,0,0,0.9)',
     envelopeHeader: '0px 18px 30px -22px rgba(20,32,60,0.6)',
     letter: '0px -6px 14px -10px rgba(0,0,0,0.7)',
     window: 'inset 0px 2px 4px -1px rgba(0,0,0,0.55)',
@@ -106,7 +107,7 @@ const OBJECT_SHADOWS: Record<'light' | 'dark', Record<ObjectShadow, string>> = {
     // No board at night: the light shadow's blue is lost on the dark paper, so it is black, as the
     // envelope's own is.
     sealedEnvelope: '0px 18px 26px rgba(0,0,0,0.55)',
-    popover: '0px 0px 0px 1px rgba(255,255,255,0.05), 0px 24px 40px -20px rgba(0,0,0,0.8)',
+    popover: '0px 24px 40px -20px rgba(0,0,0,0.8)',
   },
 };
 

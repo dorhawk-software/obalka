@@ -20,6 +20,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **V tmavém vzhledu karty a obálky končí vlastním odstínem.** Kolem karet, obálek, nabídky schránky a
+  oznámení dole už není slabá světlá linka; okraj dělá o stupeň světlejší plocha a stín pod ní, jako ve
+  světlém vzhledu.
 - **Tlačítka ukazují, co udělají.** Před slovy každého tlačítka, které něco dělá, je jeho značka: klíč u
   „Přihlásit se“, koš u „Smazat“, obálka se šipkou u „Odeslat“. Tlačítka, která jen pokračují nebo
   nechávají věci, jak jsou („Pokračovat“, „Ponechat“), zůstávají jen slovy, takže je na první pohled

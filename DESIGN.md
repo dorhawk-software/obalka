@@ -533,8 +533,8 @@ Shadow is reserved for objects that float, plus a few brand moments:
 **The printed objects' shadows** (031, `objectShadow` and `objectFilter` in `depth.ts`) follow
 "paper has weight": an object lies on the screen and casts a soft shadow below it, with no bevel.
 
-- **`sheet`** (`0 1px 2px rgba(33,27,18,.08), 0 8px 16px -10px rgba(33,27,18,.28)`; dark: a faint
-  `rgba(255,255,255,.04)` edge and `0 8px 16px -10px rgba(0,0,0,.7)`): every resting card, with no
+- **`sheet`** (`0 1px 2px rgba(33,27,18,.08), 0 8px 16px -10px rgba(33,27,18,.28)`; dark:
+  `0 8px 16px -10px rgba(0,0,0,.7)` alone): every resting card, with no
   hairline (Cards B, agreed 2026-11-12, built with R13): `Card` draws it in place of the old border.
 - **`envelope`** (`0 22px 34px -26px rgba(20,32,60,.7)`) and **`envelopeHeader`**
   (`0 18px 30px -22px rgba(20,32,60,.6)`): an envelope on the paper, and the inbox header.
@@ -546,7 +546,12 @@ Shadow is reserved for objects that float, plus a few brand moments:
 ### Named Rules
 
 **The Tonal-First Rule.** Reach for a tonal level, then a hairline, then - only if the object truly
-floats - a shadow. `depth.md` exists and is currently unused, and `depth.sm` has a single use (the retry button on the
+floats - a shadow. **No edge line in the dark** (the owner, 2026-11-16, T050.8 "no hairline"): a dark
+card, envelope, the box menu and the snackbar end in their own tone, the shadow under them; the 4-7%
+white ring they drew until then is gone (a bottom sheet never had one) (`printedObjects.test.ts`, `raisedShadow.test.ts`). A ring
+that means something - the chosen colour, the Komu window while you search, an unmet password rule, the
+off switch's track - is a border in the app and an `outline` on the boards, never a `box-shadow` that a
+shadow layer could replace (practices, "Tone, not outlines"). `depth.md` exists and is currently unused, and `depth.sm` has a single use (the retry button on the
 sign-in error screen); that is correct, not an oversight.
 
 ## Shapes

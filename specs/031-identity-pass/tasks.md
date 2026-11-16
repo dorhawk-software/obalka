@@ -1355,7 +1355,15 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     rule "A glyph keeps one ink" went to practices 1.6.3 with its check (ink); it found the green
     postmark on a blue plane. AppShell's notice dialogs and the backup answers moved to their own files
     (AppShell 1465 → 1424, BackupScreen 1950 → 1811). Canvas v45, check-ui 128 → 72, icon 0, ink 0.
-  - [ ] T050.8 Tone, not outlines (45): 1 px rings on cards and sheets, 2 px rings on chips.
+  - [x] T050.8 Tone, not outlines (45). The owner: "no hairline". The dark theme's 4-7% white ring is
+    gone from every card, envelope, menu and the snackbar in the app (`depth.ts`, two guard tests that
+    fail on the old values) and from 17 places on the boards; the edge is the step of tone. The 33
+    rings that mean something (the off switch, the count's paper cut-out, the colour dots, the chosen
+    colour, the Komu window, an unmet password rule, the scanner's frame) are outlines now, drawn the
+    same; the app already drew them as borders. Two marked for halo: the count's cut-out and the chosen
+    colour under its own label. It found a check-ui fault, fixed in practices 1.6.4: boards wider than
+    the window were never scrolled sideways, so covered text past the right edge was measured (640 runs
+    here). Canvas v46, check-ui 72 → 27, ring 0, halo 0.
   - [ ] T050.9 Shadows fall away from the light (27): bottom sheets' upward shadow.
   - [ ] T050.10 The app itself: walk each screen against the same rules (check-ui reads only boards).
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by

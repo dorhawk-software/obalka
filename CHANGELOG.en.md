@@ -20,6 +20,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **In the dark appearance, cards and envelopes end in their own tone.** Cards, envelopes, the box menu
+  and the notice at the bottom no longer have a faint light line round them; the edge is the surface one
+  step lighter than the page and the shadow under it, as in the light appearance.
 - **Buttons show what they do.** Every button that does something carries its mark before its words: a
   key on "Sign in", a bin on "Delete", an envelope with an arrow on "Send". Buttons that only move on or
   leave things as they are ("Continue", "Keep") stay as words, so you can tell at a glance which button
