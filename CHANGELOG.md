@@ -217,6 +217,10 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Hledání příjemce řekne, že je potřeba se znovu přihlásit.** Když ISDS přihlášení schránky odmítne,
+  hledání dřív psalo „Příjemce se nepodařilo vyhledat. Zkuste to znovu.“, i když opakování nemohlo
+  pomoct. Teď uvede totéž co odeslání, například „Platnost hesla vypršela. Změňte ho v portálu ISDS a
+  přihlaste se novým heslem.“
 - **Výzva k novému přihlášení stojí v přehledu hned po spuštění.** Dřív ji při každém spuštění na chvíli
   zastoupil modrý pruh „Platnost hesla vypršela.“, dokud neodpověděla synchronizace, a seznam pod ním
   pak poskočil o dva řádky.

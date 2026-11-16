@@ -125,6 +125,17 @@ describe('compose, the envelope you are sending (R2, R12)', () => {
     expect(letter.zIndex ?? 0).toBeLessThan(1);
   });
 
+  // Walked on Obalka_Demo (2026-11-16, T050.10): a box whose password had expired searched and was
+  // told "Příjemce se nepodařilo vyhledat. Zkuste to znovu." - trying again could never help.
+  it('says the sign-in was refused when the search is, as sending does, not "try again"', async () => {
+    const { sendController } = jest.requireMock('../../src/features/accounts/deps');
+    sendController.searchRecipients.mockResolvedValueOnce({ kind: 'reauth' });
+    const view = await compose();
+    await fireEvent.changeText(view.getByTestId('composeRecipientQuery'), 'hledat');
+    const error = await waitFor(() => view.getByTestId('composeSearchError'), { timeout: 3000 });
+    expect(error).toHaveTextContent(t('send.reauth.credentials'));
+  });
+
   it('prints Zdarma and the data message on the stamp for a public authority', async () => {
     const view = await compose();
     await pick(view, mockOvm);

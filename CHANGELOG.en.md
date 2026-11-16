@@ -243,6 +243,11 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **The recipient search says when the box must sign in again.** When ISDS refused the box's sign-in,
+  the search said “Příjemce se nepodařilo vyhledat. Zkuste to znovu.” (could not search, try again),
+  though trying again could not help. It now says what sending says, such as “Platnost hesla vypršela.
+  Změňte ho v portálu ISDS a přihlaste se novým heslem.” (the password expired; change it in the ISDS
+  portal).
 - **The request to sign in again stands in the inbox from the moment the app opens.** Until now, at
   every launch the blue “Platnost hesla vypršela.” strip stood in for it until the sync answered, and
   the list under it then jumped by two lines.

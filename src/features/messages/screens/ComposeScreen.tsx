@@ -30,6 +30,7 @@ import { totalAttachmentBytes } from '../state/costModel';
 import { useSnackbar } from '../../../app/Snackbar';
 import { formatBytes, t } from '../../../i18n/strings';
 import { reauthKey } from '../../accounts/state/reauthCopy';
+import { useRecipientSearch } from './useRecipientSearch';
 import { portalUrl } from '../../../services/isds/endpoints';
 import type {
   CostEstimate,
@@ -78,10 +79,6 @@ function newDraftId(): string {
   return Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
 }
 
-// Recipient search runs automatically as the user types: wait for a typing pause, and require a
-// couple of characters so one keystroke doesn't hit the network on every box in the country.
-const SEARCH_DEBOUNCE_MS = 400;
-const MIN_SEARCH_CHARS = 2;
 
 
 export interface ComposeScreenProps {
@@ -122,14 +119,11 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
     const theme = useTheme();
     const snackbar = useSnackbar();
     const insets = useSafeAreaInsets();
-    const [query, setQuery] = useState('');
-    const [results, setResults] = useState<Recipient[]>([]);
+    // The recipient search: run as the person types, its results, and why it failed (`useRecipientSearch`).
+    const { query, setQuery, results, searching, searched, error, runSearch, clear } = useRecipientSearch(account);
     // Which results share an owner name with another result in the SAME set (015). A fact about the
     // search, not about anybody in it - computed here, never fetched.
     const marked = markSameName(results);
-    const [searching, setSearching] = useState(false);
-    const [searched, setSearched] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [recipient, setRecipient] = useState<Recipient | null>(null);
     const [subject, setSubject] = useState('');
     // Plain-text message body → turned into a "Textová zpráva.pdf" on send (the portal's convenience;
@@ -168,7 +162,6 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
     const [freshCredit, setFreshCredit] = useState<number | undefined>(undefined);
     const [drafts, setDrafts] = useState<DraftRecord[]>([]);
     const draftId = useRef<string | null>(null);
-    const inFlight = useRef<AbortController | null>(null);
     // Once a send times out (ambiguous - it MAY have gone through), every later attempt reconciles
     // against the sent list first, so a retry can't charge twice. Cleared only on a confirmed send.
     const reconcilePending = useRef(false);
@@ -297,58 +290,6 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
       },
       [loadDrafts, snackbar],
     );
-
-    // Stable across keystrokes and across re-reads of the accounts (keyed on the sender's `boxId`) - the
-    // query is passed in, so the debounce effect below can call it without re-subscribing.
-    const runSearch = useCallback(
-      async (q: string) => {
-        inFlight.current?.abort();
-        if (q.trim() === '') {
-          return;
-        }
-        const ac = new AbortController();
-        inFlight.current = ac;
-        setSearching(true);
-        setError(null);
-        const out = await sendController.searchRecipients(
-          accountRef.current,
-          q,
-          ac.signal,
-        );
-        if (ac.signal.aborted) {
-          return;
-        }
-        setSearching(false);
-        setSearched(true);
-        if (out.kind === 'recipients') {
-          setResults(out.recipients);
-        } else {
-          setError(
-            out.kind === 'reauth' ? t('send.error.search') : t(out.messageKey),
-          );
-        }
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [account.boxId],
-    );
-
-    // Auto-search as the user types (no Find button): debounce, and require a couple of characters so
-    // a single keystroke doesn't hit the network. Clearing the field resets the results.
-    useEffect(() => {
-      const q = query.trim();
-      if (q === '') {
-        inFlight.current?.abort();
-        setResults([]);
-        setSearched(false);
-        setSearching(false);
-        return;
-      }
-      if (q.length < MIN_SEARCH_CHARS) {
-        return;
-      }
-      const handle = setTimeout(() => void runSearch(q), SEARCH_DEBOUNCE_MS);
-      return () => clearTimeout(handle);
-    }, [query, runSearch]);
 
     // Leaving compose mid-read abandons the read: a draft does not keep attachments, so bytes that
     // finish arriving after the screen is gone would have nowhere to go.
@@ -629,8 +570,7 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
                       recipient={recipient}
                       onChange={() => {
                         setRecipient(null);
-                        setResults([]);
-                        setSearched(false);
+                        clear();
                       }}
                     />
                   ) : (
