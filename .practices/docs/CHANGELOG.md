@@ -3,7 +3,18 @@
 What changed for the projects that use the practices. Written by hand,
 newest first, in the kinds common/changelog.md describes.
 
-## Unreleased
+## 1.6.3 (2026-11-16)
+
+### New
+
+- **A glyph keeps one ink** (ui/visual-craft.md). A glyph's plane or fill
+  is a tint of its stroke's hue, or a neutral. Obálka's danger bin on a
+  neutral button kept the family's blue plane under a red stroke, and the
+  owner saw the two inks fight; on the red button, where the plane was
+  white, the same bin was right.
+  - `check-ui` (ink) flags a glyph up to 64 px whose stroke and fill are
+    two distinct hues, symbols drawn through `<use>` included. Mark a
+    deliberate two-colour glyph with `data-allow="ink: <why>"`.
 
 ## 1.6.2 (2026-11-16)
 

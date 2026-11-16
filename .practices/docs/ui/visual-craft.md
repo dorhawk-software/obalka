@@ -193,6 +193,36 @@ flags every button with words and no icon, unless it is marked
 (`role="tablist"` or `role="radiogroup"`) are no main buttons and aren't
 flagged.
 
+## A glyph keeps one ink
+
+**What.** A glyph is printed in one ink. Its second colour, an offset
+plane or a fill, is a tint of the stroke's own hue, or a neutral (white,
+grey, the paper). Two hues never meet in one small glyph.
+
+**Why.** Obálka's offset glyphs print a pale blue plane under every
+stroke. Under a black stroke it reads as print. When the bin on a
+neutral "Smazat" button turned red, its blue plane stayed, and the
+owner saw at once that the red and blue fought (2026-11-16). On the red
+danger button the same bin looked right, because its plane there was
+white over red: one hue.
+
+**Apply.**
+1. When a glyph takes a colour (danger, success, a link's blue), its
+   plane takes a faint tint of that colour, not the family's default.
+   Obálka's danger bin: the danger red at 20 % (light) and 26 % (dark).
+2. On a filled button the plane is white or black at low alpha, so it
+   takes on the button's colour.
+3. Give each coloured plane a theme token beside the ink it belongs to,
+   so a new colour can't forget its plane.
+4. A two-colour drawing that is a mark, not a glyph (the logo, a flag),
+   is filled, not stroked, and isn't held to this.
+
+**Check.** At 18 to 48 px, every glyph reads as one colour family.
+`check-ui` (ink) flags a glyph of 64 px or less whose stroke and any fill
+are two distinct hues (each with chroma of at least 0.12, more than 45°
+apart), including symbols drawn through `<use>`. A glyph that is meant
+to carry two colours is marked `data-allow="ink: …"`.
+
 ## Depth and texture from a concept
 
 **What.** A mobile design has depth and, where the identity allows,

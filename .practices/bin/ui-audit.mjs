@@ -65,7 +65,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function audit(cfg) {
   const out = [];
   const measured = { contrastMeasured: 0, contrastSkipped: 0, pending: [] };
-  const RULES = ["contain", "align", "gap", "clip", "text-size", "ring", "shadow", "halo", "centre", "state", "icon", "outcome", "same-look", "contrast", "mark"];
+  const RULES = ["contain", "align", "gap", "clip", "text-size", "ring", "shadow", "halo", "centre", "state", "icon", "outcome", "same-look", "contrast", "mark", "ink"];
   const isSvgInner = (e) => e instanceof SVGElement && e.tagName.toLowerCase() !== "svg";
   const cs = (e) => getComputedStyle(e);
   const hiddenByOpacity = (e) => { for (let a = e; a && a.nodeType === 1; a = a.parentElement) if (+cs(a).opacity === 0) return true; return false; };
@@ -421,6 +421,56 @@ function audit(cfg) {
     const hex = (c) => "#" + c.slice(0, 3).map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
     if (ratio < need - 0.005) add("contrast", e, `"${words(e)}" (${label(e)}) is ${Math.round(ratio * 100) / 100}:1, ${hex(fg)} on ${hex(bg)}; ${large ? "large " : ""}text needs ${need}:1.`, label(e) + "|" + words(e));
   }
+
+  // ink: a glyph keeps one ink. Its fills (an offset plane) take the stroke's hue, or none (1.6.3:
+  // a red bin on a blue plane fought; on the red button, its plane white over red, it was right).
+  const hueOf = (c) => {
+    const [r, g, b] = c.slice(0, 3).map((v) => v / 255), mx = Math.max(r, g, b), d = mx - Math.min(r, g, b);
+    if (d < 0.12) return null; // a neutral: black, grey, white, the paper
+    const h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return (h * 60 + 360) % 360;
+  };
+  const hexOf = (c) => "#" + c.slice(0, 3).map((v) => Math.round(v).toString(16).padStart(2, "0")).join("");
+  const SHAPES = "path, rect, circle, ellipse, line, polyline, polygon";
+  for (const svg of document.querySelectorAll("svg")) {
+    if (!visible(svg) || allowNode(svg, "ink")) continue;
+    const box = svg.getBoundingClientRect();
+    if (box.width < 4 || box.width > 64 || box.height > 64) continue; // a glyph, not an illustration
+    // A <use> draws its symbol in a closed tree: copy the shapes in beside it, read them, take them out.
+    const copies = [];
+    for (const u of svg.querySelectorAll("use")) {
+      const id = (u.getAttribute("href") || u.getAttribute("xlink:href") || "").replace(/^#/, "");
+      const src = id && document.getElementById(id);
+      if (!src) continue;
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      for (const a of ["class", "style", "fill", "stroke", "color"]) if (u.getAttribute(a)) g.setAttribute(a, u.getAttribute(a));
+      for (const k of src.childNodes) g.appendChild(k.cloneNode(true));
+      u.parentNode.insertBefore(g, u);
+      copies.push(g);
+    }
+    const strokes = [], fills = [];
+    for (const sh of svg.querySelectorAll(SHAPES)) {
+      if (sh.closest("defs, symbol, mask, clipPath, pattern, marker")) continue;
+      const s = cs(sh);
+      if (s.display === "none" || s.visibility === "hidden") continue;
+      const st = s.stroke !== "none" && parseFloat(s.strokeWidth) > 0 && +s.strokeOpacity > 0.05 && rgba(s.stroke);
+      if (st && st[3] > 0.05) strokes.push(st);
+      const fl = s.fill !== "none" && +s.fillOpacity > 0.05 && rgba(s.fill);
+      if (fl && fl[3] > 0.05) fills.push(fl);
+    }
+    for (const g of copies) g.remove();
+    let worst = null;
+    for (const a of strokes) for (const b of [...strokes, ...fills]) {
+      const ha = hueOf(a), hb = hueOf(b);
+      if (ha === null || hb === null) continue;
+      const apart = Math.min(Math.abs(ha - hb), 360 - Math.abs(ha - hb));
+      if (apart > 45 && (!worst || apart > worst[2])) worst = [a, b, apart];
+    }
+    if (!worst) continue;
+    const host = words(svg.closest("button, a, [role=button], li, label") || svg.parentElement);
+    add("ink", svg, `the glyph${host ? ` in "${host}"` : ""} mixes two inks: ${hexOf(worst[0])} with ${hexOf(worst[1])}, ${Math.round(worst[2])}° apart.`, host + "|" + hexOf(worst[0]) + "|" + hexOf(worst[1]));
+  }
+
   window.scrollTo(0, 0);
   return { findings: out, measured };
 }
@@ -442,6 +492,7 @@ const RULE = {
   "same-look": ["One anatomy per job: like controls keep one look", "Build both from one component, or give the different one its own class and reason.", "-"],
   contrast: ["Text passes contrast: 4.5:1, or 3:1 for large text", "Darken (or, in the dark theme, lighten) the text or its ground.", "A disabled control, which also says it is disabled"],
   mark: ["A mark holds at its smallest size", "Measure it where it ships smallest: every stroke 1 px or more, no leftover piece of a cut, the brand element 10 px or taller, and the brand touching the letters or a quarter of a stroke clear of them.", "A mark only ever shown large, a poster or a splash", "ui/identity-pass.md"],
+  ink: ["A glyph keeps one ink", "Print the plane or fill as a faint tint of the stroke's colour, or a neutral (white or black at low alpha, the paper).", "A glyph meant to carry two colours (a flag)"],
   allow: ["Every exception has a written reason", "Write data-allow=\"rule: a reason of at least three words\".", "-"],
 };
 
