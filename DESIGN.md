@@ -590,6 +590,12 @@ moves without being asked.
 ### Buttons
 - **Shape:** 14dp radius (`rounded.card`; 16 on Welcome and Lock), mostly 48–52dp minimum height (54
   on Welcome and Lock).
+- **Three sizes, by job** (the owner, 2026-11-16, T050.4): 52 alone across its column; 48 one of a
+  pair, or alone inside a card (the blue download, the refused sign-in's "Upravit jméno nebo
+  heslo"), and the text action under the sent result's Hotovo (50 until then); 40 inside a list row.
+  54 stays for Welcome, Lock and the sent result's Hotovo. On the boards each size has its own class
+  (`pair`, `row`, `card`, `dl`, `link`, `big`), so like for like keeps one look. The download
+  button's corner is 14 (13 until then).
 - **Primary** (`InkButton`, the boards' `fbtn`): `ink` fill with a `surface-alt` label in `bodyStrong` -
   the dark high-contrast button, full width in a form footer, 52 tall. `compact` is 48, one of a pair
   beside a neutral button (R10's Smazat and Obnovit); `small` is R13's half of a pair inside a card row,

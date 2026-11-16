@@ -236,6 +236,28 @@ it('goes back on "Hotovo" and opens the message on "Ukázat v Odeslaných"', asy
   expect(onOpenSent).toHaveBeenCalledTimes(1);
 });
 
+it('draws Hotovo 54 tall, and "Ukázat v Odeslaných" at the 48 pair size (T050.4)', async () => {
+  // The owner, 2026-11-16: three button sizes by job; the link under Hotovo was 50, off the scale.
+  const view = await mount({});
+  const tallest = (label: string) => {
+    let found = 0;
+    const walk = (node: { props?: { style?: unknown }; children?: unknown[] }) => {
+      const style = StyleSheet.flatten(node.props?.style as never) as { minHeight?: number } | undefined;
+      if (typeof style?.minHeight === 'number') {
+        found = Math.max(found, style.minHeight);
+      }
+      for (const child of node.children ?? []) {
+        if (typeof child === 'object' && child !== null) {
+          walk(child as never);
+        }
+      }
+    };
+    walk(view.getByLabelText(label) as never);
+    return found;
+  };
+  expect([tallest('Hotovo'), tallest('Ukázat v Odeslaných')]).toEqual([54, 48]);
+});
+
 describe('the sending moment (board Motion 2)', () => {
   const trigger = RNHaptic.trigger as unknown as jest.Mock;
   beforeEach(() => trigger.mockReset());

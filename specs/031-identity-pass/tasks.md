@@ -1332,7 +1332,12 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     welcome slide's is an example. "PDF" on the document glyph and the A4 letter's miniatures are
     marked the same way; the motion board's annotation goes 10 → 11 px. Nothing changes in the app.
     Canvas v40, check-ui 175 → 154, small text 0.
-  - [ ] T050.4 One anatomy (14): neutral and filled buttons 48/52/40 tall, icon buttons 44/30.
+  - [x] T050.4 One anatomy (14). The owner picked "three sizes by job" (2026-11-16): 52 alone, 48 a
+    pair or alone in a card, 40 in a list row, 54 for Welcome, Lock and Hotovo; each its own class
+    on the boards. Off the scale: the sent result's "Ukázat v Odeslaných" 50 → 48, the download
+    button's corner 13 → 14 (app and boards). The strips board still drew the missing-files button
+    neutral at 46, though 6a14d22 had moved the app to the blue download; the board follows the app.
+    Canvas v41, check-ui 154 → 140, same-look 0.
   - [ ] T050.5 8 px between targets (8): backup's two links, transfer dialog buttons, Napsat by dialogs.
   - [ ] T050.6 Nothing past its surface (4): the Main slide's cards, R8's board at 1100.
   - [ ] T050.7 Icons on main buttons (56): dialog actions, Hotovo, Ukázat v Odeslaných, Připomenout.

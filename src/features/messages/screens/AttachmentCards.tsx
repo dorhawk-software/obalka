@@ -34,7 +34,8 @@ export function DownloadButton({
       <XStack
         width="100%"
         minHeight={48}
-        borderRadius={13}
+        // The buttons' 14 corner; 13 until T050.4 (off the radius scale).
+        borderRadius={14}
         backgroundColor={theme.blue}
         alignItems="center"
         justifyContent="center"

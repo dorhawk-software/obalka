@@ -423,7 +423,8 @@ export function SentResult({
             </XStack>
           </PressScale>
           <PressScale fullWidth onPress={onOpenSent} accessibilityLabel={t('send.sent.open')} testID="composeOpenSent">
-            <XStack width="100%" minHeight={50} alignItems="center" justifyContent="center" opacity={opening ? 0.5 : 1}>
+            {/* The pair size under Hotovo: 50 until T050.4, off the scale (the owner's three sizes by job). */}
+            <XStack width="100%" minHeight={48} alignItems="center" justifyContent="center" opacity={opening ? 0.5 : 1}>
               <BodyStrong color={theme.text}>{t('send.sent.open')}</BodyStrong>
             </XStack>
           </PressScale>
