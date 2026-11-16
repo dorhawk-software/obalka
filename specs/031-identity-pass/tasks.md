@@ -1306,6 +1306,20 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   with practices 1.6.1's check-ui on the 24 boards (232 findings), the canvas's own mistakes fixed
   (dark phones' clock in dark ink, Přijaté | Odeslané marked as tabs, screens drawn mid-scroll
   marked): 200 left, the agreed design against the new rules, for the owner (not-now.md).
+  The owner, 2026-11-16: "Fix to 1.6 first" - the pass stays open until the build meets practices
+  1.6. Plan, one rule at a time, each proposed on the canvas with options where it is a design choice,
+  picked by the owner, built, walked, and re-checked with check-ui (target: 0 findings, or data-allow
+  with a reason the owner gave):
+  - [ ] T050.1 Outcome: the ten bare "Zrušit" and "Přijmout" (proposal per dialog in not-now.md).
+  - [ ] T050.2 Contrast 4.5:1 (19): muted lines, the neutral button's ink, "Režim ladění" on blue.
+  - [ ] T050.3 The 11 px floor (22): the postmark's ring text and time, "PDF", compose's letter preview.
+  - [ ] T050.4 One anatomy (14): neutral and filled buttons 48/52/40 tall, icon buttons 44/30.
+  - [ ] T050.5 8 px between targets (8): backup's two links, transfer dialog buttons, Napsat by dialogs.
+  - [ ] T050.6 Nothing past its surface (4): the Main slide's cards, R8's board at 1100.
+  - [ ] T050.7 Icons on main buttons (56): dialog actions, Hotovo, Ukázat v Odeslaných, Připomenout.
+  - [ ] T050.8 Tone, not outlines (45): 1 px rings on cards and sheets, 2 px rings on chips.
+  - [ ] T050.9 Shadows fall away from the light (27): bottom sheets' upward shadow.
+  - [ ] T050.10 The app itself: walk each screen against the same rules (check-ui reads only boards).
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
