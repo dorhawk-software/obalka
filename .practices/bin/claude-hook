@@ -9,7 +9,8 @@
 #   jest, tsc, eslint): the lint gate;
 # - when a design board (UI_BOARDS) changed since the last call, by any
 #   tool (a shell edit too): the UI gate, check-ui, on what changed; when
-#   a copy file (VOICE_FILES) changed: the voice gate, check-voice.
+#   a copy file (VOICE_FILES) changed: the voice gate, check-voice; when a
+#   board or a copy file (COPY_FILES) changed: the copy gate, check-copy.
 # Stop and SubagentStop: the agent may not end its turn while a file it
 # changed fails a gate. Blocked twice on the same findings, it may
 # stop, and the person is told what is still open.
@@ -65,7 +66,9 @@ gate() { # gate NAME LIST CHECK: 0 when the changed files pass, or none changed;
             else
                 cut -d ' ' -f 2- "$state.now"
             fi
-            [ -f "$state.failing" ] && cat "$state.failing"
+            # Those that failed, while the gate still reads them: a file taken out of its list
+            # (COPY_FILES narrowed) isn't checked again. Until 1.7.2 it was, on every call.
+            [ -f "$state.failing" ] && printf '%s\n' "$all" | grep -Fxf "$state.failing"
         } | awk 'NF && !seen[$0]++' | while IFS= read -r f; do
             [ -f "$f" ] && printf '%s\n' "$f"
         done
@@ -87,6 +90,7 @@ gates() { # every gate, each one run; 1 when any fails
     local failed=0
     gate ui ui_boards check-ui || failed=1
     gate voice voice_files check-voice || failed=1
+    gate copy copy_files check-copy || failed=1
     return $failed
 }
 
@@ -100,7 +104,7 @@ if [ "$event" = Stop ] || [ "$event" = SubagentStop ]; then
     if [ "$(field stop_hook_active)" = true ] && [ -f "$blocked" ] && [ "$found" = "$(cat "$blocked")" ]; then
         n=$(printf '%s\n' "$found" | grep -c '^  - ')
         failing=$(cat "$gitdir"/practices-*.failing 2>/dev/null | tr '\n' ' ' | sed 's/ $//')
-        printf '{"systemMessage": "%s finding(s) still open in %s. The agent stopped without fixing them; run .practices/bin/check-ui and check-voice to see them."}\n' "$n" "$failing"
+        printf '{"systemMessage": "%s finding(s) still open in %s. The agent stopped without fixing them; run .practices/bin/check-ui, check-voice and check-copy to see them."}\n' "$n" "$failing"
         exit 0
     fi
     printf '%s' "$found" >"$blocked"

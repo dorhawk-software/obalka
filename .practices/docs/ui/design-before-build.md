@@ -261,3 +261,38 @@ read.
 them yourself first. Show before and after side by side.
 
 **Check.** The proposal page or message answers the six questions.
+
+## Every fact a screen uses was entered earlier
+
+**What.** When a screen relies on data ("start Wednesday, after
+swimming"), the flow that reaches it contains the step where the person
+gave that data, or where the app got it, with consent. A fact two screens
+show comes from one source, so they never disagree.
+
+**Why.** Scops' onboarding step "Kdy začít" (when to start) recommended
+"Wednesday evening, after swimming", from the week's events (2026-11-16).
+But onboarding never asked for events: they lived only in the Týden
+(week) tab. Every board was right on its own; the flow wasn't. The same
+screen said "three days with no morning events after Wednesday", while
+Týden had a vaccination on Friday at 9:15: two screens disagreeing about
+one fact.
+
+**Apply.**
+1. For each screen, list the facts it shows or decides from. Beside each
+   one, write the step that supplies it: the person's input, the phone's
+   calendar, a default.
+2. Walk the flow in the prototype as a new user. A fact with no earlier
+   step means a missing screen, not a copy fix.
+3. The demo data is one story. A fact shown on two screens (an event, a
+   time, a name) comes from one source in the generator, never typed
+   twice. Mark it where it is shown, `data-fact="swim-time"`.
+4. A step that collects data used later may be skipped ("Teď nic pevného
+   nemáme", nothing fixed yet). The later screen then has a designed
+   state for no data.
+
+**Check.** `check-copy` (fact) compares every element marked
+`data-fact="KEY"` across all the boards, per language: one fact, one
+wording. A board changed alone is still compared with all the others.
+Whether a step supplies each fact is the click-through walk: for each
+screen that recommends something, the reviewer asks "where did this come
+from?" and points to the step.

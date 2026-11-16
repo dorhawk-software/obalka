@@ -106,12 +106,23 @@ sometimes edits it.
   smallest size").
   Clean output says nothing about taste: the review steps still run.
 - Geometry is measured, not eyeballed: 8 px between separate targets,
-  nothing tappable within 34 px of the bottom edge, 16 px from a visible
-  halo to text, a surface's padding counted from whatever covers its
-  edge, centred text on its column's axis. Re-run all of it
-  after any global style change (visual-craft.md).
+  nothing tappable within 34 + 8 px of the bottom edge, 16 px from a
+  visible halo to text, a surface's padding counted from whatever covers
+  its edge, centred text on its column's axis, labels on one line. Re-run all of it after any global style change (visual-craft.md).
+- Boards say what a script needs to know: `<html lang>`; a phone frame,
+  `data-frame="phone"`, with its `data-home-indicator`; a fixed width,
+  `<meta name="viewport" content="width=390">`; a class per component
+  (`b-main`, `b-chip`); `aria-hidden="true"` on the page behind an open
+  sheet, written in one place; `data-fact="KEY"` on a fact several
+  screens show (visual-craft.md, design-before-build.md).
 - The product speaks as itself or names who acts, never "we" (and in
   Czech, never the -me verb): common/voice.md, checked by `check-voice`.
+  Each language's grammar between words ("V 10:20", "ve středu") is
+  checked by its own rules file, `check-copy`; a new language ships with
+  its rules (common/voice.md).
+- Every fact a screen uses was entered earlier in the flow; walk the
+  prototype as a new user and point to the step for each
+  (design-before-build.md).
 - One reading only: every number and limit names its subject and what
   happens when it runs out (visual-craft.md).
 - Dates, times and counts are picked, never typed; derived text

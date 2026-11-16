@@ -19,7 +19,12 @@ each commit (pre-commit), and in CI. Its findings go back to the agent,
 grouped by rule, each with its fix. A deliberate exception is marked in
 the board, `data-allow="rule: the reason"`, and a mark without a reason
 is a finding too. What it checks, and what is still a reviewer's, is in
-[ENFORCEMENT.md](../ENFORCEMENT.md).
+[ENFORCEMENT.md](../ENFORCEMENT.md). A board drawn at a fixed width (a
+390 px phone) says so, `<meta name="viewport" content="width=390">` or a
+`canvas.json` beside it, and renders at that width only. A board with no
+dark rules renders in one theme. The words on the boards are checked too,
+for their language's grammar, by `check-copy`
+([common/voice.md](../common/voice.md#each-languages-grammar-is-checked)).
 
 Each rule names the incident behind it. Product details are labelled
 examples.
@@ -183,6 +188,16 @@ the icons are the part of the identity the user sees on every screen.
 6. Use icons generously. Every settings row, list item and main button
    carries one from the family. On Scops (2026-11-14) the owner asked
    for icons everywhere, settings first.
+7. Keep one map from action to icon in code, with no default. Its lookup
+   fails loudly when a label has no icon, so a new button without one
+   breaks the build, not the review. On Scops (2026-11-16) `check-ui`
+   found 189 buttons without an icon. Most were quiet text buttons,
+   written by hand 16 times in three weights. The fix was one `ghost()`
+   component and that map.
+8. A single choice is a `role="radiogroup"`, not a row of buttons: chips,
+   month and year grids, day grids, quick times, method cards. It is the
+   right meaning for a screen reader, and `check-ui` treats the group as
+   one control, not as many main buttons without icons.
 
 **Check.** No icon on any screen is a system or stock symbol unless the
 design doc says why. Each icon of the family, side by side at 24 and at
@@ -253,6 +268,17 @@ the signature of Shrike, another Dorhawk product.
 7. Shadows fall away from the light. Scops' green buttons had a glow
    that blurred 8 px above their top edge. The owner asked whether the
    soft top and sharp bottom were intended. They were not.
+8. A glow is not depth. Scops' lit beads had an amber glow with no
+   offset (2026-11-16). It gave 32 shadow findings and 20 halo findings,
+   and it fogged the label "hotovo 5 min" beside it. Now a lit bead shines
+   by its own gradient, with a small shadow that falls down. It still
+   reads as lit, and nothing around it is fogged.
+9. A bottom sheet casts no shadow upward. Light comes from above, so a
+   raised sheet's shadow falls behind it, where nobody sees it. Separate
+   the sheet by tone, the scrim and a 1 px top highlight
+   (`inset 0 1px 0`). Scops' sheets cast `0 -18px 50px` upward.
+10. A ring that means something (focus, the selected item) is an
+    `outline`, never a `box-shadow` of `0 0 0 1px`.
 
 **Check.**
 - Each depth effect is explained by the concept in one sentence.
@@ -345,6 +371,32 @@ each width and theme. A surface that clips is measured once, by clip, so
 one `data-allow="clip: …"` covers a screen drawn mid-scroll. It runs after every edit to a board, before the
 agent's turn ends, and before each commit.
 
+## A button label stays on one line
+
+**What.** A button, chip or tab keeps its label on one line
+(`white-space: nowrap`). If the label doesn't fit, shorten it, give the
+button its own row, or make it a list row. Content meant to stack (a card,
+a list row with a subtitle) is a flex column.
+
+**Why.** Adding icons on Scops (2026-11-16) pushed "Připojit se k rodině,
+která už Scops má" (join a family that already uses Scops) onto two lines.
+"Další dítě" (another child) wrapped beside a hint. Nothing overflowed:
+the box just grew, so no check saw it. A one-line control that wraps reads
+as broken.
+
+**Apply.**
+1. Give every button, chip and tab `white-space: nowrap`.
+2. A long label is shortened first: the verb and its object.
+3. A label that stays long gets the button its own row, full width at
+   phone width, or becomes a list row.
+4. A target with two lines on purpose (a title and a subtitle) stacks
+   them in a flex column.
+
+**Check.** `check-ui` (wrap) flags a target (a button, a tab, a radio, a
+switch, a menu item) whose text runs onto a second line, unless it sits in
+a flex column inside the target. A card-sized target whose text is a
+paragraph on purpose is marked `data-allow="wrap: …"`.
+
 ## Buttons follow the column
 
 **What.** A row of buttons lines up with the text above it. In a column
@@ -418,7 +470,12 @@ outcome, and that the app stays.
 **Check.** `check-ui` (outcome) flags every button whose whole label is
 a word that names no outcome: Cancel, OK, Okay, Yes, No, Confirm,
 Submit, Accept, Decline, Proceed, Abort, Dismiss, and in Czech Zrušit,
-Storno, Ano, Ne, Potvrdit, Přijmout, Odmítnout, Přerušit.
+Storno, Ano, Ne, Potvrdit, Přijmout, Odmítnout, Přerušit. The words are
+language data, each language's `vagueButtons` in `copy-rules/<lang>.mjs`
+(Spanish: Aceptar, Cancelar, Sí, No…), read for the language the button
+is in. The label is the accessible name when there is one: in a weekday
+picker, "Ne" with `aria-label="Neděle"` is Sunday, not "no" (Scops,
+2026-11-16).
 
 ## Separate targets keep their distance
 
@@ -450,8 +507,12 @@ worse: it turned flat chips into raised tiles, and raised tiles need air.
 pair of targets, across and down. It flags anything under 8 px, except
 the three cases above, marked `data-allow="gap: …"`. A segmented
 control that says so by its role (`role="tablist"` or
-`role="radiogroup"`) needs no mark. The reviewers get 1:1 crops of dense areas, not only scaled-down
-sheets.
+`role="radiogroup"`) needs no mark, nor does a group of toggles that
+each say whether they're pressed (`role="group"`, every option
+`aria-pressed`: a weekday picker). The targets of a page behind an open
+sheet aren't measured: it is `aria-hidden` or `inert`
+([below](#a-sheets-page-is-inert-and-the-board-says-so)). The reviewers
+get 1:1 crops of dense areas, not only scaled-down sheets.
 
 ## Spacing is measured from what you see
 
@@ -483,11 +544,14 @@ the blue top bar".
    top, the 10 under the envelope and 14.
 
 **Check.** `check-ui` (halo) measures every ring of 2 px or more and
-every glow to the nearest text that isn't its own. `check-ui` (inset)
-measures, on every filled surface with text, each filled box painted
-over one of its edges: from that box's edge to the nearest text must be
-at least the surface's smallest padding on its other sides. The painted extent of
-drawings (a disc behind a mascot) is still a project's own script
+every glow to the ink of the nearest text that isn't its own. The ink,
+not the line box: the line box holds the font's whole descent, and digits
+have none. Scops' lamp digits "03:48" read as 1.9 px into a glow whose
+visible gap was 18 px (2026-11-16). `check-ui` (inset) measures, on every
+filled surface with text, each filled box painted over one of its edges:
+from that box's edge to the nearest text must be at least the surface's
+smallest padding on its other sides. The painted extent of drawings (a
+disc behind a mascot) is still a project's own script
 ([ENFORCEMENT.md](../ENFORCEMENT.md)).
 
 ## Centred means on the axis
@@ -688,12 +752,26 @@ the ink pill for all toasts; the sending one counts down in words.
 2. If two places use different anatomies for the same job, pick one and
    redraw the other.
 3. Write the anatomy down: parts, order, sizes, the action's place.
+4. Name each component in the markup with a class: `b-main`, `b-sub`,
+   `b-ghost`, `b-chip`, `b-day`, `b-day-adj`, `b-val`, `b-row`. A variant
+   that is meant to differ (a muted day of the next month) gets its own
+   class, and the design doc gives its reason. The design doc's list of
+   components and the classes are the same list.
+
+**Why the classes.** `check-ui` (same-look) compares like with like:
+the same tag, classes and role. Scops' buttons had inline styles and no
+classes (2026-11-16), so every button on a screen was compared with
+every other: the main button, the child switcher, a calendar day, a
+chip. That gave 71 findings, mostly noise around a few real ones: "Utišil
+se" in 800 weight beside "Jít za ním hned" in 700, in one row; inputs 56
+px high with 18 px type on one screen and 52 and 16 on the next.
 
 **Check.** The design doc lists each component's anatomy, and the canvas
 shows no second version. `check-ui` (same-look) flags like targets (the
 same tag, classes and role) of different height, type, radius or padding.
 A button with no words (an icon button) is a kind of its own, compared
-by height, radius and padding only.
+by height, radius and padding only. When the like targets have no class,
+the finding asks for the component's name first.
 
 ## A choice changes everything it owns
 
@@ -787,9 +865,44 @@ inside the home indicator's area. There were three causes:
    the safe area, with a short fade over the scrolling content.
 4. Bottom sheets add the safe area to their bottom padding too.
 
-**Check.** A script measures every tappable element against the bottom
-edge and flags anything closer than 34 px. Every phone board shows the
-home indicator.
+**Check.** `check-ui` (safe) measures every target in a phone frame,
+marked `data-frame="phone"`. It flags anything that ends less than 34 + 8
+px above the frame's bottom, or that starts under the status bar (54 px).
+A tab bar (`nav` or `role="tablist"`) sits on the safe area itself, so it
+needs the 34 px only. What scrolls inside the frame may pass under the
+home indicator. A frame that draws no home indicator (marked
+`data-home-indicator`) is a finding. So is a board drawn at a phone's
+width (480 px or less) with no frame marked. Other sizes go on the
+frame: `data-safe-top="24" data-safe-bottom="48"`.
+
+## A sheet's page is inert, and the board says so
+
+**What.** While a sheet or dialog is open, the page behind it takes no
+taps and no screen reader reads it: it is `inert` in the product. A board
+that draws an open `role="dialog"` says the same, with
+`aria-hidden="true"` on everything drawn before the dialog in its screen.
+
+**Why.** Scops' screens with an open sheet produced dozens of "targets
+overlap" findings (2026-11-16). They were buttons of the page behind the
+scrim. A real app makes that page inert; the boards didn't say so, so a
+check couldn't tell the page from the sheet. Marking them `inert` on the
+boards brought false contrast findings instead (1.9:1 under the scrim):
+Chrome's hit test skips inert elements, so the scrim inside the page no
+longer covered its text. `check-ui` now skips both.
+
+**Apply.**
+1. In the product, set `inert` on the page while a sheet is open, and
+   clear it when the sheet closes.
+2. On a board, mark everything drawn before the dialog in its screen
+   `aria-hidden="true"`. Do it in one place: the board writer (Scops'
+   `finish()`), never by hand per screen.
+3. A dialog that isn't modal (a popover over a live page) is marked
+   `data-allow="sheet: …"`.
+
+**Check.** `check-ui` (sheet) flags an open dialog (`role="dialog"`,
+`role="alertdialog"`, `<dialog open>`) while a target drawn before it in
+its screen (its `data-frame`, or its parent) is still live. The targets
+and text of an `aria-hidden` or `inert` page aren't measured.
 
 ## Words in the product's voice
 
@@ -823,7 +936,10 @@ full forms on purpose: they read as care.
 **Check.** No "OK" or "Yes" buttons (`check-ui` outcome, see
 [Every button names its outcome](#every-button-names-its-outcome)). No
 jokes on screens that can show sensitive content. Every screen that
-mentions a person is on the board in every gender.
+mentions a person is on the board in every gender. The grammar between
+words that a script can decide ("V 10:20", "ve středu") is
+`check-copy`'s, per language
+([common/voice.md](../common/voice.md#each-languages-grammar-is-checked)).
 
 ## Answer the next question where it arises
 

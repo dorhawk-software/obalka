@@ -65,6 +65,14 @@ UI_CHROME=''
 # 1.6.1 neither was read, and a FAQ's "not even us" passed.
 VOICE_FILES=':(glob)CHANGELOG*.md :(glob)**/content/**/*.ts :(glob)**/content/**/*.tsx :(glob)**/content/**/*.js :(glob)**/content/**/*.json :(glob)**/content/**/*.md :(glob)**/i18n/** :(glob)**/locales/** :(glob)**/l10n/** :(glob)**/*.lproj/*.strings :(glob)**/*.xcstrings :(glob)**/*.ftl :(glob)**/*.po :(glob)**/*.arb :(glob)**/res/values*/strings.xml :(glob)fastlane/metadata/**/*.txt :(exclude,glob)**/__tests__/** :(exclude,glob)**/*.test.* :(exclude,glob)**/*.spec.* :(exclude,glob)**/tests/** :(exclude,glob)**/*.generated.*'
 VOICE_WORDS=''
+# The copy gate (check-copy): the files it reads (git pathspecs; empty: the
+# design boards and the copy files, UI_BOARDS and VOICE_FILES), the
+# language of copy that names none (empty: such copy is a finding, never a
+# guess), and the folder of the project's own copy-rules/<lang>.mjs files,
+# which add to the kit's (cs, en, es) and add languages.
+COPY_FILES=''
+COPY_LANG=''
+COPY_RULES='.practices/copy-rules'
 
 if [ -f .practices/config ]; then
     # shellcheck source=/dev/null
@@ -96,6 +104,18 @@ voice_files() {
     local spec
     [ -n "$VOICE_FILES" ] || return 0
     read -r -a spec <<<"$VOICE_FILES $EXCLUDE"
+    git ls-files --cached --others --exclude-standard -- "${spec[@]}"
+}
+
+# The files check-copy reads: tracked or new, matching COPY_FILES, or the
+# boards and the copy files when it is empty.
+copy_files() {
+    local spec
+    if [ -z "$COPY_FILES" ]; then
+        { ui_boards; voice_files; } | awk '!seen[$0]++'
+        return 0
+    fi
+    read -r -a spec <<<"$COPY_FILES $EXCLUDE"
     git ls-files --cached --others --exclude-standard -- "${spec[@]}"
 }
 

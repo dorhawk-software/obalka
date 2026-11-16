@@ -3,6 +3,121 @@
 What changed for the projects that use the practices. Written by hand,
 newest first, in the kinds common/changelog.md describes.
 
+## 1.7.2 (2026-11-16)
+
+### Fixed
+
+- **`check-copy` asked for "ze SMS".** An abbreviation with no vowel is
+  read letter by letter, and "SMS" is "esemes", so "z SMS" and "v FTP"
+  are right; one read as a word keeps the rule, "ze SÚKL". Obálka's three
+  "kód z SMS" strings were findings.
+- **`check-copy` read code as copy in no language.** A module's path
+  (`from './strings'`), a type's members (`'app' | 'isds'`) and, in a
+  code catalogue with `cs` and `en` blocks, the ids and plural categories
+  outside the blocks are code. Obálka had 56 such findings in two
+  catalogues.
+- **The Claude Code hook kept checking files its gate no longer reads.**
+  A file that once failed was checked again after every tool call, even
+  after `COPY_FILES` (or `UI_BOARDS`, `VOICE_FILES`) left it out. In
+  Obálka, narrowing the copy to its catalogues still read all 327 source
+  files on every call.
+
+## 1.7.1 (2026-11-16)
+
+### New
+
+- **A live switch draws what a fresh start draws** (mobile/devices.md).
+  A setting that changes the look while the app runs is walked both ways,
+  and the same screen is the same pixel for pixel. Obálka's "Testovací"
+  pill lost its "í" after a switch to dark and was whole after a restart;
+  every walk and check had looked at fresh starts.
+  - `check-shots FRESH LIVE` compares two screenshots, or two folders of
+    them by name, and lists each region that differs; `--skip-top PX`
+    leaves out the status bar. On Obálka's switcher it finds the lost
+    glyph, 7×21 px, and nothing between two fresh starts.
+
+## 1.7.0 (2026-11-16)
+
+### New
+
+- **`check-copy`: each language's grammar, checked by its own rules**
+  (common/voice.md, "Each language's grammar is checked"). Scops showed
+  "Ve 10:20 ho vzbuďte"; a time is said "v deset dvacet", so it is "V
+  10:20". The owner caught it on a screenshot, and nothing could have.
+  - Rules files per language, `copy-rules/<lang>.mjs`: Czech (v/ve before
+    a time and a weekday, ve before v and f, se/ze, ke), Spanish (al, del,
+    e before i, u before o) and English (a and an). A project adds its own
+    in `.practices/copy-rules/`.
+  - Each piece of copy gets its own language's rules: a board's `<html
+    lang>`, a catalogue's path (`cs.json`, `values-cs/`) or block (`cs:
+    {`). Copy that names no language is a finding, and so is a language
+    without a rules file: a new locale ships with its rules.
+  - A fact several boards show, marked `data-fact="KEY"`, reads the same
+    on each (ui/design-before-build.md, "Every fact a screen uses was
+    entered earlier"). Scops' "start Wednesday" screen and its week tab
+    disagreed about one Friday.
+  - It runs on the boards and the copy files, where `check-voice` runs:
+    after each edit and before the turn ends, before each commit, in
+    lint. An exception is marked with its reason, `data-allow="copy: …"`
+    or `practices-allow copy: …`.
+- **`check-ui` measures both safe areas of a phone** (safe). In a frame
+  marked `data-frame="phone"`, nothing to tap ends less than 34 + 8 px
+  above the bottom (a tab bar 34) or starts under the status bar. A frame
+  without its home indicator, and a phone-width board without a frame,
+  are findings. Scops had 21 of 85 screens with a button in the home
+  indicator's area.
+- **`check-ui` keeps labels on one line** (wrap). A button, chip or tab
+  whose label wraps is a finding; nothing overflowed when Scops' "Připojit
+  se k rodině, která už Scops má" took two lines.
+- **`check-ui` wants the page behind a sheet marked inert** (sheet). An
+  open dialog with live targets drawn before it in its screen is a
+  finding: mark the page `aria-hidden="true"` in one place.
+- **New practices** in ui/visual-craft.md, "A button label stays on one
+  line" and "A sheet's page is inert, and the board says so", and in
+  ui/design-before-build.md, "Every fact a screen uses was entered
+  earlier". "One anatomy per job" asks for a class per component, "A
+  drawn icon set" for one map from action to icon and a radiogroup for a
+  single choice, and "Depth and texture" says glows aren't depth and a
+  sheet casts no shadow upward.
+
+### Better
+
+- **`check-ui` renders a board only as often as it differs.** A board
+  fixed at a phone's width (`<meta name="viewport" content="width=390">`,
+  or `canvas.json`'s `boards[file].w`) renders at that width, and a board
+  with no dark rules in one theme. Scops' 87 boards took 348 renders where
+  87 would do.
+- **`check-ui` measures a halo to the text's ink**, not its line box. Lamp
+  digits with no descenders read as 1.9 px into a glow 18 px from them.
+- **`check-ui` knows a weekday picker is one control.** A `role="group"`
+  of toggles that each carry `aria-pressed` is segmented, like a
+  radiogroup, for gap and icon. Scops needed three marks for one picker.
+- **`check-ui` outcome reads the accessible name**, and each language's
+  words. "Ne" with `aria-label="Neděle"` is Sunday, not "no". The words no
+  button may say alone are each language's `vagueButtons`, in the same
+  rules files as check-copy's, so Spanish gets "Aceptar" and "Cancelar".
+- **`check-ui` asks unclassed buttons for a class.** same-look compared
+  every unclassed button with every other (71 findings on Scops, mostly
+  noise); its finding now says to name each component first.
+- **`check-ui` opens Chrome's page itself, and tries three times.** In a
+  container Chrome's start failed half the time with "Cannot read
+  properties of undefined (reading 'targetId')"; it now says "Chrome
+  didn't open a page" when it gives up. Run as root (a dev container, a
+  cloud session), it passes `--no-sandbox`, as in CI.
+
+### Changed
+
+- **Copy that names no language now fails `check-copy`**, a project's
+  changelog among them. Name it once: `COPY_LANG=en` in
+  `.practices/config` for the language of copy that names none.
+
+### Fixed
+
+- **`check-ui` read text under an inert page's scrim.** Chrome's hit test
+  skips inert elements, so a scrim inside the page no longer covered its
+  text, and Scops' boards had contrast findings of 1.9:1 there. Inert
+  pages are skipped like `aria-hidden` ones, targets and text alike.
+
 ## 1.6.5 (2026-11-16)
 
 ### New

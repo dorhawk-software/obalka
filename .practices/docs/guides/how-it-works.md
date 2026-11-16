@@ -106,6 +106,7 @@ also in `rules.md`.
 | `lint` | rustfmt, clippy, cargo deny, cargo machete, then the checks below and `lint.d/*` | Claude hook, pre-commit, CI |
 | `check-private` | no name from `dev/private-terms` in files or the message; fails closed | lint, both git hooks |
 | `check-voice` | no "we" in the copy people see ([common/voice.md](../common/voice.md)); a quote is marked `practices-allow voice: reason` | lint, Claude hook (edits, Stop), pre-commit |
+| `check-copy` | each language's grammar between words, by that language's rules file ([common/voice.md](../common/voice.md#each-languages-grammar-is-checked)); copy names its language, and the language ships its rules; a `data-fact` reads the same on every board; an exception is marked `data-allow="copy: reason"` or `practices-allow copy: reason` | lint, Claude hook (edits, Stop), pre-commit |
 | `check-size` | 700 lines per file, 1000 per integration test, the shrinking allowlist | lint |
 | `check-unsafe` | `unsafe` only in `UNSAFE_ALLOWED` | lint |
 | `check-coverage` | each crate at or over its floor, per OS; floors never lowered | pre-commit, CI |
@@ -113,7 +114,7 @@ also in `rules.md`.
 | `install-hooks` | points git at `.practices/hooks` (`--check` to verify) | once per clone; lint checks it |
 | `check-ui` | design boards rendered in headless Chrome at each width and theme: nothing past its surface, buttons follow their column and name their outcome, 8 px between targets, 11 px text, contrast and the rest of [ui/visual-craft.md](../ui/visual-craft.md)'s measurable rules, and each mark at its smallest size ([ui/identity-pass.md](../ui/identity-pass.md)); `data-allow="rule: reason"` marks a deliberate exception | Claude hook (edits, Stop), pre-commit |
 | `check-hooks` | `.claude/settings.json` still runs `claude-hook` after edits and on Stop | pre-commit |
-| `claude-hook` | disk floor after every command; lint after cargo builds; check-ui on a board that changed; on Stop, the turn can't end while a board fails | Claude Code |
+| `claude-hook` | disk floor after every command; lint after cargo builds; check-ui on a board that changed, check-voice and check-copy on copy that changed; on Stop, the turn can't end while a changed file fails a gate | Claude Code |
 | `disk-guard` | keeps `DISK_FLOOR_GB` free where cargo builds | Claude hook |
 | `prune-caches` | deletes GitHub caches a newer one of the same kind replaced | CI on main |
 | `sweep-target` | keeps only the build units cargo used, before caching by hand | CI, packaging |
@@ -291,8 +292,8 @@ by `bin/install --templates`:
 After each shell command an agent runs, `claude-hook` checks the disk floor,
 and after a cargo build, test, check, clippy, run or nextest it runs the lint
 gate. After any edit, it runs `check-ui` on each design board whose content
-changed, and `check-voice` on each copy file that changed, and on any that
-failed before. A failure goes back to the
+changed, `check-voice` on each copy file that changed, and `check-copy` on
+each board or copy file that changed, and on any that failed before. A failure goes back to the
 agent as an error to fix before going on (exit 2). On Stop and
 SubagentStop it refuses to let the turn end while a board still fails, so
 the agent can't tell the person it's done; blocked twice on the same

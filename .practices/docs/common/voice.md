@@ -4,7 +4,8 @@ Everything people read from the product (its screens, notifications,
 store listing, website and changelog) speaks as the product, or names
 who acts. How a screen's wording reads is in
 [ui/visual-craft.md](../ui/visual-craft.md#words-in-the-products-voice);
-this practice holds who speaks.
+this practice holds who speaks, and the grammar each language checks
+between its words.
 
 ## The product speaks as itself, never as "we"
 
@@ -58,3 +59,58 @@ pages). claude-hook runs it after each edit on the files that changed and
 holds the agent's turn while it fails; pre-commit runs it on what is
 staged, and lint on everything. "I" stays with the reviewer, because the
 person's own words use it too.
+
+## Each language's grammar is checked
+
+**What.** Copy that is right word by word can still be wrong in its
+language, in the grammar between words. Where that grammar is mechanical,
+a script checks it. Each language the product ships has its own rules
+file, and each piece of copy is checked by the rules of its own language.
+
+**Why.** Scops showed "Ve 10:20 ho vzbuďte" (wake him at 10:20) and "Ve
+10:15 vám dáme vědět" (2026-11-16). In Czech the preposition follows how
+the next word is said. A time is read aloud, "v deset dvacet", so it is
+"V 10:20"; "ve čtrnáct deset" gives "ve 14:10". The owner caught it on a
+screenshot. No check could: `check-ui` measures geometry, and copy had
+only a reviewer's eye.
+
+**Apply.**
+1. Name the language of all copy. A board says `<html lang="cs">` (a
+   part in another language, `<span lang="en">`). A catalogue says it in
+   its path (`cs.json`, `values-cs/`, `cs.lproj/`) or its block
+   (`cs: {`). Copy that names none is a finding, never a guess. A
+   project whose plain files (its changelog) are in one language sets it
+   once: `COPY_LANG=en` in `.practices/config`. In a code catalogue (a
+   `.ts` file with `cs` and `en` blocks) the copy is in the blocks; its
+   ids, imports and type names outside them are code, not copy.
+2. A new language ships with its rules: `.practices/copy-rules/<lang>.mjs`.
+   A language with copy and no rules file fails the build, so "we added
+   German" means "we added German and its copy rules".
+3. A rules file lists rules, each `{ id, what, fix, find, check }`:
+   `find` is a global RegExp, and `check(match)` returns a message, or
+   `""` when the match is right. It also lists `vagueButtons`, the words
+   a button may not say alone ("Zrušit", "Cancel"; `check-ui` outcome
+   reads them). The kit's `copy-rules/cs.mjs` is the format.
+4. A deliberate exception (a quoted name, a brand) is marked with its
+   reason: `data-allow="copy: the product's own name"` on a board's
+   element, or `practices-allow copy: <reason>` on a string's line or the
+   one above. A mark without a reason of three words is a finding.
+5. Run it on the shipped strings, not only on boards: those are what
+   people read.
+
+The kit ships three languages:
+- **cs**: `v-ve-time` ("ve" before 2, 3, 4, 12, 13, 14 and 20 to 23
+  o'clock, "v" before the rest), `v-ve-day` (ve středu, ve čtvrtek, v
+  pondělí), `v-before-v` (ve vaně, ve fázi), `s-z-before-sibilant` (se
+  sestrou, ze školy), `k-before-k` (ke kočárku).
+- **es**: `al-del` ("a el" is "al", "de el" is "del"), `y-e` (padres e
+  hijos), `o-u` (siete u ocho).
+- **en**: `a-an` (an hour, an SMS, a user, a one-off).
+
+**Check.** `check-copy` reads the boards (`UI_BOARDS`) and the copy
+files (`VOICE_FILES`), or `COPY_FILES` when set, and runs each
+language's rules on its own copy. A language without rules, and copy
+without a language, are findings. It runs where `check-voice` runs:
+claude-hook after each edit and before the turn ends, pre-commit, lint
+(so CI). Which wordings are wrong but not mechanical stays with the
+reviewer.

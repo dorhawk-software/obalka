@@ -144,10 +144,26 @@ is the source of everything Rust here; its commit links are in each doc.
     Each check has a planted fault in `tests/run` and a mutant in
     `tests/mutate` (1.6.0). ink: one hue per glyph (1.6.3). inset: what
     covers an edge takes room from the padding (1.6.5).
+  - [x] Scops' round 2 (2026-11-16, 903 findings on 87 boards, then 0):
+    both safe areas of a phone frame, labels on one line, the page behind
+    an open sheet; inert pages and groups of pressed toggles understood;
+    a halo measured to the text's ink; a button's accessible name read;
+    fixed-width boards at their own width and boards without dark rules
+    in one theme (348 renders where 87 would do); Chrome's first page
+    opened or retried, and `--no-sandbox` for root (1.7.0).
+  - [x] `check-copy`: each language's grammar by its own rules file (cs,
+    en, es, and a project's own), copy that names no language or a
+    language without rules as findings, one wording per `data-fact`
+    across the boards; the button words `outcome` refuses moved into the
+    same files (1.7.0).
+  - [ ] `check-copy` reads a board as written: text a script writes at
+    load isn't read. Read the rendered DOM where `check-ui` renders.
+  - [ ] A click-through test of a prototype: each `data-fact` first shown
+    after the step that collects it (ui/design-before-build.md, "Every
+    fact a screen uses was entered earlier").
   - [ ] The next checks, most value for least effort (the 2026-11-15
-    audit, [ENFORCEMENT.md](ENFORCEMENT.md)): the bottom safe area on
-    phone boards (34 + 8 px); values off the project's spacing and type
-    scale; a border census (borders and inset rings that aren't focus or
+    audit, [ENFORCEMENT.md](ENFORCEMENT.md)): values off the project's
+    spacing and type scale; a border census (borders and inset rings that aren't focus or
     a checkbox, nested cards); leftover text (TODO, lorem, "Option A");
     the face that actually renders (CDP `CSS.getPlatformFontsForNode`);
     one shadow recipe per elevation and a declared light direction;
@@ -180,8 +196,8 @@ convention. Each one leaves this list when it's built.
   is published (phase 5).
 - Scenario suites (one test per scenario, run everywhere) are a documented
   pattern; the shared macro is phase 4.
-- Safe areas and typed values (`ui/visual-craft.md`, `ui/pickers.md`) are
-  a project's own scripts until `check-ui` measures them (phase 7).
+- Typed values (`ui/pickers.md`) are a project's own script until
+  `check-ui` measures them (phase 7).
 
 ## Every rule a machine can check, a gate
 
@@ -240,7 +256,7 @@ rows are this list's source; the most valuable first.
     CI workflow that runs `.practices/bin/lint`.
 - **UI:** the next checks for `check-ui`, in phase 7 above.
   - [x] A commit that changes an existing board names its before/after
-    page (`check-commit-msg`, 1.7.0).
+    page (`check-commit-msg`, 1.6.2).
   - [ ] A `before-after` script: renders a board's object (a selector) at
     HEAD and in the working tree, both themes, at the device's pixel
     ratio, and writes the page the trailer names.

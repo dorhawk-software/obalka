@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # git's pre-commit hook: nothing private (check-private); design boards
-# pass the UI gate (check-ui); the copy has no "we" (check-voice); the
+# pass the UI gate (check-ui); the copy has no "we" (check-voice) and keeps
+# its language's grammar (check-copy); the
 # Claude Code hooks stay wired (check-hooks); when Rust files are
 # committed, the lint gate and the coverage floors; when JavaScript or
 # TypeScript files are, the lint gate and the tests (NPM_TEST). It runs at
@@ -29,6 +30,16 @@ if [ -n "$copy" ] && [ -n "$staged" ]; then
     voice=$(printf '%s\n' "$staged" | grep -Fx -f <(printf '%s\n' "$copy") || true)
     if [ -n "$voice" ]; then
         printf '%s\n' "$voice" | tr '\n' '\0' | xargs -0 "$bin/check-voice" || exit 1
+    fi
+fi
+# The copy being committed keeps its language's grammar, and the facts
+# its boards share read the same (check-copy).
+# shellcheck source=/dev/null
+copied=$(cd "$(git rev-parse --show-toplevel)" && . "$bin/lib.sh" && copy_files)
+if [ -n "$copied" ] && [ -n "$staged" ]; then
+    copy=$(printf '%s\n' "$staged" | grep -Fx -f <(printf '%s\n' "$copied") || true)
+    if [ -n "$copy" ]; then
+        printf '%s\n' "$copy" | tr '\n' '\0' | xargs -0 "$bin/check-copy" || exit 1
     fi
 fi
 # The agent's gates stay wired: claude-hook runs after edits and before an

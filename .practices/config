@@ -22,3 +22,11 @@ SIZE_EXCLUDE='(\.generated\.ts$|/generated/)'
 # third-party licences. The kit's default read only src/i18n and missed the
 # FAQ's "ani my" and the privacy page's "nám" (2026-11-16).
 VOICE_FILES=':(glob)src/** :(glob)CHANGELOG*.md :(glob)PRIVACY*.md :(glob)README*.md :(glob)SECURITY.md :(glob)docs/store/** :(glob)ios/ObalkaDatovaSchranka/Info.plist :(glob)android/app/src/main/res/values*/strings.xml :(exclude,glob)**/*.generated.*'
+
+# The copy whose grammar check-copy reads (practices 1.7, common/voice.md): the
+# catalogues that hold it in `cs` and `en` blocks, and the FAQ. Its default is
+# VOICE_FILES, all of src/, where component styles, SOAP tags and schema files
+# read as copy in no language: 310 findings, none about grammar. Left out too:
+# dates.ts and typeset.ts (format data), activeLocale.ts and serverMessages.ts
+# (ids) (2026-11-16).
+COPY_FILES=':(glob)src/i18n/*Strings.ts src/i18n/strings.ts src/i18n/loginMessages.ts src/content/faq.ts'

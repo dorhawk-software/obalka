@@ -2,6 +2,7 @@
 """check-voice's reading half: finds "we" in the copy people see.
 
     voice-audit.py [--words REGEX] FILE...
+    voice-audit.py --strings FILE...    every string as JSON, for check-copy
 
 Reads only what people see: string literals in code (not their keys, not
 comments), values in JSON, .strings, .xcstrings and .arb files, messages
@@ -69,6 +70,13 @@ def line_at(text, i):
     return text.count("\n", 0, i) + 1
 
 
+# A string that names a module (`from './strings'`, `require('x')`) or is a member of a type
+# (`type Group = 'app' | 'isds'`) is code. 1.7.1 read Obálka's import paths and type names as copy
+# in no language, 56 findings in two catalogues.
+MODULE = re.compile(r"(?:\bfrom|\bimport|\brequire\s*\(|\bimport\s*\(|\bmock\s*\()\s*$")
+TYPE_LITERAL = re.compile(r"(?:(?<!\|)\||\btype\s+\w+(?:<[^=]*>)?\s*=)$")
+
+
 def from_code(text, path):
     """String literals that aren't keys, outside comments, with the language of their block."""
     out = []  # (line, string, lang, allow-or-None)
@@ -124,6 +132,9 @@ def from_code(text, path):
             ternary = text[:start].rstrip().endswith("?")  # `k ? 'We…' : …` is copy, not a key
             if rest.startswith(":") and not rest.startswith("::") and not ternary:
                 continue  # a key
+            said = text[:start].rstrip()
+            if MODULE.search(said) or TYPE_LITERAL.search(said):
+                continue  # a module's path, or a type's name: code, not copy
             before = text[text.rfind("\n", 0, start) + 1:start]
             m = re.search(r"(?:^|[^\w])[\"']?(" + LANGS + r")[\"']?\s*:\s*$", before)
             lang = m.group(1) if m else (stack[-1][1] if stack else None)
@@ -207,9 +218,45 @@ def from_lines(text, path):
 
 
 ALLOW = re.compile(r"practices-allow\s+voice\s*:\s*(.*)")
+COPY_ALLOW = re.compile(r"practices-allow\s+copy\s*:\s*(.*)")
+
+
+def read(path):
+    """The file's text, and its strings as (line, string, language or None)."""
+    text = open(path, encoding="utf-8").read()
+    if path.endswith(JSONISH):
+        strings = from_json(text, path)
+    elif path.endswith(CODE):
+        strings = from_code(text, path)
+        if path.endswith((".tsx", ".jsx")):
+            strings += from_jsx(text, path)
+    else:
+        strings = from_lines(text, path)
+    fixed = path_lang(path)
+    return text, [(ln, s, fixed or lang) for ln, s, lang in strings]
+
+
+def dump(argv):
+    """--strings: every string as JSON, for check-copy (copy-audit.mjs), which checks each language's grammar."""
+    out = {"strings": [], "broken": []}
+    for path in argv:
+        try:
+            text, strings = read(path)
+        except (OSError, UnicodeDecodeError, ValueError) as e:
+            out["broken"].append(f"{path}: {e}")
+            continue
+        lines = text.split("\n")
+        for ln, s, lang in strings:
+            marks = [m for m in (COPY_ALLOW.search(x) for x in lines[max(0, ln - 2):ln]) if m]
+            allow = re.sub(r"\s*(\*/|-->)\s*$", "", marks[-1].group(1)).strip() if marks else None
+            out["strings"].append({"path": path, "line": ln, "text": s, "lang": lang, "allow": allow})
+    json.dump(out, sys.stdout, ensure_ascii=False)
+    return 0
 
 
 def main(argv):
+    if argv[:1] == ["--strings"]:
+        return dump(argv[1:])
     extra = None
     if argv[:1] == ["--words"]:
         extra, argv = argv[1], argv[2:]
@@ -218,22 +265,12 @@ def main(argv):
     findings, broken = [], []
     for path in argv:
         try:
-            text = open(path, encoding="utf-8").read()
-            if path.endswith(JSONISH):
-                strings = from_json(text, path)
-            elif path.endswith(CODE):
-                strings = from_code(text, path)
-                if path.endswith((".tsx", ".jsx")):
-                    strings += from_jsx(text, path)
-            else:
-                strings = from_lines(text, path)
+            text, strings = read(path)
         except (OSError, UnicodeDecodeError, ValueError) as e:
             broken.append(f"{path}: {e}")
             continue
         lines = text.split("\n")
-        fixed = path_lang(path)
         for ln, s, lang in strings:
-            lang = fixed or lang
             said = re.sub(r"\{[^{}]*\}|%\d*\$?[@sdif]|\$\w+", " ", s)  # placeholders aren't words
             said = re.sub(r"\b[a-z][a-z0-9+.-]*://\S+|\bwww\.\S+", " ", said)  # nor web addresses (/us/)
             hits = [m.group(1) for m in everywhere.finditer(said)
