@@ -13,7 +13,7 @@ import { Animated, Pressable, View, type LayoutChangeEvent } from 'react-native'
 import { XStack, YStack } from '../../../theme/ui';
 import { Caption, Display, Heading, Overline, Subheading } from '../../../theme/Typography';
 import { PriceStamp, STAMP_FRAME } from './ComposeEnvelope';
-import { perforation } from '../../../theme/print';
+import { perforation, postmarkPrint } from '../../../theme/print';
 import { AddressLines } from './AddressLines';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Envelope } from '../../../theme/objects/Envelope';
@@ -80,11 +80,22 @@ function FormNote({
   );
 }
 
+/** The sent postmark's drawing, 96 wide (the owner's answer Q1, 2026-11-16). */
+export const SENT_POSTMARK_SIZE = 96;
 /**
- * Where the postmark stands on a sent envelope, from its right edge: past the stamp (14 in, the 96 frame
- * in its 12 margins) and 4 more, the Sent board's gap; its waves reach across the stamp from there.
+ * Where the postmark stands on a sent envelope, from its right edge: struck over the stamp's edge, like
+ * a real cancellation. The stamp's paper starts 14 + 96 + 2 x 12 = 134 in; the ring reaches 40 into it,
+ * so the date sits on the paper, and the stamp draws the waves across the rest. Beside the stamp (138
+ * in, until 2026-11-16) it ran over the sender at 360 dp: a 310 envelope put its 108 drawing at 64-172,
+ * over the sender's 18-138.
  */
-export const SENT_POSTMARK_RIGHT = 14 + STAMP_FRAME.width + 2 * perforation.stamp.inset + 4;
+const STAMP_PAPER_LEFT = 14 + STAMP_FRAME.width + 2 * perforation.stamp.inset;
+/** Where the ring's outer circle ends in the drawing, the stroke included. */
+const RING_RIGHT =
+  ((postmarkPrint.cx + postmarkPrint.rings[0] + postmarkPrint.stroke / 2) * SENT_POSTMARK_SIZE) / postmarkPrint.width;
+export const SENT_POSTMARK_RIGHT = Math.round(STAMP_PAPER_LEFT - 40 - (SENT_POSTMARK_SIZE - RING_RIGHT));
+/** The sender's column beside it: "Ing. Ondřej / Dvořák" on two lines, clear of the drawing at 120. */
+export const SENT_SENDER_WIDTH = 100;
 
 /**
  * Where a sent envelope's window starts, under its top edge: the Sent board's 196 envelope less its 14
@@ -96,10 +107,23 @@ const SENT_WINDOW_TOP = 120;
 /** The envelope's 12 above the sender and the 8 between the sender and the window. */
 const SENT_SENDER_ROOM = SENT_WINDOW_TOP - 12 - 8;
 
-/** The corner of a sent envelope: the stamp, and the postmark whose waves cancel it once ISDS took it. */
+/**
+ * The corner of a sent envelope: the stamp, and the postmark struck over its edge once ISDS took it, in
+ * the ink of the waves that cancel it - one strike, one ink.
+ */
 function SentCorner({ sentAt }: { readonly sentAt: number | null }) {
+  const theme = useTheme();
   return (
     <>
+      <View
+        style={{ position: 'absolute', right: 14, top: 14, transform: [{ rotate: '2deg' }] }}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+        testID="detailStamp"
+      >
+        {/* Compose's stamp, blank: the archive keeps no cost (the owner, 2026-11-13 and 2026-11-15). */}
+        <PriceStamp price={null} frame={STAMP_FRAME} shadow="stampOnEnvelope" cancelled={sentAt != null} />
+      </View>
       {sentAt != null ? (
         <View
           style={{ position: 'absolute', right: SENT_POSTMARK_RIGHT, top: 20 }}
@@ -111,21 +135,13 @@ function SentCorner({ sentAt }: { readonly sentAt: number | null }) {
             ring={t('send.sent.postmark.ring')}
             line1={shortDate(sentAt)}
             line2={clock(sentAt)}
-            size={108}
+            size={SENT_POSTMARK_SIZE}
             rotate={-6}
+            color={theme.cancelInk}
             waves={false}
           />
         </View>
       ) : null}
-      <View
-        style={{ position: 'absolute', right: 14, top: 14, transform: [{ rotate: '2deg' }] }}
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-        testID="detailStamp"
-      >
-        {/* Compose's stamp, blank: the archive keeps no cost (the owner, 2026-11-13 and 2026-11-15). */}
-        <PriceStamp price={null} frame={STAMP_FRAME} shadow="stampOnEnvelope" cancelled={sentAt != null} />
-      </View>
     </>
   );
 }
@@ -204,7 +220,7 @@ export function DetailEnvelope({
             ) : null}
             {sent ? (
               // Under the stamp's corner, as narrow as the board's 120.
-              <YStack maxWidth={120} minHeight={SENT_SENDER_ROOM} gap={2} testID="detailSenderBlock">
+              <YStack maxWidth={SENT_SENDER_WIDTH} minHeight={SENT_SENDER_ROOM} gap={2} testID="detailSenderBlock">
                 <Overline color={theme.envelopeInkSoft}>{t('detail.from')}</Overline>
                 <Subheading color={theme.onSolid} testID="detailSender">
                   {sender.name || account.label}

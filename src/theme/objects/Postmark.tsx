@@ -44,6 +44,7 @@ export function Postmark({
       height={Math.round((size * p.height) / p.width)}
       viewBox={`0 0 ${p.width} ${p.height}`}
       style={{ transform: [{ rotate: `${rotate}deg` }] }}
+      testID="postmarkDrawing"
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
     >

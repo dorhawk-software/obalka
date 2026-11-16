@@ -3,10 +3,11 @@
 // reports the steps. Seen on Obalka_Demo before the build: the old subject, Komu card and timeline.
 
 import { fireEvent, render, waitFor, within } from '@testing-library/react-native';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, processColor } from 'react-native';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { t } from '../../src/i18n/strings';
+import { lightTheme } from '../../src/theme/theme';
 import type { DataBoxAccount, MessageEnvelope } from '../../src/services/isds/types';
 
 const AT = new Date(2026, 9, 26, 21, 5).getTime();
@@ -122,6 +123,22 @@ describe('a sent message (R7)', () => {
     await waitFor(() => view.getByTestId('detailStamp', { includeHiddenElements: true }));
     expect(view.getByTestId('detailPostmark', { includeHiddenElements: true })).toBeTruthy();
     expect(JSON.stringify(view.toJSON())).toContain(t('send.sent.postmark.ring'));
+  });
+
+  it('strikes the stamp\'s edge with a 96 ring, 40 into the stamp, the sender kept to 100 beside it (the owner, Q1 2026-11-16)', async () => {
+    const view = await open();
+    const mark = await waitFor(() => view.getByTestId('detailPostmark', { includeHiddenElements: true }));
+    // The stamp's paper starts 14 + 96 + 2 x 12 = 134 in from the right; the ring (its outer circle ends
+    // 87.75 into the 96 drawing) reaches 40 into it: the drawing's right edge is 134 - 40 - 8.25 = 86 in.
+    expect(StyleSheet.flatten(mark.props.style).right).toBe(86);
+    const drawing = within(mark).getByTestId('postmarkDrawing', { includeHiddenElements: true });
+    expect(drawing.props.width).toBe(96);
+    // Struck over the stamp, after it, in the ink of the waves it cancels the stamp with.
+    const said = JSON.stringify(view.toJSON());
+    expect(said.indexOf('"detailPostmark"')).toBeGreaterThan(said.indexOf('"detailStamp"'));
+    const ink = JSON.stringify({ type: 0, payload: processColor(lightTheme.cancelInk) });
+    expect(said.slice(said.indexOf('"detailPostmark"'))).toContain(ink);
+    expect(StyleSheet.flatten(view.getByTestId('detailSenderBlock').props.style).maxWidth).toBe(100);
   });
 
   it("cancels compose's stamp, R2's 96 x 78 frame, blank where the archive keeps no cost (the owner, 2026-11-15)", async () => {

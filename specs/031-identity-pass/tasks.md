@@ -1298,6 +1298,10 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   right it already reached 20 into the column. Seen on Obalka_Demo at 360 dp; at 411 the detail
   clears it. And the password field keeps a placeholder ("Heslo") that repeats its label, now that
   the name field has none.
+  Answered 2026-11-16: the password field lost its placeholder (Q2, d501499), and the postmark strikes
+  the stamp's edge (Q1): the 96 drawing over the stamp, its ring 40 into the paper (right 86), in
+  `cancelInk`, the sender's column 100. Walked on Obalka_Demo at 360 dp (detail light and dark, the
+  sent result with "0 Kč" struck) and 411 dp; the ring starts at 128 on the 310 result envelope.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the

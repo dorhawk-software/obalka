@@ -769,6 +769,11 @@ After the critique (2026-11-15), the owner's answers, one by one:
   price lost to R2's stamp everywhere - 96 by 78 in its 12 perforated margin, blank at .55 until a
   recipient sets the price, cancelled on the sent envelope (blank there when the archive keeps no
   cost). The postmark stands 4 left of it; the waves run from 14 left of the stamp to its right edge.
+  Since 2026-11-16 (the owner's answer Q1) it strikes the stamp's edge instead, as a real
+  cancellation: the 96 drawing over the stamp, its ring 40 into the stamp's paper, in `cancelInk`
+  like the waves (one strike, one ink; the white ring vanished on the paper), the date on the paper.
+  The sender keeps 100 beside it ("Ing. Ondřej / Dvořák" on two lines); on the result screen the ring
+  crosses "0 Kč". Beside the stamp it ran over the sender at 360 dp.
 - **Dates:** the compact "12.11.2026 09:20" lost to the Czech standard's "12. 11. 2026 9:20", "29. 8."
   in rows and on the postmark (non-breaking spaces, the hour without its zero; English "12 Nov 2026,
   9:20", "29 Aug"), all through `src/i18n/dates.ts`. The postmark sets its date smaller when it would

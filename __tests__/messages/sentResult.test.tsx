@@ -3,10 +3,10 @@
 // delivery record still to fill in. These hold each fact on its object, the Czech preposition, that
 // nothing is drawn as done that ISDS has not reported, and the two ways on.
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, waitFor, within } from '@testing-library/react-native';
 import RNHaptic from 'react-native-haptic-feedback';
 import { useReducedMotion } from 'react-native-reanimated';
-import { Animated, processColor } from 'react-native';
+import { Animated, StyleSheet, processColor } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
@@ -122,6 +122,17 @@ describe.each([
     expect(view.getByText('Jana Nováková')).toBeTruthy();
     expect(view.getByText('ID k4m9xrt')).toBeTruthy();
     expect(view.getByTestId('sentRecipient').props.children).toBe('Finanční úřad pro Kotlinský kraj');
+  });
+
+  it('strikes the stamp\'s edge with a 96 ring, 40 into the stamp, clear of the sender at 360 dp (the owner, Q1 2026-11-16)', async () => {
+    const view = await mount({}, isDark);
+    const mark = await waitFor(() => view.getByTestId('sentPostmark', { includeHiddenElements: true }));
+    expect(StyleSheet.flatten(mark.props.style).right).toBe(86);
+    expect(within(mark).getByTestId('postmarkDrawing', { includeHiddenElements: true }).props.width).toBe(96);
+    const said = JSON.stringify(view.toJSON());
+    expect(said.indexOf('"sentPostmark"')).toBeGreaterThan(said.indexOf('"sentStamp"'));
+    // The 310 envelope at 360 dp: the drawing starts 310 - 86 - 96 = 128 in, past the sender's 18 + 100.
+    expect(StyleSheet.flatten(view.getByTestId('sentSenderBlock').props.style).maxWidth).toBe(100);
   });
 
   it('strikes the postmark with the minute ISDS took it, its waves cancelling the stamp in the cancel ink', async () => {

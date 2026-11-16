@@ -33,7 +33,7 @@ import { haptics } from '../../../services/haptics';
 import type { DataBoxAccount, Recipient } from '../../../services/isds/types';
 import type { SentStatus } from '../state/sendController';
 import { MESSAGE_STATE } from '../state/messageState';
-import { SENT_POSTMARK_RIGHT } from './DetailEnvelope';
+import { SENT_POSTMARK_RIGHT, SENT_POSTMARK_SIZE, SENT_SENDER_WIDTH } from './DetailEnvelope';
 import { shortDate } from '../../../i18n/dates';
 import { PriceStamp, STAMP_FRAME } from './ComposeEnvelope';
 import { dateAndTime } from './DeliveryRecord';
@@ -179,19 +179,6 @@ function SentEnvelope({
         transform: [{ rotate: '-1.5deg' }],
       }}
     >
-      {/* The postmark ISDS struck when it took the message; its waves cancel the stamp beside it. */}
-      {landed ? (
-        <Animated.View style={[{ position: 'absolute', right: SENT_POSTMARK_RIGHT, top: 20 }, postmarkStyle]} testID="sentPostmark">
-          <Postmark
-            ring={t('send.sent.postmark.ring')}
-            line1={shortDate(sentAt)}
-            line2={time}
-            size={108}
-            rotate={-6}
-            waves={false}
-          />
-        </Animated.View>
-      ) : null}
       {/* What the send cost, stuck in the corner and cancelled: the stamp compose showed, kind line and
           all (the owner, 2026-11-15). */}
       <View style={{ position: 'absolute', right: 14, top: 14, transform: [{ rotate: '2deg' }] }} testID="sentStamp">
@@ -202,7 +189,22 @@ function SentEnvelope({
           cancelled={landed}
         />
       </View>
-      <YStack maxWidth={120} gap={2}>
+      {/* The postmark ISDS struck when it took the message; struck over the stamp's edge
+          in the ink of the waves that cancel it (the owner's answer Q1, 2026-11-16). */}
+      {landed ? (
+        <Animated.View style={[{ position: 'absolute', right: SENT_POSTMARK_RIGHT, top: 20 }, postmarkStyle]} testID="sentPostmark">
+          <Postmark
+            ring={t('send.sent.postmark.ring')}
+            line1={shortDate(sentAt)}
+            line2={time}
+            size={SENT_POSTMARK_SIZE}
+            rotate={-6}
+            color={theme.cancelInk}
+            waves={false}
+          />
+        </Animated.View>
+      ) : null}
+      <YStack maxWidth={SENT_SENDER_WIDTH} gap={2} testID="sentSenderBlock">
         <Overline color={theme.envelopeInkSoft}>{t('detail.from')}</Overline>
         <Subheading color={theme.onSolid}>{account.alias ?? account.label}</Subheading>
         <Caption fontWeight="400" color={theme.envelopeInkSoft}>
