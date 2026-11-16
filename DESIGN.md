@@ -12,7 +12,7 @@ colors:
   ink: "#211B12"
   body-ink: "#3F392E"
   muted-ink: "#6B6253"
-  faint-ink: "#736A57"
+  faint-ink: "#6E6555"
   brand-blue: "#2A5C9A"
   brand-blue-deep: "#1E4E80"
   brand-blue-soft: "#EEF4FB"
@@ -273,7 +273,7 @@ A warm paper ramp with two accents - a brand blue that acts, and a gold that not
 - **Hairline** (`#ECE3D2` / `#3A332A`): every resting edge in the app.
 - **Hairline Strong** (`#DCD2BF` / `#4A4236`): input borders and emphasis edges.
 - **Ink** (`#211B12` / `#F2ECE0`), **Body Ink** (`#3F392E` / `#D8D0C2`), **Muted Ink**
-  (`#6B6253` / `#A89D8B`), **Faint Ink** (`#736A57` / `#9C9282`): four registers of text, and no
+  (`#6B6253` / `#A89D8B`), **Faint Ink** (`#6E6555` / `#9C9282`): four registers of text, and no
   fifth. Faint Ink is the floor - it is already the AA-corrected value, not the design's original.
 
 ### The printed objects

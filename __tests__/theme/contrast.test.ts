@@ -78,6 +78,8 @@ const pairs = (t: Theme): [string, string, string][] => [
   ['bodyText on bg', t.bodyText, t.bg],
   ['textMuted on surface', t.textMuted, t.surface],
   ['textFaint on surface', t.textFaint, t.surface],
+  // The box switcher's ID line and a document's estimate sit on the sunken well: 4.47 until T050.2.
+  ['textFaint on surfaceSunken', t.textFaint, t.surfaceSunken],
   // The sent register's "Doručeno" (12/600) on the paper and on the sunken row (031 T050).
   ['success on bg', t.success, t.bg],
   ['success on surfaceSunken', t.success, t.surfaceSunken],

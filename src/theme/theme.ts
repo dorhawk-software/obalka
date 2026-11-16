@@ -228,7 +228,7 @@ export const lightTheme: Theme = {
   text: '#211B12',
   bodyText: '#3F392E',
   textMuted: '#6B6253',
-  textFaint: '#736A57', // design `fnt`, darkened to AA (≥4.5 on bg/surfaces) for meta/timestamp content (T043)
+  textFaint: '#6E6555', // design `fnt`, darkened to AA (≥4.5 on bg/surfaces, T043; on the sunken well too, 4.81, T050.2)
   blue: '#2A5C9A',
   blueDark: '#1E4E80',
   blueSoft: '#EEF4FB',

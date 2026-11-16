@@ -137,6 +137,24 @@ describe('"Stahovat přílohy automaticky?" (026 US4)', () => {
     expect(view.getByTestId('auto-download-wifi-toggle')).toBeTruthy();
   });
 
+  it('says why the Wi-Fi row is dimmed while automatic downloads are off', async () => {
+    // A disabled control fades only if it also says why (T050.2, the owner's "faded, and say why").
+    const view = await mountSettings();
+    expect(view.getByText('Platí, když se přílohy stahují automaticky.')).toBeTruthy();
+    expect(view.queryByText(t('settings.autoDownload.wifi.desc'))).toBeNull();
+  });
+
+  it('says what the Wi-Fi row does once automatic downloads are on', async () => {
+    mockSettings.autoDownload = { on: true, since: null, wifiOnly: true };
+    try {
+      const view = await mountSettings();
+      expect(view.getByText(t('settings.autoDownload.wifi.desc'))).toBeTruthy();
+      expect(view.queryByText('Platí, když se přílohy stahují automaticky.')).toBeNull();
+    } finally {
+      mockSettings.autoDownload = { on: false, since: null, wifiOnly: true };
+    }
+  });
+
   it('asks which messages before it switches on, new ones by default', async () => {
     const view = await mountSettings();
     await act(async () => {

@@ -1319,7 +1319,14 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     Ponechat, Nechat zámek, Neodesílat, Zavřít fotoaparát, Zrušit přihlášení, Přijmout zálohu.
     `common.cancel` and `login.cancel` are gone (guard: wayOutNamesOutcome). Canvas v38 redraws five
     boards; a before/after page shows them, and lists the six dialogs no board draws.
-  - [ ] T050.2 Contrast 4.5:1 (19): muted lines, the neutral button's ink, "Režim ladění" on blue.
+  - [x] T050.2 Contrast 4.5:1 (19). The owner picked "faded, and say why" (2026-11-16): a disabled
+    control fades as one piece and something beside it says why. Only "Jen na Wi-Fi" lacked its
+    reason: while automatic downloads are off it reads "Platí, když se přílohy stahují automaticky."
+    `textFaint` #736A57 → #6E6555 (4.47 → 4.81 on the sunken well, now in contrast.test); the motion
+    board's arrows take the muted ink. Eight faded items keep their look with a data-allow reason;
+    two were check-ui's misses (a ground drawn as a picture: the gold flap, the camera). Canvas v39,
+    check-ui 200 → 175, contrast 0. The settings strings moved to settingsStrings.ts (strings.ts
+    1,605 → 1,549).
   - [ ] T050.3 The 11 px floor (22): the postmark's ring text and time, "PDF", compose's letter preview.
   - [ ] T050.4 One anatomy (14): neutral and filled buttons 48/52/40 tall, icon buttons 44/30.
   - [ ] T050.5 8 px between targets (8): backup's two links, transfer dialog buttons, Napsat by dialogs.

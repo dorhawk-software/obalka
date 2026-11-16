@@ -220,7 +220,11 @@ export function SettingsScreen({
               />
             </CardRow>
             <CardRow last indent dimmed={!autoDownload.on}>
-              <RowText title={t('settings.autoDownload.wifi')} subtitle={t('settings.autoDownload.wifi.desc')} />
+              <RowText
+                title={t('settings.autoDownload.wifi')}
+                // Dimmed while automatic downloads are off, so it says why (T050.2).
+                subtitle={t(autoDownload.on ? 'settings.autoDownload.wifi.desc' : 'settings.autoDownload.wifi.off')}
+              />
               <Toggle
                 value={autoDownload.wifiOnly}
                 onChange={next => {
