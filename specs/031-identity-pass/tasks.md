@@ -1370,7 +1370,18 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     Bottom sheets throw nothing up onto the scrim: light keeps its lit top, dark has no shadow (9 boards;
     one sheet had a hidden second layer; `raised('dark', 'sheet')` is none). A guard test holds
     every named shadow to falling at least a quarter of its blur. Canvas v47, check-ui 27 → 0.
-  - [ ] T050.10 The app itself: walk each screen against the same rules (check-ui reads only boards).
+  - [x] T050.10 The app itself: walk each screen against the same rules (check-ui reads only boards).
+    Walked on Obalka_Demo, light and dark (2026-11-16): the inbox, the switcher and box menu, the
+    rename sheet, a message, Odeslané, search, Compose, Settings with backup, What's new, FAQ, licences
+    and debug mode, adding a box with each sign-in form. Five things found. Four fixed, each with a
+    test that failed first:
+    - The inbox flipped from the blue expiry strip to the red sign-in strip after launch (7fd3004).
+    - Compose's search said "try again" for a refused sign-in (984f27e).
+    - The letter's subject was half hidden under its envelope: 4-6 px above it, 14 below (dd83ad9;
+      the owner's catch). That one became practices 1.6.5's inset check.
+    - Android's back from the password or SMS form left the whole add-box flow (d88cc3e).
+    The fifth is written down in not-now.md: the "Testovací" pill can lose its "í" after a live theme
+    switch. That one became practices' "A live switch draws what a fresh start draws" and check-shots.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the

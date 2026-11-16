@@ -320,6 +320,18 @@ they wait for their own work. The owner decided "not now" on 2026-11-12.
   landscape. Decided to leave it: the column is the page, as print sets one; a header that ran to the
   screen's edges over a column that does not would draw two widths. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
   I138)
+- **The switcher's "Testovací" pill can read "Testovac" (2026-11-16).** The owner first saw it about
+  two days earlier. Walked on Obalka_Demo for T050.10: after a fresh start, in either theme, the pill
+  is whole. After Settings › Vzhled switches the theme live it loses its last glyph until the app
+  restarts, every time; once it did so with no switch, after the rename sheet closed over the
+  switcher (opening and closing the box menu alone does not). The box stays 138 px in every case,
+  and on the whole switcher only that glyph differs (`check-shots`: 7×21 px at 636,1766): Android
+  draws the text a hair wider than the box it measured. Two fixes were tried and reverted: a fresh
+  Text per theme (`key`), and one line with `ellipsizeMode="clip"`. The owner chose "write it down,
+  finish the walk" over finding the cause now. Plan: find why a redraw comes out wider than its
+  measure (the 800 face, Fabric's text measurement cache), fix it for every text, add a guard, and
+  walk every screen both ways with `check-shots`.
+  ([031/tasks.md](../../specs/031-identity-pass/tasks.md) T050.10)
 - **No error boundary (2026-11-12).** A render error leaves an empty screen with no way on. Plan: a
   boundary at the root with a fallback screen that offers to start again, reported only with consent;
   the screen gets a board on the canvas first. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
