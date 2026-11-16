@@ -1347,7 +1347,14 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     1280 × 900 and its words reached 1070, so the frame cut the cards' last lines (it now grows, frame
     1070); R8's paper was 3568 wide under nine phones (3950), now its 4040 frame. Canvas v42, check-ui
     140 → 136, contain 0.
-  - [ ] T050.7 Icons on main buttons (56): dialog actions, Hotovo, Ukázat v Odeslaných, Připomenout.
+  - [x] T050.7 Icons on main buttons (56). The owner: "every action, escapes marked", and for the red
+    bin on a neutral button the red plane (#1 of three). 65 board buttons draw their glyph, 24 are marked
+    words-only (steps, ways out, equal answers); six glyphs joined the family (bin, restore, retry,
+    share, key, save; Icons 21 → 27). In the app `InkButton`, `NeutralButton` and dialog answers take
+    `glyph` | `icon` | `bare` or do not compile; the hand-built ones carry theirs (`BusyGlyph`). The new
+    rule "A glyph keeps one ink" went to practices 1.6.3 with its check (ink); it found the green
+    postmark on a blue plane. AppShell's notice dialogs and the backup answers moved to their own files
+    (AppShell 1465 → 1424, BackupScreen 1950 → 1811). Canvas v45, check-ui 128 → 72, icon 0, ink 0.
   - [ ] T050.8 Tone, not outlines (45): 1 px rings on cards and sheets, 2 px rings on chips.
   - [ ] T050.9 Shadows fall away from the light (27): bottom sheets' upward shadow.
   - [ ] T050.10 The app itself: walk each screen against the same rules (check-ui reads only boards).

@@ -19,7 +19,7 @@ export function ContinueButton({
 }) {
   return (
     <YStack marginTop={space.md}>
-      <InkButton label={t('common.continue')} onPress={onPress} testID={testID} />
+      <InkButton bare="step" label={t('common.continue')} onPress={onPress} testID={testID} />
     </YStack>
   );
 }

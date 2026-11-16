@@ -8,6 +8,7 @@
 import Svg, { Circle, G, Path, Rect } from 'react-native-svg';
 import { useTheme } from './ThemeProvider';
 import { offsetPrint } from './print';
+import { withAlpha } from './color';
 
 type Shape =
   | {
@@ -248,7 +249,97 @@ export const OFFSET_GLYPHS = {
       },
     ],
   },
+  // The buttons' six (T050.7, the owner's OK 2026-11-16): every action carries the family's glyph.
+  // A bin: the lid, its handle, the body as the plane, two slats.
+  bin: {
+    plane: [{ kind: 'path', d: 'M6.5 7.5h11l-1 12.1a1.5 1.5 0 0 1-1.5 1.4H9a1.5 1.5 0 0 1-1.5-1.4z' }],
+    ink: [
+      { kind: 'path', d: 'M4 7.5h16' },
+      { kind: 'path', d: 'M9.5 7.5V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2.5' },
+      { kind: 'path', d: 'M6.5 7.5h11l-1 12.1a1.5 1.5 0 0 1-1.5 1.4H9a1.5 1.5 0 0 1-1.5-1.4z' },
+      { kind: 'path', d: 'M10.2 11v6.5M13.8 11v6.5' },
+    ],
+  },
+  // The archive box with what it held rising out of it.
+  restore: {
+    plane: [{ kind: 'path', d: 'M4.5 14h15v5a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2z' }],
+    ink: [
+      { kind: 'rect', x: 3, y: 10, width: 18, height: 4, rx: 1.2 },
+      { kind: 'path', d: 'M4.5 14v5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5' },
+      { kind: 'path', d: 'M10 17.5h4' },
+      { kind: 'path', d: 'M12 7.5V2.5M9.2 5.3 12 2.5l2.8 2.8' },
+    ],
+  },
+  // Round again: an open circle and its arrowhead.
+  retry: {
+    plane: [{ kind: 'circle', cx: 12, cy: 12.5, r: 7.5 }],
+    ink: [
+      { kind: 'path', d: 'M19.5 12.5a7.5 7.5 0 1 1-2.6-5.7' },
+      { kind: 'path', d: 'M17.4 3.2v3.9h-3.9' },
+    ],
+  },
+  // A sheet with the arrow leaving it.
+  share: {
+    plane: [{ kind: 'rect', x: 4, y: 6, width: 14, height: 14, rx: 2 }],
+    ink: [
+      { kind: 'path', d: 'M18 13.5V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4.5' },
+      { kind: 'path', d: 'M14.5 3.5H20.5v6M20.5 3.5l-8.5 8.5' },
+    ],
+  },
+  // A key: the bow as the plane, its hole, the shaft and two teeth.
+  key: {
+    plane: [{ kind: 'circle', cx: 8, cy: 15.5, r: 4.6 }],
+    ink: [
+      { kind: 'circle', cx: 8, cy: 15.5, r: 4.6 },
+      { kind: 'circle', cx: 8, cy: 15.5, r: 1.3 },
+      { kind: 'path', d: 'M11.3 12.2 20.5 3' },
+      { kind: 'path', d: 'M17.2 6.3l2.6 2.6M14.6 8.9l2 2' },
+    ],
+  },
+  // Kept: a tick in a rounded square.
+  save: {
+    plane: [{ kind: 'rect', x: 4, y: 4, width: 16, height: 16, rx: 3 }],
+    ink: [
+      { kind: 'rect', x: 4, y: 4, width: 16, height: 16, rx: 3 },
+      { kind: 'path', d: 'M8.5 12.3l2.6 2.6 4.6-5' },
+    ],
+  },
 } satisfies Record<string, Glyph>;
+
+/** Hue in degrees of a `#rrggbb` colour, or null for a neutral (chroma under 0.12) or anything else. */
+function hueOf(color: string): number | null {
+  const m = /^#([0-9a-f]{6})$/i.exec(color);
+  if (!m) {
+    return null;
+  }
+  const n = parseInt(m[1], 16);
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => v / 255);
+  const max = Math.max(r, g, b);
+  const d = max - Math.min(r, g, b);
+  if (d < 0.12) {
+    return null;
+  }
+  const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return (h * 60 + 360) % 360;
+}
+
+/**
+ * The blue plane, unless the ink is a colour of its own: then a faint tint of the ink, so the glyph
+ * keeps one ink (practices 1.6.3, "A glyph keeps one ink"; the owner, 2026-11-16: the red bin on the
+ * blue plane "doesn't play very well"). A neutral ink, or a blue within 45° of the plane, keeps it.
+ */
+export function inkPlane(ink: string, theme: { readonly iconPlane: string; readonly iconPlaneTint: number }): string {
+  const inkHue = hueOf(ink);
+  const planeHue = hueOf(theme.iconPlane);
+  if (inkHue === null || planeHue === null) {
+    return theme.iconPlane;
+  }
+  const apart = Math.min(Math.abs(inkHue - planeHue), 360 - Math.abs(inkHue - planeHue));
+  if (apart <= 45) {
+    return theme.iconPlane;
+  }
+  return withAlpha(ink, theme.iconPlaneTint);
+}
 
 export type OffsetGlyphName = keyof typeof OFFSET_GLYPHS;
 
@@ -285,7 +376,7 @@ export function OffsetIcon({
   readonly name: OffsetGlyphName;
   readonly size?: number;
   readonly color: string;
-  readonly plane?: 'blue' | 'gold' | 'envelope' | 'flap';
+  readonly plane?: 'blue' | 'gold' | 'envelope' | 'flap' | 'button';
 }) {
   const theme = useTheme();
   const glyph: Glyph = OFFSET_GLYPHS[name];
@@ -307,7 +398,9 @@ export function OffsetIcon({
               ? theme.envelopePlane
               : plane === 'flap'
                 ? theme.flapPlane
-                : theme.iconPlane
+                : plane === 'button'
+                  ? theme.inkButtonPlane
+                  : inkPlane(color, theme)
         }
         transform={`translate(${off} ${off})`}
       >

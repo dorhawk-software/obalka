@@ -198,6 +198,10 @@ export interface Theme {
   iconPlane: string;
   /** The same plane under a glyph that sits on gold (the fiction chip, the paid stamp). */
   iconPlaneGold: string;
+  /** How strong a coloured ink's own plane is: its tint, where the blue plane would mix two inks. */
+  iconPlaneTint: number;
+  /** The plane under a glyph on the ink button: white over the dark fill, the light blue on dark's light one. */
+  inkButtonPlane: string;
   /** The second envelope's edge peeking under an attention sheet. */
   sheetEdge: string;
   /** A stamp's paper, frame, printed value and small print: a printed object, light in both themes. */
@@ -282,6 +286,8 @@ export const lightTheme: Theme = {
   windowGlint: 'rgba(214,228,246,0.14)',
   iconPlane: '#CFE0F5',
   iconPlaneGold: '#F3D891',
+  iconPlaneTint: 0.2,
+  inkButtonPlane: 'rgba(255,255,255,0.2)',
   sheetEdge: '#F7F1E4',
   stampPaper: '#FFFDF8',
   stampFrame: '#DCD2BF',
@@ -368,6 +374,8 @@ export const darkTheme: Theme = {
   windowGlint: 'rgba(214,228,246,0.03)',
   iconPlane: '#2F4A6E',
   iconPlaneGold: '#5A4716',
+  iconPlaneTint: 0.26,
+  inkButtonPlane: '#CFE0F5',
   sheetEdge: '#231F19',
   stampPaper: '#FFFDF8',
   stampFrame: '#DCD2BF',

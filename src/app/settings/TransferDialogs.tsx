@@ -42,11 +42,13 @@ export function TransferDialogs({
         testID="transfer-metered-dialog"
         actions={[
           {
+            bare: 'way out',
             label: t('transfer.metered.wait'),
             testID: 'transfer-metered-cancel',
             onPress: onMeteredCancel,
           },
           {
+            glyph: 'transfer',
             label: t('transfer.metered.confirm'),
             // R9 fills it: the answer the question is asking for, first under the words.
             tone: 'primary',
@@ -77,12 +79,14 @@ export function TransferDialogs({
           got.restorable
             ? [
                 {
+                  bare: 'way out',
                   label: t('transfer.got.decline'),
                   testID: 'transfer-received-cancel',
                   // Declining still has to let go of what arrived: the documents are on disk.
                   onPress: onDecline,
                 },
                 {
+                  glyph: 'archive',
                   label: t('transfer.got.confirm'),
                   tone: 'primary',
                   testID: 'transfer-received-confirm',
@@ -91,6 +95,7 @@ export function TransferDialogs({
               ]
             : [
                 {
+                  bare: 'step',
                   label: t('common.ok'),
                   testID: 'transfer-received-close',
                   onPress: onDecline,

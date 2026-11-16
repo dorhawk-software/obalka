@@ -1,5 +1,4 @@
 import { Dialog } from '../../../theme/Dialog';
-import { TrashIcon } from '../../../theme/icons';
 import { YStack } from '../../../theme/ui';
 import { EnvelopeTile } from '../../../theme/objects/Envelope';
 import { boxColor } from '../../../theme/boxColor';
@@ -38,12 +37,12 @@ export function RemoveBoxDialog({
       // Dismissing (scrim, back) keeps the box: the safe outcome, never the destructive one.
       onDismiss={onKeep}
       actions={[
-        { label: t('box.remove.keep'), onPress: onKeep, testID: 'removeKeep' },
+        { bare: 'way out', label: t('box.remove.keep'), onPress: onKeep, testID: 'removeKeep' },
         {
           label: t('box.remove.delete'),
           onPress: onDelete,
           tone: 'danger',
-          icon: color => <TrashIcon size={18} color={color} />,
+          glyph: 'bin',
           testID: 'removeDelete',
         },
       ]}

@@ -176,8 +176,8 @@ describe('overlays contain the screen reader', () => {
         body="Zprávy zůstanou v archivu."
         onDismiss={() => {}}
         actions={[
-          { label: 'Ponechat', onPress: () => {}, testID: 'keep' },
-          { label: 'Smazat', onPress: () => {}, tone: 'danger', testID: 'del' },
+          { bare: 'step', label: 'Ponechat', onPress: () => {}, testID: 'keep' },
+          { bare: 'step', label: 'Smazat', onPress: () => {}, tone: 'danger', testID: 'del' },
         ]}
       />,
     );

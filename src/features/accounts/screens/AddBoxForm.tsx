@@ -4,7 +4,7 @@ import { textSlop, touchSlop } from '../../../theme/touchTarget';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Input, XStack, YStack } from '../../../theme/ui';
-import { ArcSpinner } from '../../../theme/ArcSpinner';
+import { BusyGlyph } from '../../../theme/BusyGlyph';
 import type { TextInput } from 'react-native';
 import { PressScale } from '../../../theme/PressScale';
 import { SegmentedControl } from '../../../theme/SegmentedControl';
@@ -453,9 +453,7 @@ export function AddBoxForm({
                 justifyContent="center"
                 gap={10}
               >
-                {loading ? (
-                  <ArcSpinner track={theme.surfaceSunken} ink={theme.surfaceAlt} />
-                ) : null}
+                <BusyGlyph name="key" busy={loading} />
                 <BodyStrong color={theme.surfaceAlt}>
                   {loading ? t('login.authenticating') : t('login.submit')}
                 </BodyStrong>

@@ -62,7 +62,11 @@ values are read from the canvas's source. Colours are in `src/theme/theme.ts`, t
   messages (031 R7). It isn't real mail, and it says so.
 - **Offset glyphs**: a 1.75 ink stroke with one plane printed 1.3 off register, `icon-plane`
   (`#CFE0F5` / `#2F4A6E`), or `icon-plane-gold` (`#F3D891` / `#5A4716`) on gold. Plain controls stay
-  Lucide.
+  Lucide. **A glyph keeps one ink** (practices 1.6.3, 2026-11-16): a glyph drawn in a colour of its
+  own (the danger bin, the green Doručeno postmark, the gold reminder) prints its plane as that ink
+  at `iconPlaneTint` (20% light, 26% dark); on an ink button the plane is `inkButtonPlane` (the
+  paper at 20% light, the envelope's light blue dark). `inkPlane()` picks it, so a caller passes only
+  the ink.
 - **Seal**: the lock's wax seal, `seal-light` to `seal-shade`. The lock screen holds up the sealed
   envelope (`SealedEnvelope`, `sealedEnvelope`): the 160 tile in the envelope's blue, the gold flap
   folded down and lit from the top, and the seal (52) where the flap's point meets the envelope - its

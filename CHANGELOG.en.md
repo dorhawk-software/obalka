@@ -20,6 +20,10 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **Buttons show what they do.** Every button that does something carries its mark before its words: a
+  key on "Sign in", a bin on "Delete", an envelope with an arrow on "Send". Buttons that only move on or
+  leave things as they are ("Continue", "Keep") stay as words, so you can tell at a glance which button
+  changes something.
 - **The two ways to a backup's password have room between them.** "Scan the password from a QR code" and "Use the password from this phone" touched, so a thumb aimed at one could land on the other; there are now 8 points between them.
 - **The "Wi-Fi only" switch says why it is dimmed.** While documents don't download automatically, it reads "Applies when documents download automatically." The faintest grey text is a shade darker, so it reads on the grey ground too.
 - **The button that closes a question says what stays.** Instead of "Cancel", for example "Keep it on", "Don't send" or "Close the camera", and receiving a backup from another phone says "Receive the backup": what happens is clear without reading the question.

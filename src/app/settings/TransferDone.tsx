@@ -71,7 +71,7 @@ export function TransferDone({
         ) : null}
       </ScrollView>
       <YStack paddingHorizontal={16} paddingTop={12} paddingBottom={insets.bottom + 12}>
-        <InkButton label={t('common.continue')} onPress={onContinue} testID="transfer-continue" />
+        <InkButton bare="step" label={t('common.continue')} onPress={onContinue} testID="transfer-continue" />
       </YStack>
     </YStack>
   );

@@ -50,6 +50,7 @@ export function FictionBanner({
         minHeight={44}
         paddingHorizontal={10}
         alignItems="center"
+        gap={6}
         // To the 48 target (031 T050).
         hitSlop={touchSlop({ height: 44 })}
         pressStyle={{ opacity: 0.5 }}
@@ -58,6 +59,7 @@ export function FictionBanner({
         accessibilityLabel={t('detail.fikce.remind')}
         testID="fikceRemind"
       >
+        <OffsetIcon name="remind" size={16} color={tone.fg} />
         <Badge color={tone.fg} textDecorationLine="underline">
           {t('detail.fikce.remind')}
         </Badge>

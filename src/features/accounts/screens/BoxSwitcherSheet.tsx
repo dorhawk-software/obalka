@@ -24,7 +24,6 @@ import { useTheme } from '../../../theme/ThemeProvider';
 import { useScrim } from '../../../theme/useScrim';
 import { SheetDismissGesture } from '../../../theme/SheetDismissGesture';
 import { raised } from '../../../theme/depth';
-import { PlusIcon } from '../../../theme/icons';
 import { OffsetIcon } from '../../../theme/offsetIcons';
 import { useCloseOnBackground } from '../../../app/useCloseOnBackground';
 import { haptics } from '../../../services/haptics';
@@ -233,7 +232,7 @@ export function BoxSwitcherSheet({
                   accessibilityLabel={t('home.addBox')}
                   testID="switcherAddBox"
                 >
-                  <PlusIcon size={18} color={theme.text} />
+                  <OffsetIcon name="boxes" size={18} color={theme.text} />
                   <BodyStrong>{t('home.addBox')}</BodyStrong>
                 </XStack>
 

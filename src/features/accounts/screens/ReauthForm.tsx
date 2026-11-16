@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Input, XStack, YStack } from '../../../theme/ui';
-import { ArcSpinner } from '../../../theme/ArcSpinner';
+import { BusyGlyph } from '../../../theme/BusyGlyph';
 import { PressScale } from '../../../theme/PressScale';
 import { OptionGroup } from '../../../theme/OptionGroup';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
@@ -268,7 +268,7 @@ export function ReauthForm({
             justifyContent="center"
             gap={10}
           >
-            {loading ? <ArcSpinner track={theme.surfaceSunken} ink={theme.surfaceAlt} /> : null}
+            <BusyGlyph name="key" busy={loading} />
             <BodyStrong color={theme.surfaceAlt}>
               {loading ? t('login.authenticating') : t('reauth.submit')}
             </BodyStrong>

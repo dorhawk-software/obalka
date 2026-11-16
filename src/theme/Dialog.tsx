@@ -25,19 +25,12 @@ import { InkButton, inkButtonInk } from './InkButton';
 import { NeutralButton } from './NeutralButton';
 import { Well } from './Well';
 import type { OffsetGlyphName } from './offsetIcons';
+import type { Bare } from './buttonGlyph';
 import { space } from './spacing';
 
-export interface DialogAction {
+export type DialogAction = DialogAnswerGlyph & {
   label: string;
   onPress: () => void;
-  /**
-   * Drawn before the label. For a destructive action it says what will happen before the words are
-   * read - the one place in a dialog where a glance has to be enough.
-   *
-   * A FUNCTION of the colour, not an element: the tone decides the foreground, so a caller cannot
-   * hardcode a hex that then fails to follow the theme (the palette guard rejects it outright).
-   */
-  icon?: (color: string) => ReactNode;
   /**
    * `primary` fills with ink, `danger` with the danger colour, `neutral` is the sunken one.
    * A dialog has at most one primary and at most one danger - more than one filled button and the
@@ -47,7 +40,16 @@ export interface DialogAction {
   /** The filled answer's press is running (the paid send while it starts): its spinner, no second press. */
   busy?: boolean;
   testID?: string;
-}
+};
+
+/**
+ * Before the label: the family's glyph by name (the button inks it in the tone's colour), or a plain
+ * control's own drawn in that colour, or why the answer has none (`ButtonGlyph`).
+ */
+type DialogAnswerGlyph =
+  | { glyph: OffsetGlyphName; icon?: never; bare?: never }
+  | { icon: (color: string) => ReactNode; glyph?: never; bare?: never }
+  | { bare: Bare; glyph?: never; icon?: never };
 
 /** R9's order: the filled and danger answers first, under the words; the neutral ones last. */
 function inOrder(actions: readonly DialogAction[]): DialogAction[] {
@@ -138,16 +140,19 @@ function Answer({ action }: { readonly action: DialogAction }) {
   const theme = useTheme();
   const tone = action.tone ?? 'neutral';
   // Decorative: the label already says it, and a screen reader should hear it once.
-  const glyph = (color: string) =>
+  const drawn = (color: string) =>
     action.icon ? (
       <YStack accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         {action.icon(color)}
       </YStack>
-    ) : undefined;
+    ) : null;
+  const glyph = action.glyph
+    ? { glyph: action.glyph }
+    : action.bare
+      ? { bare: action.bare }
+      : { icon: drawn(tone === 'neutral' ? theme.text : inkButtonInk(theme)) };
   if (tone === 'neutral') {
-    return (
-      <NeutralButton label={action.label} onPress={action.onPress} icon={glyph(theme.text)} testID={action.testID} />
-    );
+    return <NeutralButton label={action.label} onPress={action.onPress} {...glyph} testID={action.testID} />;
   }
   return (
     <InkButton
@@ -155,7 +160,7 @@ function Answer({ action }: { readonly action: DialogAction }) {
       onPress={action.onPress}
       busy={action.busy}
       danger={tone === 'danger'}
-      icon={glyph(inkButtonInk(theme))}
+      {...glyph}
       testID={action.testID}
     />
   );

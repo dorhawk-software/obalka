@@ -7,11 +7,12 @@
 // `danger` is R9's `dbtn`, the answer a question's danger takes: the same button filled with the danger
 // colour, its glyph 10 before the words (the bin before Smazat).
 
-import type { ReactNode } from 'react';
 import { XStack } from './ui';
 import { BodyStrong, SmallStrong } from './Typography';
 import { useTheme } from './ThemeProvider';
 import { PressScale } from './PressScale';
+import { OffsetIcon } from './offsetIcons';
+import type { ButtonGlyph } from './buttonGlyph';
 
 export function InkButton({
   label,
@@ -22,10 +23,11 @@ export function InkButton({
   small = false,
   compact = false,
   danger = false,
+  glyph,
   icon,
   accessibilityLabel,
   testID,
-}: {
+}: ButtonGlyph & {
   readonly label: string;
   readonly onPress: () => void;
   readonly busy?: boolean;
@@ -39,8 +41,6 @@ export function InkButton({
   readonly compact?: boolean;
   /** R9's danger answer: filled with the danger colour. */
   readonly danger?: boolean;
-  /** A glyph before the words, 10 from them, inked by the caller in `inkButtonInk`. */
-  readonly icon?: ReactNode;
   /** What a screen reader hears when the words alone do not say what they act on. */
   readonly accessibilityLabel?: string;
   readonly testID?: string;
@@ -69,7 +69,12 @@ export function InkButton({
         // One picture, or Android fades the words apart from the ink and they sink into it (031 I38).
         needsOffscreenAlphaCompositing={blocked}
       >
-        {icon}
+        {glyph ? (
+          // The words' ink; the plane white over the fill, or the light blue on dark's light button.
+          <OffsetIcon name={glyph} size={small ? 18 : 20} color={theme.surfaceAlt} plane={danger ? 'envelope' : 'button'} />
+        ) : (
+          icon
+        )}
         {small ? (
           <SmallStrong color={theme.surfaceAlt}>{label}</SmallStrong>
         ) : (

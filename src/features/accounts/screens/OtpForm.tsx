@@ -3,7 +3,7 @@ import { useAutoFocus } from '../../../theme/useAutoFocus';
 import { ScreenHeader } from '../../../theme/ScreenHeader';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 import { Button, XStack, YStack } from '../../../theme/ui';
-import { ArcSpinner } from '../../../theme/ArcSpinner';
+import { BusyGlyph } from '../../../theme/BusyGlyph';
 import { PressScale } from '../../../theme/PressScale';
 import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView';
 import { BodyStrong, Code, Display, Label, Value } from '../../../theme/Typography';
@@ -16,6 +16,7 @@ import type { ServerNotice } from '../../../services/isds/types';
 import { listenForSmsCode } from '../../../services/sms/smsUserConsent';
 import { useSingleFlight } from '../../../app/useSingleFlight';
 import { touchSlop } from '../../../theme/touchTarget';
+import { OffsetIcon } from '../../../theme/offsetIcons';
 
 /**
  * ISDS's SMS code is eight digits: `otpFromSms.ts` quotes one message, and the owner checked the rest
@@ -240,9 +241,7 @@ export function OtpForm({
               justifyContent="center"
               gap={10}
             >
-              {loading ? (
-                <ArcSpinner track={theme.surfaceSunken} ink={theme.surfaceAlt} />
-              ) : null}
+              <BusyGlyph name="key" busy={loading} />
               <BodyStrong color={theme.surfaceAlt}>
                 {t('login.otp.submit')}
               </BodyStrong>
@@ -265,6 +264,7 @@ export function OtpForm({
               // would be the controller's to refuse anyway.
               disabled={inFlight}
               opacity={inFlight ? 0.45 : 1}
+              icon={<OffsetIcon name="retry" size={18} color={theme.blue} />}
               onPress={() => {
                 void resendOnce(onResend);
               }}

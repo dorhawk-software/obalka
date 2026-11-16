@@ -113,8 +113,10 @@ function WelcomeContent({ onAddBox, onOpenFaq, onRestore, canTransfer }: Welcome
               backgroundColor={theme.text}
               alignItems="center"
               justifyContent="center"
+              gap={10}
               style={{ boxShadow: depth.primaryButton }}
             >
+              <OffsetIcon name="boxes" size={20} color={theme.surfaceAlt} plane="button" />
               <BodyStrong color={theme.surfaceAlt}>{t('login.title')}</BodyStrong>
             </XStack>
           </PressScale>

@@ -675,8 +675,8 @@ describe('the saved files', () => {
         ).toBeTruthy(),
       );
       expect(view.getByTestId('debug-saved-retry')).toBeBusy();
-      // The label stays under the spinner, holding the button's width.
-      const label = () => view.getByText(t('debug.saved.retry'), { includeHiddenElements: true });
+      // The glyph and the label stay under the spinner, holding the button's width.
+      const label = () => view.getByTestId('debug-saved-retry-face', { includeHiddenElements: true });
       expect(styleOf(label()).opacity).toBe(0);
 
       await act(async () => fail(new Error('EACCES')));

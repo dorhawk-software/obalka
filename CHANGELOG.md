@@ -20,6 +20,10 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Tlačítka ukazují, co udělají.** Před slovy každého tlačítka, které něco dělá, je jeho značka: klíč u
+  „Přihlásit se“, koš u „Smazat“, obálka se šipkou u „Odeslat“. Tlačítka, která jen pokračují nebo
+  nechávají věci, jak jsou („Pokračovat“, „Ponechat“), zůstávají jen slovy, takže je na první pohled
+  vidět, které tlačítko něco změní.
 - **Dva odkazy k heslu zálohy mají mezi sebou místo.** „Načíst heslo z QR kódu“ a „Použít heslo z tohoto telefonu“ se dotýkaly, takže palec mířící na jeden mohl trefit druhý; teď je mezi nimi 8 bodů.
 - **Vypínač „Jen na Wi-Fi“ říká, proč je ztlumený.** Dokud se přílohy nestahují automaticky, stojí pod ním „Platí, když se přílohy stahují automaticky.“ Nejsvětlejší šedý text je o odstín tmavší, aby se dal přečíst i na šedém podkladu.
 - **Tlačítko, které otázku zavře, říká, co zůstane.** Místo „Zrušit“ třeba „Nechat zapnuté“, „Neodesílat“ nebo „Zavřít fotoaparát“, a příjem zálohy z druhého telefonu má „Přijmout zálohu“: co se stane, je jasné i bez čtení otázky.

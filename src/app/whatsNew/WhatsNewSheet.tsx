@@ -36,7 +36,7 @@ export function WhatsNewSheet({
       testID="whats-new-sheet"
       footer={
         <YStack marginTop={space.section}>
-          <InkButton label={t('common.continue')} onPress={onClose} testID="whats-new-continue" />
+          <InkButton bare="step" label={t('common.continue')} onPress={onClose} testID="whats-new-continue" />
         </YStack>
       }
     >

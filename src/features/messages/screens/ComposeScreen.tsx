@@ -22,7 +22,7 @@ import { KeyboardAwareScrollView } from '../../../theme/KeyboardAwareScrollView'
 import { PressScale } from '../../../theme/PressScale';
 import { BodyStrong, Caption, SmallStrong } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { ArcSpinner } from '../../../theme/ArcSpinner';
+import { BusyGlyph } from '../../../theme/BusyGlyph';
 import { ExternalLinkIcon } from '../../../theme/icons';
 import { markSameName } from '../state/addressParts';
 import { creditState } from '../state/credit';
@@ -736,7 +736,7 @@ export const ComposeScreen = forwardRef<ComposeHandle, ComposeScreenProps>(
                       gap={10}
                       testID="composeSendFace"
                     >
-                      {busy ? <ArcSpinner track={theme.surfaceSunken} ink={theme.surfaceAlt} /> : null}
+                      <BusyGlyph name="sent" busy={busy} />
                       <BodyStrong color={theme.surfaceAlt}>{busy ? t('send.sending') : t('send.send')}</BodyStrong>
                     </XStack>
                   </View>

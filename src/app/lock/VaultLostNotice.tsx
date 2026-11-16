@@ -46,6 +46,7 @@ export function VaultLostNotice({ source }: { readonly source: LostSecretsSource
       testID="vault-lost-dialog"
       actions={[
         {
+          bare: 'step',
           label: t('common.ok'),
           tone: 'primary',
           testID: 'vault-lost-ok',

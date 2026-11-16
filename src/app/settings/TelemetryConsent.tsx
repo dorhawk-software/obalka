@@ -116,6 +116,7 @@ export function TelemetryConsent({
         <XStack gap={10}>
           <YStack flex={1}>
             <NeutralButton
+              bare="equal answer"
               compact
               label={t('consent.no')}
               onPress={() => {
@@ -127,6 +128,7 @@ export function TelemetryConsent({
           </YStack>
           <YStack flex={1}>
             <NeutralButton
+              bare="equal answer"
               compact
               label={t('consent.yes')}
               onPress={() => {

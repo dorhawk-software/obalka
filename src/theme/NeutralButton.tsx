@@ -6,11 +6,12 @@
 // The press is PressScale's dip, as every button's. `disabled` draws it at .55, as R10 dims the backup's
 // pair while a run goes on, faded as one picture (Android fades a group child by child otherwise).
 
-import type { ReactNode } from 'react';
 import { XStack } from './ui';
 import { BodyStrong, SmallStrong } from './Typography';
 import { useTheme } from './ThemeProvider';
 import { PressScale } from './PressScale';
+import { OffsetIcon } from './offsetIcons';
+import type { ButtonGlyph } from './buttonGlyph';
 
 export function NeutralButton({
   label,
@@ -19,12 +20,13 @@ export function NeutralButton({
   disabled = false,
   compact = false,
   inline = false,
+  glyph,
   icon,
   small = false,
   danger = false,
   accessibilityLabel,
   testID,
-}: {
+}: ButtonGlyph & {
   readonly label: string;
   readonly onPress: () => void;
   readonly busy?: boolean;
@@ -34,8 +36,6 @@ export function NeutralButton({
   readonly compact?: boolean;
   /** As wide as its words with 24 at each side, centred under them (R4); otherwise the column's width. */
   readonly inline?: boolean;
-  /** A glyph before the words, 10 from them (R10's scan button), sized and inked by the caller. */
-  readonly icon?: ReactNode;
   /** R13's row button, one of two side by side: 40 tall, the 12 corner, 14/700. */
   readonly small?: boolean;
   /** The words in the danger ink, for an action that removes something (R13's Smazat). */
@@ -66,7 +66,12 @@ export function NeutralButton({
         paddingHorizontal={inline ? 24 : 12}
         gap={10}
       >
-        {icon}
+        {glyph ? (
+          // In the words' ink; a red ink prints its own faint plane, not the blue (practices 1.6.3).
+          <OffsetIcon name={glyph} size={small ? 18 : 20} color={danger ? theme.danger : theme.text} />
+        ) : (
+          icon
+        )}
         {small ? (
           <SmallStrong color={danger ? theme.danger : theme.text} textAlign="center">
             {label}

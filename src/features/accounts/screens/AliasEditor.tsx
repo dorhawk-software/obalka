@@ -67,7 +67,7 @@ export function AliasEditor({
       testID="aliasEditor"
       footer={
         <YStack marginTop={space.gutter}>
-          <InkButton label={t('alias.save')} onPress={save} testID="aliasSave" />
+          <InkButton glyph="save" label={t('alias.save')} onPress={save} testID="aliasSave" />
         </YStack>
       }
     >

@@ -28,6 +28,7 @@ import type {
 import { portalUrl } from '../../../services/isds/endpoints';
 import type { Credentials } from '../state/loginController';
 import { touchSlop } from '../../../theme/touchTarget';
+import { OffsetIcon } from '../../../theme/offsetIcons';
 
 export interface LoginFlowProps {
   readonly deps: UseLoginControllerDeps;
@@ -410,8 +411,10 @@ function SignInRefused({
               backgroundColor={theme.text}
               alignItems="center"
               justifyContent="center"
+              gap={10}
             >
-              <BodyStrong color={theme.surfaceAlt} textAlign="center">
+              <OffsetIcon name="draft" size={20} color={theme.surfaceAlt} plane="button" />
+              <BodyStrong color={theme.surfaceAlt} textAlign="center" flexShrink={1}>
                 {t('login.refused.edit')}
               </BodyStrong>
             </XStack>
@@ -473,7 +476,7 @@ function SignInError({ messageKey, onRetry }: { readonly messageKey: string; rea
         {t(messageKey)}
       </Body>
       <YStack marginTop={24}>
-        <NeutralButton compact inline label={t('login.retry')} onPress={onRetry} testID="retry" />
+        <NeutralButton glyph="retry" compact inline label={t('login.retry')} onPress={onRetry} testID="retry" />
       </YStack>
     </YStack>
   );

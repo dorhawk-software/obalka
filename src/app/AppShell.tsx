@@ -93,6 +93,7 @@ import {
   type ShellNotice,
 } from './shellNotices';
 import { Dialog } from '../theme/Dialog';
+import { ShellNoticeDialog } from './ShellNoticeDialog';
 import {
   readActiveBoxId,
   readRestoredActiveBoxId,
@@ -1175,68 +1176,24 @@ export function AppShell() {
     [resumeLater],
   );
   const notice = notices.length > 0 && !covered ? notices[0] : null;
-  let noticeDialog: ReactNode = null;
-  if (notice?.kind === 'removal') {
-    noticeDialog = (
-      <Dialog
-        key={`removal:${notice.boxId}`}
-        testID="removeFailed" glyph="boxes"
-        title={t('box.removeFailed.title')}
-        subtitle={notice.name ?? undefined}
-        body={
-          notice.notice === 'kept'
-            ? t('box.removeFailed.kept')
-            : notice.notice === 'incomplete'
-            ? t('box.removeFailed.incomplete')
-            : t('box.removeFailed.unknown')
-        }
-        onDismiss={() => closeNotice(notice)}
-        actions={[
-          {
-            label: t('box.removeFailed.close'),
-            onPress: () => closeNotice(notice),
-            testID: 'removeFailedClose',
-          },
-          {
-            label: t('box.removeFailed.retry'),
-            onPress: () => {
-              setNotices(prev => prev.filter(n => n !== notice));
-              void handleRemove(notice.boxId);
-            },
-            tone: 'primary',
-            testID: 'removeFailedRetry',
-          },
-        ]}
-      />
-    );
-  } else if (notice?.kind === 'alias') {
-    noticeDialog = (
-      <Dialog
-        key={`alias:${notice.boxId}`}
-        testID="aliasFailed" glyph="boxes"
-        title={t('box.aliasFailed.title')}
-        subtitle={notice.name ?? undefined}
-        body={t('box.aliasFailed.body')}
-        onDismiss={() => closeNotice(notice)}
-        actions={[
-          {
-            label: t('box.aliasFailed.close'),
-            onPress: () => closeNotice(notice),
-            testID: 'aliasFailedClose',
-          },
-          {
-            label: t('box.aliasFailed.retry'),
-            onPress: () => {
-              closeNotice(notice);
-              void handleSetAlias(notice.boxId, notice.alias);
-            },
-            tone: 'primary',
-            testID: 'aliasFailedRetry',
-          },
-        ]}
-      />
-    );
-  }
+  // A retry of a removal starts it again; a renaming's saves the same name again.
+  const retryNotice = (n: ShellNotice) => {
+    if (n.kind === 'removal') {
+      setNotices(prev => prev.filter(x => x !== n));
+      void handleRemove(n.boxId);
+    } else {
+      closeNotice(n);
+      void handleSetAlias(n.boxId, n.alias);
+    }
+  };
+  const noticeDialog: ReactNode = notice ? (
+    <ShellNoticeDialog
+      key={`${notice.kind}:${notice.boxId}`}
+      notice={notice}
+      onClose={closeNotice}
+      onRetry={retryNotice}
+    />
+  ) : null;
 
   const withFaq = (screen: ReactNode) => (
     <>
@@ -1439,11 +1396,13 @@ export function AppShell() {
           onDismiss={() => void answerNudgeAsk(false)}
           actions={[
             {
+              bare: 'way out',
               label: t('notif.passwordAsk.later'),
               onPress: () => void answerNudgeAsk(false),
               testID: 'nudgeAskLater',
             },
             {
+              glyph: 'bell',
               label: t('notif.passwordAsk.allow'),
               onPress: () => void answerNudgeAsk(true),
               tone: 'primary',

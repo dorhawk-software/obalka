@@ -199,6 +199,7 @@ export function AttachmentRow({
         testID="attachment-alert"
         actions={[
           {
+            bare: 'step',
             label: t('common.ok'),
             tone: 'primary',
             testID: 'attachment-alert-ok',

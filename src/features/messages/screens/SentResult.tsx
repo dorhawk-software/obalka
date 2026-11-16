@@ -28,6 +28,7 @@ import { Slip } from '../../../theme/objects/Slip';
 import { Window } from '../../../theme/objects/Window';
 import { RecordRing, type RecordRingKind } from '../../../theme/objects/RecordRing';
 import { easedStretch } from '../../../theme/motionClock';
+import { OffsetIcon } from '../../../theme/offsetIcons';
 import { t } from '../../../i18n/strings';
 import { haptics } from '../../../services/haptics';
 import type { DataBoxAccount, Recipient } from '../../../services/isds/types';
@@ -424,7 +425,15 @@ export function SentResult({
           </PressScale>
           <PressScale fullWidth onPress={onOpenSent} accessibilityLabel={t('send.sent.open')} testID="composeOpenSent">
             {/* The pair size under Hotovo: 50 until T050.4, off the scale (the owner's three sizes by job). */}
-            <XStack width="100%" minHeight={48} alignItems="center" justifyContent="center" opacity={opening ? 0.5 : 1}>
+            <XStack
+              width="100%"
+              minHeight={48}
+              alignItems="center"
+              justifyContent="center"
+              gap={10}
+              opacity={opening ? 0.5 : 1}
+            >
+              <OffsetIcon name="sent" size={20} color={theme.text} />
               <BodyStrong color={theme.text}>{t('send.sent.open')}</BodyStrong>
             </XStack>
           </PressScale>

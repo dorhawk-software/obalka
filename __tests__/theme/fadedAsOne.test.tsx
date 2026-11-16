@@ -37,7 +37,7 @@ const faded = (root: unknown): Node[] => {
 };
 
 it.each<[string, ReactElement]>([
-  ['a blocked ink button', <InkButton label="Uložit" onPress={() => {}} blockedReason="Chybí heslo" />],
+  ['a blocked ink button', <InkButton bare="step" label="Uložit" onPress={() => {}} blockedReason="Chybí heslo" />],
   ['the busy download', <DownloadButton label="Stáhnout" busyLabel="Stahuje se" busy onPress={() => {}} />],
   ['compose\'s waiting window', <WaitingWindow />],
 ])('%s fades as one picture', async (_name, element) => {

@@ -793,10 +793,10 @@ export function MessageList({
   const pwdTone = chipTone('info', theme);
   // The re-auth strip's "Přihlásit znovu" - one element for both of that strip's shapes (below).
   const reauthAction = (
-    <StripAction tone={reauthTone} label={t('box.reauth.action')} onPress={() => onReauth(refusedAt)} testID="reauth" />
+    <StripAction tone={reauthTone} glyph="key" label={t('box.reauth.action')} onPress={() => onReauth(refusedAt)} testID="reauth" />
   );
   const reauthActionBelow = (
-    <StripAction tone={reauthTone} label={t('box.reauth.action')} below onPress={() => onReauth(refusedAt)} testID="reauth" />
+    <StripAction tone={reauthTone} glyph="key" label={t('box.reauth.action')} below onPress={() => onReauth(refusedAt)} testID="reauth" />
   );
 
   // Build the sections. RECEIVED: "Vyžaduje pozornost" on top, then the remainder date-grouped (Dnes /
@@ -898,7 +898,7 @@ export function MessageList({
           object={<EnvelopePose pose="sealed" />}
           title={t('messages.error.loadTitle')}
           body={t(state.messageKey !== 'messages.error.load' ? state.messageKey : 'messages.error.loadSub')}
-          action={<NeutralButton inline label={t('messages.retry')} onPress={onPullRefresh} testID="retry" />}
+          action={<NeutralButton glyph="retry" inline label={t('messages.retry')} onPress={onPullRefresh} testID="retry" />}
           testID="listError"
         />
       </ScrollView>
@@ -1075,7 +1075,7 @@ export function MessageList({
           }
           action={
             <StripAction
-              tone={pwdTone}
+              tone={pwdTone} glyph={changeInApp ? 'key' : undefined}
               label={t(changeInApp ? 'pwd.change' : 'pwd.action')}
               role={changeInApp ? 'button' : 'link'}
               onPress={changeInApp ? onChangePassword : () => openPortal(account.host)}
@@ -1095,7 +1095,7 @@ export function MessageList({
           action={
             <StripAction
               tone={reauthTone}
-              label={t('box.reauth.action')}
+              glyph="key" label={t('box.reauth.action')}
               onPress={() => {
                 const fixable = missingBoxes.filter(a => needsSignIn(a.syncError));
                 if (fixable.length === 1) {

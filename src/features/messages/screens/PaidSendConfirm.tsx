@@ -67,8 +67,8 @@ export function PaidSendConfirm({
         </YStack>
       }
       actions={[
-        { label: t('send.confirm.send', { czk: approxCzk }), onPress: onSend, tone: 'primary', busy, testID: 'composeConfirmSend' },
-        { label: t('send.confirm.cancel'), onPress: cancelUnlessSending, testID: 'composeConfirmCancel' },
+        { glyph: 'sent', label: t('send.confirm.send', { czk: approxCzk }), onPress: onSend, tone: 'primary', busy, testID: 'composeConfirmSend' },
+        { bare: 'way out', label: t('send.confirm.cancel'), onPress: cancelUnlessSending, testID: 'composeConfirmCancel' },
       ]}
       onDismiss={cancelUnlessSending}
       testID="composeConfirm"

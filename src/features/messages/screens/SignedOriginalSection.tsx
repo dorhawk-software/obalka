@@ -366,6 +366,7 @@ export function SignedOriginalSection({
           testID="signed-original-alert"
           actions={[
             {
+              bare: 'step',
               label: t('common.ok'),
               tone: 'primary',
               testID: 'signed-original-alert-ok',

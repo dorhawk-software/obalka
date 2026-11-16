@@ -114,8 +114,8 @@ describe('overlay wrappers', () => {
         onDismiss={() => {}}
         testID="dlg"
         actions={[
-          { label: 'Ponechat', onPress: () => {}, testID: 'keep' },
-          { label: 'Smazat', onPress: () => {}, tone: 'danger', testID: 'del' },
+          { bare: 'step', label: 'Ponechat', onPress: () => {}, testID: 'keep' },
+          { bare: 'step', label: 'Smazat', onPress: () => {}, tone: 'danger', testID: 'del' },
         ]}
       />,
     );

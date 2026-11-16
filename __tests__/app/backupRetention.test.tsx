@@ -6,12 +6,8 @@
 
 import { act, fireEvent, waitFor } from '@testing-library/react-native';
 import { fakeController, manifest, mount } from '../helpers/backupScreenHarness';
-import {
-  deleteDialogActions,
-  disableDialogActions,
-  pruneBody,
-  pruneDialogActions,
-} from '../../src/app/settings/BackupScreen';
+import { pruneBody } from '../../src/app/settings/BackupScreen';
+import { deleteDialogActions, disableDialogActions, pruneDialogActions } from '../../src/app/settings/backupDialogActions';
 import { t } from '../../src/i18n/strings';
 
 const enabled = () => fakeController({ enabled: true, last: manifest(1_000) });

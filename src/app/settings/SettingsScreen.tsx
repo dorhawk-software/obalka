@@ -369,6 +369,7 @@ export function SettingsScreen({
           testID="lock-unavailable-dialog"
           actions={[
             {
+              bare: 'step',
               label: t('common.ok'),
               tone: 'primary',
               testID: 'lock-unavailable-ok',
@@ -387,6 +388,7 @@ export function SettingsScreen({
           testID="lock-disable-failed-dialog"
           actions={[
             {
+              bare: 'step',
               label: t('common.ok'),
               tone: 'primary',
               testID: 'lock-disable-failed-ok',
@@ -428,11 +430,13 @@ export function SettingsScreen({
           testID="auto-download-dialog"
           actions={[
             {
+              bare: 'way out',
               label: t('settings.autoDownload.ask.keep'),
               testID: 'auto-download-cancel',
               onPress: () => setDownloadAsk(null),
             },
             {
+              glyph: 'download',
               label: t('settings.autoDownload.ask.confirm'),
               tone: 'primary',
               testID: 'auto-download-confirm',

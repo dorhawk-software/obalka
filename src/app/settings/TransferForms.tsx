@@ -131,7 +131,7 @@ export function SendHalf({
             {t('transfer.pick.note')}
           </Caption>
           <YStack marginTop={16}>
-            <InkButton label={t('transfer.pick.send')} onPress={onSend} testID="transfer-send" />
+            <InkButton glyph="transfer" label={t('transfer.pick.send')} onPress={onSend} testID="transfer-send" />
           </YStack>
         </YStack>
       )}
@@ -223,6 +223,7 @@ export function ReceiveForm({
       )}
       <YStack marginTop={8}>
         <InkButton
+          glyph="transfer"
           label={t('transfer.start')}
           onPress={onReceive}
           blockedReason={typed.trim() ? undefined : t('transfer.needPhrase')}

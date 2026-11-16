@@ -256,6 +256,7 @@ export function TermPicker({
         {current != null ? (
           <YStack flex={1}>
             <NeutralButton
+              glyph="bin"
               danger
               label={t('term.remove')}
               onPress={() => {
@@ -268,7 +269,7 @@ export function TermPicker({
           </YStack>
         ) : null}
         <YStack flex={1}>
-          <InkButton label={t('term.save')} onPress={() => pick(selected ?? dayFromNow(now, 1))} testID="term-save" />
+          <InkButton glyph="save" label={t('term.save')} onPress={() => pick(selected ?? dayFromNow(now, 1))} testID="term-save" />
         </YStack>
       </XStack>
     </BottomSheet>

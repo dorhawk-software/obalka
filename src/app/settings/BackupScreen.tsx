@@ -28,13 +28,20 @@ import { SecureSlip, SlipCode } from '../../theme/objects/SecureSlip';
 import { space } from '../../theme/spacing';
 import { ProgressBar } from '../../theme/ProgressBar';
 import { Skeleton } from '../../theme/Skeleton';
-import { Dialog, type DialogAction } from '../../theme/Dialog';
+import { Dialog } from '../../theme/Dialog';
+import {
+  deleteDialogActions,
+  leaveCopy,
+  leaveDialogActions,
+  pruneDialogActions,
+} from './backupDialogActions';
 import { useTheme } from '../../theme/ThemeProvider';
 import { chipTone } from '../../theme/chipTone';
 import {
   CheckIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  EyeIcon,
   FileDownIcon,
   FileUpIcon,
   HelpIcon,
@@ -200,165 +207,6 @@ export function restoreErrorText(err: unknown): string {
     return `${t('backup.restore.error')} ${t('backup.restore.error.held')}`;
   }
   return err instanceof BackupAuthError ? t('backup.restore.failed') : t('backup.restore.error');
-}
-
-/**
- * The two buttons of "delete the older backups?" - the question asked before a lower retention limit
- * takes effect.
- *
- * Cancelling must leave the SETTING alone, not just the backups: an unconfirmed limit that quietly
- * stuck would delete on the next backup instead, which is the same surprise moved later.
- */
-export function pruneDialogActions({
-  close,
-  confirm,
-}: {
-  close: () => void;
-  confirm: () => void;
-}): DialogAction[] {
-  return [
-    // "Ponechat", not "Zrušit": beside a destructive button, "cancel" can be read as cancelling the
-    // backups themselves. This one names the outcome.
-    { label: t('common.keep'), testID: 'backup-prune-keep', onPress: close },
-    {
-      label: t('backup.prune.confirm'),
-      tone: 'danger',
-      icon: color => <TrashIcon size={16} color={color} />,
-      testID: 'backup-prune-confirm',
-      onPress: confirm,
-    },
-  ];
-}
-
-/** The two buttons of "delete this backup?". Same shape, same reason (see `leaveDialogActions`). */
-export function deleteDialogActions({
-  close,
-  remove,
-}: {
-  close: () => void;
-  remove: () => void;
-}): DialogAction[] {
-  return [
-    { label: t('common.keep'), testID: 'backup-delete-keep', onPress: close },
-    {
-      label: t('backup.delete'),
-      tone: 'danger',
-      icon: color => <TrashIcon size={18} color={color} />,
-      testID: 'backup-delete-confirm',
-      onPress: remove,
-    },
-  ];
-}
-
-/** The two buttons of "turn backups off?". Extracted for the same reason as the leave dialog's. */
-export function disableDialogActions({
-  close,
-  disable,
-}: {
-  close: () => void;
-  disable: () => void;
-}): DialogAction[] {
-  return [
-    {
-      label: t('backup.off.keep'),
-      testID: 'backup-disable-keep',
-      onPress: close,
-    },
-    {
-      label: t('backup.off.confirm'),
-      tone: 'danger',
-      testID: 'backup-disable-confirm',
-      onPress: disable,
-    },
-  ];
-}
-
-/**
- * What the leave-mid-run dialog says, for what is running.
- *
- * A restore and a verify ran as backups as far as this dialog knew, so leaving either asked "Záloha
- * ještě běží" and offered "Zrušit zálohu" (2026-09-15). A restore stopped from that button was not a
- * backup being called off, and a verify writes nothing at all.
- */
-export function leaveCopy(kind: BackupRun['kind']): { title: string; body: string; cancel: string } {
-  switch (kind) {
-    case 'restore':
-      return {
-        title: t('backup.leave.title.restore'),
-        body: t('backup.leave.body'),
-        cancel: t('backup.leave.cancel.restore'),
-      };
-    case 'verify':
-      return {
-        title: t('backup.leave.title.verify'),
-        body: t('backup.leave.body.verify'),
-        cancel: t('backup.leave.cancel.verify'),
-      };
-    default:
-      return {
-        title: t('backup.leave.title'),
-        body: t('backup.leave.body'),
-        cancel: t('backup.leave.cancel'),
-      };
-  }
-}
-
-/**
- * What the three buttons of the leave-mid-run dialog do.
- *
- * A pure builder rather than inline JSX so the BEHAVIOUR is testable without pressing pixels: React
- * Native Testing Library will not dispatch a press inside a `Modal` that appears after the first
- * render of a tree this size - the dialog renders and can be queried, but the press never lands. The
- * screen test therefore asserts that the right dialog appears, and `__tests__/app/leaveActions.test.ts`
- * asserts what each button does.
- */
-export function leaveDialogActions({
-  kind,
-  close,
-  leave,
-  cancelRun,
-  notStopped,
-}: {
-  /** What is running, so the stop says what it stops. */
-  kind: BackupRun['kind'];
-  close: () => void;
-  leave: () => void;
-  /** Whether the run in progress will stop - see `BackupController.cancelRun`. */
-  cancelRun: () => boolean;
-  /** Says the run goes on, when the stop came after it could no longer be stopped. */
-  notStopped: () => void;
-}): DialogAction[] {
-  return [
-    {
-      label: t('backup.leave.background'),
-      tone: 'primary',
-      testID: 'backup-leave-background',
-      // Walk away, leave it running. The controller owns the run, so nothing here has to keep it alive.
-      onPress: () => {
-        close();
-        leave();
-      },
-    },
-    {
-      label: leaveCopy(kind).cancel,
-      tone: 'danger',
-      testID: 'backup-leave-cancel',
-      onPress: () => {
-        close();
-        // The dialog can stay open while a restore gets past its rows (2026-09-15), and from then this
-        // stop does nothing. Said, rather than leaving someone who chose "cancel" to believe it worked.
-        if (!cancelRun()) {
-          notStopped();
-        }
-        leave();
-      },
-    },
-    {
-      label: t('backup.leave.stay'),
-      testID: 'backup-leave-stay',
-      onPress: close,
-    },
-  ];
 }
 
 /** The run's slot under the switch: the stage's 20, the 8 between, the bar's 6 (R10). */
@@ -1164,6 +1012,7 @@ export function BackupScreen({
                   <XStack gap={space.base}>
                     <YStack flex={1}>
                       <NeutralButton
+                        glyph="bin"
                         compact
                         danger
                         label={t('backup.delete')}
@@ -1173,6 +1022,7 @@ export function BackupScreen({
                     </YStack>
                     <YStack flex={1}>
                       <InkButton
+                        glyph="restore"
                         compact
                         label={restoring ? t('backup.working') : t('backup.restore.start')}
                         onPress={() => startTypedRestore(item.manifest)}
@@ -1304,11 +1154,13 @@ export function BackupScreen({
           testID="backup-disable-dialog" glyph="archive"
           actions={[
             {
+              bare: 'way out',
               label: t('backup.off.keep'),
               testID: 'backup-disable-keep',
               onPress: () => setDialog(null),
             },
             {
+              glyph: 'archive',
               label: t('backup.off.confirm'),
               tone: 'danger',
               testID: 'backup-disable-confirm',
@@ -1343,11 +1195,13 @@ export function BackupScreen({
           testID="backup-documents-dialog" glyph="attach"
           actions={[
             {
+              bare: 'way out',
               label: t('backup.docs.keep'),
               testID: 'backup-documents-cancel',
               onPress: () => setDocumentAsk(null),
             },
             {
+              glyph: 'attach',
               label: t(documentAsk.changing ? 'backup.docs.ask.save' : 'backup.docs.ask.confirm'),
               tone: 'primary',
               testID: 'backup-documents-confirm',
@@ -1404,6 +1258,7 @@ export function BackupScreen({
           testID="backup-nolock-dialog" glyph="lock"
           actions={[
             {
+              bare: 'step',
               label: t('common.ok'),
               tone: 'primary',
               testID: 'backup-nolock-ok',
@@ -1429,6 +1284,7 @@ export function BackupScreen({
           testID="backup-transfer-outcome" glyph="transfer"
           actions={[
             {
+              bare: 'step',
               label: t('common.ok'),
               tone: 'primary',
               testID: 'backup-transfer-outcome-ok',
@@ -1453,6 +1309,7 @@ export function BackupScreen({
           testID="backup-restore-outcome" glyph="archive"
           actions={[
             {
+              bare: 'step',
               label: t('common.ok'),
               tone: 'primary',
               testID: 'backup-restore-outcome-ok',
@@ -1570,6 +1427,7 @@ export function BackupScreen({
             <XStack gap={space.base} marginTop={space.md}>
               <YStack flex={1}>
                 <NeutralButton
+                  glyph="archive"
                   compact
                   label={activeRun?.kind === 'backup' || busy === 'backup' ? t('backup.working') : t('backup.now')}
                   onPress={onBackupNow}
@@ -1586,6 +1444,7 @@ export function BackupScreen({
               {!loading && status?.last ? (
                 <YStack flex={1}>
                   <NeutralButton
+                    glyph="seal"
                     compact
                     label={busy === 'verify' ? t('backup.verify.busy') : t('backup.verify')}
                     onPress={() => void onVerify(status.last as BackupManifest)}
@@ -1719,6 +1578,7 @@ export function BackupScreen({
               <XStack gap={space.base}>
                 <YStack flex={1}>
                   <NeutralButton
+                    icon={<EyeIcon size={20} color={theme.text} off={revealed !== null} />}
                     compact={revealed !== null}
                     label={
                       busy === 'reveal' ? t('backup.working') : revealed ? t('backup.key.hide') : t('backup.key.show')
@@ -1730,6 +1590,7 @@ export function BackupScreen({
                 {revealed ? (
                   <YStack flex={1}>
                     <NeutralButton
+                      icon={<EyeIcon size={20} color={theme.text} off={showQr} />}
                       compact
                       label={showQr ? t('backup.key.qr.hide') : t('backup.key.qr')}
                       onPress={() => setShowQr(v => !v)}

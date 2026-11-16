@@ -429,7 +429,7 @@ export function MessageDetail({ account, messageId, folder = 'received', onBack,
           object={<EnvelopePose pose="sealed" />}
           title={t('detail.error.title')}
           body={t(state.messageKey)}
-          action={<NeutralButton inline label={t('detail.error.back')} onPress={onBack} testID="retry" />}
+          action={<NeutralButton bare="step" inline label={t('detail.error.back')} onPress={onBack} testID="retry" />}
           testID="detailError"
         />
       </YStack>

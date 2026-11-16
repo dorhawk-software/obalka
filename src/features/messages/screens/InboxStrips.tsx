@@ -17,6 +17,7 @@ import { Badge, Meta } from '../../../theme/Typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { AlertIcon, WifiOffIcon } from '../../../theme/icons';
 import { touchSlop } from '../../../theme/touchTarget';
+import { OffsetIcon, type OffsetGlyphName } from '../../../theme/offsetIcons';
 import type { ChipColors as ChipTone } from '../../../theme/chipTone';
 import { t } from '../../../i18n/strings';
 
@@ -70,10 +71,13 @@ export function StripAction({
   onPress,
   role = 'button',
   below = false,
+  glyph,
   testID,
 }: {
   readonly tone: ChipTone;
   readonly label: string;
+  /** What it does, drawn before the words; a link out of the app keeps to its words. */
+  readonly glyph?: OffsetGlyphName;
   readonly onPress: () => void;
   /** `link` when it leaves the app (the ISDS portal). */
   readonly role?: 'button' | 'link';
@@ -92,8 +96,11 @@ export function StripAction({
       accessibilityLabel={label}
       // From the Badge's own 16 dp line box to 48: one of the only ways out of "your box does not work".
       hitSlop={touchSlop({ height: 16 })}
+      alignItems="center"
+      gap={4}
       testID={testID}
     >
+      {glyph ? <OffsetIcon name={glyph} size={14} color={tone.fg} /> : null}
       <Badge fontWeight="800" color={tone.fg}>
         {label}
       </Badge>

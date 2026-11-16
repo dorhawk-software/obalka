@@ -28,7 +28,6 @@ import { InkButton } from '../../theme/InkButton';
 import { NeutralButton } from '../../theme/NeutralButton';
 import { OptionGroup } from '../../theme/OptionGroup';
 import { Dialog } from '../../theme/Dialog';
-import { TrashIcon } from '../../theme/icons';
 import { useTheme } from '../../theme/ThemeProvider';
 import { space } from '../../theme/spacing';
 import { type as typeScale } from '../../theme/typeScale';
@@ -272,11 +271,11 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
           glyph="settings"
           testID="debug-delete-dialog"
           actions={[
-            { label: t('common.keep'), onPress: () => setPendingDelete(null) },
+            { bare: 'way out', label: t('common.keep'), onPress: () => setPendingDelete(null) },
             {
               label: t('debug.delete'),
               tone: 'danger',
-              icon: color => <TrashIcon size={18} color={color} />,
+              glyph: 'bin',
               testID: 'debug-delete-confirm',
               onPress: () => {
                 const target = pendingDelete;
@@ -379,13 +378,14 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
                 </XStack>
                 <Caption color={theme.textMuted}>{t('debug.recording.hint')}</Caption>
                 <YStack marginTop={space.xs}>
-                  <InkButton label={t('debug.stop')} onPress={onStop} testID="debug-toggle" />
+                  <InkButton glyph="save" label={t('debug.stop')} onPress={onStop} testID="debug-toggle" />
                 </YStack>
-                <NeutralButton label={t('debug.discard')} onPress={onDiscard} testID="debug-discard" />
+                <NeutralButton glyph="bin" label={t('debug.discard')} onPress={onDiscard} testID="debug-discard" />
               </YStack>
             </Card>
           ) : (
             <InkButton
+              glyph="bug"
               label={t(saving ? 'debug.saving' : 'debug.start')}
               onPress={onStart}
               busy={saving}

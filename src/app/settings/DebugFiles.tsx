@@ -26,6 +26,7 @@ import { formatBytes, t } from '../../i18n/strings';
 import type { SavedBundle } from '../../services/debug/debugStore';
 import { Card, RowDivider, Section } from './SettingsSection';
 import { touchSlop } from '../../theme/touchTarget';
+import { OffsetIcon } from '../../theme/offsetIcons';
 
 /** The boards' `strip`: never shorter than this, whatever it says. */
 const STRIP_ROW = 44;
@@ -124,9 +125,10 @@ function RetryLink({ busy, onPress }: { readonly busy: boolean; readonly onPress
       testID="debug-saved-retry"
     >
       <XStack minHeight={44} alignItems="center">
-        <SmallStrong color={theme.blue} opacity={busy ? 0 : 1}>
-          {t('debug.saved.retry')}
-        </SmallStrong>
+        <XStack alignItems="center" gap={space.sm} opacity={busy ? 0 : 1} testID="debug-saved-retry-face">
+          <OffsetIcon name="retry" size={18} color={theme.blue} />
+          <SmallStrong color={theme.blue}>{t('debug.saved.retry')}</SmallStrong>
+        </XStack>
         {busy ? (
           <YStack
             position="absolute"
@@ -174,6 +176,7 @@ function SavedRow({
       <XStack gap={space.base}>
         <YStack flex={1}>
           <InkButton
+            glyph="share"
             small
             label={t('debug.share')}
             accessibilityLabel={`${t('debug.share')}, ${bundle.name}`}
@@ -183,6 +186,7 @@ function SavedRow({
         </YStack>
         <YStack flex={1}>
           <NeutralButton
+            glyph="bin"
             small
             danger
             label={t('debug.delete')}

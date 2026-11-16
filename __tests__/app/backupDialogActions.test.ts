@@ -10,7 +10,7 @@ import {
   disableDialogActions,
   leaveCopy,
   leaveDialogActions,
-} from '../../src/app/settings/BackupScreen';
+} from '../../src/app/settings/backupDialogActions';
 import type { BackupRun } from '../../src/features/backup/state/backupController';
 import { t } from '../../src/i18n/strings';
 

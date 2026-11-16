@@ -51,7 +51,7 @@ export function LaunchScreen({
             {t('app.loadFailed')}
           </Small>
           <YStack marginTop={18}>
-            <NeutralButton compact inline label={t('app.loadFailed.retry')} onPress={onRetry} testID="loadRetry" />
+            <NeutralButton glyph="retry" compact inline label={t('app.loadFailed.retry')} onPress={onRetry} testID="loadRetry" />
           </YStack>
         </YStack>
       ) : (

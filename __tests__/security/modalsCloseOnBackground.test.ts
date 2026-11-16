@@ -31,6 +31,8 @@ const NESTED: Record<string, { parent: string; tag: string }> = {
   },
   // Raised by the app itself after an update; AppShell holds it while covered.
   'src/app/whatsNew/WhatsNewSheet.tsx': { parent: 'src/app/AppShell.tsx', tag: '<WhatsNewSheet' },
+  // A box's removal or renaming that did not finish, raised by the app; AppShell holds it while covered.
+  'src/app/ShellNoticeDialog.tsx': { parent: 'src/app/AppShell.tsx', tag: '<ShellNoticeDialog' },
 };
 
 const MODAL = /<(Dialog|BottomSheet|Modal)\b/;

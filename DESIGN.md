@@ -596,11 +596,20 @@ moves without being asked.
   54 stays for Welcome, Lock and the sent result's Hotovo. On the boards each size has its own class
   (`pair`, `row`, `card`, `dl`, `link`, `big`), so like for like keeps one look. The download
   button's corner is 14 (13 until then).
+- **Every button names its act** (the owner, 2026-11-16, T050.7, "every action, escapes marked"):
+  each button that does something carries its offset glyph 10 before the words (6 on a link): the
+  key signs in, the bin deletes, the archive backs up, sent sends, retry tries again. Three kinds keep
+  to their words, on purpose: a step forward (Pokračovat, Rozumím, Hotovo), a way out (Ponechat,
+  Zavřít, Teď ne, Neodesílat) and two equal answers (the crash-report question), so neither leans.
+  `InkButton`, `NeutralButton` and a dialog's answer take `glyph`, `icon` (the Lucide eye) or `bare`
+  with that reason; a button with none of them does not compile (`buttonGlyph.ts`). The boards mark a
+  words-only button `data-allow="icon: …"`. A red glyph on a neutral button keeps one ink: its plane is
+  the danger red, faint (the owner's pick of three, 2026-11-16).
 - **Primary** (`InkButton`, the boards' `fbtn`): `ink` fill with a `surface-alt` label in `bodyStrong` -
   the dark high-contrast button, full width in a form footer, 52 tall. `compact` is 48, one of a pair
   beside a neutral button (R10's Smazat and Obnovit); `small` is R13's half of a pair inside a card row,
-  40 tall with the 12 corner and the label 14/700; `icon` puts a glyph 10 before the words, in the
-  label's colour (`inkButtonInk`). Blue fills only in-content actions: downloading attachments,
+  40 tall with the 12 corner and the label 14/700; `glyph` puts its offset glyph 10 before the words, in the
+  label's colour (`inkButtonInk`) on the `inkButtonPlane`. Blue fills only in-content actions: downloading attachments,
   accepting a scan suggestion.
 - **Danger:** `InkButton danger` (R9's `dbtn`): `danger` fill, the label in the paper colour, the bin 10
   before Smazat. Used only where something is destroyed.
@@ -621,7 +630,8 @@ moves without being asked.
   `keyLinksApart.test.tsx`). What lies under an open sheet's dim layer is not a target then; the
   boards mark it `aria-hidden`, as the app's `Modal` hides it.
 - **Busy:** the board draws the ring and the busy words centred as one group inside the button; the
-  button itself does not move or resize.
+  button itself does not move or resize. A hand-built ink button that spins (sign in, the code, the
+  password, Odeslat) draws the ring in its glyph's own 20 slot (`BusyGlyph`), so the words stay put.
 - **Press:** scale to 0.97 over 90ms, timing curve, native driver. A dip, not a bop.
 - **Busy vs blocked:** a *busy* button (action already running) swallows the press - the spinner is
   the answer. A *blocked* button (a requirement unmet) still receives the press and answers with a

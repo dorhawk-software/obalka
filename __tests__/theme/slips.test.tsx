@@ -135,8 +135,8 @@ describe('the neutral button', () => {
   it('is the neutral tone with the 14 corner and an ink label, 48 in a pair and 52 alone', async () => {
     const view = await themed(
       <>
-        <NeutralButton compact label="Skrýt heslo" onPress={() => {}} testID="pair" />
-        <NeutralButton label="Zálohovat" onPress={() => {}} testID="alone" />
+        <NeutralButton bare="step" compact label="Skrýt heslo" onPress={() => {}} testID="pair" />
+        <NeutralButton bare="step" label="Zálohovat" onPress={() => {}} testID="alone" />
       </>,
     );
     const root = view.toJSON() as unknown as Json[];
@@ -155,7 +155,7 @@ describe('the neutral button under a failed state (R4)', () => {
   it('is as wide as its words with 24 at each side, the same 52 neutral face', async () => {
     // The column's width inside a centred state is no width at all: the label drew off-centre (the
     // detail's error on Obalka_Demo, 2026-11-13).
-    const view = await themed(<NeutralButton inline label="Zkusit znovu" onPress={() => {}} testID="inline" />);
+    const view = await themed(<NeutralButton bare="step" inline label="Zkusit znovu" onPress={() => {}} testID="inline" />);
     const root = view.toJSON() as unknown as Json;
     const face = flat(nodes(byId(root, 'inline'), n => flat(n).minHeight !== undefined)[0]);
     expect(face).toEqual(

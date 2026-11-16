@@ -4,8 +4,8 @@ __tests__/backup/backupController.test.ts 1723
 __tests__/messages/messages.test.ts 1871
 __tests__/transfer/transferController.test.ts 1836
 scripts/gen-attributions.mjs 813
-src/app/AppShell.tsx 1465
-src/app/settings/BackupScreen.tsx 1950
+src/app/AppShell.tsx 1424
+src/app/settings/BackupScreen.tsx 1811
 src/app/settings/TransferScreen.tsx 781
 src/features/backup/state/backupController.ts 1372
 src/features/messages/screens/ComposeScreen.tsx 776

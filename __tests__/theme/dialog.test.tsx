@@ -82,8 +82,8 @@ describe('as R9 draws it', () => {
         glyph={color => <Text testID="dlg-glyph" color={color}>x</Text>}
         testID="dlg"
         actions={[
-          { label: 'Ponechat', onPress: () => {}, testID: 'keep' },
-          { label: 'Smazat', onPress: () => {}, tone: 'danger', testID: 'remove' },
+          { bare: 'step', label: 'Ponechat', onPress: () => {}, testID: 'keep' },
+          { bare: 'step', label: 'Smazat', onPress: () => {}, tone: 'danger', testID: 'remove' },
         ]}
       />,
     );
@@ -158,9 +158,9 @@ describe('at the largest text sizes', () => {
           onDismiss={() => {}}
           testID="dlg"
           actions={[
-            { label: 'Ponechat', onPress: () => {}, testID: 'keep' },
-            { label: 'Smazat', onPress: () => {}, tone: 'danger', testID: 'remove' },
-            { label: 'Později', onPress: () => {}, testID: 'later' },
+            { bare: 'step', label: 'Ponechat', onPress: () => {}, testID: 'keep' },
+            { bare: 'step', label: 'Smazat', onPress: () => {}, tone: 'danger', testID: 'remove' },
+            { bare: 'step', label: 'Později', onPress: () => {}, testID: 'later' },
           ]}
         />
       </SafeAreaProvider>,
@@ -268,8 +268,8 @@ describe('Dialog', () => {
         onDismiss={keep}
         testID="dlg"
         actions={[
-          { label: 'Ponechat', onPress: keep, testID: 'keep' },
-          { label: 'Smazat', onPress: remove, tone: 'danger', testID: 'remove' },
+          { bare: 'step', label: 'Ponechat', onPress: keep, testID: 'keep' },
+          { bare: 'step', label: 'Smazat', onPress: remove, tone: 'danger', testID: 'remove' },
         ]}
       />,
     );
@@ -291,7 +291,7 @@ describe('Dialog', () => {
         title="Záloha ještě běží"
         body="Nechat doběhnout?"
         onDismiss={() => {}}
-        actions={[{ label: 'OK', onPress: () => {} }]}
+        actions={[{ bare: 'step', label: 'OK', onPress: () => {} }]}
       />,
     );
     // A screen-reader user lands on the dialog and hears what it is about, not a stray sentence.
@@ -308,7 +308,7 @@ describe('Dialog', () => {
           title="T"
           body="B"
           onDismiss={() => {}}
-          actions={ids.map(id => ({ label: id, onPress: () => {}, testID: `${count}${id}` }))}
+          actions={ids.map(id => ({ bare: 'step' as const, label: id, onPress: () => {}, testID: `${count}${id}` }))}
         />,
       );
       for (const id of ids) {
@@ -324,9 +324,9 @@ describe('Dialog', () => {
         body="B"
         onDismiss={() => {}}
         actions={[
-          { label: 'A', onPress: () => {}, tone: 'primary', testID: 'a' },
-          { label: 'B', onPress: () => {}, tone: 'danger', testID: 'b' },
-          { label: 'C', onPress: () => {}, testID: 'c' },
+          { bare: 'step', label: 'A', onPress: () => {}, tone: 'primary', testID: 'a' },
+          { bare: 'step', label: 'B', onPress: () => {}, tone: 'danger', testID: 'b' },
+          { bare: 'step', label: 'C', onPress: () => {}, testID: 'c' },
         ]}
       />,
     );
@@ -354,7 +354,7 @@ describe('destructive buttons', () => {
         body="B"
         onDismiss={() => {}}
         actions={[
-          { label: 'Ponechat', onPress: () => {}, testID: 'keep' },
+          { bare: 'step', label: 'Ponechat', onPress: () => {}, testID: 'keep' },
           {
             label: 'Smazat',
             onPress: () => {},
