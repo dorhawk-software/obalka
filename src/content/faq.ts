@@ -95,7 +95,7 @@ const cs: Readonly<Record<FaqId, FaqText>> = {
     question: 'Kam se ukládají stažené přílohy?',
     answer: [
       'Zpráva se stahuje celá se všemi přílohami najednou, u velkých zpráv i desítky megabajtů; proto až na vaše klepnutí. Na právní doručení to vliv nemá, to nastalo dřív (viz „Jaký je rozdíl mezi Dodáno a Doručeno?").',
-      'Soubory leží v soukromém úložišti aplikace, kam jiné aplikace nedosáhnou; chrání je šifrování telefonu, ne aplikace. Otevřete je i offline v systémové prohlížečce nebo sdílíte dál. Nikam je neodesíláme.',
+      'Soubory leží v soukromém úložišti aplikace, kam jiné aplikace nedosáhnou; chrání je šifrování telefonu, ne aplikace. Otevřete je i offline v systémové prohlížečce nebo sdílíte dál. Aplikace je nikam neodesílá.',
     ],
   },
   archive: {
@@ -143,7 +143,7 @@ const cs: Readonly<Record<FaqId, FaqText>> = {
       'Technický popis chyby, nic jiného. Vypnete ji v Nastavení → Diagnostika.',
       'Odesílá se: kde chyba nastala, typ chyby, chybový kód datové schránky, HTTP kód, pořadí pokusu, verze aplikace a systému.',
       'Neodesílá se: obsah zpráv, předměty, jména odesílatelů ani příjemců, ID schránek, uživatelské jméno, hesla, přílohy ani jejich názvy, text dokumentů a nic ze zálohy. Filtr propustí jen vyjmenované údaje a ostatní zahodí; zná ID a jména vašich schránek a odstraní je i z volného textu.',
-      'Hlášení míří do služby Sentry (Functional Software, Inc.), projekt v evropském regionu, tedy servery v EU. Čte je vývojář této aplikace; nepředáváme je dál, neprodáváme ani nepoužíváme k reklamě. Sentry je po 30 dnech smaže. Vlastní server nemáme.',
+      'Hlášení míří do služby Sentry (Functional Software, Inc.), projekt v evropském regionu, tedy servery v EU. Čtou je vývojáři této aplikace; nepředávají je dál, neprodávají ani nepoužívají k reklamě. Sentry je po 30 dnech smaže. Vlastní server aplikace nemá.',
     ],
   },
   // 006 FR-015 (user). The Settings screen says what the backup holds; this says how it is locked and
@@ -165,10 +165,10 @@ const cs: Readonly<Record<FaqId, FaqText>> = {
   backupEncryption: {
     question: 'Jak je záloha zašifrovaná?',
     answer: [
-      'Záloha je jeden soubor, zašifrovaný v telefonu ještě před uložením. Nezašifrovaná se nikam neposílá, my k ní přístup nemáme a aplikace nemá server.',
+      'Záloha je jeden soubor, zašifrovaný v telefonu ještě před uložením. Nezašifrovaná se nikam neposílá, vývojáři aplikace k ní přístup nemají a aplikace nemá server.',
       'Klíč se z hesla odvozuje funkcí Argon2id (64 MiB, 3 průchody), obsah šifruje XChaCha20-Poly1305 s ověřením celistvosti: po změně jediného bajtu otevření selže. Sůl a nonce jsou pro každou zálohu nové.',
       'Heslo je 20 náhodných znaků (100 bitů entropie), negenerujete ho vy a nikam se neposílá; leží v zabezpečeném úložišti a zobrazí se až po ověření otiskem, obličejem nebo kódem.',
-      'Bez hesla zálohu neotevře nikdo, ani my. Záložní klíč ani obnova přes podporu neexistují. Uschovejte ho i mimo telefon; do druhého telefonu ho přenese QR kód.',
+      'Bez hesla zálohu neotevře nikdo, ani vývojáři aplikace. Záložní klíč ani obnova přes podporu neexistují. Uschovejte ho i mimo telefon; do druhého telefonu ho přenese QR kód.',
     ],
   },
   newPhone: {
@@ -250,7 +250,7 @@ const en: Readonly<Record<FaqId, FaqText>> = {
     question: 'Where do downloaded attachments go?',
     answer: [
       'A message downloads whole, with every attachment at once: tens of megabytes for large ones, so only on your tap. This has no bearing on legal delivery, which happened earlier (see “What is the difference between Delivered to box and Served?”).',
-      'Files sit in the app’s private storage, out of reach of other apps; they are protected by the phone’s encryption, not the app’s. They open offline in the system viewer or can be shared onward. We never send them anywhere.',
+      'Files sit in the app’s private storage, out of reach of other apps; they are protected by the phone’s encryption, not the app’s. They open offline in the system viewer or can be shared onward. The app never sends them anywhere.',
     ],
   },
   archive: {
@@ -274,7 +274,7 @@ const en: Readonly<Record<FaqId, FaqText>> = {
       'A technical description of the error, nothing else. Turn it off in Settings → Diagnostics.',
       'Sent: where the error happened, the kind of error, the data box’s error code, the HTTP code, which attempt it was, the app and OS version.',
       'Never sent: message contents, subjects, sender or recipient names, box IDs, your username, passwords, attachments or their filenames, document text, anything from your backup. A filter admits only the listed fields and discards the rest; it knows your boxes’ IDs and names and strips them from free text too.',
-      'Reports go to Sentry (Functional Software, Inc.), on a project held in the European region, so they sit on servers in the EU. They are read by the developer of this app; we do not pass them on, sell them, or use them for advertising. Sentry deletes them after 30 days. We have no server of our own.',
+      'Reports go to Sentry (Functional Software, Inc.), on a project held in the European region, so they sit on servers in the EU. They are read by the developers of this app, who do not pass them on, sell them, or use them for advertising. Sentry deletes them after 30 days. The app has no server of its own.',
     ],
   },
   debugMode: {
@@ -289,10 +289,10 @@ const en: Readonly<Record<FaqId, FaqText>> = {
   backupEncryption: {
     question: 'How is the backup encrypted?',
     answer: [
-      'A backup is a single file, encrypted on your phone before it is stored anywhere. It never leaves the device unencrypted, we cannot read it, and the app has no server.',
+      'A backup is a single file, encrypted on your phone before it is stored anywhere. It never leaves the device unencrypted, the app’s developers cannot read it, and the app has no server.',
       'The key is derived from the password with Argon2id (64 MiB, 3 passes), and the contents are encrypted with XChaCha20-Poly1305, which authenticates them: change one byte and opening fails. Salt and nonce are new for every backup.',
       'The password is 20 random characters (100 bits of entropy); you do not choose it and it is never sent anywhere. It lives in the secure store and is shown only after your fingerprint, face or device code.',
-      'Without the password nobody can open the backup, including us. There is no master key and no recovery through support. Keep a copy off the phone; a QR code moves it to another phone.',
+      'Without the password nobody can open the backup, not even the app’s developers. There is no master key and no recovery through support. Keep a copy off the phone; a QR code moves it to another phone.',
     ],
   },
   newPhone: {

@@ -31,7 +31,7 @@
 
 # Government mail that reads like mail.
 
-A client for Czech data boxes (datové schránky) on Android and iOS. Open source, no server of ours, and an archive that does not vanish after ninety days.
+A client for Czech data boxes (datové schránky) on Android and iOS. Open source, no server behind it, and an archive that does not vanish after ninety days.
 
 **A Czech data box is a legal delivery address. It tends to be treated worse than a marketing email.**
 
@@ -141,7 +141,7 @@ A refresh downloads the attachments of received and sent messages, Wi‑Fi only 
 </td>
 <td align="center">
 <h3>💾 Encrypted backup</h3>
-The whole archive, with every attachment if you choose. Without the password nobody opens it, including us.
+The whole archive, with every attachment if you choose. Without the password nobody opens it, not even the developers.
 </td>
 <td align="center">
 <h3>📲 A new phone</h3>
@@ -176,7 +176,7 @@ This is a client for your mail from the state. It is built accordingly.
 | **No server.**                    | There is no backend for your mail or credentials to go to. The app talks to ISDS, and elsewhere only in two cases you decide on: crash reports (only with your consent), and moving the archive to another phone, which may go through croc's public relay, encrypted so the relay cannot read it. |
 | **Nothing in the background.**    | The ISDS operating rules require an application on a local workstation to sign in only *"by a manual command of the user"*. Obálka does not sync in the background, at all. |
 | **App lock.**                     | Optional: fingerprint, face or device passcode. When it is on, it locks the saved passwords and sign-ins too. The contents never appear in the app switcher. |
-| **Encrypted backup.**             | A key only the user holds (Argon2id + XChaCha20-Poly1305, attachments with AES-256-GCM). Without it nobody opens the backup, including us. |
+| **Encrypted backup.**             | A key only the user holds (Argon2id + XChaCha20-Poly1305, attachments with AES-256-GCM). Without it nobody opens the backup, not even the developers. |
 | **Crash reports ask first.**      | Sent: where the error happened and what it was. Never sent: message contents, subjects, names, box IDs, credentials, attachments or document text. EU servers, switchable off at any time. |
 | **Debug mode uploads nothing.**   | It records a technical trace into a file on the phone; you share that file with whoever you choose. |
 
@@ -287,7 +287,7 @@ An honest per-feature breakdown, including what is **not** done, lives in
 
 Obálka was written in large part by AI, specifically [Claude](https://claude.ai) by Anthropic. Stated
 here plainly and without embarrassment: without that help the app would not exist, or it would have
-taken years. We are grateful for it and see no reason to hide it.
+taken years. The developers are grateful for it and see no reason to hide it.
 
 What that means in practice:
 

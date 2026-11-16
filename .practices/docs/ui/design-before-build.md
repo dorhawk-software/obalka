@@ -94,12 +94,109 @@ before anyone is shown the result.
 sample data makes exact comparison possible (Crake's `CRAKE_DEMO`, tern's
 `TERN_FAKE` and `TERN_SHOW`). See [testing.md](../common/testing.md).
 
+Eyes accept a line drawn twice as wide. Obálka's compose stamp has a
+1 pt translucent frame; Android drew it 6 px wide on a 2.625x screen,
+where an opaque one is 3. Side by side it looked right; measured, it
+was not ([530f8da](https://github.com/dorhawk-software/obalka/commit/530f8da)).
+
 **Apply.** Open the app in demo mode and capture the window. Compare it
 side by side with the design, and fix the differences before showing it.
 Capture sparingly: screen-portal captures flash the user's screen, so read
 a window's own pixels where you can.
 
-**Check.** The handoff includes the side-by-side capture.
+Then measure. Render the board at the device's pixel ratio and read rows
+of pixels across the same parts of both: line weights, insets, heights.
+Any image tool that dumps a row of pixels will do (ffmpeg's `crop` to
+`rawvideo`, for one).
+
+**Check.** The handoff includes the side-by-side capture and the measured
+line weights and insets of each new object.
+
+## Pixel by pixel: the owner's eye is the bar
+
+**What.** Before a built screen is called done, every object on it is
+checked at the device's full resolution, cropped beside the same crop of
+the design. The bar is that the owner finds nothing. Matching the layout
+is not enough: edges, lines, glyphs, the typeface and every string are
+checked one by one.
+
+**Why.** On 2026-11-13 Obálka's owner found five faults on screens the
+agent had walked, captured and called matching:
+
+- an envelope's creases poked past its rounded corners;
+- a 4 px blue rim showed above a flap that should reach the top edge;
+- the search header drew a hairline its board does not draw;
+- the search field had an outline and no glyph, where the board drew a
+  glyph and no outline;
+- every text field showed the system's Roboto, not the product's face.
+
+Each one was visible in a capture the agent had already looked at, but
+only shrunk to 800 px. The owner asked for "extreme attention to detail"
+and "pixel perfection" from then on (2026-11-13). All five were fixed in
+one commit, each with a test
+([561d039](https://github.com/dorhawk-software/obalka/commit/561d039)).
+
+The design can be wrong too: the board had the same crease overshoot. The
+code was fixed and the board went on the sync-back list.
+
+A fix can overshoot as well. The first one took the hairline off every
+header, because the agent read the shared header class and not the
+inline style each board sets on it; every board but the search's draws
+the line. It went back the next day, with a test for each side
+([a37862e](https://github.com/dorhawk-software/obalka/commit/a37862e)).
+Check a fix against every design that shows the part, not only the one
+where the fault was found.
+
+**Apply.**
+1. Capture at the device's full resolution. Crop each object to its own
+   picture at 1:1 or larger. Never judge from a thumbnail.
+2. Crop the same object from the design, rendered at the device's pixel
+   ratio, and put the two side by side.
+3. Check each object against this list:
+   - **Edges.** Nothing runs past a rounded corner or a clip. A fill
+     that should reach an edge reaches it, with no rim of what is under it.
+   - **Lines.** Each hairline, outline and divider is in the design. Each
+     one the design draws is there.
+   - **Glyphs.** Each icon in the design is there, from the same family,
+     in the same ink.
+   - **Type.** The face that actually renders, letter by letter. Fields,
+     placeholders and buttons fall back to the system font when no face
+     is set.
+   - **Words.** Each string appears once, in the design's wording and
+     punctuation.
+   - **Both themes**, and the longest language.
+4. A walk that forces a state with a temporary code swap can show things
+   the app never does. Say so before showing that capture, and restore
+   the swap.
+5. A fault in the design itself is fixed in the code and goes on the
+   sync-back list ([above](#when-the-agent-cant-edit-the-design-a-prompt-and-a-sync-back-list)).
+6. Each fault the owner finds becomes a test that fails without the fix
+   ([testing.md](../common/testing.md), "A guard test per incident,
+   proven able to fail"). A new kind of fault becomes an item in step 3.
+
+**Check.** The handoff names each object checked at 1:1 against its
+design crop. The commit counts the owner's catches. The goal is zero.
+
+## A value the scale doesn't have is a question for the owner
+
+**What.** An agreed board may use a spacing, size or radius the project's
+scale lacks. Then ask the owner: add the step to the scale, or move the
+board to the nearest step. Never put the value where the lint doesn't
+look.
+
+**Why.** Obálka's empty-inbox board spaced its envelope 56 and 34 from
+its neighbours; the scale has neither. The first build put both in a
+theme file, which the spacing lint skips. Another agreed board drew the
+same layout at 48 and 32: one layout, four numbers. Hidden values are
+how a scale stops being one.
+
+**Apply.** List each off-scale value with its board and its nearest
+steps, and ask once. Record the answer where it lives: a new step in the
+theme and the design system, or the board moved on the canvas. The same
+layout on several boards gets one set of values.
+
+**Check.** Every number in a lint-exempt folder is a named step, or an
+object's own geometry with its board named beside it.
 
 ## Review a proposal in its place, with fresh eyes
 

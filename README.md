@@ -284,7 +284,7 @@ Poctivý přehled po jednotlivých funkcích, včetně toho, co hotové **není*
 
 Obálku z velké části napsala umělá inteligence, konkrétně [Claude](https://claude.ai) od Anthropicu.
 Je to tu napsané rovnou a bez rozpaků: bez té pomoci by aplikace nevznikla, nebo by na ni padly roky.
-Jsme za ni vděční a není důvod to skrývat.
+Vývojáři jsou za ni vděční a není důvod to skrývat.
 
 Co to znamená v praxi:
 

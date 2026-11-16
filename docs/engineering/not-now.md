@@ -280,6 +280,22 @@ Obálka's own harness gaps, to be fixed as the next pieces of work.
   already on every commit; the box ids in 030's (and 010's) tasks are the test environment's and
   lead only to that name. This allows these items only: other personal details stay out of the
   repository.
+- **check-ui has no boards in this repository (2026-11-16).** Practices 1.6 runs `check-ui` on the
+  boards under `design/` after each edit, at the turn's end and before a commit. Obálka's boards live in
+  the Claude Design canvas (24 `.dc.html` files), so the gate finds none and says so. Until they are
+  here, the agent runs `check-ui` on its local copy before each canvas publish. On 2026-11-16, 1.6.0
+  gave 248 findings, 22 of them the kit's own mistakes, and missed 6 (five bare "Zrušit", one scaled
+  text); 1.6.1 fixed both and gives 232, the canvas's own (a dark phone's clock in dark ink, segmented
+  controls without `role="tablist"`, a slide whose cards run past its bottom, screens drawn mid-scroll
+  without their mark) and the agreed design against the new rules (bare "Zrušit", buttons without icons,
+  1 px rings, sheet shadows that fall up). What brings it back: the owner's answer on keeping the canvas
+  source in the repository.
+- **Ten dialogs and sheets still end in a bare "Zrušit" (2026-11-16).** Practices 1.6 ("Every button
+  names its outcome") wants the way out to name what stays, as the backup's "Ponechat" already does:
+  turning backups off, the documents choice, automatic downloads, metered and received transfers,
+  deleting a debug record, resetting the lock, the paid-send confirmation, the QR scanner and the
+  Mobile Key wait; the receiving phone's "Přijmout" too. The words change what people read, so they
+  are the owner's to pick; a proposal for each waits for the answer.
 
 # Part C: found by the identity pass's second inventory (2026-11-12)
 

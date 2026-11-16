@@ -1,7 +1,7 @@
 # ISDS web-service schemas (v20) - vendored source of truth
 
 Official ISDS (Informační systém datových schránek) WSDL/XSD definitions, namespace
-`http://isds.czechpoint.cz/v20`. These are the **source of truth** for our TypeScript models -
+`http://isds.czechpoint.cz/v20`. These are the **source of truth** for the app's TypeScript models -
 generated types are derived from these files, never hand-edited to diverge from them.
 
 - **Source**: `https://www.mojedatovaschranka.cz/static/wsdl/v20/<file>` — the files are still served there
@@ -24,5 +24,5 @@ generated types are derived from these files, never hand-edited to diverge from 
 
 ## Note
 
-These public government interface definitions are vendored for interoperability. We do **not** link
+These public government interface definitions are vendored for interoperability. The app does **not** link
 GPL `libdatovka`; these schemas are the operator's published contract.

@@ -95,7 +95,7 @@ downloading the app under their own policies.
 
 - **Error reports:** your consent (Art. 6(1)(a) GDPR and Section 89(3) of Czech Act No. 127/2005
   Coll.). You can withdraw it at any time in Settings.
-- **E-mails you send us:** handling your request (Art. 6(1)(f) GDPR).
+- **E-mails you send the controller:** handling your request (Art. 6(1)(f) GDPR).
 - **Data on your phone, and the traffic with ISDS and the croc server:** the app's developers do not
   process this data; the app on your phone does, at your instruction.
 

@@ -13,3 +13,12 @@ NPM_TEST='test'
 # Generated code nobody edits by hand: the ISDS types (codegen-isds) and
 # the in-app changelog and licence lists.
 SIZE_EXCLUDE='(\.generated\.ts$|/generated/)'
+
+# The copy people read, for check-voice (practices 1.6.0, common/voice.md): every
+# source file (the strings, the FAQ, copy in components), the public pages
+# (README, PRIVACY, SECURITY, the changelogs that are What's new), the store
+# listing and the native permission texts. Generated files are left out:
+# the in-app changelog is CHANGELOG*.md's copy and the attributions quote
+# third-party licences. The kit's default read only src/i18n and missed the
+# FAQ's "ani my" and the privacy page's "nám" (2026-11-16).
+VOICE_FILES=':(glob)src/** :(glob)CHANGELOG*.md :(glob)PRIVACY*.md :(glob)README*.md :(glob)SECURITY.md :(glob)docs/store/** :(glob)ios/ObalkaDatovaSchranka/Info.plist :(glob)android/app/src/main/res/values*/strings.xml :(exclude,glob)**/*.generated.*'

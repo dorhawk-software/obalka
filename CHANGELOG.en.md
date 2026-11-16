@@ -20,6 +20,7 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The FAQ and the privacy policy say who does what.** Where they said "we", they now name the app or its developers, so it is clear who can reach your data and who cannot.
 - **The password field says its name once.** "Password" stands above the field and no longer inside it, as with the username.
 - **Error reports have their own glyph.** In Settings › Diagnostics the error-report row leads with a bug instead of the bell; the bell stays with notifications.
 - **The message detail has the same header as every other screen.** Going from the list to a message and on to Settings, the header no longer jumps.
@@ -27,7 +28,7 @@ What changed in each Obálka release, written for the people using it. The newes
 - **A switch you can't use doesn't look on.** It takes the grey track; its knob stays on its side, so you can see what will apply once it can be used.
 - **Less red in the box switcher.** A box with a problem shows only the problem in red; "Last known state" is grey, and the alert badge no longer covers the letters.
 - **A backup screen that says each thing once.** The paragraphs that repeated the card are gone and the attachments switch has a shorter line. The sign-in form calls the name "Username", as ISDS does.
-- **The app speaks for itself.** Texts that said "we" now say what the app does, or what is happening.
+- **The app speaks for itself.** Texts that spoke in the first person now say what the app does, or what is happening.
 - **An undeliverable message has its mark in Sent.** "Undeliverable" now follows the filled
   disc with a slash, as in the help and the message detail; it used to be the quietest line in
   the list.

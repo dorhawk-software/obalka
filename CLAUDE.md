@@ -50,3 +50,8 @@ This project's own settings:
 - Files past 700 lines are in `.practices/size-allowlist`, which only shrinks.
 - `npm run release` builds both apps on this Mac before the tag (`scripts/verify-native.sh`, 2026-11-12).
 - What is decided "not now": docs/engineering/not-now.md, in the same commit.
+- `check-voice` reads `VOICE_FILES` (`.practices/config`): all of `src/`, the changelogs, PRIVACY,
+  README, SECURITY, the store texts, Info.plist and Android's strings; the kit's defaults missed the
+  FAQ (2026-11-16).
+- `check-ui` has no boards here: they live in the Claude Design canvas and are checked by hand before
+  each publish (not-now.md, 2026-11-16).

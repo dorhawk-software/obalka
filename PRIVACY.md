@@ -93,7 +93,7 @@ Odkazy (např. portál datových schránek) se otevírají ve vašem prohlíže�
 
 - **Hlášení o chybách:** váš souhlas (čl. 6 odst. 1 písm. a) GDPR a § 89 odst. 3 zákona
   č. 127/2005 Sb.). Souhlas můžete kdykoli odvolat v Nastavení.
-- **E-maily, které nám pošlete:** vyřízení vašeho dotazu (čl. 6 odst. 1 písm. f) GDPR).
+- **E-maily, které pošlete správci:** vyřízení vašeho dotazu (čl. 6 odst. 1 písm. f) GDPR).
 - **Údaje ve vašem telefonu a komunikace s ISDS a se serverem croc:** tyto údaje vývojáři aplikace
   nezpracovávají; zpracovává je aplikace ve vašem telefonu na váš pokyn.
 

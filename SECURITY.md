@@ -47,7 +47,7 @@ These are the properties worth attacking, described in full in
 [`.specify/memory/constitution.md`](.specify/memory/constitution.md) and
 [`docs/accounts.md`](docs/accounts.md):
 
-- **There is no backend of ours.** The app talks to ISDS directly. Mail and credentials never reach a
+- **The project runs no backend.** The app talks to ISDS directly. Mail and credentials never reach a
   server run by this project.
 - **Credentials live in the platform's secure storage**, sealed under a vault key; with the app lock on,
   nothing that can sign in is readable while the app is locked.
