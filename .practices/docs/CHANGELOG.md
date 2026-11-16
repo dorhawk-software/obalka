@@ -3,6 +3,17 @@
 What changed for the projects that use the practices. Written by hand,
 newest first, in the kinds common/changelog.md describes.
 
+## 1.6.4 (2026-11-16)
+
+### Fixed
+
+- **`check-ui` sees what covers a wide board's right side.** It renders at
+  1100 and 1440 px and looked under each line only by scrolling down, so
+  on a board wider than the window, text past the right edge always read
+  as uncovered: on Obálka's 3150 px dialogs board 640 runs under sheets
+  were measured, and a ring's halo was held to an avatar's initials under
+  a sheet instead of the label beside it. It now scrolls both ways.
+
 ## 1.6.3 (2026-11-16)
 
 ### New

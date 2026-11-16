@@ -173,9 +173,11 @@ function audit(cfg) {
 
   // Covered things (under a sheet, behind a window) aren't seen: hit-test each line's middle.
   // Everything else is measured at scroll 0, where page and viewport coordinates agree.
+  // Both axes: a board wider than the window has things past its right edge, where elementFromPoint
+  // finds nothing and everything read as uncovered (Obálka's 3150 px board, 1.6.4).
   const coveredAt = (e, q) => {
-    window.scrollTo(0, Math.max(0, q.top + q.height / 2 - innerHeight / 2));
-    const hit = document.elementFromPoint(q.left + q.width / 2, q.top + q.height / 2 - scrollY);
+    window.scrollTo(Math.max(0, q.left + q.width / 2 - innerWidth / 2), Math.max(0, q.top + q.height / 2 - innerHeight / 2));
+    const hit = document.elementFromPoint(q.left + q.width / 2 - scrollX, q.top + q.height / 2 - scrollY);
     return !!hit && !(hit === e || e.contains(hit) || hit.contains(e));
   };
   for (const t of texts) t.covered = t.lines.length > 0 && coveredAt(t.e, t.lines[0]);
