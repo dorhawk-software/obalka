@@ -105,6 +105,10 @@ describe.each([
     expect(style(sheet).boxShadow).toBe(objectShadow(theme.name, 'letter'));
     // Tucked under (the owner, 2026-11-16, T050.9): the envelope lies over the letter's top.
     expect(style(view.getByTestId('detailEnvelopeFront')).zIndex).toBe(1);
+    // As much shows above the subject as under its last line (the owner, 2026-11-16: "the title seems
+    // to be kinda hidden under the blue top bar"): the padding less the 10 the envelope covers.
+    const s = style(sheet);
+    expect((s.paddingTop as number) + (s.marginTop as number)).toBe(s.paddingBottom);
     expect(view.getByRole('header').props.children).toBe('Výzva k doplnění podání');
   });
 });

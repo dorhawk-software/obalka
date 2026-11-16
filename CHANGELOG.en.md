@@ -20,6 +20,8 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The subject no longer hides under the envelope.** The subject now has as much room above it as the
+  letter has below its last line, in a message and in Compose.
 - **The letter comes out from under the envelope.** On a message and while writing one, the letter's top
   lies under the envelope and the envelope's shadow falls down onto it; until now the letter lay on top
   and its shadow pointed up. Bottom sheets in the dark appearance no longer throw a shadow upward; their

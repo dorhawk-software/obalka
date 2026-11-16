@@ -123,6 +123,8 @@ describe('compose, the envelope you are sending (R2, R12)', () => {
     const letter = styleOf(view.getByTestId('composeLetter'));
     expect(envelope.zIndex).toBe(1);
     expect(letter.zIndex ?? 0).toBeLessThan(1);
+    // As much shows above the subject as under the last line (the owner, 2026-11-16).
+    expect((letter.paddingTop as number) + (letter.marginTop as number)).toBe(letter.paddingBottom);
   });
 
   // Walked on Obalka_Demo (2026-11-16, T050.10): a box whose password had expired searched and was

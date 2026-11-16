@@ -542,7 +542,10 @@ Shadow is reserved for objects that float, plus a few brand moments:
 - **`letter`** (the resting `sheet`'s shadow): the letter coming out of its envelope, its top tucked
   10 under the envelope's lower edge. The envelope lies over it (`zIndex` 1) and its own shadow falls
   onto the letter; until 2026-11-16 the letter lay on top and threw its shade up onto the envelope,
-  toward the light (the owner, T050.9 "tucked under"). **`window`** (an inset,
+  toward the light (the owner, T050.9 "tucked under"). Its top padding is 24, the 10 under the envelope
+  plus 14, so as much shows above the subject as under its last line (the owner, 2026-11-16: "the
+  message title seems to be kinda hidden under the blue top bar"); until then 4-6 showed against 14-15.
+  **`window`** (an inset,
   `inset 0 2px 4px -1px`), **`sheetEdge`** and **`seal`**.
 - **Every shadow falls away from the light**, which is above: an outer shadow drops at least a
   quarter of its blur (`printedObjects.test.ts`, `raisedShadow.test.ts`; practices, "Depth and

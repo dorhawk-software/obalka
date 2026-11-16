@@ -20,6 +20,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Předmět zprávy už nezalézá pod obálku.** Nad předmětem je teď stejně místa jako pod posledním řádkem
+  dopisu, v detailu zprávy i při psaní.
 - **Dopis vyjíždí zpod obálky.** Na detailu zprávy a při psaní leží horní okraj dopisu pod obálkou a
   stín obálky padá dolů na dopis; dřív ležel dopis navrchu a jeho stín mířil nahoru. Spodní listy v
   tmavém vzhledu nevrhají stín vzhůru; okraj dělá jejich odstín.

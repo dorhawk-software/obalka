@@ -308,7 +308,9 @@ export function DetailEnvelope({
           borderTopRightRadius={8}
           borderBottomLeftRadius={14}
           borderBottomRightRadius={14}
-          paddingTop={16}
+          // 24 = the 10 under the envelope and the 14 under the last line, so as much shows above the
+          // subject as below it (the owner, 2026-11-16: "kinda hidden under the blue top bar").
+          paddingTop={24}
           paddingHorizontal={16}
           paddingBottom={14}
           style={{ boxShadow: objectShadow(theme.name, 'letter') }}

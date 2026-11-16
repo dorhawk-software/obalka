@@ -120,7 +120,7 @@ export function WaitingLetter() {
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
     >
-      <LetterSheet>
+      <LetterSheet tucked={false}>
         <YStack gap={2}>
           <Label color={theme.textMuted}>{t('send.subject')}</Label>
           <Body color={theme.textFaint}>{t('send.subject.placeholder')}</Body>
@@ -130,7 +130,12 @@ export function WaitingLetter() {
   );
 }
 
-function LetterSheet({ children }: { readonly children: ReactNode }) {
+/**
+ * The letter's paper. Tucked 10 under the envelope's edge, its top padding is that 10 and the 14 under
+ * its last line, so as much shows above the subject as below it (the owner, 2026-11-16); the waiting
+ * letter, at the edge, has the 14 alone.
+ */
+function LetterSheet({ children, tucked = true }: { readonly children: ReactNode; readonly tucked?: boolean }) {
   const theme = useTheme();
   return (
     <YStack
@@ -141,7 +146,8 @@ function LetterSheet({ children }: { readonly children: ReactNode }) {
       borderTopRightRadius={8}
       borderBottomLeftRadius={14}
       borderBottomRightRadius={14}
-      paddingVertical={14}
+      paddingTop={tucked ? 24 : 14}
+      paddingBottom={14}
       paddingHorizontal={16}
       gap={12}
       style={{ boxShadow: objectShadow(theme.name, 'letter') }}
