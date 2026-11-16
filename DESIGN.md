@@ -616,7 +616,10 @@ moves without being asked.
 - **Target:** 48dp. A press drawn smaller (a 44 download, a 40 row button) takes `touchSlop()` to reach
   it; two links stacked with no room between are each drawn at 48 instead, because their slops would
   overlap; a link's room above it is margin, not padding, when another target sits there
-  (`smallPressHasSlop.test.ts`).
+  (`smallPressHasSlop.test.ts`). Separate targets keep 8 between them (practices 1.6): R10's two ways
+  to the recovery key, which touched until 2026-11-16, now stand 8 apart (the owner, T050.5;
+  `keyLinksApart.test.tsx`). What lies under an open sheet's dim layer is not a target then; the
+  boards mark it `aria-hidden`, as the app's `Modal` hides it.
 - **Busy:** the board draws the ring and the busy words centred as one group inside the button; the
   button itself does not move or resize.
 - **Press:** scale to 0.97 over 90ms, timing curve, native driver. A dip, not a bop.

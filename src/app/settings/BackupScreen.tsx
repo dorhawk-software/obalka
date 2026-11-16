@@ -12,12 +12,13 @@
 //   * Backups that this build cannot read are LISTED, greyed, with the reason. Hiding them would look
 //     like the backup was lost when the answer is "update the app" (FR-011).
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { BackHandler, type DimensionValue } from 'react-native';
 import { XStack, YStack, Input } from '../../theme/ui';
 import { Caption, Label, Small, SmallStrong } from '../../theme/Typography';
 import { Well } from '../../theme/Well';
 import { touchSlop } from '../../theme/touchTarget';
+import { KeyLink, LINK_HEIGHT } from './KeyLink';
 import { InkButton } from '../../theme/InkButton';
 import { OffsetIcon } from '../../theme/offsetIcons';
 import { Toggle } from '../../theme/Toggle';
@@ -360,18 +361,15 @@ export function leaveDialogActions({
   ];
 }
 
+/** The run's slot under the switch: the stage's 20, the 8 between, the bar's 6 (R10). */
+const RUN_SLOT = 34;
+
 /**
  * "12 z 40" where there is something to count, a percentage where there is not.
  *
  * Argon2id knows how far along it is but not in units a person cares about, so it gets the
  * percentage; reading messages and writing rows get the real counts, which is what was asked for.
  */
-/** R1's help link: 44 tall, the slop takes it to the target. */
-const LINK_HEIGHT = 44;
-
-/** The run's slot under the switch: the stage's 20, the 8 between, the bar's 6 (R10). */
-const RUN_SLOT = 34;
-
 function countLabel(progress: BackupProgress): string {
   return progress.total > 1
     ? t('backup.progress.count', { done: progress.done, total: progress.total })
@@ -388,42 +386,6 @@ function countLabel(progress: BackupProgress): string {
  * rather than Skeleton's default: these sit inside a Card, and there `surfaceAlt` is DARKER than
  * the surface behind it in dark mode, which measured 1.09:1 on a device - invisible.
  */
-/** R10's link under the key field: its glyph and words in blue, 44 tall (R1's link). */
-function KeyLink({
-  icon,
-  label,
-  onPress,
-  busy = false,
-  testID,
-}: {
-  readonly icon: ReactNode;
-  readonly label: string;
-  readonly onPress: () => void;
-  readonly busy?: boolean;
-  readonly testID: string;
-}) {
-  const theme = useTheme();
-  return (
-    <XStack
-      alignSelf="flex-start"
-      minHeight={LINK_HEIGHT}
-      paddingHorizontal={space.xs}
-      alignItems="center"
-      gap={space.sm}
-      hitSlop={touchSlop({ height: LINK_HEIGHT })}
-      onPress={onPress}
-      pressStyle={{ opacity: 0.5 }}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ busy }}
-      testID={testID}
-    >
-      {icon}
-      <SmallStrong color={theme.blue}>{label}</SmallStrong>
-    </XStack>
-  );
-}
-
 function LoadingLines({
   widths,
   height = 11,
@@ -1158,7 +1120,11 @@ export function BackupScreen({
                     accessibilityLabel={t('backup.restore.key.placeholder')}
                     testID="backup-key-input"
                   />
-                  <YStack /* the two ways to the key, flush: their 44 rows touch (R10) */>
+                  <YStack
+                    // The two ways to the key, 8 apart: they touched until T050.5, and their 48
+                    // touch areas overlapped (the owner, 2026-11-16).
+                    gap={space.base}
+                  >
                     {/* Showing the key as a QR has worked since T012a; READING one needs a camera,
                         which the app only gained for 025. Typing stays: the phone showing the code
                         may be the lost one. */}

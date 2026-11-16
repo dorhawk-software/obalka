@@ -20,6 +20,7 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Dva odkazy k heslu zálohy mají mezi sebou místo.** „Načíst heslo z QR kódu“ a „Použít heslo z tohoto telefonu“ se dotýkaly, takže palec mířící na jeden mohl trefit druhý; teď je mezi nimi 8 bodů.
 - **Vypínač „Jen na Wi-Fi“ říká, proč je ztlumený.** Dokud se přílohy nestahují automaticky, stojí pod ním „Platí, když se přílohy stahují automaticky.“ Nejsvětlejší šedý text je o odstín tmavší, aby se dal přečíst i na šedém podkladu.
 - **Tlačítko, které otázku zavře, říká, co zůstane.** Místo „Zrušit“ třeba „Nechat zapnuté“, „Neodesílat“ nebo „Zavřít fotoaparát“, a příjem zálohy z druhého telefonu má „Přijmout zálohu“: co se stane, je jasné i bez čtení otázky.
 - **Razítko odeslané zprávy ruší známku jako na skutečné poště.** Kruh razítka leží přes okraj známky, tmavým inkoustem jako vlnky, a datum je na papíře známky. Vlnky vybíhají z kruhu a datum nepřeškrtávají. Na úzkém telefonu už nepřekrývá jméno odesílatele.

@@ -1338,7 +1338,11 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     button's corner 13 → 14 (app and boards). The strips board still drew the missing-files button
     neutral at 46, though 6a14d22 had moved the app to the blue download; the board follows the app.
     Canvas v41, check-ui 154 → 140, same-look 0.
-  - [ ] T050.5 8 px between targets (8): backup's two links, transfer dialog buttons, Napsat by dialogs.
+  - [x] T050.5 8 px between targets (8). The owner picked "8 px between them" (2026-11-16): the two
+    ways to the recovery key on Backup were 44 rows that touched, their 48 touch areas overlapping by
+    4; now 8 apart, app and R10. The other 7 were Napsat and "Zrušit přenos" under an open sheet's dim
+    layer, which the app's Modal takes out of reach; R9 marks them aria-hidden. KeyLink moved to
+    KeyLink.tsx (BackupScreen 1984 → 1950 allowed). Canvas v43, check-ui 136 → 128, gap 0.
   - [x] T050.6 Nothing past its surface (4). Canvas only, no design change: the Main slide was a fixed
     1280 × 900 and its words reached 1070, so the frame cut the cards' last lines (it now grows, frame
     1070); R8's paper was 3568 wide under nine phones (3950), now its 4040 frame. Canvas v42, check-ui
