@@ -59,7 +59,10 @@ export function ComposeEnvelope({
   return (
     <Envelope
       creases={envelopeShape.composeCreases}
+      testID="composeEnvelope"
       style={{
+        // Above the letter tucked under its lower edge, so its shadow falls onto it (T050.9).
+        zIndex: 1,
         minHeight: 188,
         paddingTop: 12,
         paddingHorizontal: 16,

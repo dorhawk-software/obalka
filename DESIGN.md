@@ -518,8 +518,9 @@ Shadow is reserved for objects that float, plus a few brand moments:
 - **`depth.lg`** (`inset 0 1px 2px rgba(255,255,255,.45), 0 4px 6px rgba(0,0,0,.18), 0 6px 10px rgba(0,0,0,.08)`):
   dialogs and sheets. The layered stack - an inset top highlight, a tight contact shadow, a soft
   ambient one - which is why it reads in both appearances: the dark shadows carry in light mode, the
-  top highlight carries in dark. Bottom sheets in dark mode swap it for a faint highlight and a soft
-  ambient lift.
+  top highlight carries in dark. A bottom sheet keeps only the highlight in light mode (the shadow
+  falls below the screen's edge) and has no shadow in dark mode: its tone over the scrim is its
+  edge, with no shade thrown up onto the scrim (the owner, 2026-11-16, T050.9 "no shade above").
 - **Snackbar** (`0 10px 24px -10px rgba(33,27,18,.6)`, R9): the toast that floats above the content, 6
   over the compose stamp while the stamp is on screen.
 - **Emblem** (`0 14px 34px rgba(33,50,90,.32)`): the 96dp brand tile on a success screen and the
@@ -538,8 +539,14 @@ Shadow is reserved for objects that float, plus a few brand moments:
   hairline (Cards B, agreed 2026-11-12, built with R13): `Card` draws it in place of the old border.
 - **`envelope`** (`0 22px 34px -26px rgba(20,32,60,.7)`) and **`envelopeHeader`**
   (`0 18px 30px -22px rgba(20,32,60,.6)`): an envelope on the paper, and the inbox header.
-- **`letter`** (`0 -6px 14px -10px`), **`window`** (an inset, `inset 0 2px 4px -1px`),
-  **`sheetEdge`** and **`seal`**.
+- **`letter`** (the resting `sheet`'s shadow): the letter coming out of its envelope, its top tucked
+  10 under the envelope's lower edge. The envelope lies over it (`zIndex` 1) and its own shadow falls
+  onto the letter; until 2026-11-16 the letter lay on top and threw its shade up onto the envelope,
+  toward the light (the owner, T050.9 "tucked under"). **`window`** (an inset,
+  `inset 0 2px 4px -1px`), **`sheetEdge`** and **`seal`**.
+- **Every shadow falls away from the light**, which is above: an outer shadow drops at least a
+  quarter of its blur (`printedObjects.test.ts`, `raisedShadow.test.ts`; practices, "Depth and
+  texture from a concept").
 - **Filters** - `slip`, `stamp`, `stampFab` - are `drop-shadow`s, because a perforated edge is cut
   out of the object and the shadow has to follow the holes.
 

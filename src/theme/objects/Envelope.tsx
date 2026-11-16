@@ -20,9 +20,11 @@ export function Envelope({
   children,
   style,
   creases = envelopeShape.creases,
+  testID,
 }: {
   readonly children: ReactNode;
   readonly style?: StyleProp<ViewStyle>;
+  readonly testID?: string;
   /** The folds' drawing, for an envelope of another shape (the sign-in's, `waitingEnvelope`). */
   readonly creases?: { readonly width: number; readonly height: number; readonly d: string; readonly stroke: number };
 }) {
@@ -39,6 +41,7 @@ export function Envelope({
         },
         style,
       ]}
+      testID={testID}
     >
       {/* The folds' own layer, filling the whole envelope. A percentage size straight on the drawing
           resolved against the padded content box, and the folds stopped the padding short of the

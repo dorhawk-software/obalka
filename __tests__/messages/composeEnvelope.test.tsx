@@ -114,6 +114,17 @@ describe('compose, the envelope you are sending (R2, R12)', () => {
     expect(view.queryByTestId('composeStamp')).toBeNull();
   });
 
+  // Tucked under (the owner, 2026-11-16, T050.9): the envelope lies over the letter's top, and its own
+  // shadow falls down onto it; until then the letter lay on top and threw its shade up.
+  it('tucks the letter under the envelope, which lies above it', async () => {
+    const view = await compose();
+    await pick(view, mockOvm);
+    const envelope = styleOf(view.getByTestId('composeEnvelope'));
+    const letter = styleOf(view.getByTestId('composeLetter'));
+    expect(envelope.zIndex).toBe(1);
+    expect(letter.zIndex ?? 0).toBeLessThan(1);
+  });
+
   it('prints Zdarma and the data message on the stamp for a public authority', async () => {
     const view = await compose();
     await pick(view, mockOvm);

@@ -28,8 +28,6 @@ export const depth = {
   segmentOnEnvelope: '0px 1px 2px rgba(9,30,64,0.25)',
   /** A switch's knob. */
   knob: '0px 1px 3px rgba(0,0,0,0.25)',
-  /** A bottom sheet's edge in dark mode: `lg`'s white bevel is a harsh line against the dark scrim. */
-  sheetDark: 'inset 0px 1px 1px rgba(255,255,255,0.06), 0px -2px 18px rgba(0,0,0,0.45)',
   /**
    * A floating card's edge in dark mode - a dialog, the rename box: the shadow alone, even all round.
    * `lg`'s top-only bevel read as a bright top edge fading out down the sides (owner, 2026-11-11: "the
@@ -57,7 +55,9 @@ export const depth = {
  * - `sheetEdge`: the second envelope's edge under an attention sheet.
  * - `envelope`: a whole envelope on the paper (message, compose, sent, sign-in).
  * - `envelopeHeader`: the inbox header, the envelope front the list hangs from.
- * - `letter`: the letter rising out of its envelope, shading the envelope's lip.
+ * - `letter`: the letter coming out of its envelope, its top tucked under the envelope's lower edge,
+ *   which lies over it and shades it; the letter rests on the page as a sheet does (the owner,
+ *   2026-11-16, T050.9 "tucked under"; until then it lay on top and threw its shade up, toward the light).
  * - `window`: the envelope's paper lying over the window's edge (an inset).
  * - `seal`: the lock's wax seal, raised and lit.
  * - `popover`: a menu held up over the screen beside what opened it (R9's box menu, `--dlgsh`).
@@ -83,7 +83,7 @@ const OBJECT_SHADOWS: Record<'light' | 'dark', Record<ObjectShadow, string>> = {
     sheetEdge: '0px 1px 2px rgba(33,27,18,0.12)',
     envelope: '0px 22px 34px -26px rgba(20,32,60,0.7)',
     envelopeHeader: '0px 18px 30px -22px rgba(20,32,60,0.6)',
-    letter: '0px -6px 14px -10px rgba(20,32,60,0.35)',
+    letter: '0px 1px 2px rgba(33,27,18,0.08), 0px 8px 16px -10px rgba(33,27,18,0.28)',
     window: 'inset 0px 2px 4px -1px rgba(9,30,64,0.28)',
     seal:
       '0px 4px 8px rgba(9,30,64,0.45), inset 0px 1px 1px rgba(255,255,255,0.35), ' +
@@ -99,7 +99,7 @@ const OBJECT_SHADOWS: Record<'light' | 'dark', Record<ObjectShadow, string>> = {
     sheetEdge: '0px 1px 2px rgba(33,27,18,0.12)',
     envelope: '0px 22px 34px -24px rgba(0,0,0,0.9)',
     envelopeHeader: '0px 18px 30px -22px rgba(20,32,60,0.6)',
-    letter: '0px -6px 14px -10px rgba(0,0,0,0.7)',
+    letter: '0px 8px 16px -10px rgba(0,0,0,0.7)',
     window: 'inset 0px 2px 4px -1px rgba(0,0,0,0.55)',
     seal:
       '0px 4px 8px rgba(9,30,64,0.45), inset 0px 1px 1px rgba(255,255,255,0.35), ' +
@@ -151,11 +151,14 @@ export function objectFilter(themeName: 'light' | 'dark', kind: ObjectFilter): s
  * light mode, and in dark mode an edge that does not draw a bright line along the top. One function, so
  * no surface can take `lg` in dark mode again by forgetting a branch - three did (2026-11-11).
  *
- * `sheet` rises from the bottom edge and only its top shows; `float` is a card with all four edges.
+ * `sheet` rises from the bottom edge and only its top shows; `float` is a card with all four edges. A
+ * dark sheet has no shadow: its tone over the scrim is its edge (the owner, 2026-11-16, T050.9 "no
+ * shade above"); until then it drew a 6% line on top and threw a shade up onto the scrim, toward the
+ * light. In light mode `lg`'s shadow falls below the screen's edge, and only its lit top shows.
  */
-export function raised(themeName: 'light' | 'dark', kind: 'float' | 'sheet'): string {
+export function raised(themeName: 'light' | 'dark', kind: 'float' | 'sheet'): string | undefined {
   if (themeName === 'light') {
     return depth.lg;
   }
-  return kind === 'sheet' ? depth.sheetDark : depth.floatDark;
+  return kind === 'sheet' ? undefined : depth.floatDark;
 }

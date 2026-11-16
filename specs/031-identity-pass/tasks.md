@@ -1364,7 +1364,12 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     colour under its own label. It found a check-ui fault, fixed in practices 1.6.4: boards wider than
     the window were never scrolled sideways, so covered text past the right edge was measured (640 runs
     here). Canvas v46, check-ui 72 → 27, ring 0, halo 0.
-  - [ ] T050.9 Shadows fall away from the light (27): bottom sheets' upward shadow.
+  - [x] T050.9 Shadows fall away from the light (27). The owner: "tucked under" and "no shade above".
+    The letter's top lies under its envelope, which is raised over it (`zIndex` 1) and shades it; the
+    letter rests with the sheet's shadow (16 letters on the boards, Detail and Compose in the app).
+    Bottom sheets throw nothing up onto the scrim: light keeps its lit top, dark has no shadow (9 boards;
+    one sheet had a hidden second layer; `raised('dark', 'sheet')` is none). A guard test holds
+    every named shadow to falling at least a quarter of its blur. Canvas v47, check-ui 27 → 0.
   - [ ] T050.10 The app itself: walk each screen against the same rules (check-ui reads only boards).
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.

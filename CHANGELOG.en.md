@@ -20,6 +20,10 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The letter comes out from under the envelope.** On a message and while writing one, the letter's top
+  lies under the envelope and the envelope's shadow falls down onto it; until now the letter lay on top
+  and its shadow pointed up. Bottom sheets in the dark appearance no longer throw a shadow upward; their
+  tone is their edge.
 - **In the dark appearance, cards and envelopes end in their own tone.** Cards, envelopes, the box menu
   and the notice at the bottom no longer have a faint light line round them; the edge is the surface one
   step lighter than the page and the shadow under it, as in the light appearance.

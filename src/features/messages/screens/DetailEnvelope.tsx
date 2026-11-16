@@ -193,7 +193,14 @@ export function DetailEnvelope({
   return (
     // Over what follows it on the screen, which the tile flies across.
     <YStack paddingHorizontal={16} paddingTop={12} zIndex={1} onLayout={onRootLayout} testID="detailEnvelope">
-      <View ref={opening.envelope} onLayout={onEnvelopeLayout} collapsable={false} testID="detailEnvelopeFront">
+      {/* Above the letter tucked under its lower edge, so its shadow falls onto it (T050.9). */}
+      <View
+        ref={opening.envelope}
+        onLayout={onEnvelopeLayout}
+        collapsable={false}
+        style={{ zIndex: 1 }}
+        testID="detailEnvelopeFront"
+      >
         {opening.tile ? <FlyingTile {...opening.tile} /> : null}
         <Animated.View style={opening.envelopeStyle}>
           <Envelope

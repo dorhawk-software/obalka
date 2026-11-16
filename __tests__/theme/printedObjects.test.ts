@@ -3,6 +3,7 @@
 
 import { objectFilter, objectShadow } from '../../src/theme/depth';
 import { perforation, securityTint } from '../../src/theme/print';
+import { towardTheLight } from '../helpers/shadowLayers';
 
 const SHADOWS = ['sheet', 'sheetEdge', 'envelope', 'envelopeHeader', 'letter', 'window', 'seal'] as const;
 const FILTERS = ['slip', 'stamp', 'stampFab'] as const;
@@ -26,6 +27,14 @@ describe('object shadows', () => {
     // Until 031 R6 the night slip had only its 1 pt edge (the older DetailDark board); every board
     // agreed on 2026-11-12 draws this shadow and no edge.
     expect(objectFilter('dark', 'slip')).toBe('drop-shadow(0px 4px 10px rgba(0,0,0,0.35))');
+  });
+
+  // Shadows fall away from the light (practices; the owner, 2026-11-16, T050.9 "tucked under"): the
+  // letter threw its shade up onto the envelope until then; the envelope now lies over it.
+  it.each([...SHADOWS, 'sealedEnvelope', 'popover'] as const)('casts the %s\'s shadow downward, away from the light', kind => {
+    for (const theme of ['light', 'dark'] as const) {
+      expect(towardTheLight(objectShadow(theme, kind))).toEqual([]);
+    }
   });
 
   it('casts a resting sheet\'s shadow below it, never a bevel on top (paper lies on the screen)', () => {

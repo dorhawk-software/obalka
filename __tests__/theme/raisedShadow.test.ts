@@ -6,6 +6,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { depth, raised } from '../../src/theme/depth';
+import { towardTheLight } from '../helpers/shadowLayers';
 
 function sources(dir: string): string[] {
   return readdirSync(dir).flatMap(name => {
@@ -35,8 +36,14 @@ describe('raised', () => {
     expect(depth.snackbarDark).not.toMatch(/0px 0px 0px \d/);
   });
 
-  it('gives a dark sheet the soft edge it had', () => {
-    expect(raised('dark', 'sheet')).toBe(depth.sheetDark);
+  // A bottom sheet's tone over the scrim is its edge (the owner, 2026-11-16, T050.9 "no shade above"):
+  // the dark one threw a soft shade up onto the scrim until then, and drew a 6% top line.
+  it('draws a dark sheet with no shade above it and no line on top', () => {
+    expect(raised('dark', 'sheet')).toBeUndefined();
+  });
+
+  it.each(Object.keys(depth) as (keyof typeof depth)[])('casts depth.%s away from the light', name => {
+    expect(towardTheLight(depth[name])).toEqual([]);
   });
 });
 

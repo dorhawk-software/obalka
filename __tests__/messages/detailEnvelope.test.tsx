@@ -103,6 +103,8 @@ describe.each([
     const sheet = view.getByTestId('detailSubject');
     expect(style(sheet).backgroundColor).toBe(theme.surface);
     expect(style(sheet).boxShadow).toBe(objectShadow(theme.name, 'letter'));
+    // Tucked under (the owner, 2026-11-16, T050.9): the envelope lies over the letter's top.
+    expect(style(view.getByTestId('detailEnvelopeFront')).zIndex).toBe(1);
     expect(view.getByRole('header').props.children).toBe('Výzva k doplnění podání');
   });
 });

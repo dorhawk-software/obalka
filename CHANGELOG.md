@@ -20,6 +20,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Dopis vyjíždí zpod obálky.** Na detailu zprávy a při psaní leží horní okraj dopisu pod obálkou a
+  stín obálky padá dolů na dopis; dřív ležel dopis navrchu a jeho stín mířil nahoru. Spodní listy v
+  tmavém vzhledu nevrhají stín vzhůru; okraj dělá jejich odstín.
 - **V tmavém vzhledu karty a obálky končí vlastním odstínem.** Kolem karet, obálek, nabídky schránky a
   oznámení dole už není slabá světlá linka; okraj dělá o stupeň světlejší plocha a stín pod ní, jako ve
   světlém vzhledu.
