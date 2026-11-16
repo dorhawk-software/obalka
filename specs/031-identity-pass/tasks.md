@@ -1339,7 +1339,10 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     neutral at 46, though 6a14d22 had moved the app to the blue download; the board follows the app.
     Canvas v41, check-ui 154 → 140, same-look 0.
   - [ ] T050.5 8 px between targets (8): backup's two links, transfer dialog buttons, Napsat by dialogs.
-  - [ ] T050.6 Nothing past its surface (4): the Main slide's cards, R8's board at 1100.
+  - [x] T050.6 Nothing past its surface (4). Canvas only, no design change: the Main slide was a fixed
+    1280 × 900 and its words reached 1070, so the frame cut the cards' last lines (it now grows, frame
+    1070); R8's paper was 3568 wide under nine phones (3950), now its 4040 frame. Canvas v42, check-ui
+    140 → 136, contain 0.
   - [ ] T050.7 Icons on main buttons (56): dialog actions, Hotovo, Ukázat v Odeslaných, Připomenout.
   - [ ] T050.8 Tone, not outlines (45): 1 px rings on cards and sheets, 2 px rings on chips.
   - [ ] T050.9 Shadows fall away from the light (27): bottom sheets' upward shadow.
