@@ -116,6 +116,7 @@ export function OtpForm({
         title={t('login.otp.verify')}
         onBack={onCancel}
         testID="otpCancel"
+        systemBack
       />
 
       <KeyboardAwareScrollView

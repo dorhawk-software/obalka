@@ -144,7 +144,7 @@ export function AddBoxForm({
 
   return (
     <YStack flex={1} backgroundColor={theme.bg}>
-      <ScreenHeader title={headerTitle} onBack={headerBack ?? undefined} />
+      <ScreenHeader title={headerTitle} onBack={headerBack ?? undefined} systemBack />
 
       {/* KeyboardAvoidingView lifts the pinned footer above the keyboard - on Android 15+ (edge-to-edge)
           the window no longer resizes for adjustResize, so a sibling footer would sit behind the IME. */}

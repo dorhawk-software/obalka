@@ -325,7 +325,7 @@ function MobileKeyWaiting({
   return (
     <YStack flex={1} backgroundColor={theme.bg} testID="mobileKeyWaiting">
       {/* The back chevron cancels the pending Mobile Key request. */}
-      <ScreenHeader title={t('login.method.mobile_key')} onBack={onCancel} />
+      <ScreenHeader title={t('login.method.mobile_key')} onBack={onCancel} systemBack />
 
       <YStack flex={1} alignItems="center" paddingTop={36} paddingHorizontal={24}>
         <WaitingEnvelope label={t('login.loginName')} name={loginName} testID="mobileKeyEnvelope" />
@@ -392,7 +392,7 @@ function SignInRefused({
   const theme = useTheme();
   return (
     <YStack flex={1} backgroundColor={theme.bg}>
-      <ScreenHeader title={title} onBack={onEdit} />
+      <ScreenHeader title={title} onBack={onEdit} systemBack />
       <YStack paddingTop={16} paddingHorizontal={16}>
         <Card padding={16} gap={10} testID="signInRefused">
           <XStack gap={12} alignItems="flex-start">

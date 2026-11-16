@@ -111,7 +111,7 @@ export function ReauthForm({
   return (
     <YStack flex={1} backgroundColor={theme.bg}>
       {/* No test-env banner: re-auth is a sign-in surface, not a box context. */}
-      <ScreenHeader title={t('reauth.title')} onBack={onBack} />
+      <ScreenHeader title={t('reauth.title')} onBack={onBack} systemBack />
 
       {/* KeyboardAvoidingView lifts the pinned footer above the keyboard (Android 15+ no longer resizes). */}
       <KeyboardAvoidingView

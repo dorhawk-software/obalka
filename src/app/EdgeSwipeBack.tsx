@@ -8,7 +8,7 @@
 //
 // When there's nowhere to go back to (no onBack), it's a transparent passthrough.
 
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { BackHandler, Platform, View, useWindowDimensions } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -18,6 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { useTheme } from '../theme/ThemeProvider';
+import { innermostBack, SystemBackContext, type BackEntry } from '../theme/systemBack';
 
 export function EdgeSwipeBack({
   onBack,
@@ -33,23 +34,24 @@ export function EdgeSwipeBack({
    */
   readonly systemBack?: boolean;
 }) {
+  // The screens inside that offered their own back (`useSystemBack`), innermost last.
+  const screens = useRef<BackEntry[]>([]);
   // Android: route the system back (button / gesture) to onBack so it goes home, not out of the app.
   useEffect(() => {
     if (Platform.OS !== 'android' || !onBack || !systemBack) {
       return;
     }
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      onBack();
+      // The innermost screen's own back first (a step back inside the flow), else out of the flow.
+      (innermostBack(screens) ?? onBack)();
       return true; // consumed - don't bubble to "exit app"
     });
     return () => sub.remove();
   }, [onBack, systemBack]);
 
   // No back target, or Android (the system back above handles it): plain passthrough.
-  if (!onBack || Platform.OS !== 'ios') {
-    return <>{children}</>;
-  }
-  return <IosEdgeSwipe onBack={onBack}>{children}</IosEdgeSwipe>;
+  const inner = !onBack || Platform.OS !== 'ios' ? children : <IosEdgeSwipe onBack={onBack}>{children}</IosEdgeSwipe>;
+  return <SystemBackContext.Provider value={screens}>{inner}</SystemBackContext.Provider>;
 }
 
 /**

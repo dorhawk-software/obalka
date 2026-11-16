@@ -32,6 +32,7 @@ import { fonts } from './typeScale';
 import { ChevronLeftIcon } from './icons';
 import { touchSlop } from './touchTarget';
 import { t } from '../i18n/strings';
+import { useSystemBack } from './systemBack';
 
 /** The design's bar: 54 tall below the safe area, 6px of padding at each end. */
 const BAR_MIN_HEIGHT = 54;
@@ -84,6 +85,7 @@ export function ScreenHeader({
   insetTop = true,
   hairline = true,
   quiet = false,
+  systemBack = false,
 }: {
   /** The screen's name. Omit only when `content` fills the row instead. */
   readonly title?: string;
@@ -111,9 +113,15 @@ export function ScreenHeader({
    * (the owner's answer 14, 2026-11-15).
    */
   readonly quiet?: boolean;
+  /**
+   * Android's system back does what the chevron does, under the shell's `EdgeSwipeBack` (screens
+   * outside the navigator that change step in place, `systemBack.ts`). Elsewhere it does nothing.
+   */
+  readonly systemBack?: boolean;
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  useSystemBack(systemBack ? onBack : undefined);
   return (
     <YStack
       backgroundColor={theme.surfaceAlt}
@@ -168,3 +176,4 @@ export function ScreenHeader({
     </YStack>
   );
 }
+

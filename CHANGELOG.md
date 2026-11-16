@@ -219,6 +219,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Systémové Zpět v Androidu se při přidávání schránky vrací o krok.** Z formuláře pro heslo nebo SMS
+  kód dřív opustilo celé přidávání a přeskočilo volbu způsobu přihlášení; teď dělá totéž co šipka v
+  záhlaví, i na kroku s SMS kódem a u Mobilního klíče.
 - **Hledání příjemce řekne, že je potřeba se znovu přihlásit.** Když ISDS přihlášení schránky odmítne,
   hledání dřív psalo „Příjemce se nepodařilo vyhledat. Zkuste to znovu.“, i když opakování nemohlo
   pomoct. Teď uvede totéž co odeslání, například „Platnost hesla vypršela. Změňte ho v portálu ISDS a

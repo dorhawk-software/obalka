@@ -245,6 +245,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **Android's system back steps back one screen when adding a box.** From the password or SMS form it
+  used to leave the whole flow, skipping the choice of sign-in method; it now does what the header's
+  arrow does, on the SMS code step and for Mobile Key too.
 - **The recipient search says when the box must sign in again.** When ISDS refused the box's sign-in,
   the search said “Příjemce se nepodařilo vyhledat. Zkuste to znovu.” (could not search, try again),
   though trying again could not help. It now says what sending says, such as “Platnost hesla vypršela.
