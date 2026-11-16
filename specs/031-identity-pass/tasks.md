@@ -1387,6 +1387,12 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     - Android's back from the password or SMS form left the whole add-box flow (d88cc3e).
     The fifth is written down in not-now.md: the "Testovací" pill can lose its "í" after a live theme
     switch. That one became practices' "A live switch draws what a fresh start draws" and check-shots.
+  - [x] T050.11 Both safe areas belong to the frame (practices 1.7, 2026-11-16). The six phone boards
+    marked no frame and drew no home indicator; they now do. Then three actions sat in the indicator's
+    band. The owner: "check the app, then fix". Napsat sits 23 dp above the gesture bar on
+    Obalka_Demo, and each action is the inset plus its own gap in the code, so the boards follow the
+    app: Napsat 30 → 56 px from the bottom (34 + 22), Odemknout 40 → 42 (34 + 8), Sent's actions
+    34 → 50 (34 + 16). Canvas v50, check-ui on the six boards: 0 findings.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
