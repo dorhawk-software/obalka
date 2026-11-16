@@ -1327,7 +1327,11 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     two were check-ui's misses (a ground drawn as a picture: the gold flap, the camera). Canvas v39,
     check-ui 200 → 175, contrast 0. The settings strings moved to settingsStrings.ts (strings.ts
     1,605 → 1,549).
-  - [ ] T050.3 The 11 px floor (22): the postmark's ring text and time, "PDF", compose's letter preview.
+  - [x] T050.3 The 11 px floor (21 under 1.6.2). The owner picked "a drawing, marked" (2026-11-16): the
+    postmark keeps its agreed size, a drawing whose date and time the detail writes in full; the
+    welcome slide's is an example. "PDF" on the document glyph and the A4 letter's miniatures are
+    marked the same way; the motion board's annotation goes 10 → 11 px. Nothing changes in the app.
+    Canvas v40, check-ui 175 → 154, small text 0.
   - [ ] T050.4 One anatomy (14): neutral and filled buttons 48/52/40 tall, icon buttons 44/30.
   - [ ] T050.5 8 px between targets (8): backup's two links, transfer dialog buttons, Napsat by dialogs.
   - [ ] T050.6 Nothing past its surface (4): the Main slide's cards, R8's board at 1100.
