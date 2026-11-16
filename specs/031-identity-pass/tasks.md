@@ -1302,6 +1302,10 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   the stamp's edge (Q1): the 96 drawing over the stamp, its ring 40 into the paper (right 86), in
   `cancelInk`, the sender's column 100. Walked on Obalka_Demo at 360 dp (detail light and dark, the
   sent result with "0 Kč" struck) and 411 dp; the ring starts at 128 on the 310 result envelope.
+  Canvas version 36 (2026-11-16): Sent and R7 redrawn to it, each cropped at 3x beside the capture;
+  with practices 1.6.1's check-ui on the 24 boards (232 findings), the canvas's own mistakes fixed
+  (dark phones' clock in dark ink, Přijaté | Odeslané marked as tabs, screens drawn mid-scroll
+  marked): 200 left, the agreed design against the new rules, for the owner (not-now.md).
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
