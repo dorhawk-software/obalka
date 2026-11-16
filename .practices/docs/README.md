@@ -156,7 +156,7 @@ own extra checks in `.practices/lint.d/`.
 | `check-size` | 700 lines per Rust, TS or JS file, 1000 per test file, a shrinking allowlist |
 | `check-unsafe` | `unsafe` only where the project allows it |
 | `check-coverage` | tests, measured, against per-crate per-OS floors; never lowered |
-| `check-commit-msg` | no session IDs or session links in commit messages |
+| `check-commit-msg` | no session IDs or session links in commit messages; a commit that changes a design board names its before/after page |
 | `check-ui` | design boards (`design/**/*.html`), rendered in headless Chrome at each width, light and dark: nothing past its surface or cut off, buttons that follow their column and name their outcome, 8 px between targets, 11 px text, rings drawn with outline, shadows away from the light, 16 px from a ring to text, centring, states that don't move content, icons on buttons, like controls alike, contrast against the pixels behind the text, and each mark (`data-mark`) at its smallest size: no stroke under 1 px, no leftover piece of a cut, the brand element 10 px or taller |
 | `ui-audit.mjs` | check-ui's measuring half (Node, no packages; drives Chrome over a pipe) |
 | `ui-mark.mjs` | check-ui's mark check: each `svg[data-mark]` drawn alone and large, measured from its pixels at the smallest size the board shows |

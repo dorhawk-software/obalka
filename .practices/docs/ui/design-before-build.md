@@ -64,6 +64,41 @@ the same commit where it lives in the repo.
 
 **Check.** In review of a UI commit: is the design updated?
 
+## A touch-up gets its own before and after
+
+**What.** A change to a design that is already agreed gets its own small
+page: that one change only, before beside after, cropped to the object
+that changed. It names where to find it, on the canvas and in the app.
+The page is made new for each change, never a reused overview.
+
+**Why.** Obálka's design has 24 boards and about 70 phone screens. A
+touch-up there (a postmark's waves that ran through its date) was
+published as a new version of the whole canvas. The owner, 2026-11-16:
+"otherwise it is very difficult to see in 70 screens where to look and
+what has changed". The same fix on its own page, the app and the board
+each as a before/after pair, was accepted at a glance.
+
+**Apply.**
+1. Before you change the board, keep a copy of it. In git, the last
+   commit is the copy.
+2. Render the board before and after at the same size and device pixel
+   ratio, and crop both to the same box around the changed object. Do
+   the same for the app's capture, where it is built.
+3. One page: before on the left, after on the right, the place named
+   above each pair (the board's title or a word to search for, the
+   screen's path in the app), and the values that changed in one line.
+   Both themes when the change differs between them.
+4. Publish it beside the design and link it in the message that asks
+   the owner to look. Several touch-ups get several pages.
+
+**Check.** A commit that changes an existing board in `UI_BOARDS` carries
+a `Before-after:` trailer naming the page (a path in the repository or an
+https link). A change that doesn't alter the look says
+`Before-after: none, <why, three words or more>`. `check-commit-msg`
+refuses the commit otherwise (the commit-msg hook). A design kept outside
+the repository, on a canvas, isn't seen by it: there, the reviewer asks
+for the page. Whether the page shows that one change only is judgement.
+
 ## Read the design's source, never a picture
 
 **What.** Values for a build (colours, spacing, sizes, radii, copy) come from the design's source: its code, its tokens, its inspector. A screenshot is only for checking the result.

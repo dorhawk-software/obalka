@@ -36,7 +36,10 @@ sometimes edits it.
   use, one line per state, a second inventory from a fresh agent). Grade
   each from a picture, redraw, ask, build, re-audit.
 - **A small change in an agreed design**: follow the spec and the craft
-  rules; put it on the canvas in the same piece of work.
+  rules; put it on the canvas in the same piece of work, and show it on
+  a before/after page of its own (design-before-build.md, "A touch-up
+  gets its own before and after"): that change only, cropped, the place
+  named. Never ask the owner to find it on the whole canvas.
 
 ## Musts
 
@@ -53,6 +56,8 @@ sometimes edits it.
   does, the resting hint faded, nothing glowing (ui/drag-and-drop.md).
 - Show variants and recommend one; never build an open choice unasked.
 - After a pick, strip the other variants from the canvas.
+- Every touch-up to an agreed design: its own small before/after page, made
+  new for that change; a `Before-after:` trailer in the commit that names it.
 - Real context: the real frame, both themes, the longest language.
 - Run "Before you show anything" (identity-pass.md) on the rendered
   page, every time, before telling the owner it is ready, and the checks

@@ -181,10 +181,20 @@ function audit(cfg) {
   for (const t of texts) t.covered = t.lines.length > 0 && coveredAt(t.e, t.lines[0]);
   window.scrollTo(0, 0);
 
-  // How much a transform (scale) shrinks an element on the screen: its drawn box over its laid-out one.
+  // How much transforms shrink an element on the screen: the scales of it and its ancestors, from
+  // `transform` and `scale`. Not its drawn box over offsetWidth/Height: those round to whole pixels,
+  // so an unscaled 19.6 px badge read as 0.98 (Gentes, 1.6.2).
   const drawnScale = (e) => {
-    const r = e.getBoundingClientRect(), w = e.offsetWidth, h = e.offsetHeight;
-    return w > 0 && h > 0 ? Math.min(r.width / w, r.height / h, 1) : 1;
+    let k = 1;
+    for (let a = e; a instanceof Element; a = a.parentElement) {
+      const s = cs(a);
+      if (s.transform && s.transform !== "none") {
+        const m = new DOMMatrixReadOnly(s.transform);
+        k *= Math.min(Math.hypot(m.a, m.b), Math.hypot(m.c, m.d));
+      }
+      if (s.scale && s.scale !== "none") { const [x, y = x] = s.scale.split(" ").map(parseFloat); k *= Math.min(x, y); }
+    }
+    return Math.min(k, 1);
   };
   // text-size: nothing anyone reads under the floor (11 px).
   for (const { e } of texts) {

@@ -238,3 +238,8 @@ rows are this list's source; the most valuable first.
     that disable a rule say why, `--max-warnings 0`) and a reusable Node
     CI workflow that runs `.practices/bin/lint`.
 - **UI:** the next checks for `check-ui`, in phase 7 above.
+  - [x] A commit that changes an existing board names its before/after
+    page (`check-commit-msg`, 1.7.0).
+  - [ ] A `before-after` script: renders a board's object (a selector) at
+    HEAD and in the working tree, both themes, at the device's pixel
+    ratio, and writes the page the trailer names.

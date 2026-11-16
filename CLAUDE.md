@@ -55,3 +55,7 @@ This project's own settings:
   FAQ (2026-11-16).
 - `check-ui` has no boards here: they live in the Claude Design canvas and are checked by hand before
   each publish (not-now.md, 2026-11-16).
+- Every touch-up to the canvas gets its own before/after page, that change only, cropped and with
+  the place named, published beside the canvas; the commit names it in a `Before-after:` line by
+  hand, since `check-commit-msg` sees no boards here (the owner: "otherwise it is very difficult to
+  see in 70 screens where to look and what has changed", 2026-11-16).
