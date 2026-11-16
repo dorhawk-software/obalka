@@ -1298,6 +1298,11 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   right it already reached 20 into the column. Seen on Obalka_Demo at 360 dp; at 411 the detail
   clears it. And the password field keeps a placeholder ("Heslo") that repeats its label, now that
   the name field has none.
+  Closed 2026-11-16, each note checked against the code: fixed are I46.2 (12ab2d4), I46.4, I11, I38
+  and I95 (the delete's body says what goes: "Soubor z telefonu zmizí…"), and both lines open for
+  the owner, the postmark at 360 dp (cffa9f6) and the password placeholder (d501499). I48 was decided
+  by the owner. The rest went to not-now.md by the owner's answers: I47, I51 and I76 "left as it
+  is", I53 written down to watch.
   Answered 2026-11-16: the password field lost its placeholder (Q2, d501499), and the postmark strikes
   the stamp's edge (Q1): the 96 drawing over the stamp, its ring 40 into the paper (right 86), in
   `cancelInk`, the sender's column 100. Walked on Obalka_Demo at 360 dp (detail light and dark, the

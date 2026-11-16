@@ -332,6 +332,28 @@ they wait for their own work. The owner decided "not now" on 2026-11-12.
   measure (the 800 face, Fabric's text measurement cache), fix it for every text, add a guard, and
   walk every screen both ways with `check-shots`.
   ([031/tasks.md](../../specs/031-identity-pass/tasks.md) T050.10)
+- **The debug screen's counter keeps two lines at 360 dp (2026-11-16, left as it is).** In bold 14
+  the longest recording count needs two lines on a 360 dp phone at the default text size, so the
+  counter reserves them and a short count sits over an empty line; from 411 dp it is one line. The
+  "Uloženo: …" strip wraps after its colon on Android where the board fits one line (the face is
+  about 2 % wider), and its height is held, so it moves nothing. The owner chose to leave it: the
+  reserve is the rule against layout jumps at work. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
+  I47)
+- **What's new once stopped part-way in (2026-11-15).** Once, in English and dark right after a
+  language change, the sheet's slide-in stopped part-way and stayed there: laid out at full height,
+  drawn 980 px lower, Pokračovat under the screen's edge. Not seen again in seven launches. The
+  suspect is Reanimated's entering animation on the Modal. The owner chose to write it down and watch
+  rather than change the animation unproven. It reopens if it is seen again: then capture the
+  layout, and replace the entering animation with one the sheet drives itself, under a test that
+  checks where the sheet ends. ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I53)
+- **The scanner's no-camera sentence takes three lines on Android (2026-11-16, left as it is).** The
+  board fits it in two under R13's 300 cap; Android's wider face needs three. It is balanced, as the
+  board's `text-wrap`, so no word stands alone. The owner chose to leave it.
+  ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I51)
+- **An ink button's busy ring barely turns (2026-11-16, left as it is).** R12 draws the ring in the
+  sunken paper (#F2EADB) with its quarter in the button's words (#FBF6EA), 3 % apart on the ink, so
+  the turn hardly shows. Built as drawn; the busy words change too, so the state still reads. The
+  owner chose to leave it. ([031/tasks.md](../../specs/031-identity-pass/tasks.md) I76)
 - **No error boundary (2026-11-12).** A render error leaves an empty screen with no way on. Plan: a
   boundary at the root with a fallback screen that offers to start again, reported only with consent;
   the screen gets a board on the canvas first. ([031/tasks.md](../../specs/031-identity-pass/tasks.md)
