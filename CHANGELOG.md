@@ -217,6 +217,9 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Opraveno
 
+- **Výzva k novému přihlášení stojí v přehledu hned po spuštění.** Dřív ji při každém spuštění na chvíli
+  zastoupil modrý pruh „Platnost hesla vypršela.“, dokud neodpověděla synchronizace, a seznam pod ním
+  pak poskočil o dva řádky.
 - **Okno odeslané zprávy už nezakryje razítko.** S adresou rostlo okno nahoru přes datum a čas
   odeslání; teď se obálka prodlouží dolů.
 - **Hodiny nad zlatou chlopní jsou v tmavém režimu čitelné.** Stavový řádek byl bílý na žluté.

@@ -7,7 +7,6 @@ import {
   useState,
 } from 'react';
 import {
-  Linking,
   RefreshControl,
   ScrollView,
   SectionList,
@@ -26,11 +25,7 @@ import {
   type AttentionSummary,
 } from '../state/attention';
 import type { Reminder } from '../state/reminders';
-import { formatTermDate } from './TermPicker';
-import {
-  passwordExpiry,
-  refusedForExpiredPassword,
-} from '../../accounts/state/passwordExpiry';
+import { passwordExpiry } from '../../accounts/state/passwordExpiry';
 import {
   groupByDate,
   type DateSectionLabel,
@@ -38,11 +33,8 @@ import {
 import { reportFailure } from '../../../services/telemetry/telemetry';
 import { t, plural } from '../../../i18n/strings';
 import { type FaqId } from '../../../content/faq';
-import { storedReauthKey } from '../../accounts/state/reauthCopy';
-import { portalUrl } from '../../../services/isds/endpoints';
 import {
   type DataBoxAccount,
-  type Host,
   type MessageEnvelope,
 } from '../../../services/isds/types';
 import type { MessageFolder } from '../../../services/db/messagesStore';
@@ -62,6 +54,7 @@ import { boxColor } from '../../../theme/boxColor';
 import { AttentionHead, AttentionSheet, RegisterRow, RegisterSkeleton, SectionHead, freshnessText } from './InboxRows';
 import { DraftsEntry, SentRegisterRow } from './SentRows';
 import { InboxStrip, StaleLine, StripAction, SyncBar } from './InboxStrips';
+import { BoxStrips } from './BoxStrips';
 import type { TileRect } from './EnvelopeFlight';
 import { EmptyObject } from '../../../theme/EmptyObject';
 import { EnvelopePose, OpenEnvelope } from '../../../theme/objects/Envelope';
@@ -274,20 +267,6 @@ export interface MessageListProps {
   } | null;
 }
 
-/**
- * Hands the Data Boxes portal for this box's environment to the OS browser.
- *
- * A hand-off, not a fetch: where an EXPIRED password is changed (ISDS refuses the sign-in an in-app
- * change would need), and where a box that does not sign in with name and password changes it (030).
- * A failure is inert: the strip simply does nothing rather than raising an error nobody can act on.
- *
- * Per environment since 2026-09-14. It opened the PRODUCTION portal for every box, so a test box's
- * "Změnit v portálu" landed on a portal where that test login does not exist.
- */
-function openPortal(host: Host): void {
-  void Linking.openURL(portalUrl(host)).catch(() => {});
-}
-
 export function MessageList({
   account,
   onOpenSwitcher,
@@ -329,7 +308,10 @@ export function MessageList({
   const [syncing, setSyncing] = useState(false);
   // The box's session/credentials expired. The design surfaces this as an INLINE gold strip pinned
   // under the header (the cached list stays readable behind it) - never a full-screen takeover.
-  const [needsReauth, setNeedsReauth] = useState(false);
+  // It starts from the verdict stored for the box, the one its switcher row shows; the sync then
+  // confirms or clears it. Started from "no", the blue password-expiry strip stood in for it at every
+  // launch until the sync answered, then gave way to this one, moving the list (T050.10, 2026-11-16).
+  const [needsReauth, setNeedsReauth] = useState(() => needsSignIn(account.syncError));
   // When that sync was refused - the moment the strip asks "was it an expired password?" (001
   // FR-009), as `classifyFailure` does for the stored flag. Not the render clock: a refusal a minute
   // before the stored expiry date would turn into "change it on the portal" on a later re-render,
@@ -604,10 +586,13 @@ export function MessageList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account.boxId, folder, refresh, resyncNonce, unifiedKey]);
 
-  // A different box = a different session: drop the previous box's reauth strip until THIS box's sync
-  // reports back. (Not reset on a folder switch - the session is per box, so the strip must not blink.)
+  // A different box = a different session: the previous box's strip gives way to THIS box's stored
+  // verdict until its sync reports back. (Not reset on a folder switch - the session is per box, so
+  // the strip must not blink.)
   useEffect(() => {
-    setNeedsReauth(false);
+    setNeedsReauth(needsSignIn(account.syncError));
+    // Only on a box change: a sync's own answer is newer than the stored verdict it re-reads.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account.boxId]);
 
   // Pull-to-refresh / retry - re-sync the current folder with a fresh in-flight controller.
@@ -778,26 +763,9 @@ export function MessageList({
   // 001 T041. `now` is already what the deadline chips are computed from, so the strip crosses from
   // "in 1 day" to "today" on the same re-render they do.
   const pwd = passwordExpiry(account.passwordExpiresAt, now);
-  // 030 US2: changed here while it still works, by a box that signs in with name and password.
-  const changeInApp =
-    onChangePassword != null && account.authMethod === 'password' && pwd.kind !== 'expired';
-  // 001 FR-009: a password box refused after its stored expiry date. Read at the moment of the
-  // refusal (`refusedAt`, above), the same one the strip's own copy uses (`storedReauthKey` below), so
-  // its words and its portal action cannot disagree. A verdict already stored for the box wins over
-  // that moment (`refusedForExpiredPassword`): the switcher row shows it and the re-auth screen reads
-  // it, and a box refused before its date and still unrepaired read "change it on the portal" here
-  // but "sign in again" on both of those once the date had passed.
-  const passwordExpired = needsReauth && refusedForExpiredPassword(account, refusedAt);
-  // The two strips are ACTIONABLE and must not read as the informational gold around them.
+
+  // The "could not reach" strip is ACTIONABLE and must not read as the informational gold around it.
   const reauthTone = chipTone('dangerSoft', theme);
-  const pwdTone = chipTone('info', theme);
-  // The re-auth strip's "Přihlásit znovu" - one element for both of that strip's shapes (below).
-  const reauthAction = (
-    <StripAction tone={reauthTone} glyph="key" label={t('box.reauth.action')} onPress={() => onReauth(refusedAt)} testID="reauth" />
-  );
-  const reauthActionBelow = (
-    <StripAction tone={reauthTone} glyph="key" label={t('box.reauth.action')} below onPress={() => onReauth(refusedAt)} testID="reauth" />
-  );
 
   // Build the sections. RECEIVED: "Vyžaduje pozornost" on top, then the remainder date-grouped (Dnes /
   // Tento týden / …) like SENT. The row component is chosen by folder.
@@ -1035,53 +1003,14 @@ export function MessageList({
       {header}
       {/* The strips (031 I16, `InboxStrips.tsx`). Session expired: the more severe one - the box cannot
           be used until it is answered - so soft red; tapping the action re-authenticates this box. */}
-      {!unified && needsReauth ? (
-        <InboxStrip
-          tone={reauthTone}
-          message={t(storedReauthKey(account, 'box.reauth.session', 'box.reauth.credentials', refusedAt))}
-          action={passwordExpired ? undefined : reauthAction}
-          actionsBelow={
-            passwordExpired ? (
-              <>
-                <StripAction
-                  tone={reauthTone}
-                  label={t('pwd.action')}
-                  role="link"
-                  below
-                  onPress={() => openPortal(account.host)}
-                  testID="reauthPortal"
-                />
-                {reauthActionBelow}
-              </>
-            ) : undefined
-          }
-        />
-      ) : null}
-      {/* The box's PASSWORD is running out - a different thing from the session above, and a quieter
-          one: the box still works today, so blue. Shown only when re-auth is NOT being asked for: a box
-          you cannot use has one problem, not two. While the password still works, a box that signs in
-          with name and password changes it here (030 US2); an expired one, or any other box, is handed
-          to the portal - an in-app change of an expired password is a sign-in ISDS refuses (VI). */}
-      {!unified && !needsReauth && pwd.kind !== 'none' ? (
-        <InboxStrip
-          tone={pwdTone}
-          testID="passwordExpiry"
-          message={
-            pwd.kind === 'expired'
-              ? t('pwd.expired')
-              : pwd.kind === 'today'
-                ? t('pwd.today')
-                : t('pwd.soon', { d: formatTermDate(pwd.date) })
-          }
-          action={
-            <StripAction
-              tone={pwdTone} glyph={changeInApp ? 'key' : undefined}
-              label={t(changeInApp ? 'pwd.change' : 'pwd.action')}
-              role={changeInApp ? 'button' : 'link'}
-              onPress={changeInApp ? onChangePassword : () => openPortal(account.host)}
-              testID="passwordExpiryAction"
-            />
-          }
+      {!unified ? (
+        <BoxStrips
+          account={account}
+          needsReauth={needsReauth}
+          refusedAt={refusedAt}
+          pwd={pwd}
+          onReauth={onReauth}
+          onChangePassword={onChangePassword}
         />
       ) : null}
       {/* MERGED: a list that quietly omits a box it could not reach is lying by arrangement rather

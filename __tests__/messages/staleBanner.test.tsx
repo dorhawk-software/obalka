@@ -313,6 +313,19 @@ describe('a password box refused after its password expired', () => {
     expect(view.queryByTestId('reauthPortal')).toBeNull();
   });
 
+  // Walked on Obalka_Demo (2026-11-16, T050.10): at every launch the blue "Platnost hesla vypršela."
+  // strip stood there until the sync answered, then gave way to the red three-line one, moving the list.
+  it('shows the stored sign-in strip before the sync answers, not the expiry strip it replaces', async () => {
+    mockOutcome.value = new Promise(() => {});
+    const view = await inboxFor({
+      ...passwordBox('production', Date.now() - DAY),
+      syncError: 'passwordExpired',
+    });
+    await waitFor(() => expect(view.getByTestId('reauthPortal')).toBeTruthy());
+    expect(view.getByTestId('reauth')).toBeTruthy();
+    expect(view.queryByTestId('passwordExpiry')).toBeNull();
+  });
+
   it('gives the verdict already stored for the box, the one its switcher row and re-auth screen give', async () => {
     // A box refused while still in date is stored `reauth`: its row says "Přihlášení vypršelo" and its
     // re-auth screen asks for the credentials. Refused again here once the date had passed, this strip

@@ -243,6 +243,9 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Fixed
 
+- **The request to sign in again stands in the inbox from the moment the app opens.** Until now, at
+  every launch the blue “Platnost hesla vypršela.” strip stood in for it until the sync answered, and
+  the list under it then jumped by two lines.
 - **A sent message's window no longer covers the postmark.** With an address it grew upwards over
   the date and time it was sent; now the envelope grows downwards.
 - **The clock over the gold flap reads in dark mode.** The status bar was white on yellow.
