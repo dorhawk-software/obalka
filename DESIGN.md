@@ -773,7 +773,9 @@ After the critique (2026-11-15), the owner's answers, one by one:
   cancellation: the 96 drawing over the stamp, its ring 40 into the stamp's paper, in `cancelInk`
   like the waves (one strike, one ink; the white ring vanished on the paper), the date on the paper.
   The sender keeps 100 beside it ("Ing. Ondřej / Dvořák" on two lines); on the result screen the ring
-  crosses "0 Kč". Beside the stamp it ran over the sender at 360 dp.
+  crosses "0 Kč". Beside the stamp it ran over the sender at 360 dp. The waves run out of the ring,
+  from 4 past it (44 into the stamp) to within 2 of its right edge, never through the date (the
+  owner, on canvas v36: they crossed it).
 - **Dates:** the compact "12.11.2026 09:20" lost to the Czech standard's "12. 11. 2026 9:20", "29. 8."
   in rows and on the postmark (non-breaking spaces, the hour without its zero; English "12 Nov 2026,
   9:20", "29 Aug"), all through `src/i18n/dates.ts`. The postmark sets its date smaller when it would

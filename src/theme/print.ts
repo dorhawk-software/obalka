@@ -261,14 +261,15 @@ export const docSheet = {
 } as const;
 
 /**
- * The cancellation (board Sent): where a postmark lands on a stamp, its waves run across the stamp in
- * `cancelInk`, the postmark's white would not show on the stamp's paper. Two waves 18 tall, one period
- * every 12, from 14 left of the stamp to at least 2 short of its right edge, their top 10 above the
- * stamp's middle - the board's 96 of waves at 34 down its 84 x 88 stamp (`cancellationWaves`).
+ * The cancellation (board Sent): the waves the postmark leaves across a stamp, in `cancelInk`. Two waves
+ * 18 tall, one period every 12, their top 10 above the stamp's middle. They run out of the ring, as on
+ * real mail: the ring reaches 40 into the stamp's paper (the owner's Q1, 2026-11-16), and the waves
+ * start 4 past it and stop within 2 of the stamp's right edge. Until 2026-11-16 they began 14 left of
+ * the stamp and crossed the date and time inside the ring (the owner, on canvas v36).
  */
 export const cancellation = {
   height: 18,
-  x: -14,
+  x: 44,
   period: 12,
   stroke: 1.5,
   opacity: 0.7,
@@ -277,7 +278,7 @@ export const cancellation = {
 /** The cancellation's waves across a stamp of this size (its perforated margin included). */
 export function cancellationWaves(stampWidth: number, stampHeight: number) {
   const { x, period } = cancellation;
-  const periods = Math.ceil((stampWidth - x - 2) / period);
+  const periods = Math.floor((stampWidth - x - 2) / period);
   const run = 't12 0'.repeat(periods - 1).replace(/t/g, ' t').trim();
   const wave = (y: number) => `M0 ${y}q6-4 12 0 ${run}`;
   return {

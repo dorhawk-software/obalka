@@ -12,7 +12,8 @@ import { TamaguiProvider } from 'tamagui';
 import { tamaguiConfig } from '../../tamagui.config';
 import { AppThemeProvider } from '../../src/theme/ThemeProvider';
 import { darkTheme, lightTheme } from '../../src/theme/theme';
-import { cancellationWaves, perforation, postmarkPrint, recordRing } from '../../src/theme/print';
+import { cancellation, cancellationWaves, perforation, postmarkPrint, recordRing } from '../../src/theme/print';
+import { SENT_POSTMARK_RIGHT, SENT_POSTMARK_SIZE } from '../../src/features/messages/screens/DetailEnvelope';
 import { setActiveLocale } from '../../src/i18n/strings';
 import { SentResult, sendMoment, sendMomentEnd, sentBody, sentSteps } from '../../src/features/messages/screens/SentResult';
 import type { DataBoxAccount, Recipient } from '../../src/services/isds/types';
@@ -172,13 +173,15 @@ it('cancels the stamp compose showed, kind line and all, not a smaller one (the 
   expect(paid.getByText('PDZ')).toBeTruthy();
 });
 
-it('runs the cancelling waves from left of the stamp to just short of its right edge', () => {
-  // The Sent board: 96 of waves on its 84 stamp, from 14 left of it, 34 down its 88.
-  const board = cancellationWaves(84, 88);
-  expect([board.width, board.y]).toEqual([96, 34]);
+it('runs the cancelling waves out of the ring, never through its date, to just short of the stamp\'s edge', () => {
+  // The ring ends 40 into the stamp's paper (the owner's Q1); until 2026-11-16 the waves began 14 left
+  // of the stamp and crossed the date and time inside it (the owner saw it on canvas v36).
+  const ringEnd = 14 + STAMP.width - (SENT_POSTMARK_RIGHT + SENT_POSTMARK_SIZE - (postmarkPrint.cx + postmarkPrint.rings[0] + postmarkPrint.stroke / 2));
+  expect(cancellation.x).toBeGreaterThanOrEqual(ringEnd + 2);
+  expect(cancellation.x).toBeLessThanOrEqual(ringEnd + 6);
   const ours = cancellationWaves(STAMP.width, STAMP.height);
-  expect(ours.width - 14).toBeGreaterThanOrEqual(STAMP.width - 2);
-  expect(ours.width - 14).toBeLessThan(STAMP.width + 12);
+  expect(cancellation.x + ours.width).toBeGreaterThanOrEqual(STAMP.width - 2 - cancellation.period);
+  expect(cancellation.x + ours.width).toBeLessThanOrEqual(STAMP.width - 2);
 });
 
 it('says when ISDS took it, with the preposition Czech gives that hour', () => {

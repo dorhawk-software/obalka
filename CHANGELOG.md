@@ -20,7 +20,7 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
-- **Razítko odeslané zprávy ruší známku jako na skutečné poště.** Kruh razítka leží přes okraj známky, tmavým inkoustem jako vlnky, a datum je na papíře známky. Na úzkém telefonu už nepřekrývá jméno odesílatele.
+- **Razítko odeslané zprávy ruší známku jako na skutečné poště.** Kruh razítka leží přes okraj známky, tmavým inkoustem jako vlnky, a datum je na papíře známky. Vlnky vybíhají z kruhu a datum nepřeškrtávají. Na úzkém telefonu už nepřekrývá jméno odesílatele.
 - **Nápověda a zásady ochrany soukromí říkají, kdo co dělá.** Kde stálo „my“, teď stojí aplikace nebo její vývojáři, takže je jasné, kdo k vašim datům může a kdo ne.
 - **Pole pro heslo bez opakovaného slova.** Nad polem stojí „Heslo“ a uvnitř už ne, stejně jako u uživatelského jména.
 - **Hlášení chyb má vlastní ikonu.** V Nastavení › Diagnostika vede řádek s hlášením chyb brouk místo zvonku; zvonek zůstává jen u upozornění.
