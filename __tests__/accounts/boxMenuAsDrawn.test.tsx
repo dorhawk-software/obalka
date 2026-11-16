@@ -87,7 +87,7 @@ describe('the alias editor, as R9 draws it', () => {
     const tile = styleOf(view.getByTestId('aliasPreview', { includeHiddenElements: true }));
     expect([tile.width, tile.height, tile.borderRadius]).toEqual([56, 56, 16]);
     expect(view.getByTestId('aliasSave')).toBeTruthy();
-    expect(view.queryByText(t('login.cancel'))).toBeNull();
+    expect(view.queryByText('Zrušit')).toBeNull();
   });
 
   it('rings the chosen colour outside its edge, with its corner on the 16 step', async () => {

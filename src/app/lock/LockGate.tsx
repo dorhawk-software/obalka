@@ -534,7 +534,7 @@ function LockScreen({
           onDismiss={closeResetDialog}
           actions={[
             {
-              label: t('common.cancel'),
+              label: t('lock.reset.keep'),
               onPress: closeResetDialog,
               testID: 'lock-reset-cancel',
             },

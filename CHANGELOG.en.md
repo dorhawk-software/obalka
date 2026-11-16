@@ -20,6 +20,7 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ### Changed
 
+- **The button that closes a question says what stays.** Instead of "Cancel", for example "Keep it on", "Don't send" or "Close the camera", and receiving a backup from another phone says "Receive the backup": what happens is clear without reading the question.
 - **A sent message's postmark cancels its stamp, as real mail does.** The ring sits over the stamp's edge, in the dark ink of the waves, with the date on the stamp's paper. The waves run out of the ring and never cross the date. On a narrow phone it no longer covers the sender's name.
 - **The FAQ and the privacy policy say who does what.** Where they said "we", they now name the app or its developers, so it is clear who can reach your data and who cannot.
 - **The password field says its name once.** "Password" stands above the field and no longer inside it, as with the username.

@@ -144,7 +144,7 @@ export function ScannerSheet({
       </SmallStrong>
       <YStack alignSelf="stretch" marginTop={space.gutter}>
         <NeutralButton
-          label={t('common.cancel')}
+          label={t('transfer.scanner.close')}
           icon={<CloseIcon size={18} color={theme.text} />}
           onPress={onCancel}
           testID="transfer-scanner-close"

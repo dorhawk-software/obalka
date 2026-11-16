@@ -69,6 +69,7 @@ export const cs: Record<string, string> = {
   'send.confirm.body':
     'Jde o poštovní datovou zprávu (PDZ). Z kreditu schránky se strhne přibližně {czk} Kč.',
   'send.confirm.send': 'Odeslat za ~{czk} Kč',
+  'send.confirm.cancel': 'Neodesílat',
   'send.blocked.recipientRejectsPdz':
     'Tato schránka nepřijímá poštovní datové zprávy.',
   'send.blocked.insufficientCredit': 'Nedostatek kreditu pro odeslání.',
@@ -159,6 +160,7 @@ export const en: Record<string, string> = {
   'send.confirm.body':
     'This is a Postal Data Message (PDZ). About {czk} CZK will be deducted from the box credit.',
   'send.confirm.send': 'Send for ~{czk} CZK',
+  'send.confirm.cancel': "Don't send",
   'send.blocked.recipientRejectsPdz':
     'This box does not accept Postal Data Messages.',
   'send.blocked.insufficientCredit': 'Insufficient credit to send.',

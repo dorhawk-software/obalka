@@ -290,12 +290,6 @@ Obálka's own harness gaps, to be fixed as the next pieces of work.
   without their mark) and the agreed design against the new rules (bare "Zrušit", buttons without icons,
   1 px rings, sheet shadows that fall up). What brings it back: the owner's answer on keeping the canvas
   source in the repository.
-- **Ten dialogs and sheets still end in a bare "Zrušit" (2026-11-16).** Practices 1.6 ("Every button
-  names its outcome") wants the way out to name what stays, as the backup's "Ponechat" already does:
-  turning backups off, the documents choice, automatic downloads, metered and received transfers,
-  deleting a debug record, resetting the lock, the paid-send confirmation, the QR scanner and the
-  Mobile Key wait; the receiving phone's "Přijmout" too. The words change what people read, so they
-  are the owner's to pick; a proposal for each waits for the answer.
 
 # Part C: found by the identity pass's second inventory (2026-11-12)
 

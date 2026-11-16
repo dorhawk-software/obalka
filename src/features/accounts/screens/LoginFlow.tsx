@@ -364,7 +364,7 @@ function MobileKeyWaiting({
           fontWeight="700"
           onPress={onCancel}
           testID="cancelMobileKey">
-          {t('login.cancel')}
+          {t('login.mobileKey.cancel')}
         </Button>
       </YStack>
     </YStack>

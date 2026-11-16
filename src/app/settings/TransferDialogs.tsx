@@ -42,7 +42,7 @@ export function TransferDialogs({
         testID="transfer-metered-dialog"
         actions={[
           {
-            label: t('common.cancel'),
+            label: t('transfer.metered.wait'),
             testID: 'transfer-metered-cancel',
             onPress: onMeteredCancel,
           },
@@ -77,7 +77,7 @@ export function TransferDialogs({
           got.restorable
             ? [
                 {
-                  label: t('common.cancel'),
+                  label: t('transfer.got.decline'),
                   testID: 'transfer-received-cancel',
                   // Declining still has to let go of what arrived: the documents are on disk.
                   onPress: onDecline,

@@ -68,7 +68,7 @@ export function PaidSendConfirm({
       }
       actions={[
         { label: t('send.confirm.send', { czk: approxCzk }), onPress: onSend, tone: 'primary', busy, testID: 'composeConfirmSend' },
-        { label: t('login.cancel'), onPress: cancelUnlessSending, testID: 'composeConfirmCancel' },
+        { label: t('send.confirm.cancel'), onPress: cancelUnlessSending, testID: 'composeConfirmCancel' },
       ]}
       onDismiss={cancelUnlessSending}
       testID="composeConfirm"

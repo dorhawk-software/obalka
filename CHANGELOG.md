@@ -20,6 +20,7 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ### Změněno
 
+- **Tlačítko, které otázku zavře, říká, co zůstane.** Místo „Zrušit“ třeba „Nechat zapnuté“, „Neodesílat“ nebo „Zavřít fotoaparát“, a příjem zálohy z druhého telefonu má „Přijmout zálohu“: co se stane, je jasné i bez čtení otázky.
 - **Razítko odeslané zprávy ruší známku jako na skutečné poště.** Kruh razítka leží přes okraj známky, tmavým inkoustem jako vlnky, a datum je na papíře známky. Vlnky vybíhají z kruhu a datum nepřeškrtávají. Na úzkém telefonu už nepřekrývá jméno odesílatele.
 - **Nápověda a zásady ochrany soukromí říkají, kdo co dělá.** Kde stálo „my“, teď stojí aplikace nebo její vývojáři, takže je jasné, kdo k vašim datům může a kdo ne.
 - **Pole pro heslo bez opakovaného slova.** Nad polem stojí „Heslo“ a uvnitř už ne, stejně jako u uživatelského jména.

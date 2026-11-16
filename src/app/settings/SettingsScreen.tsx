@@ -424,7 +424,7 @@ export function SettingsScreen({
           testID="auto-download-dialog"
           actions={[
             {
-              label: t('common.cancel'),
+              label: t('settings.autoDownload.ask.keep'),
               testID: 'auto-download-cancel',
               onPress: () => setDownloadAsk(null),
             },

@@ -259,7 +259,7 @@ export function disableDialogActions({
 }): DialogAction[] {
   return [
     {
-      label: t('common.cancel'),
+      label: t('backup.off.keep'),
       testID: 'backup-disable-keep',
       onPress: close,
     },
@@ -1338,7 +1338,7 @@ export function BackupScreen({
           testID="backup-disable-dialog" glyph="archive"
           actions={[
             {
-              label: t('common.cancel'),
+              label: t('backup.off.keep'),
               testID: 'backup-disable-keep',
               onPress: () => setDialog(null),
             },
@@ -1377,7 +1377,7 @@ export function BackupScreen({
           testID="backup-documents-dialog" glyph="attach"
           actions={[
             {
-              label: t('common.cancel'),
+              label: t('backup.docs.keep'),
               testID: 'backup-documents-cancel',
               onPress: () => setDocumentAsk(null),
             },

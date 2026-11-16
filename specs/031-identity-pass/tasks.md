@@ -1306,11 +1306,19 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   with practices 1.6.1's check-ui on the 24 boards (232 findings), the canvas's own mistakes fixed
   (dark phones' clock in dark ink, Přijaté | Odeslané marked as tabs, screens drawn mid-scroll
   marked): 200 left, the agreed design against the new rules, for the owner (not-now.md).
+  On canvas v36 the owner saw the stamp's waves cross the postmark's date: they now start 4 past the
+  ring (`cancellation.x` 44) and stop within 2 of the stamp's edge (4182e72, canvas v37). Shown on
+  its own before/after page (the app and the board), accepted 2026-11-16: "ok accept". From then on,
+  practices 1.7.0: every touch-up to the canvas gets its own before/after page, named in the commit.
   The owner, 2026-11-16: "Fix to 1.6 first" - the pass stays open until the build meets practices
   1.6. Plan, one rule at a time, each proposed on the canvas with options where it is a design choice,
   picked by the owner, built, walked, and re-checked with check-ui (target: 0 findings, or data-allow
   with a reason the owner gave):
-  - [ ] T050.1 Outcome: the ten bare "Zrušit" and "Přijmout" (proposal per dialog in not-now.md).
+  - [x] T050.1 Outcome: the ten bare "Zrušit" and "Přijmout". The owner picked "name what stays"
+    (2026-11-16): Nechat zapnuté, Nechat jak je, Nechat vypnuté, Počkat na Wi-Fi, Neukládat,
+    Ponechat, Nechat zámek, Neodesílat, Zavřít fotoaparát, Zrušit přihlášení, Přijmout zálohu.
+    `common.cancel` and `login.cancel` are gone (guard: wayOutNamesOutcome). Canvas v38 redraws five
+    boards; a before/after page shows them, and lists the six dialogs no board draws.
   - [ ] T050.2 Contrast 4.5:1 (19): muted lines, the neutral button's ink, "Režim ladění" on blue.
   - [ ] T050.3 The 11 px floor (22): the postmark's ring text and time, "PDF", compose's letter preview.
   - [ ] T050.4 One anatomy (14): neutral and filled buttons 48/52/40 tall, icon buttons 44/30.

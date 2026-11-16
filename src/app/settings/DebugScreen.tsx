@@ -272,7 +272,7 @@ export function DebugScreen({ onBack }: { readonly onBack: () => void }) {
           glyph="settings"
           testID="debug-delete-dialog"
           actions={[
-            { label: t('common.cancel'), onPress: () => setPendingDelete(null) },
+            { label: t('common.keep'), onPress: () => setPendingDelete(null) },
             {
               label: t('debug.delete'),
               tone: 'danger',
