@@ -1193,7 +1193,7 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
 
 ## Phase 6: Build round 1 and round 2; Phase 7: close
 
-- [ ] T050 impeccable critique of the built app (two isolated reviewers), fixes, re-audit with the owner.
+- [x] T050 impeccable critique of the built app (two isolated reviewers), fixes, re-audit with the owner.
   Raised in I46.2: dates are "13.11.2026 15:18" across the app (backups, the message detail); the
   boards write "12. 11. 2026 09:20" with the Czech spaces. One formatter for the app is the fix.
   Raised in I46.4: English byte sizes keep the Czech decimal comma ("2,6 MB of 4,2 MB"); `formatBytes`
@@ -1400,7 +1400,7 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     overlapped by the text" on R15. The tucked bar drew the message envelope's folds squeezed into its
     54, under the sender and the window, in the app too. The owner chose "No folds in the bar": the
     band's Envelope takes `creases={null}` (test first, red on the fold's path), and R15 drops them
-    (canvas v55, check-ui 0).
+    (canvas v55, check-ui 0). Walked on Obalka_Demo (dark, text at 1.6x): the tucked bar has no folds.
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the
@@ -1501,4 +1501,5 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
   debug delete question (DESIGN.md records its anatomy, R9's `Dialog`), R13's licence list (3 of 9
   rows drawn, the rest the same row). Open for the owner, under T050: the stamp (R2 or Sent) and the
   date form; each screen follows its own board until then. The dimmed Odeslat took .55 with the rest.
-- [ ] T052 Delete `docs/engineering/identity-pass.md` in the last commit.
+- [x] T052 Delete `docs/engineering/identity-pass.md` in the last commit. It was never committed (the
+  handoff for the agent sessions); deleted with this commit, 2026-11-18.
