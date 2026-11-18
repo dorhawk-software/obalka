@@ -30,16 +30,16 @@ BODY = (16, 16, 18)
 # on a one-letter preposition.
 SHOTS = {
     "1-unified": {
-        "cs": ("Všechny schránky\nv\xa0jednom seznamu", "Zprávy zůstanou i\xa0po 90 dnech, kdy je ISDS smaže"),
-        "en": ("Every data box\nin one list", "Your mail stays after ISDS deletes it at 90 days"),
+        "cs": ("Všechny schránky\nv\xa0jednom seznamu", "Osobní, živnost i\xa0firma pohromadě"),
+        "en": ("Every data box\nin one list", "Personal, sole trader and company together"),
     },
     "2-detail": {
-        "cs": ("Fikce vás\nnepřekvapí", "Doručenka řekne, co se stalo a kdy"),
-        "en": ("No surprise\ndeliveries", "The delivery record says what happened"),
+        "cs": ("Uvidíte, kdy\nlhůta běží", "Po 10 dnech je zpráva doručená, i\xa0když ji neotevřete"),
+        "en": ("See when the\nclock starts", "After 10 days a message counts as delivered, opened or not"),
     },
     "3-search": {
-        "cs": ("Najdete cokoli,\ni\xa0offline", "Hledání napříč všemi schránkami"),
-        "en": ("Find anything,\neven offline", "Search across every box"),
+        "cs": ("Najdete cokoli,\ni\xa0offline", "I\xa0zprávy, které ISDS po 90 dnech smazal"),
+        "en": ("Find anything,\neven offline", "Even mail ISDS deleted after 90 days"),
     },
     "4-backup": {
         "cs": ("Šifrovaná\nzáloha", "Heslo k ní máte jen vy"),
