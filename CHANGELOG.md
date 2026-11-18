@@ -13,13 +13,6 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
-### Nové
-
-- **Časté dotazy odpoví, proč Obálka, když existuje Portál občana.** Komu stačí oficiální
-  aplikace a pro koho je Obálka: víc schránek v jednom seznamu, lhůty na očích a pošta v telefonu.
-  Odpověď o mazání zpráv nově říká, že 90 dní běží od doručení přihlášením a zprávu doručenou
-  fikcí ISDS drží nejméně tři roky.
-
 ## 1.1.0 (2026-11-18)
 
 ### Nové
@@ -30,6 +23,10 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   změnit, jinak se do schránky nedostanete.
 - **Přílohu i podepsaný originál můžete stáhnout, kam chcete.** Tlačítko Stáhnout vedle souboru
   uloží jeho kopii přes systémový dialog; klepnutím na řádek se soubor otevře jako dřív.
+- **Časté dotazy odpoví, proč Obálka, když existuje Portál občana.** Komu stačí oficiální aplikace a
+  pro koho je Obálka: víc schránek v jednom seznamu, lhůty na očích a pošta v telefonu. Odpověď o
+  mazání zpráv nově říká, že 90 dní běží od doručení přihlášením a zprávu doručenou fikcí ISDS drží
+  nejméně tři roky.
 
 ### Lepší
 

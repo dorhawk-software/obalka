@@ -13,13 +13,6 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
-### New
-
-- **The FAQ answers why Obálka, when there is Portál občana.** Who the official app is enough
-  for, and who Obálka is for: several boxes in one list, deadlines in sight and mail on the phone.
-  The answer about deleted messages now says the 90 days run from service by sign-in, and that
-  ISDS keeps a message served by fiction for at least three years.
-
 ## 1.1.0 (2026-11-18)
 
 ### New
@@ -30,6 +23,10 @@ What changed in each Obálka release, written for the people using it. The newes
   change it, or the box stops letting you in.
 - **Save a copy of an attachment or the signed original wherever you like.** The Download button
   beside a file saves a copy through the system dialog; tapping the row opens the file as before.
+- **The FAQ answers why Obálka, when there is Portál občana.** Who the official app is enough for,
+  and who Obálka is for: several boxes in one list, deadlines in sight and mail on the phone. The
+  answer about deleted messages now says the 90 days run from service by sign-in, and that ISDS
+  keeps a message served by fiction for at least three years.
 
 ### Better
 
