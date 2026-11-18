@@ -10,7 +10,8 @@ Rules the text keeps:
 - **No other app's name in the keywords** (2.3.7) - so not "Datovka", however often people search it.
 - **Project voice**, never "I": "Aplikace…", "vývojáři aplikace" / "the developers".
 - **It says it is not official**, near the end: an independent client of the public ISDS interface, not
-  from the Ministry of the Interior or the ISDS operator.
+  from the Digitální a informační agentura, which administers ISDS, or Česká pošta, which operates it
+  (as the README and the website say since 2026-11-18).
 - Limits: name and subtitle 30 characters, promotional text 170, keywords 100 **bytes** (comma-separated,
   no spaces; a Czech letter with a diacritic takes two), description 4000.
 
@@ -64,7 +65,7 @@ SOUKROMÍ
 PŘIHLÁŠENÍ
 Jménem a heslem, SMS kódem nebo Mobilním klíčem. Funguje i s testovacím prostředím ISDS.
 
-Obálka není oficiální aplikace. Není od Ministerstva vnitra ani od provozovatele ISDS a není s nimi nijak spojená; používá veřejné rozhraní ISDS pro aplikace třetích stran. Zdrojový kód je otevřený pod licencí MIT.
+Obálka není oficiální aplikace. Není od Digitální a informační agentury, která ISDS spravuje, ani od České pošty, která ho provozuje, a není s nimi nijak spojená; používá veřejné rozhraní ISDS pro aplikace třetích stran. Zdrojový kód je otevřený pod licencí MIT.
 
 ## en-US
 
@@ -108,4 +109,4 @@ PRIVACY
 SIGNING IN
 Username and password, SMS code or Mobile Key. Works with the ISDS test environment too.
 
-Obálka is not an official app. It is not from the Ministry of the Interior or the ISDS operator and is not affiliated with them; it uses the public ISDS interface for third-party applications. The source code is open under the MIT licence.
+Obálka is not an official app. It is not from the Digital and Information Agency, which administers ISDS, or from Česká pošta, which operates it, and is not affiliated with either; it uses the public ISDS interface for third-party applications. The source code is open under the MIT licence.
