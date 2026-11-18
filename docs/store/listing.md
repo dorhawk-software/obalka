@@ -1,7 +1,7 @@
 # App Store listing
 
 The listing as it goes to App Store Connect. `tools/asc.py listing` uploads the blocks below verbatim and
-`tools/asc.py verify` compares the store with them, so an edit lands here first. Background and the
+`tools/asc.py listing --dry` compares the store with them, so an edit lands here first. Background and the
 keyword rules are in [`docs/aso.md`](../aso.md).
 
 Rules the text keeps:
@@ -29,10 +29,10 @@ Shared by both languages:
 Obálka - datové schránky
 
 ### subtitle
-Datové zprávy, lhůty a archiv
+Více schránek v jednom seznamu
 
 ### promotional text
-Všechny datové schránky v jednom seznamu, běžící lhůty na očích a archiv, který po 90 dnech nezmizí. Bez serveru a bez tichého doručování na pozadí.
+Osobní, živnostenská i firemní schránka v jednom seznamu. Uvidíte, kdy se zpráva počítá za doručenou a kdy běží lhůta. Pošta zůstává ve vašem telefonu, bez serveru.
 
 ### keywords
 ISDS,datová,schránka,úřad,doručenka,fikce,podání,OSVČ,eGovernment,pošta,přílohy,zfo
@@ -40,12 +40,12 @@ ISDS,datová,schránka,úřad,doručenka,fikce,podání,OSVČ,eGovernment,pošta
 ### description
 Pošta od státu, která se čte jako pošta.
 
-Obálka je nezávislý klient datových schránek. Zprávy, přílohy i podepsané originály ukládá do šifrovaného archivu v telefonu, takže nezmizí ani poté, co je ISDS po 90 dnech smaže.
+Obálka je nezávislý klient datových schránek pro ty, kdo jich mají víc. Osobní, živnostenská i firemní schránka jsou v jednom seznamu a u každé zprávy je vidět, kdy se počítá za doručenou: po deseti dnech to platí, i když ji neotevřete, a lhůty běží. Zprávy a přílohy zůstávají v šifrovaném archivu v telefonu i poté, co je ISDS po 90 dnech smaže.
 
 CO UMÍ
-• Archiv, který nemizí: obálky, přílohy i podepsaný originál (.zfo) zůstávají v telefonu, jak dlouho chcete.
 • Sloučená schránka: osobní, živnostenská i firemní schránka v jednom seznamu. Štítek u každé zprávy řekne, kam přišla.
-• Lhůty a fikce: sekce Vyžaduje pozornost ukáže běžící desetidenní lhůtu a u zprávy doručené fikcí to řekne rovnou.
+• Lhůty a fikce: sekce Vyžaduje pozornost ukáže běžící desetidenní lhůtu. Když se zpráva počítá za doručenou bez vašeho přihlášení (doručení fikcí), řekne to rovnou.
+• Archiv, který nemizí: obálky a přílohy zůstávají v telefonu, jak dlouho chcete. Podepsaný originál (.zfo) uložíte jedním klepnutím, dokud ho ISDS drží.
 • Doručenka: co se se zprávou stalo a kdy.
 • Odesílání: úřadům zdarma, soukromým schránkám jako poštovní datová zpráva s kreditem viditelným předem.
 • Hledání napříč všemi schránkami, i bez připojení.
@@ -73,10 +73,10 @@ Obálka není oficiální aplikace. Není od Digitální a informační agentury
 Obálka - Czech Data Boxes
 
 ### subtitle
-ISDS mail, deadlines, archive
+Every data box in one list
 
 ### promotional text
-Every data box in one list, running deadlines in plain sight and an archive that outlives the 90 days ISDS keeps your mail. No server, nothing delivered behind your back.
+Personal, sole-trader and company boxes in one list. See when a message counts as delivered and when a deadline runs. Your mail stays on your phone, with no server.
 
 ### keywords
 datová,schránka,datové,schránky,government,official,letters,delivery,receipt,eGovernment,zfo
@@ -84,12 +84,12 @@ datová,schránka,datové,schránky,government,official,letters,delivery,receipt
 ### description
 Mail from the state that reads like mail.
 
-Obálka is an independent client for Czech data boxes (datové schránky). It keeps messages, attachments and their signed originals in an encrypted archive on your phone, so they stay after ISDS deletes them 90 days after delivery.
+Obálka is an independent client for Czech data boxes (datové schránky), made for people who hold more than one. Personal, sole-trader and company boxes sit in one list, and every message shows when it counts as delivered: after ten days it does, even unopened, and deadlines start running. Messages and attachments stay in an encrypted archive on your phone after ISDS deletes them 90 days after delivery.
 
 WHAT IT DOES
-• An archive that stays: envelopes, attachments and the signed original (.zfo) remain on your phone for as long as you want.
 • One inbox: personal, sole-trader and company boxes in a single list. A label on every message says where it arrived.
-• Deadlines and deemed delivery: Needs attention shows the running ten-day period, and a message delivered by fiction says so plainly.
+• Deadlines and deemed delivery: Needs attention shows the running ten-day period. When a message counts as delivered without you signing in (delivery by fiction), it says so plainly.
+• An archive that stays: envelopes and attachments remain on your phone for as long as you want. The signed original (.zfo) saves with one tap while ISDS still holds it.
 • Delivery record: what happened to a message, and when.
 • Sending: free to public authorities, and to private boxes as a postal data message with the credit shown up front.
 • Search across every box, offline.
