@@ -13,31 +13,7 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
-### New
-
-- **Save a copy of an attachment or the signed original wherever you like.** The Download button
-  beside a file saves a copy through the system dialog; tapping the row opens the file as before.
-
-### Changed
-
-- **A new look: post, as on paper.** The top of a box is the front of an envelope. Messages waiting
-  for you lie as sheets of paper, the rest are in a register by day. A received message lies in the
-  envelope it came in, the delivery record is a tear-off slip with a stamp for each step, and
-  attachments are sheets of paper. A sent message has its stamp cancelled by ISDS's postmark. The
-  Compose button is a gold postage stamp, and a locked Obálka is an envelope sealed with wax.
-- **Every screen in the new look.** Signing in, the SMS code in eight boxes, search, backup, moving to
-  another phone, changing the password, Settings and What's new. Questions rise from the bottom, buttons
-  show with a glyph what they do, and the button that closes a question says what stays. Dates are
-  written the same way everywhere, and the dark look has its own tones instead of light outlines.
-
-### Fixed
-
-- **Fixes across the app.** Android's system back steps back one screen when adding a box, and on
-  iPhone a message closes with a swipe from the edge. A screen reader reaches the fields of a new
-  message, nothing is cut at the largest text size, and the box switcher shows every box. An open
-  question no longer shows over the lock screen.
-
-## 1.1.0 (2026-11-11)
+## 1.1.0 (2026-11-18)
 
 ### New
 
@@ -45,6 +21,8 @@ What changed in each Obálka release, written for the people using it. The newes
   in Obálka while the current one still works: type the current one and the new one twice.
 - **A notice before the password runs out.** A week and a day before, a notification reminds you to
   change it, or the box stops letting you in.
+- **Save a copy of an attachment or the signed original wherever you like.** The Download button
+  beside a file saves a copy through the system dialog; tapping the row opens the file as before.
 
 ### Better
 
@@ -53,11 +31,28 @@ What changed in each Obálka release, written for the people using it. The newes
 - **Obálka says what notifications are for before the phone asks.** After a box is added it first
   explains the password-expiry notice; the system prompt comes only if you want them.
 
+### Changed
+
+- **A new look: post, as on paper.** The top of a box is the front of an envelope. Messages waiting
+  for you lie as sheets of paper, the rest are in a register by day. A received message lies in the
+  envelope it came in, the delivery record is a tear-off slip with a stamp for each step, and
+  attachments are sheets of paper. A sent message has its stamp cancelled by ISDS's postmark. The
+  Compose button is a gold postage stamp, and a locked Obálka is an envelope sealed with wax.
+- **Every screen in the new look.** Signing in, the SMS code in eight boxes, search, backup, moving
+  to another phone, changing the password, Settings and What's new. Questions rise from the bottom,
+  buttons show with a glyph what they do, and the button that closes a question says what stays.
+  Dates are written the same way everywhere, and the dark look has its own tones instead of light
+  outlines.
+
 ### Fixed
 
 - **A password validity changed on the portal reaches Obálka.** When a password starts or stops
   expiring, the app learns it on a refresh, without signing in again, and warns or stops warning.
 - **Dialogs in dark mode have an even edge all round.** It used to light up only along the top.
+- **Fixes across the app.** Android's system back steps back one screen when adding a box, and on
+  iPhone a message closes with a swipe from the edge. A screen reader reaches the fields of a new
+  message, nothing is cut at the largest text size, and the box switcher shows every box. An open
+  question no longer shows over the lock screen.
 
 ## 1.0.0 (2026-11-11)
 

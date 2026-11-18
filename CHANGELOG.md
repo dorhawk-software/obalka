@@ -13,31 +13,7 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
-### Nové
-
-- **Přílohu i podepsaný originál můžete stáhnout, kam chcete.** Tlačítko Stáhnout vedle souboru uloží
-  jeho kopii přes systémový dialog; klepnutím na řádek se soubor otevře jako dřív.
-
-### Změněno
-
-- **Nový vzhled: pošta jako na papíře.** Horní část schránky je přední strana obálky. Zprávy, které na
-  vás čekají, leží jako listy papíru, ostatní jsou v rejstříku po dnech. Přijatá zpráva leží v obálce, ve
-  které přišla, doručenka je ústřižek s razítkem za každý krok a přílohy jsou listy papíru. Odeslaná
-  zpráva má známku zrušenou razítkem ISDS. Tlačítko Napsat je zlatá poštovní známka a zamčená Obálka je
-  obálka zapečetěná voskem.
-- **Každá obrazovka v novém vzhledu.** Přihlášení, kód z SMS v osmi políčkách, hledání, záloha,
-  přesun do jiného telefonu, změna hesla, Nastavení i Co je nového. Otázky vyjíždějí zespodu, tlačítka
-  ukazují značkou, co udělají, a tlačítko, které otázku zavře, říká, co zůstane. Data se všude píšou
-  stejně a tmavý vzhled má vlastní odstíny místo světlých linek.
-
-### Opraveno
-
-- **Opravy napříč aplikací.** Systémové Zpět na Androidu vrací o krok při přidávání schránky a na
-  iPhonu jde zpráva zavřít přejetím od okraje. Čtečka obrazovky dosáhne na pole nové zprávy, při
-  největším písmu se nic neusekne a přepínač schránek ukazuje všechny schránky. Otevřená otázka se už
-  neukáže přes zamčenou obrazovku a jednopísmenná slova nezůstávají na konci řádku.
-
-## 1.1.0 (2026-11-11)
+## 1.1.0 (2026-11-18)
 
 ### Nové
 
@@ -45,6 +21,8 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
   Obálce, dokud to současné platí: zadáte současné a dvakrát nové.
 - **Upozornění, že heslo brzy vyprší.** Týden a den předem oznámení připomene, že je potřeba heslo
   změnit, jinak se do schránky nedostanete.
+- **Přílohu i podepsaný originál můžete stáhnout, kam chcete.** Tlačítko Stáhnout vedle souboru
+  uloží jeho kopii přes systémový dialog; klepnutím na řádek se soubor otevře jako dřív.
 
 ### Lepší
 
@@ -53,11 +31,27 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 - **Než telefon požádá o oznámení, Obálka řekne, k čemu jsou.** Po přidání schránky nejdřív vysvětlí
   upozornění na konec platnosti hesla; systémový dotaz přijde, jen když je chcete.
 
+### Změněno
+
+- **Nový vzhled: pošta jako na papíře.** Horní část schránky je přední strana obálky. Zprávy, které
+  na vás čekají, leží jako listy papíru, ostatní jsou v rejstříku po dnech. Přijatá zpráva leží v
+  obálce, ve které přišla, doručenka je ústřižek s razítkem za každý krok a přílohy jsou listy
+  papíru. Odeslaná zpráva má známku zrušenou razítkem ISDS. Tlačítko Napsat je zlatá poštovní známka
+  a zamčená Obálka je obálka zapečetěná voskem.
+- **Každá obrazovka v novém vzhledu.** Přihlášení, kód z SMS v osmi políčkách, hledání, záloha,
+  přesun do jiného telefonu, změna hesla, Nastavení i Co je nového. Otázky vyjíždějí zespodu,
+  tlačítka ukazují značkou, co udělají, a tlačítko, které otázku zavře, říká, co zůstane. Data se
+  všude píšou stejně a tmavý vzhled má vlastní odstíny místo světlých linek.
+
 ### Opraveno
 
 - **Změna platnosti hesla v portálu se projeví i v Obálce.** Když heslo začne nebo přestane vypršet,
   aplikace to zjistí při obnovení, bez nového přihlášení, a podle toho upozorní, nebo přestane.
 - **Okraj dialogů v tmavém režimu je stejný ze všech stran.** Dřív svítil jen nahoře.
+- **Opravy napříč aplikací.** Systémové Zpět na Androidu vrací o krok při přidávání schránky a na
+  iPhonu jde zpráva zavřít přejetím od okraje. Čtečka obrazovky dosáhne na pole nové zprávy, při
+  největším písmu se nic neusekne a přepínač schránek ukazuje všechny schránky. Otevřená otázka se
+  už neukáže přes zamčenou obrazovku a jednopísmenná slova nezůstávají na konci řádku.
 
 ## 1.0.0 (2026-11-11)
 

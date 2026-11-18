@@ -29,7 +29,7 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
   "cs": [
     {
       "version": "1.1.0",
-      "date": "2026-11-11",
+      "date": "2026-11-18",
       "changes": {
         "new": [
           {
@@ -39,6 +39,10 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
           {
             "lead": "Upozornění, že heslo brzy vyprší.",
             "body": "Týden a den předem oznámení připomene, že je potřeba heslo změnit, jinak se do schránky nedostanete."
+          },
+          {
+            "lead": "Přílohu i podepsaný originál můžete stáhnout, kam chcete.",
+            "body": "Tlačítko Stáhnout vedle souboru uloží jeho kopii přes systémový dialog; klepnutím na řádek se soubor otevře jako dřív."
           }
         ],
         "better": [
@@ -51,6 +55,16 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
             "body": "Po přidání schránky nejdřív vysvětlí upozornění na konec platnosti hesla; systémový dotaz přijde, jen když je chcete."
           }
         ],
+        "changed": [
+          {
+            "lead": "Nový vzhled: pošta jako na papíře.",
+            "body": "Horní část schránky je přední strana obálky. Zprávy, které na vás čekají, leží jako listy papíru, ostatní jsou v rejstříku po dnech. Přijatá zpráva leží v obálce, ve které přišla, doručenka je ústřižek s razítkem za každý krok a přílohy jsou listy papíru. Odeslaná zpráva má známku zrušenou razítkem ISDS. Tlačítko Napsat je zlatá poštovní známka a zamčená Obálka je obálka zapečetěná voskem."
+          },
+          {
+            "lead": "Každá obrazovka v novém vzhledu.",
+            "body": "Přihlášení, kód z SMS v osmi políčkách, hledání, záloha, přesun do jiného telefonu, změna hesla, Nastavení i Co je nového. Otázky vyjíždějí zespodu, tlačítka ukazují značkou, co udělají, a tlačítko, které otázku zavře, říká, co zůstane. Data se všude píšou stejně a tmavý vzhled má vlastní odstíny místo světlých linek."
+          }
+        ],
         "fixed": [
           {
             "lead": "Změna platnosti hesla v portálu se projeví i v Obálce.",
@@ -59,6 +73,10 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
           {
             "lead": "Okraj dialogů v tmavém režimu je stejný ze všech stran.",
             "body": "Dřív svítil jen nahoře."
+          },
+          {
+            "lead": "Opravy napříč aplikací.",
+            "body": "Systémové Zpět na Androidu vrací o krok při přidávání schránky a na iPhonu jde zpráva zavřít přejetím od okraje. Čtečka obrazovky dosáhne na pole nové zprávy, při největším písmu se nic neusekne a přepínač schránek ukazuje všechny schránky. Otevřená otázka se už neukáže přes zamčenou obrazovku a jednopísmenná slova nezůstávají na konci řádku."
           }
         ]
       }
@@ -117,7 +135,7 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
   "en": [
     {
       "version": "1.1.0",
-      "date": "2026-11-11",
+      "date": "2026-11-18",
       "changes": {
         "new": [
           {
@@ -127,6 +145,10 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
           {
             "lead": "A notice before the password runs out.",
             "body": "A week and a day before, a notification reminds you to change it, or the box stops letting you in."
+          },
+          {
+            "lead": "Save a copy of an attachment or the signed original wherever you like.",
+            "body": "The Download button beside a file saves a copy through the system dialog; tapping the row opens the file as before."
           }
         ],
         "better": [
@@ -139,6 +161,16 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
             "body": "After a box is added it first explains the password-expiry notice; the system prompt comes only if you want them."
           }
         ],
+        "changed": [
+          {
+            "lead": "A new look: post, as on paper.",
+            "body": "The top of a box is the front of an envelope. Messages waiting for you lie as sheets of paper, the rest are in a register by day. A received message lies in the envelope it came in, the delivery record is a tear-off slip with a stamp for each step, and attachments are sheets of paper. A sent message has its stamp cancelled by ISDS's postmark. The Compose button is a gold postage stamp, and a locked Obálka is an envelope sealed with wax."
+          },
+          {
+            "lead": "Every screen in the new look.",
+            "body": "Signing in, the SMS code in eight boxes, search, backup, moving to another phone, changing the password, Settings and What's new. Questions rise from the bottom, buttons show with a glyph what they do, and the button that closes a question says what stays. Dates are written the same way everywhere, and the dark look has its own tones instead of light outlines."
+          }
+        ],
         "fixed": [
           {
             "lead": "A password validity changed on the portal reaches Obálka.",
@@ -147,6 +179,10 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
           {
             "lead": "Dialogs in dark mode have an even edge all round.",
             "body": "It used to light up only along the top."
+          },
+          {
+            "lead": "Fixes across the app.",
+            "body": "Android's system back steps back one screen when adding a box, and on iPhone a message closes with a swipe from the edge. A screen reader reaches the fields of a new message, nothing is cut at the largest text size, and the box switcher shows every box. An open question no longer shows over the lock screen."
           }
         ]
       }
