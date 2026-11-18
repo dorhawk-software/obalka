@@ -20,6 +20,19 @@ describe('the demo switches', () => {
   });
 });
 
+describe('the demo boxes', () => {
+  // The app measures a password's and a session's end against the real clock, not the demo's fixed
+  // one: set 64 days after 2026-09-12, every demo box said "Platnost hesla vypršela" from 2026-11-15
+  // on, in the website's and the README's pictures (2026-11-18).
+  it('keep their password and session for years after today', () => {
+    const years = 2 * 365 * 24 * 60 * 60 * 1000;
+    for (const box of DEMO_ACCOUNTS) {
+      expect(box.passwordExpiresAt).toBeGreaterThan(Date.now() + years);
+      expect(box.sessionValidUntil).toBeGreaterThan(Date.now() + years);
+    }
+  });
+});
+
 describe('the seed', () => {
   it('writes the whole archive on an empty phone', () => {
     expect(seedMode([])).toBe('fresh');

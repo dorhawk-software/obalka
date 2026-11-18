@@ -76,8 +76,10 @@ const account = (
   authMethod: 'password',
   host: 'production',
   secretRef: `demo/${boxId}`,
-  sessionValidUntil: NOW + 30 * DAY,
-  passwordExpiresAt: NOW + 64 * DAY,
+  // Measured against the real clock, not `NOW`: 64 days after the fixed clock passed on 2026-11-15,
+  // and every demo box showed "Platnost hesla vypršela" in the pictures (2026-11-18).
+  sessionValidUntil: NOW + 3650 * DAY,
+  passwordExpiresAt: NOW + 3650 * DAY,
   lastSyncedAt: NOW - 4 * 60_000,
   messageCount: null,
   unreadCount: null,
