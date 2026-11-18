@@ -71,12 +71,8 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
             "body": "Když heslo začne nebo přestane vypršet, aplikace to zjistí při obnovení, bez nového přihlášení, a podle toho upozorní, nebo přestane."
           },
           {
-            "lead": "Okraj dialogů v tmavém režimu je stejný ze všech stran.",
-            "body": "Dřív svítil jen nahoře."
-          },
-          {
             "lead": "Opravy napříč aplikací.",
-            "body": "Systémové Zpět na Androidu vrací o krok při přidávání schránky a na iPhonu jde zpráva zavřít přejetím od okraje. Čtečka obrazovky dosáhne na pole nové zprávy, při největším písmu se nic neusekne a přepínač schránek ukazuje všechny schránky. Otevřená otázka se už neukáže přes zamčenou obrazovku a jednopísmenná slova nezůstávají na konci řádku."
+            "body": "Systémové Zpět na Androidu vrací o krok při přidávání schránky a na iPhonu jde zpráva zavřít přejetím od okraje. Čtečka obrazovky dosáhne na pole nové zprávy, při největším písmu se nic neusekne a přepínač schránek ukazuje všechny schránky. Otevřená otázka se už neukáže přes zamčenou obrazovku a jednopísmenná slova nezůstávají na konci řádku. Okraj dialogů v tmavém režimu je stejný ze všech stran, dřív svítil jen nahoře."
           }
         ]
       }
@@ -177,12 +173,8 @@ export const CHANGELOG: Readonly<Record<Locale, readonly ChangelogRelease[]>> = 
             "body": "When a password starts or stops expiring, the app learns it on a refresh, without signing in again, and warns or stops warning."
           },
           {
-            "lead": "Dialogs in dark mode have an even edge all round.",
-            "body": "It used to light up only along the top."
-          },
-          {
             "lead": "Fixes across the app.",
-            "body": "Android's system back steps back one screen when adding a box, and on iPhone a message closes with a swipe from the edge. A screen reader reaches the fields of a new message, nothing is cut at the largest text size, and the box switcher shows every box. An open question no longer shows over the lock screen."
+            "body": "Android's system back steps back one screen when adding a box, and on iPhone a message closes with a swipe from the edge. A screen reader reaches the fields of a new message, nothing is cut at the largest text size, and the box switcher shows every box. An open question no longer shows over the lock screen, and dialogs in dark mode have an even edge all round instead of lighting up only along the top."
           }
         ]
       }

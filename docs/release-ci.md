@@ -253,6 +253,18 @@ is upgraded past the fix.
   (`MountingCoordinator::pullTransaction`, SEGV_ACCERR) in about 1 of 60 cold starts upstream (#4654), seen
   once on the emulator here. Remove the patch when upgrading to 4.28.0 or later.
 
+## Dependabot, 2026-11-18
+
+Four open alerts, none fixed by an update and none reaching a user. Dismissing them on GitHub is the
+owner's call; each row says how:
+
+| Alert | Reached through | Decision |
+|---|---|---|
+| minimatch, moderate (GHSA-g3hv-75wg-m249) | 10.2.6 via glob 13 and the lint toolchain | Build and test tooling, never shipped: `npm run audit:shipped` is OK. To dismiss as tolerable risk. |
+| glob, moderate (GHSA-3g3m-2fjr-6pw4) | 13.0.x via `@sentry/bundler-plugins` and react-native-blob-util's install scripts | Same: tooling, not in the bundle. To dismiss as tolerable risk. |
+| deepmerge, low (GHSA-gcqx-w48m-w2h4) | 4.3.1, dev | GitHub withdrew the advisory. To dismiss as inaccurate. |
+| croc, moderate (GHSA-x89h-7h96-v88f) | `native/transfer/go.mod`, croc v10.7.0 - shipped | No fixed release. Not reachable here: `Overwrite` and `NoPrompt` are already on, so the bypassed prompt never runs, and each receive writes into a folder created empty for it. To dismiss as tolerable risk; recorded in `docs/engineering/not-now.md` to move to the fix when croc releases one. |
+
 ## Dependency advisories - closed 2026-09-14
 
 Before the repository went public, GitHub's Dependabot listed nine open alerts on `main`, and `npm audit`

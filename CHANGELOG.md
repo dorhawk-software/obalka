@@ -52,11 +52,11 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 - **Změna platnosti hesla v portálu se projeví i v Obálce.** Když heslo začne nebo přestane vypršet,
   aplikace to zjistí při obnovení, bez nového přihlášení, a podle toho upozorní, nebo přestane.
-- **Okraj dialogů v tmavém režimu je stejný ze všech stran.** Dřív svítil jen nahoře.
 - **Opravy napříč aplikací.** Systémové Zpět na Androidu vrací o krok při přidávání schránky a na
   iPhonu jde zpráva zavřít přejetím od okraje. Čtečka obrazovky dosáhne na pole nové zprávy, při
   největším písmu se nic neusekne a přepínač schránek ukazuje všechny schránky. Otevřená otázka se
-  už neukáže přes zamčenou obrazovku a jednopísmenná slova nezůstávají na konci řádku.
+  už neukáže přes zamčenou obrazovku a jednopísmenná slova nezůstávají na konci řádku. Okraj dialogů
+  v tmavém režimu je stejný ze všech stran, dřív svítil jen nahoře.
 
 ## 1.0.0 (2026-11-11)
 

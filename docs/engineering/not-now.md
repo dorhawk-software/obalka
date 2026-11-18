@@ -95,6 +95,13 @@ it is" marks a limitation kept on purpose. Done items leave the list.
 - **A self-hosted relay. Decided: left as it is (2026-09-13).** A relay the project runs breaks
   006's commitment; one the user runs serves nobody who needs this.
   ([025/tasks.md](../../specs/025-phone-to-phone-transfer/tasks.md), Deferred)
+- **croc's "croc-stdin-" overwrite advisory. Decided: left as it is (2026-11-18).** GHSA-x89h-7h96-v88f
+  covers every croc up to 10.7.0, the one Obálka builds in, and no fixed release exists. Not reachable:
+  the prompt it bypasses never runs here (`Overwrite` and `NoPrompt` are on in
+  `native/transfer/transfer.go`), and every receive goes into a run folder created empty just before
+  (`transferController.receive`), so there is no existing file to replace; the sender also needs the
+  one-time phrase. Back when croc releases a fix: move to it.
+  ([docs/release-ci.md](../release-ci.md), "Dependabot, 2026-11-18")
 
 ## Backup and archive
 

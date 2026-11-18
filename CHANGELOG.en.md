@@ -53,11 +53,11 @@ What changed in each Obálka release, written for the people using it. The newes
 
 - **A password validity changed on the portal reaches Obálka.** When a password starts or stops
   expiring, the app learns it on a refresh, without signing in again, and warns or stops warning.
-- **Dialogs in dark mode have an even edge all round.** It used to light up only along the top.
 - **Fixes across the app.** Android's system back steps back one screen when adding a box, and on
   iPhone a message closes with a swipe from the edge. A screen reader reaches the fields of a new
   message, nothing is cut at the largest text size, and the box switcher shows every box. An open
-  question no longer shows over the lock screen.
+  question no longer shows over the lock screen, and dialogs in dark mode have an even edge all
+  round instead of lighting up only along the top.
 
 ## 1.0.0 (2026-11-11)
 
