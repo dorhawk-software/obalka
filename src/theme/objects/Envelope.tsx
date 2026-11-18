@@ -25,8 +25,11 @@ export function Envelope({
   readonly children: ReactNode;
   readonly style?: StyleProp<ViewStyle>;
   readonly testID?: string;
-  /** The folds' drawing, for an envelope of another shape (the sign-in's, `waitingEnvelope`). */
-  readonly creases?: { readonly width: number; readonly height: number; readonly d: string; readonly stroke: number };
+  /**
+   * The folds' drawing, for an envelope of another shape (the sign-in's, `waitingEnvelope`), or null
+   * for none: a strip too low for folds that would run under its words (the tucked bar's band).
+   */
+  readonly creases?: { readonly width: number; readonly height: number; readonly d: string; readonly stroke: number } | null;
 }) {
   const theme = useTheme();
   const c = creases;
@@ -46,29 +49,31 @@ export function Envelope({
       {/* The folds' own layer, filling the whole envelope. A percentage size straight on the drawing
           resolved against the padded content box, and the folds stopped the padding short of the
           corners (the owner, R8 walk, 2026-11-13). */}
-      <View
-        style={StyleSheet.absoluteFill}
-        pointerEvents="none"
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-      >
-        <Svg
-          width="100%"
-          height="100%"
-          viewBox={`0 0 ${c.width} ${c.height}`}
-          preserveAspectRatio="none"
+      {c ? (
+        <View
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
         >
-          <Path
-            d={c.d}
-            stroke={theme.envelopeCrease}
-            strokeWidth={c.stroke}
-            fill="none"
-            vectorEffect="non-scaling-stroke"
-          />
-        </Svg>
-      </View>
+          <Svg
+            width="100%"
+            height="100%"
+            viewBox={`0 0 ${c.width} ${c.height}`}
+            preserveAspectRatio="none"
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+          >
+            <Path
+              d={c.d}
+              stroke={theme.envelopeCrease}
+              strokeWidth={c.stroke}
+              fill="none"
+              vectorEffect="non-scaling-stroke"
+            />
+          </Svg>
+        </View>
+      ) : null}
       {children}
     </View>
   );

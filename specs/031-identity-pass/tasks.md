@@ -1396,6 +1396,11 @@ the strip's height), so the envelope still reaches the top; today it pushes the 
     Each language's grammar (practices 1.7): the R boards' notes are English in a Czech board, so
     "R6's slips" read as the preposition "s" (5 findings). The 165 notes now say lang="en" (canvas
     v52, nothing drawn changes), and check-copy on the 24 boards finds nothing.
+  - [x] T050.12 The owner's re-audit (2026-11-18): "the blue envelope contains the creases which are
+    overlapped by the text" on R15. The tucked bar drew the message envelope's folds squeezed into its
+    54, under the sender and the window, in the app too. The owner chose "No folds in the bar": the
+    band's Envelope takes `creases={null}` (test first, red on the fold's path), and R15 drops them
+    (canvas v55, check-ui 0).
   Raised by the owner for it (2026-11-13): the second envelope's edge under a sheet delivered by
   fiction read as a pile. Decided the same day, "draw under all": every attention sheet has it, done.
 - [x] T051 Canvas shows only agreed designs and matches the build; DESIGN.md records the objects, the

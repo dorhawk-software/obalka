@@ -127,9 +127,12 @@ export function DetailBand({
           boxShadow: objectShadow(theme.name, 'envelopeHeader'),
         }}
       >
-        {/* The 54 is the envelope's front: its folds are drawn there, not across the status bar. It
-            grows with the largest text sizes rather than cut the sender off (Obalka_Demo, 2.0x). */}
+        {/* The 54 is the envelope's front. It has no folds: squeezed into 54 they ran under the
+            sender's name (the owner, 2026-11-18, "No folds in the bar"); the blue, the window and the
+            round bottom say envelope. It grows with the largest text sizes rather than cut the sender
+            off (Obalka_Demo, 2.0x). */}
         <Envelope
+          creases={null}
           style={{
             minHeight: BAND_HEIGHT,
             paddingVertical: space.xs,

@@ -63,6 +63,7 @@ jest.mock('../../src/services/files/attachmentOpener', () => ({
 
 import { MessageDetail } from '../../src/features/messages/screens/MessageDetail';
 import { BAND_HEIGHT, isTucked, tuckRange } from '../../src/features/messages/screens/DetailBand';
+import { envelopeShape } from '../../src/theme/print';
 
 const account: DataBoxAccount = {
   id: 'a1',
@@ -199,6 +200,23 @@ describe('a received message', () => {
     const { view } = await open();
     expect(view.getByTestId('bandSender', hidden)).toHaveTextContent(mockEnvelope.sender);
     expect(view.getByTestId('bandRecipient', hidden)).toHaveTextContent('Jana Nováková');
+  });
+
+  it("draws no folds in the band: squeezed into its 54 they ran under the sender's name", async () => {
+    // The owner, 2026-11-18: "the blue envelope contains the creases which are overlapped by the
+    // text". The envelope above still draws its folds; the band, which carries the text, does not.
+    const { view } = await open();
+    type Node = { type: string; props: Record<string, unknown>; children: (Node | string)[] | null };
+    const all = (n: Node | string): Node[] =>
+      typeof n === 'string' ? [] : [n, ...(n.children ?? []).flatMap(all)];
+    const tree = view.toJSON() as Node | Node[] | null;
+    const within = (testID: string) => {
+      const root = (Array.isArray(tree) ? tree : tree ? [tree] : []).flatMap(all).find(n => n.props.testID === testID);
+      expect(root).toBeDefined();
+      return root ? all(root).filter(n => n.type === 'RNSVGPath' && n.props.d === envelopeShape.creases.d) : [];
+    };
+    expect(within('detailEnvelopeFront').length).toBeGreaterThan(0);
+    expect(within('detailBand')).toHaveLength(0);
   });
 
   it('keeps the band out of reach at the top: no touches, nothing to read aloud, a dark status bar', async () => {
