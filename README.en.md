@@ -23,7 +23,7 @@
 <br/>
 
 <div align="center">
-  <video src="https://github.com/user-attachments/assets/c687f704-126c-4475-ba93-651af7df279a" width="640" controls></video>
+  <video src="https://github.com/user-attachments/assets/446e0a6f-1fff-4ac3-93ad-66ff83ae3ce6" width="640" controls></video>
   <br/><sub>Obálka in 35 seconds. The video is in Czech.</sub>
 </div>
 
