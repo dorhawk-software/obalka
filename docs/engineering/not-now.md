@@ -218,7 +218,10 @@ Obálka's own harness gaps, to be fixed as the next pieces of work.
   building.
 - **The Xcode pin block is pasted into three workflows.** Plan: one shared step or script.
 - **Local Xcode 27, CI Xcode 26.3.** Plan: decide the version and write it down; build locally with
-  CI's when it matters.
+  CI's when it matters. **Deadline: April 2027.** Apple accepted build 1.1.0 (8) on 2026-11-18 with
+  ITMS-90725: built with the iOS 26.2 SDK; from April 2027 an upload needs the iOS 27 SDK (Xcode 27).
+  Moving the release workflows to Xcode 27 needs the UIScene lifecycle and signed simulator builds
+  that Xcode 27 asks for on this Mac.
 - **Stale texts.** `docs/release-ci.md`'s status line; ci.yml's single-commit concurrency comment;
   `docs/sideload-ios.md` says change `runs-on`; `docs/store/listing.md` cites a missing `asc.py
   verify`; `docs/aso.md` disagrees with it. Plan: correct each; one store doc, the other points to
