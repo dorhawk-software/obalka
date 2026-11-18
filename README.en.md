@@ -75,26 +75,26 @@ A client for Czech data boxes (datové schránky) on Android and iOS. Open sourc
 
 <div align="center">
 
-| Unified inbox | Delivery record | Box switcher |
+| Unified inbox | Message and delivery record | Box switcher |
 |:---:|:---:|:---:|
 | <img src="docs/screenshots/en/03-unified.png" width="230"> | <img src="docs/screenshots/en/04-detail.png" width="230"> | <img src="docs/screenshots/en/02-switcher.png" width="230"> |
-| Every box in one list. A chip on each message says which box it arrived in. | What happened, and when. A step appears only for something that actually happened. | Unread counts per box. "All" is visibly not just another box. |
+| Every box in one list. A chip on each message says which box it arrived in. | Sender and recipient on the envelope, a postmark with the delivery date, the record under the letter. | Unread counts per box. "All boxes" reads as a summary, not as one more box. |
 
-| Search | A single box | Settings |
+| Search | A single box | New message |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/en/05-search.png" width="230"> | <img src="docs/screenshots/en/01-inbox-box.png" width="230"> | <img src="docs/screenshots/en/06-settings.png" width="230"> |
-| Across every box, in the local archive, with no connection. | An "Elsewhere" line says something is waiting in another box without stealing attention. | Appearance, language, lock, documents, deadlines, diagnostics. |
+| <img src="docs/screenshots/en/05-search.png" width="230"> | <img src="docs/screenshots/en/01-inbox-box.png" width="230"> | <img src="docs/screenshots/en/13-compose.png" width="230"> |
+| Across every box, in the local archive, with no connection and without diacritics. | The "In your other boxes" line says how much is unread elsewhere without stealing attention. | Addressed like a letter: from whom and to whom, the recipient by name or box ID. |
 
-| Documents by themselves | Backup with documents | A new phone |
+| Settings | Backup | A new phone |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/en/10-attachments.png" width="230"> | <img src="docs/screenshots/en/11-backup.png" width="230"> | <img src="docs/screenshots/en/12-transfer.png" width="230"> |
-| New messages only, or the ones already on the phone too. The message stays unread. | Only downloaded documents, or all of them. What ISDS already deleted is said up front. | Pick a finished backup and send it. Each one says which documents it carries. |
+| <img src="docs/screenshots/en/06-settings.png" width="230"> | <img src="docs/screenshots/en/11-backup.png" width="230"> | <img src="docs/screenshots/en/12-transfer.png" width="230"> |
+| Appearance, language, lock, documents, deadlines, diagnostics. | By itself after every refresh, encrypted, with the documents if you choose. | The chosen backup goes to the other phone as it is, and says which documents it carries. |
 
 <br/>
 
 **Light and dark, independent of the phone's own setting.**
 
-<img src="docs/screenshots/en/03-unified.png" width="230"> <img src="docs/screenshots/en/07-unified-dark.png" width="230">
+<img src="docs/screenshots/en/03-unified.png" width="230"> <img src="docs/screenshots/en/07-unified-dark.png" width="230"> <img src="docs/screenshots/en/08-detail-dark.png" width="230">
 
 <sub>Every piece of data in these screenshots is invented (<code>src/dev/demoData.ts</code>). The
 names, box IDs, case numbers and addresses are all fictional.</sub>
@@ -190,7 +190,7 @@ This is a client for your mail from the state. It is built accordingly.
 
 |                                     |                                                                                                    |
 | ----------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Not an official app.**            | An independent client. Not from the Ministry of the Interior or the ISDS operator, and not affiliated with either. |
+| **Not an official app.**            | An independent client. Not from the Digital and Information Agency, which administers ISDS, or from Česká pošta, which operates it, and not affiliated with either. |
 | **Not a cloud service.**            | No account, no server. The archive is on the phone; only a backup you move yourself goes anywhere. |
 | **Not reading your mail for you.**  | Attachment contents are not read until you turn on the deadline scan, and even then only on the phone. |
 | **Not legal advice.**               | Deadlines and service by fiction are shown as help. What counts is the law and the message itself. |
@@ -317,7 +317,8 @@ you can [buy the developers a coffee](https://buymeacoffee.com/software.dorhawk)
 ## Licence
 
 [MIT](LICENSE). Obálka is an independent data-box client. It is not an official application of the
-Ministry of the Interior or of the ISDS operator, and is not affiliated with either.
+Digital and Information Agency, which administers ISDS, or of Česká pošta, which operates it, and is not
+affiliated with either.
 
 <br/>
 

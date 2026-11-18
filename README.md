@@ -74,26 +74,26 @@ Klient datových schránek pro Android a iOS. Otevřený kód, žádný server a
 
 <div align="center">
 
-| Sloučená schránka | Doručenka | Přepínač schránek |
+| Sloučená schránka | Zpráva a doručenka | Přepínač schránek |
 |:---:|:---:|:---:|
 | <img src="docs/screenshots/03-unified.png" width="230"> | <img src="docs/screenshots/04-detail.png" width="230"> | <img src="docs/screenshots/02-switcher.png" width="230"> |
-| Všechny schránky v jednom seznamu. Štítek u každé zprávy říká, kam přišla. | Co se stalo a kdy. Krok se zobrazí jen pro to, co se skutečně stalo. | Nepřečtené u každé schránky. „Vše“ je vidět, že je něco jiného než schránka. |
+| Všechny schránky v jednom seznamu. Štítek u každé zprávy říká, kam přišla. | Odesílatel a adresát na obálce, razítko s datem dodání, doručenka pod dopisem. | Nepřečtené u každé schránky. „Všechny schránky“ jsou vidět jako souhrn, ne jako další schránka. |
 
-| Hledání | Jedna schránka | Nastavení |
+| Hledání | Jedna schránka | Nová zpráva |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/05-search.png" width="230"> | <img src="docs/screenshots/01-inbox-box.png" width="230"> | <img src="docs/screenshots/06-settings.png" width="230"> |
-| Napříč všemi schránkami, v místním archivu, bez připojení. | Řádek „Jinde“ řekne, že něco leží i jinde, aniž by odvedl pozornost. | Vzhled, jazyk, zámek, přílohy, termíny, diagnostika. |
+| <img src="docs/screenshots/05-search.png" width="230"> | <img src="docs/screenshots/01-inbox-box.png" width="230"> | <img src="docs/screenshots/13-compose.png" width="230"> |
+| Napříč všemi schránkami, v místním archivu, bez připojení a bez diakritiky. | Řádek „V ostatních schránkách“ řekne, kolik nepřečteného leží jinde, a neodvede pozornost. | Adresuje se jako dopis: od koho a komu, příjemce podle jména nebo ID schránky. |
 
-| Přílohy samy | Záloha s přílohami | Nový telefon |
+| Nastavení | Záloha | Nový telefon |
 |:---:|:---:|:---:|
-| <img src="docs/screenshots/10-attachments.png" width="230"> | <img src="docs/screenshots/11-backup.png" width="230"> | <img src="docs/screenshots/12-transfer.png" width="230"> |
-| Jen nové zprávy, nebo i ty, které už v telefonu jsou. Zpráva zůstane nepřečtená. | Jen stažené přílohy, nebo všechny. Co ISDS už smazalo, řekne předem. | Vyberete hotovou zálohu a pošlete ji. Každá říká, jaké přílohy nese. |
+| <img src="docs/screenshots/06-settings.png" width="230"> | <img src="docs/screenshots/11-backup.png" width="230"> | <img src="docs/screenshots/12-transfer.png" width="230"> |
+| Vzhled, jazyk, zámek, přílohy, termíny, diagnostika. | Po každé aktualizaci schránky sama, šifrovaná, podle volby i s přílohami. | Vybraná záloha jde do druhého telefonu tak, jak je, a říká, jaké přílohy nese. |
 
 <br/>
 
 **Světlý i tmavý motiv, nezávisle na nastavení telefonu.**
 
-<img src="docs/screenshots/03-unified.png" width="230"> <img src="docs/screenshots/07-unified-dark.png" width="230">
+<img src="docs/screenshots/03-unified.png" width="230"> <img src="docs/screenshots/07-unified-dark.png" width="230"> <img src="docs/screenshots/08-detail-dark.png" width="230">
 
 <sub>Všechna data na snímcích jsou vymyšlená (<code>src/dev/demoData.ts</code>). Jména, IDs schránek,
 spisové značky i adresy jsou smyšlené.</sub>
@@ -140,7 +140,7 @@ Při aktualizaci schránky se stáhnou přílohy přijatých i odeslaných zprá
 </td>
 <td align="center">
 <h3>💾 Šifrovaná záloha</h3>
-Celý archiv, podle volby i se všemi přílohami. Bez hesla ji nikdo neotevře, ani my.
+Celý archiv, podle volby i se všemi přílohami. Bez hesla ji nikdo neotevře, ani vývojáři.
 </td>
 <td align="center">
 <h3>📲 Nový telefon</h3>
@@ -175,7 +175,7 @@ Tohle je klient vaší pošty od státu. Podle toho je postavený.
 | **Žádný server.**                 | Neexistuje backend, kam by šla vaše pošta nebo přihlašovací údaje. Aplikace mluví s ISDS, a jinam jen ve dvou případech, o kterých rozhodujete vy: hlášení o chybách (jen se souhlasem) a přenos archivu do jiného telefonu, který může jít přes veřejný relay nástroje croc – zašifrovaně, relay obsah nepřečte. |
 | **Nic na pozadí.**                | Provozní řád ISDS vyžaduje, aby se aplikace na místní stanici přihlašovala pouze *„pomocí manuálního příkazu uživatele“*. Obálka se nesynchronizuje na pozadí, vůbec. |
 | **Zámek aplikace.**               | Volitelný: otisk, obličej nebo kód zařízení. Když je zapnutý, zamyká i uložená hesla a přihlášení ke schránkám. Obsah se nikdy neobjeví v přepínači aplikací. |
-| **Šifrovaná záloha.**             | Heslo má jen uživatel (Argon2id + XChaCha20‑Poly1305, přílohy AES‑256‑GCM). Bez něj zálohu neotevře nikdo, ani my. |
+| **Šifrovaná záloha.**             | Heslo má jen uživatel (Argon2id + XChaCha20‑Poly1305, přílohy AES‑256‑GCM). Bez něj zálohu neotevře nikdo, ani vývojáři. |
 | **Hlášení o chybách se ptají.**   | Odesílá se, kde chyba nastala a jaká byla. Nikdy obsah zpráv, předměty, jména, ID schránek, přihlašovací údaje, přílohy ani text dokumentů. Servery v EU, vypnutelné kdykoliv. |
 | **Režim ladění nic neodesílá.**   | Zaznamená technický průběh do souboru v telefonu; ten sdílíte vy, komu chcete. |
 
@@ -189,7 +189,7 @@ Tohle je klient vaší pošty od státu. Podle toho je postavený.
 
 |                                     |                                                                                                   |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **Není to oficiální aplikace.**     | Nezávislý klient. Není od Ministerstva vnitra ani od provozovatele ISDS a není s nimi nijak spojený. |
+| **Není to oficiální aplikace.**     | Nezávislý klient. Není od Digitální a informační agentury, která ISDS spravuje, ani od České pošty, která ho provozuje, a není s nimi nijak spojený. |
 | **Není to cloudová služba.**        | Žádný účet, žádný server. Archiv je v telefonu a jinam jde jen záloha, kterou si sami přesunete.  |
 | **Nečte vaši poštu za vás.**        | Obsah příloh se nečte, dokud nezapnete hledání termínů – a i potom jen v telefonu.                 |
 | **Nenahrazuje právní radu.**        | Lhůty a doručení fikcí ukazuje jako pomoc. Rozhodující je, co říká zákon a samotná zpráva.        |
@@ -311,7 +311,8 @@ vývojářům [koupit kafe](https://buymeacoffee.com/software.dorhawk). Nic se t
 ## Licence
 
 [MIT](LICENSE). Obálka je nezávislý klient datových schránek. Není to oficiální aplikace
-Ministerstva vnitra ani provozovatele ISDS a není s nimi nijak spojena.
+Digitální a informační agentury, která ISDS spravuje, ani České pošty, která ho provozuje, a není s nimi
+nijak spojena.
 
 <br/>
 
