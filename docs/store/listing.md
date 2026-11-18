@@ -40,7 +40,7 @@ ISDS,datová,schránka,úřad,doručenka,fikce,podání,OSVČ,eGovernment,pošta
 ### description
 Pošta od státu, která se čte jako pošta.
 
-Obálka je nezávislý klient datových schránek pro ty, kdo jich mají víc. Osobní, živnostenská i firemní schránka jsou v jednom seznamu a u každé zprávy je vidět, kdy se počítá za doručenou: po deseti dnech to platí, i když ji neotevřete, a lhůty běží. Zprávy, přílohy i podepsané originály zůstávají v šifrovaném archivu v telefonu i poté, co je ISDS po 90 dnech smaže.
+Obálka je nezávislý klient datových schránek pro ty, kdo jich mají víc. Osobní, živnostenská i firemní schránka jsou v jednom seznamu a u každé zprávy je vidět, kdy se počítá za doručenou: po deseti dnech to platí, i když ji neotevřete, a lhůty běží. Zprávy, přílohy i podepsané originály zůstávají v šifrovaném archivu v telefonu i poté, co je ISDS smaže, 90 dní po doručení přihlášením.
 
 CO UMÍ
 • Sloučená schránka: osobní, živnostenská i firemní schránka v jednom seznamu. Štítek u každé zprávy řekne, kam přišla.
@@ -84,7 +84,7 @@ datová,schránka,datové,schránky,government,official,letters,delivery,receipt
 ### description
 Mail from the state that reads like mail.
 
-Obálka is an independent client for Czech data boxes (datové schránky), made for people who hold more than one. Personal, sole-trader and company boxes sit in one list, and every message shows when it counts as delivered: after ten days it does, even unopened, and deadlines start running. Messages, attachments and their signed originals stay in an encrypted archive on your phone after ISDS deletes them 90 days after delivery.
+Obálka is an independent client for Czech data boxes (datové schránky), made for people who hold more than one. Personal, sole-trader and company boxes sit in one list, and every message shows when it counts as delivered: after ten days it does, even unopened, and deadlines start running. Messages, attachments and their signed originals stay in an encrypted archive on your phone after ISDS deletes them, 90 days after delivery by sign-in.
 
 WHAT IT DOES
 • One inbox: personal, sole-trader and company boxes in a single list. A label on every message says where it arrived.

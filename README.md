@@ -64,7 +64,7 @@ Klient datových schránek pro Android a iOS, hlavně pro ty, kdo jich mají ví
 - ✅ máte **víc než jednu datovou schránku** (osobní, živnost, firma) a nechcete hlídat tři místa zvlášť
 - ✅ chcete vědět, **kdy se zpráva počítá za doručenou**, i když jste ji neotevřeli, a **kdy běží lhůta**
 - ✅ nechcete, aby vám aplikace **doručovala poštu na pozadí** bez vašeho vědomí
-- ✅ chcete mít **zprávy, přílohy i podepsané originály v telefonu** i po 90 dnech, kdy je ISDS smaže
+- ✅ chcete mít **zprávy, přílohy i podepsané originály v telefonu** i poté, co je ISDS smaže (90 dní po přihlášení)
 - ✅ chcete **zálohu, kterou nikdo jiný neotevře**, a snadný **přechod na nový telefon**
 - ✅ čtete poštu od úřadů hlavně **z telefonu**
 
@@ -164,7 +164,7 @@ zapnutí se obsah příloh vůbec nečte.
 | --- | --- |
 | ❌ Fyzická osoba, živnost, s.r.o.: tři schránky, tři přihlášení, tři místa, kam se nezapomenout podívat. | ✅ Jedna sloučená schránka se štítkem u každé zprávy a nepřečtené u každého účtu. |
 | ❌ Po deseti dnech je zpráva doručena fikcí (§ 17 odst. 4 zákona 300/2008 Sb.), ať jste se přihlásili, nebo ne. Lhůty běží. | ✅ Běžící lhůty jsou nahoře v sekci *Vyžaduje pozornost* a doručení fikcí je u zprávy řečené rovnou. |
-| ❌ ISDS uchovává zprávu 90 dnů od doručení a pak ji smaže. Přílohu, kterou jste si nestáhli včas, už nedostanete. | ✅ Zprávy, přílohy i podepsané originály zůstávají v šifrovaném archivu v telefonu, jak dlouho chcete. |
+| ❌ ISDS uchovává zprávu 90 dnů od doručení přihlášením a pak ji smaže (doručenou fikcí nejméně tři roky). Přílohu, kterou jste si nestáhli včas, už nedostanete. | ✅ Zprávy, přílohy i podepsané originály zůstávají v šifrovaném archivu v telefonu, jak dlouho chcete. |
 | ❌ Samotné vypsání seznamu zpráv je právní doručení (§ 17 odst. 3). Aplikace, která kontroluje schránku na pozadí, doručuje poštu bez vašeho vědomí. | ✅ Obálka se přihlašuje jen na váš pokyn. Nic na pozadí, žádné tiché doručování. |
 | ❌ Nový telefon znamená začít s prázdným archivem. | ✅ Šifrovaná záloha i s přílohami a přenos hotové zálohy do nového telefonu jedním kódem. |
 

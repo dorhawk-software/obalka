@@ -224,7 +224,7 @@ const cs: Readonly<Record<FaqId, FaqText>> = {
   retention: {
     question: 'Proč zprávy po čase mizí ze systému?',
     answer: [
-      'ISDS uchovává obsah zpráv 90 dnů od doručení, pak je ze svých serverů odstraní a přílohy už z něj nestáhnete.',
+      'ISDS uchovává zprávu 90 dnů od doručení přihlášením, tedy od chvíle, kdy se do schránky přihlásí někdo, kdo ji smí číst. Zprávu doručenou fikcí uchová nejméně tři roky. Potom ji ze svých serverů odstraní i s přílohami a z ISDS už ji nestáhnete.',
       'Obálka proto zprávy i přílohy ukládá do místního archivu. Co jste si nestáhli včas, už z ISDS nezískáte.',
     ],
   },
@@ -350,7 +350,7 @@ const en: Readonly<Record<FaqId, FaqText>> = {
   retention: {
     question: 'Why do messages disappear from the system after a while?',
     answer: [
-      'ISDS keeps message contents for 90 days after service, then removes them from its servers, and the attachments can no longer be downloaded.',
+      'ISDS keeps a message for 90 days after it is served by sign-in, that is, from the moment someone allowed to read it signs in to the box. A message served by fiction it keeps for at least three years. Then it removes the message from its servers, attachments and all, and it can no longer be downloaded.',
       'Obálka therefore saves messages and attachments to the local archive. Whatever you did not download in time is gone from ISDS.',
     ],
   },

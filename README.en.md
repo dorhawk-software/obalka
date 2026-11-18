@@ -65,7 +65,7 @@ A client for Czech data boxes (datové schránky) on Android and iOS, mainly for
 - ✅ you have **more than one data box** (personal, sole trader, company) and do not want to watch three places
 - ✅ you want to know **when a message counts as delivered**, even unopened, and **when a deadline is running**
 - ✅ you do not want an app **delivering your mail in the background** without you knowing
-- ✅ you want **messages, attachments and signed originals on your phone** after 90 days, when ISDS deletes them
+- ✅ you want **messages, attachments and signed originals on your phone** after ISDS deletes them (90 days after you sign in)
 - ✅ you want a **backup nobody else can open**, and an easy **move to a new phone**
 - ✅ you read your mail from the authorities mostly **on your phone**
 
@@ -165,7 +165,7 @@ deadline in an attachment. Leave it off and attachment contents are never read a
 | --- | --- |
 | ❌ A private person, a sole trader, a company: three boxes, three sign-ins, three places you must not forget to check. | ✅ One unified inbox, a chip on every message, and unread counts per account. |
 | ❌ After ten days a message is served by fiction (§ 17(4) of Act 300/2008 Coll.) whether you signed in or not. Deadlines run. | ✅ Running deadlines sit at the top in *Needs attention*, and service by fiction is stated plainly on the message. |
-| ❌ ISDS keeps a message for 90 days after delivery and then deletes it. An attachment you did not download in time is gone for good. | ✅ Messages, attachments and signed originals stay in an encrypted archive on the phone for as long as you want. |
+| ❌ ISDS keeps a message for 90 days after it is served by sign-in and then deletes it (one served by fiction, for at least three years). An attachment you did not download in time is gone for good. | ✅ Messages, attachments and signed originals stay in an encrypted archive on the phone for as long as you want. |
 | ❌ Merely listing your messages is legal service (§ 17(3)). An app that checks your box in the background delivers your mail without your knowledge. | ✅ Obálka signs in only when you tell it to. Nothing in the background, no silent delivery. |
 | ❌ A new phone means starting with an empty archive. | ✅ An encrypted backup with attachments, and moving a finished backup to the new phone with one code. |
 

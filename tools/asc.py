@@ -408,7 +408,7 @@ BETA_DESCRIPTION = {
     "cs": (
         "Obálka je aplikace pro datové schránky: všechny schránky v jednom seznamu, běžící lhůty a "
         "doručení fikcí na očích a šifrovaný archiv zpráv, příloh a podepsaných originálů v telefonu, "
-        "který zůstane i po 90 dnech, kdy je ISDS smaže.\n\n"
+        "který zůstane, i když je ISDS 90 dní po přihlášení smaže.\n\n"
         "Co vyzkoušet: přidání schránky, čtení a stažení zpráv a příloh, Odeslané, odeslání zprávy, "
         "hledání, zálohu a přenos do jiného telefonu. Ke schránce se aplikace připojuje jen na váš "
         "pokyn, nic se neděje na pozadí.\n\n"
@@ -417,7 +417,7 @@ BETA_DESCRIPTION = {
     "en-US": (
         "Obálka is an app for Czech data boxes (ISDS): every box in one list, running deadlines and "
         "deemed delivery in plain sight, and an encrypted archive of messages, attachments and signed "
-        "originals on your phone that stays after ISDS deletes them at 90 days.\n\n"
+        "originals on your phone that stays after ISDS deletes them, 90 days after you sign in.\n\n"
         "What to try: adding a box, reading and downloading messages and attachments, Sent, sending a "
         "message, search, backup and moving to another phone. The app contacts a box only when you ask "
         "it to; nothing happens in the background.\n\n"
