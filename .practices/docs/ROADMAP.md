@@ -239,8 +239,11 @@ rows are this list's source; the most valuable first.
   - [ ] Releases (common/releases.md, mobile/releases.md) and mobile CI
     have no script in the kit yet: phase 2's release script carries them.
   - [x] check-voice reads JSX text between tags (1.6.1).
-  - [ ] check-voice reads the copy on design boards, and knows more
-    languages' we-words than English and Czech.
+  - [x] check-voice reads the copy on design boards and web pages, in
+    each element's lang, and takes COPY_LANG for copy that names none
+    (1.7.3).
+  - [ ] check-voice knows more languages' we-words than English and
+    Czech.
   - [ ] tests/mutate lists the kit's checks and fails when one has no
     mutant ("A test of a check is proven by breaking the check").
 - **Rust:**

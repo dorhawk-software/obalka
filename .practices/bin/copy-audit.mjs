@@ -11,8 +11,8 @@
 // the copy in aria-label, alt, title and placeholder, and an exception
 // marked on the element or an ancestor, data-allow="copy: <reason>".
 // Every other file is read by voice-audit.py --strings, as check-voice
-// reads it: the language from the path (cs.json, values-cs/, cs.lproj/) or
-// the block (`cs: {`), an exception marked on the string's line or the one
+// reads it: the language from the path (cs.json, values-cs/, cs.lproj/),
+// the block (`cs: {`) or a Markdown page's front matter (`lang: cs`), an exception marked on the string's line or the one
 // above, "practices-allow copy: <reason>". Copy that names no language
 // takes --lang (COPY_LANG); with none, it is a finding: never a guess.
 //
@@ -186,7 +186,7 @@ async function main(argv) {
       }
     }
   }
-  for (const [file, n] of unknown) note("language", file, 0, `${n} piece${n > 1 ? "s" : ""} of copy name${n > 1 ? "" : "s"} no language, so no rules ran on ${n > 1 ? "them" : "it"}. Name it: <html lang="cs"> on a board, the locale in the path (cs.json, values-cs/, cs.lproj/) or the block (\`cs: {\`); or set COPY_LANG in .practices/config to the language of copy that names none.`);
+  for (const [file, n] of unknown) note("language", file, 0, `${n} piece${n > 1 ? "s" : ""} of copy name${n > 1 ? "" : "s"} no language, so no rules ran on ${n > 1 ? "them" : "it"}. Name it: <html lang="cs"> on a board, the locale in the path (cs.json, values-cs/, cs.lproj/) or the block (\`cs: {\`), "lang: cs" in a Markdown page's front matter; or set COPY_LANG in .practices/config to the language of copy that names none.`);
   for (const [k, n] of missing) {
     const [lang, file] = k.split("|");
     note("language", file, 0, `${n} piece${n > 1 ? "s" : ""} of copy in "${lang}", and no rules for it: add .practices/copy-rules/${lang}.mjs with its rules and vagueButtons (the kit's copy-rules/cs.mjs is the format). A language ships with its rules.`);

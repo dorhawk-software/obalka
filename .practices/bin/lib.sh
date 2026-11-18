@@ -68,7 +68,8 @@ VOICE_WORDS=''
 # The copy gate (check-copy): the files it reads (git pathspecs; empty: the
 # design boards and the copy files, UI_BOARDS and VOICE_FILES), the
 # language of copy that names none (empty: such copy is a finding, never a
-# guess), and the folder of the project's own copy-rules/<lang>.mjs files,
+# guess; check-voice reads it too, for the -me verbs a language carries),
+# and the folder of the project's own copy-rules/<lang>.mjs files,
 # which add to the kit's (cs, en, es) and add languages.
 COPY_FILES=''
 COPY_LANG=''
@@ -99,12 +100,18 @@ js_files() {
         '*.ts' '*.tsx' '*.js' '*.jsx' '*.mjs' '*.cjs' ${spec[@]+"${spec[@]}"}
 }
 
-# The files check-voice reads: tracked or new, matching VOICE_FILES.
+# The files check-voice reads: tracked or new, matching VOICE_FILES, and
+# the design boards (UI_BOARDS): a board's copy is the product's copy.
+# Until 1.7.3 the boards were read for grammar but never for "we".
 voice_files() {
     local spec
-    [ -n "$VOICE_FILES" ] || return 0
-    read -r -a spec <<<"$VOICE_FILES $EXCLUDE"
-    git ls-files --cached --others --exclude-standard -- "${spec[@]}"
+    {
+        if [ -n "$VOICE_FILES" ]; then
+            read -r -a spec <<<"$VOICE_FILES $EXCLUDE"
+            git ls-files --cached --others --exclude-standard -- "${spec[@]}"
+        fi
+        [ -z "$UI_BOARDS" ] || ui_boards
+    } | awk '!seen[$0]++'
 }
 
 # The files check-copy reads: tracked or new, matching COPY_FILES, or the

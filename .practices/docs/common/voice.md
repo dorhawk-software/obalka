@@ -51,11 +51,23 @@ flags "we" in each language it knows, in any case ("WE"): English we,
 us, our and their contractions; Czech my, nás, náš and their forms, jsme,
 budeme, and the first person plural verb (a word ending in -me, but not
 -ome, -ame or -ime, which are English: "Chrome", "Home"). It reads string
-literals, a ternary's branches, and the text between JSX tags. Comments,
-keys, web addresses, a word quoted as a word ("the word “we”") and the
-abbreviation "nám." in an address are skipped. By default it reads the
-strings files, the changelog and a `content/` folder (a FAQ, help
-pages). claude-hook runs it after each edit on the files that changed and
+literals, a ternary's branches, the text between JSX tags, and the text of
+web pages and design boards with their alt, title, aria-label and
+placeholder. Comments, keys, scripts, styles, web addresses, a word quoted
+as a word ("the word “we”") and the abbreviation "nám." in an address are
+skipped. By default it reads the strings files, the changelog, a
+`content/` folder (a FAQ, help pages) and the boards (`UI_BOARDS`).
+
+The Czech verb rules need to know the copy is Czech. A string's language
+comes from its path (`cs.json`, `values-cs/`), its block (`cs: {`), on a
+page its element's `lang` (`<html lang="cs">`), or in Markdown its front
+matter (`lang: cs`). Copy that names none takes `COPY_LANG`, the setting
+check-copy reads; without it, only the words every language shares are
+flagged. A Czech web page (2026-11-18) said "a říkáme to rovnou" (and we
+say so plainly): its path named no language, so only its English twin's
+"we" was found.
+
+claude-hook runs it after each edit on the files that changed and
 holds the agent's turn while it fails; pre-commit runs it on what is
 staged, and lint on everything. "I" stays with the reviewer, because the
 person's own words use it too.
@@ -78,7 +90,7 @@ only a reviewer's eye.
 1. Name the language of all copy. A board says `<html lang="cs">` (a
    part in another language, `<span lang="en">`). A catalogue says it in
    its path (`cs.json`, `values-cs/`, `cs.lproj/`) or its block
-   (`cs: {`). Copy that names none is a finding, never a guess. A
+   (`cs: {`); a Markdown page in its front matter (`lang: cs`). Copy that names none is a finding, never a guess. A
    project whose plain files (its changelog) are in one language sets it
    once: `COPY_LANG=en` in `.practices/config`. In a code catalogue (a
    `.ts` file with `cs` and `en` blocks) the copy is in the blocks; its
