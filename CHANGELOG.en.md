@@ -13,6 +13,11 @@ What changed in each Obálka release, written for the people using it. The newes
 
 ## Unreleased
 
+### New
+
+- **The FAQ answers why Obálka, when there is Portál občana.** Who the official app is enough
+  for, and who Obálka is for: several boxes in one list, deadlines in sight and mail on the phone.
+
 ## 1.1.0 (2026-11-18)
 
 ### New

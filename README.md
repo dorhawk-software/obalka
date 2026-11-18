@@ -30,7 +30,7 @@
 
 # Pošta od státu, která se čte jako pošta.
 
-Klient datových schránek pro Android a iOS. Otevřený kód, žádný server a archiv, který nezmizí za devadesát dní.
+Klient datových schránek pro Android a iOS, hlavně pro ty, kdo jich mají víc. Všechny schránky v jednom seznamu, lhůty na očích, otevřený kód a žádný server.
 
 **Datová schránka je ze zákona doručovací adresa. Zachází se s ní přitom hůř než s reklamním e‑mailem.**
 
@@ -62,11 +62,15 @@ Klient datových schránek pro Android a iOS. Otevřený kód, žádný server a
 ## Obálka je pro vás, pokud
 
 - ✅ máte **víc než jednu datovou schránku** (osobní, živnost, firma) a nechcete hlídat tři místa zvlášť
-- ✅ potřebujete mít **přílohy i po 90 dnech**, kdy je ISDS ze svých serverů smaže
-- ✅ chcete vědět, **kdy běží lhůta** a jestli už zpráva nebyla doručena fikcí
+- ✅ chcete vědět, **kdy se zpráva počítá za doručenou**, i když jste ji neotevřeli, a **kdy běží lhůta**
 - ✅ nechcete, aby vám aplikace **doručovala poštu na pozadí** bez vašeho vědomí
+- ✅ chcete mít **zprávy, přílohy i podepsané originály v telefonu** i po 90 dnech, kdy je ISDS smaže
 - ✅ chcete **zálohu, kterou nikdo jiný neotevře**, a snadný **přechod na nový telefon**
 - ✅ čtete poštu od úřadů hlavně **z telefonu**
+
+**Kdy Obálku nepotřebujete:** máte jednu osobní schránku a stačí vám [Portál občana](https://portal.gov.cz),
+oficiální aplikace státu, která je zdarma a umí i jiné služby než poštu. Obálka je jen pro datové
+schránky a hlavně pro ty, kdo jich mají víc.
 
 <br/>
 
@@ -107,16 +111,16 @@ spisové značky i adresy jsou smyšlené.</sub>
 <table>
 <tr>
 <td align="center" width="33%">
-<h3>🗄️ Archiv, který nemizí</h3>
-Obálky, přílohy i <strong>podepsaný originál</strong> (.zfo) zůstávají v šifrované databázi v telefonu i poté, co je ISDS smaže.
-</td>
-<td align="center" width="33%">
 <h3>📬 Sloučená schránka</h3>
 Jeden seznam přes všechny účty, jako v e‑mailu. Štítek u každé zprávy řekne, kam přišla.
 </td>
 <td align="center" width="33%">
 <h3>⏳ Termíny a fikce</h3>
 Sekce <em>Vyžaduje pozornost</em> ukáže běžící desetidenní lhůtu. Doručení fikcí řekne rovnou a vysvětlí proč.
+</td>
+<td align="center" width="33%">
+<h3>🗄️ Archiv, který nemizí</h3>
+Obálky, přílohy i <strong>podepsaný originál</strong> (.zfo) zůstávají v šifrované databázi v telefonu i poté, co je ISDS smaže.
 </td>
 </tr>
 <tr>
@@ -158,9 +162,9 @@ zapnutí se obsah příloh vůbec nečte.
 
 | Problém | Co s tím Obálka dělá |
 | --- | --- |
-| ❌ ISDS uchovává zprávu 90 dnů od doručení a pak ji smaže. Přílohu, kterou jste si nestáhli včas, už nedostanete. | ✅ Zprávy, přílohy i podepsané originály zůstávají v šifrovaném archivu v telefonu, jak dlouho chcete. |
-| ❌ Po deseti dnech je zpráva doručena fikcí (§ 17 odst. 4 zákona 300/2008 Sb.), ať jste se přihlásili, nebo ne. Lhůty běží. | ✅ Běžící lhůty jsou nahoře v sekci *Vyžaduje pozornost* a doručení fikcí je u zprávy řečené rovnou. |
 | ❌ Fyzická osoba, živnost, s.r.o.: tři schránky, tři přihlášení, tři místa, kam se nezapomenout podívat. | ✅ Jedna sloučená schránka se štítkem u každé zprávy a nepřečtené u každého účtu. |
+| ❌ Po deseti dnech je zpráva doručena fikcí (§ 17 odst. 4 zákona 300/2008 Sb.), ať jste se přihlásili, nebo ne. Lhůty běží. | ✅ Běžící lhůty jsou nahoře v sekci *Vyžaduje pozornost* a doručení fikcí je u zprávy řečené rovnou. |
+| ❌ ISDS uchovává zprávu 90 dnů od doručení a pak ji smaže. Přílohu, kterou jste si nestáhli včas, už nedostanete. | ✅ Zprávy, přílohy i podepsané originály zůstávají v šifrovaném archivu v telefonu, jak dlouho chcete. |
 | ❌ Samotné vypsání seznamu zpráv je právní doručení (§ 17 odst. 3). Aplikace, která kontroluje schránku na pozadí, doručuje poštu bez vašeho vědomí. | ✅ Obálka se přihlašuje jen na váš pokyn. Nic na pozadí, žádné tiché doručování. |
 | ❌ Nový telefon znamená začít s prázdným archivem. | ✅ Šifrovaná záloha i s přílohami a přenos hotové zálohy do nového telefonu jedním kódem. |
 

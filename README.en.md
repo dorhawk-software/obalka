@@ -31,7 +31,7 @@
 
 # Government mail that reads like mail.
 
-A client for Czech data boxes (datové schránky) on Android and iOS. Open source, no server behind it, and an archive that does not vanish after ninety days.
+A client for Czech data boxes (datové schránky) on Android and iOS, mainly for people who hold more than one. Every box in one list, deadlines in plain sight, open source and no server behind it.
 
 **A Czech data box is a legal delivery address. It tends to be treated worse than a marketing email.**
 
@@ -63,11 +63,15 @@ A client for Czech data boxes (datové schránky) on Android and iOS. Open sourc
 ## Obálka is right for you if
 
 - ✅ you have **more than one data box** (personal, sole trader, company) and do not want to watch three places
-- ✅ you need your **attachments after 90 days**, when ISDS deletes them from its servers
-- ✅ you want to know **when a deadline is running** and whether a message was already served by fiction
+- ✅ you want to know **when a message counts as delivered**, even unopened, and **when a deadline is running**
 - ✅ you do not want an app **delivering your mail in the background** without you knowing
+- ✅ you want **messages, attachments and signed originals on your phone** after 90 days, when ISDS deletes them
 - ✅ you want a **backup nobody else can open**, and an easy **move to a new phone**
 - ✅ you read your mail from the authorities mostly **on your phone**
+
+**When you don't need Obálka:** you have one personal box and [Portál občana](https://portal.gov.cz),
+the state's official app, is enough for you. It is free and offers other services besides mail.
+Obálka does data boxes only, mainly for people who hold more than one.
 
 <br/>
 
@@ -108,16 +112,16 @@ names, box IDs, case numbers and addresses are all fictional.</sub>
 <table>
 <tr>
 <td align="center" width="33%">
-<h3>🗄️ An archive that stays</h3>
-Envelopes, attachments and each message's <strong>signed original</strong> (.zfo) stay in an encrypted database on the phone after ISDS deletes them.
-</td>
-<td align="center" width="33%">
 <h3>📬 A unified inbox</h3>
 One list across every account, the way email works. A chip on each message names the box it arrived in.
 </td>
 <td align="center" width="33%">
 <h3>⏳ Deadlines and fiction</h3>
 A <em>Needs attention</em> section shows the ten-day clock. Service by fiction is stated plainly, with the reason.
+</td>
+<td align="center" width="33%">
+<h3>🗄️ An archive that stays</h3>
+Envelopes, attachments and each message's <strong>signed original</strong> (.zfo) stay in an encrypted database on the phone after ISDS deletes them.
 </td>
 </tr>
 <tr>
@@ -159,9 +163,9 @@ deadline in an attachment. Leave it off and attachment contents are never read a
 
 | The problem | What Obálka does about it |
 | --- | --- |
-| ❌ ISDS keeps a message for 90 days after delivery and then deletes it. An attachment you did not download in time is gone for good. | ✅ Messages, attachments and signed originals stay in an encrypted archive on the phone for as long as you want. |
-| ❌ After ten days a message is served by fiction (§ 17(4) of Act 300/2008 Coll.) whether you signed in or not. Deadlines run. | ✅ Running deadlines sit at the top in *Needs attention*, and service by fiction is stated plainly on the message. |
 | ❌ A private person, a sole trader, a company: three boxes, three sign-ins, three places you must not forget to check. | ✅ One unified inbox, a chip on every message, and unread counts per account. |
+| ❌ After ten days a message is served by fiction (§ 17(4) of Act 300/2008 Coll.) whether you signed in or not. Deadlines run. | ✅ Running deadlines sit at the top in *Needs attention*, and service by fiction is stated plainly on the message. |
+| ❌ ISDS keeps a message for 90 days after delivery and then deletes it. An attachment you did not download in time is gone for good. | ✅ Messages, attachments and signed originals stay in an encrypted archive on the phone for as long as you want. |
 | ❌ Merely listing your messages is legal service (§ 17(3)). An app that checks your box in the background delivers your mail without your knowledge. | ✅ Obálka signs in only when you tell it to. Nothing in the background, no silent delivery. |
 | ❌ A new phone means starting with an empty archive. | ✅ An encrypted backup with attachments, and moving a finished backup to the new phone with one code. |
 

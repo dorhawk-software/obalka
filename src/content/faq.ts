@@ -18,6 +18,7 @@ import type { Locale } from '../i18n/strings';
 export type FaqGroup = 'app' | 'isds';
 
 export type FaqId =
+  | 'whyObalka'
   | 'addBox'
   | 'loginMethods'
   | 'reauth'
@@ -49,6 +50,7 @@ export const FAQ_LEGEND_ID: FaqId = 'deliveredVsServed';
 /** Which questions appear under which heading, and in what order. */
 export const FAQ_ORDER: Readonly<Record<FaqGroup, readonly FaqId[]>> = {
   app: [
+    'whyObalka',
     'addBox',
     'loginMethods',
     'reauth',
@@ -70,6 +72,17 @@ export const FAQ_ORDER: Readonly<Record<FaqGroup, readonly FaqId[]>> = {
 };
 
 const cs: Readonly<Record<FaqId, FaqText>> = {
+  // The owner, 2026-11-18, after a colleague read his box in Portál občana's app: "we will definitely
+  // need to pivot the pitch". Says who does not need Obálka before anyone asks, and claims nothing
+  // about the other app beyond that it is the state's own and does more than mail.
+  whyObalka: {
+    question: 'Proč Obálka, když existuje Portál občana?',
+    answer: [
+      'Portál občana je oficiální aplikace státu a umí i jiné služby než poštu. Máte-li jednu osobní schránku a stačí vám, Obálku nepotřebujete.',
+      'Obálka je jen pro datové schránky a hlavně pro ty, kdo jich mají víc: osobní, živnostenská i firemní schránka jsou v jednom seznamu. U každé zprávy ukáže, kdy se počítá za doručenou a kdy běží lhůta, a zprávy, přílohy i podepsané originály drží ve vašem telefonu, bez serveru a bez účtu.',
+      'Obálka není oficiální aplikace. Je to nezávislý klient veřejného rozhraní ISDS a jeho kód je otevřený.',
+    ],
+  },
   addBox: {
     question: 'Jak přidám nebo přepnu schránku?',
     answer: [
@@ -225,6 +238,14 @@ const cs: Readonly<Record<FaqId, FaqText>> = {
 };
 
 const en: Readonly<Record<FaqId, FaqText>> = {
+  whyObalka: {
+    question: 'Why Obálka, when there is Portál občana?',
+    answer: [
+      'Portál občana is the state’s official app, and it offers other services besides mail. If you have one personal box and it is enough for you, you don’t need Obálka.',
+      'Obálka does data boxes only, mainly for people who hold more than one: personal, sole-trader and company boxes sit in one list. Every message shows when it counts as delivered and when a deadline runs, and messages, attachments and signed originals stay on your phone, with no server and no account.',
+      'Obálka is not an official app. It is an independent client of the public ISDS interface, and its code is open.',
+    ],
+  },
   addBox: {
     question: 'How do I add or switch a box?',
     answer: [

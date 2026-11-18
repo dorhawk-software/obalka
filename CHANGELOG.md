@@ -13,6 +13,11 @@ In English: [CHANGELOG.en.md](CHANGELOG.en.md).
 
 ## Unreleased
 
+### Nové
+
+- **Časté dotazy odpoví, proč Obálka, když existuje Portál občana.** Komu stačí oficiální
+  aplikace a pro koho je Obálka: víc schránek v jednom seznamu, lhůty na očích a pošta v telefonu.
+
 ## 1.1.0 (2026-11-18)
 
 ### Nové
