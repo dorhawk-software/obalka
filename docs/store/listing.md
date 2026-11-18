@@ -40,12 +40,12 @@ ISDS,datová,schránka,úřad,doručenka,fikce,podání,OSVČ,eGovernment,pošta
 ### description
 Pošta od státu, která se čte jako pošta.
 
-Obálka je nezávislý klient datových schránek pro ty, kdo jich mají víc. Osobní, živnostenská i firemní schránka jsou v jednom seznamu a u každé zprávy je vidět, kdy se počítá za doručenou: po deseti dnech to platí, i když ji neotevřete, a lhůty běží. Zprávy a přílohy zůstávají v šifrovaném archivu v telefonu i poté, co je ISDS po 90 dnech smaže.
+Obálka je nezávislý klient datových schránek pro ty, kdo jich mají víc. Osobní, živnostenská i firemní schránka jsou v jednom seznamu a u každé zprávy je vidět, kdy se počítá za doručenou: po deseti dnech to platí, i když ji neotevřete, a lhůty běží. Zprávy, přílohy i podepsané originály zůstávají v šifrovaném archivu v telefonu i poté, co je ISDS po 90 dnech smaže.
 
 CO UMÍ
 • Sloučená schránka: osobní, živnostenská i firemní schránka v jednom seznamu. Štítek u každé zprávy řekne, kam přišla.
 • Lhůty a fikce: sekce Vyžaduje pozornost ukáže běžící desetidenní lhůtu. Když se zpráva počítá za doručenou bez vašeho přihlášení (doručení fikcí), řekne to rovnou.
-• Archiv, který nemizí: obálky a přílohy zůstávají v telefonu, jak dlouho chcete. Podepsaný originál (.zfo) uložíte jedním klepnutím, dokud ho ISDS drží.
+• Archiv, který nemizí: obálky, přílohy i podepsaný originál (.zfo), který se stahuje spolu s přílohami, zůstávají v telefonu, jak dlouho chcete.
 • Doručenka: co se se zprávou stalo a kdy.
 • Odesílání: úřadům zdarma, soukromým schránkám jako poštovní datová zpráva s kreditem viditelným předem.
 • Hledání napříč všemi schránkami, i bez připojení.
@@ -84,12 +84,12 @@ datová,schránka,datové,schránky,government,official,letters,delivery,receipt
 ### description
 Mail from the state that reads like mail.
 
-Obálka is an independent client for Czech data boxes (datové schránky), made for people who hold more than one. Personal, sole-trader and company boxes sit in one list, and every message shows when it counts as delivered: after ten days it does, even unopened, and deadlines start running. Messages and attachments stay in an encrypted archive on your phone after ISDS deletes them 90 days after delivery.
+Obálka is an independent client for Czech data boxes (datové schránky), made for people who hold more than one. Personal, sole-trader and company boxes sit in one list, and every message shows when it counts as delivered: after ten days it does, even unopened, and deadlines start running. Messages, attachments and their signed originals stay in an encrypted archive on your phone after ISDS deletes them 90 days after delivery.
 
 WHAT IT DOES
 • One inbox: personal, sole-trader and company boxes in a single list. A label on every message says where it arrived.
 • Deadlines and deemed delivery: Needs attention shows the running ten-day period. When a message counts as delivered without you signing in (delivery by fiction), it says so plainly.
-• An archive that stays: envelopes and attachments remain on your phone for as long as you want. The signed original (.zfo) saves with one tap while ISDS still holds it.
+• An archive that stays: envelopes, attachments and the signed original (.zfo), which downloads together with the attachments, remain on your phone for as long as you want.
 • Delivery record: what happened to a message, and when.
 • Sending: free to public authorities, and to private boxes as a postal data message with the credit shown up front.
 • Search across every box, offline.

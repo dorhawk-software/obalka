@@ -131,7 +131,12 @@ them, downloading what is missing. Cancel leaves the switch off.
 - **FR-003** One downloader (`AttachmentPrefetcher`) serves US1 and US4. It runs only from a listing
   the user started (a box refresh) or from "Zálohovat nyní"; it downloads one message at a time with
   the existing `getDetail` (signed download, VoDZ path included), so files, signed originals and the
-  "gone" rule stay as 002/004 define them; it never calls `markRead`.
+  "gone" rule stay as 002/004 define them; it never calls `markRead`. **Owner, 2026-11-18:** *"Yes,
+  download original along with the attachments."* It already did: `getDetail` is the signed download,
+  so each automatic download keeps the message's .zfo beside its attachments. Held since then by
+  `__tests__/messages/keepingSignedOriginal.test.ts` ("keeps the original when the attachments download
+  automatically, too"), which wires the prefetcher to the real controller and goes red when
+  `getDetail` drops the original.
 - **FR-004** "Jen nové zprávy" is decided by a new `messages.firstSeenAt` column (migration 15), set
   when a listing first inserts a row and never updated. Rows that existed before, restored rows and
   rows of a phone transfer have none and count as not new. **Amended 2026-11-11 (owner):** a message
