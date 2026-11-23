@@ -1,6 +1,7 @@
 // check-ui's Chrome: started headless and spoken to over a pipe (fd 3 to
 // Chrome, fd 4 from it, JSON messages ending in \0), so it needs no
-// packages, only Node 18+. ui-audit.mjs uses it.
+// packages, only Node 18+. ui-audit.mjs uses it, and loads each board
+// through load() here.
 import { spawn } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -59,5 +60,21 @@ export function startChrome(path, die) {
     die(`Chrome didn't open a page in 3 tries (${last.message}). Fix: run it again; if it keeps failing, check that Chrome starts on its own: "${path}" --headless=new about:blank.`);
   }
 
-  return { send, events, sleep, openPage, cleanup };
+  // Load url in the page (sessionId) under the media features given ({ "prefers-color-scheme": "dark" }),
+  // every animation held still so each run measures the same frame, and wait for its fonts. name: for errors.
+  async function load(sessionId, url, media, name) {
+    const s = (m, p) => send(m, p, sessionId);
+    await s("Emulation.setEmulatedMedia", { features: Object.entries(media).map(([n, value]) => ({ name: n, value })) });
+    await s("Animation.setPlaybackRate", { playbackRate: 0 });
+    events.length = 0;
+    await s("Page.navigate", { url });
+    const t0 = Date.now();
+    while (!events.some((e) => e.method === "Page.loadEventFired" && e.sessionId === sessionId)) {
+      if (Date.now() - t0 > 30000) throw new Error(`${name} didn't load in 30 s`);
+      await sleep(25);
+    }
+    await s("Runtime.evaluate", { expression: "document.fonts.ready.then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))", awaitPromise: true });
+  }
+
+  return { send, events, sleep, openPage, load, cleanup };
 }

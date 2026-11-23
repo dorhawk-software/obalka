@@ -1,5 +1,6 @@
 // The UI gate's measuring half: renders each HTML board in headless Chrome
-// at every width and theme, and measures what ui/visual-craft.md asks.
+// at every width and theme, and measures what ui/visual-craft.md asks
+// (busy controls and loops: ui-motion.mjs).
 // check-ui runs it; read that script for the settings. No packages: it
 // talks to Chrome over --remote-debugging-pipe (any Node 18+).
 //
@@ -22,6 +23,8 @@ import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { startChrome } from "./ui-chrome.mjs";
 import { markAudit } from "./ui-mark.mjs";
+import { motionAudit } from "./ui-motion.mjs";
+import { typeAudit } from "./ui-type.mjs";
 import { decodePng, pixelContrast } from "./ui-pixels.mjs";
 import { RULE, fixedWidth, THEMED } from "./ui-board.mjs";
 import { loadRules } from "./copy-audit.mjs";
@@ -40,14 +43,14 @@ const die = (msg) => { console.error(`check-ui: ${msg}`); process.exit(2); };
 if (!files.length) die("no boards given");
 if (!opts.chrome || !existsSync(opts.chrome)) die(`no Chrome at "${opts.chrome}". Fix: install Google Chrome or Chromium, or set UI_CHROME in .practices/config.`);
 
-const { send, events, sleep, openPage, cleanup } = startChrome(opts.chrome, die);
+const { send, openPage, load, cleanup } = startChrome(opts.chrome, die);
 
 // --- What runs in the page. Returns { findings, measured } for one render.
 function audit(cfg) {
   const out = [];
   const measured = { contrastMeasured: 0, contrastSkipped: 0, pending: [] };
   const RULES = ["contain", "align", "gap", "clip", "text-size", "ring", "shadow", "halo", "inset", "centre", "state", "icon", "outcome", "same-look", "contrast", "mark", "ink", "safe", "wrap", "sheet",
-    "copy", "fact"]; // copy and fact are check-copy's, marked on the same boards
+    "busy", "working", "motion", "squash", "fallback", "tabular", "copy", "fact"]; // copy and fact are check-copy's, marked on the same boards
   // A page behind an open sheet is inert in the product and aria-hidden on a board: nobody reads or taps
   // it. elementFromPoint skips inert elements, so a scrim inside one no longer covered its text, and
   // Scops' boards had false contrast findings under the scrim (2026-11-16).
@@ -606,7 +609,7 @@ function audit(cfg) {
 }
 
 // --- Run every board at every width and theme.
-const runs = [], marks = new Map(), rendersOf = new Map();
+const runs = [], marks = new Map(), types = new Map(), motions = new Map(), rendersOf = new Map();
 const { vague } = await loadRules(opts["copy-rules"]);
 try {
   const sessionId = await openPage();
@@ -624,16 +627,7 @@ try {
     for (const theme of themes) for (const width of widths) {
       if (theme !== themes[0] && !themed) continue; // no dark rules: the other theme draws the same pixels
       await s("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: false });
-      await s("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: theme }, { name: "prefers-reduced-motion", value: "reduce" }] });
-      await s("Animation.setPlaybackRate", { playbackRate: 0 }); // every run measures the same frame
-      events.length = 0;
-      await s("Page.navigate", { url });
-      const t0 = Date.now();
-      while (!events.some((e) => e.method === "Page.loadEventFired" && e.sessionId === sessionId)) {
-        if (Date.now() - t0 > 30000) throw new Error(`${file} didn't load in 30 s`);
-        await sleep(25);
-      }
-      await s("Runtime.evaluate", { expression: "document.fonts.ready.then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))", awaitPromise: true });
+      await load(sessionId, url, { "prefers-color-scheme": theme, "prefers-reduced-motion": "reduce" }, file);
       if (theme === themes[0] && rendersOf.get(file) === 0) {
         const t = await s("Runtime.evaluate", { expression: THEMED, returnByValue: true });
         themed = t.exceptionDetails ? true : t.result.value !== false;
@@ -647,7 +641,13 @@ try {
       // The marks once per board, on the first render, before contrast hides the text's colour.
       if (!marks.has(file)) marks.set(file, await markAudit(s, width, opts, decodePng));
       result.findings.push(...marks.get(file));
+      // The faces once per board: what Chrome really drew each text in, and the figures of times.
+      if (!types.has(file)) types.set(file, await typeAudit(s));
+      result.findings.push(...types.get(file));
       if (result.measured.pending.length) await pixelContrast(s, result, width);
+      // Busy controls and loops once per board, last: it may load the board again with motion allowed.
+      if (!motions.has(file)) motions.set(file, await motionAudit(s, { targets: opts.targets }, () => load(sessionId, url, { "prefers-color-scheme": theme, "prefers-reduced-motion": "no-preference" }, file)));
+      result.findings.push(...motions.get(file));
       runs.push({ file, theme, width, ...result });
     }
   }

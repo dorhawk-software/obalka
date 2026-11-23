@@ -66,6 +66,17 @@ export const rules = [
     find: new RegExp(`${W}([Kk])${GAP}([KkGg][\\p{L}]*)`, "gu"),
     check: (m) => `"${m[0]}" is "${as(m[1], "ke")} ${m[2]}".`,
   },
+  {
+    // Czech typography (ČSN 01 6910): a one-letter preposition or conjunction never ends a line,
+    // so it is tied to the next word with a no-break space. Scops' blind page broke "…často s /
+    // plačícím dítětem" (2026-11-22, a reviewer's crop); copy checked by eye at one width breaks at
+    // another, so the copy carries the tie, whatever the width.
+    id: "one-letter-end",
+    what: "a one-letter preposition or conjunction (k, s, v, z, o, u, a, i) never ends a line",
+    fix: "Tie it to the next word with a no-break space: U+00A0, &nbsp; in HTML, \\u00a0 in code (\"s\u00a0plačícím\").",
+    find: new RegExp(`${W}([KkSsVvZzOoUuAaIi])[ \\t\\r\\n]+(?=([\\p{L}\\p{N}„"(][^\\s]*))`, "gu"),
+    check: (m) => `"${m[1]} ${m[2]}" can end a line after "${m[1]}": write "${m[1]}\\u00a0${m[2]}".`,
+  },
 ];
 
 // Buttons whose whole label names no outcome (check-ui outcome, ui/visual-craft.md, "Every button
