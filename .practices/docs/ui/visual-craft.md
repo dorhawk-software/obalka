@@ -4,7 +4,8 @@ The rules for drawing an interface that looks made, not generated. They
 apply to any product and any toolkit. The process that uses them is in
 [identity-pass.md](identity-pass.md). Entering dates, times and numbers
 is in [pickers.md](pickers.md); asking for consent is in
-[consent.md](consent.md).
+[consent.md](consent.md); showing work under way and answering a press
+is in [feedback.md](feedback.md).
 
 Many of these rules are geometry: a gap, a distance from an edge, an
 axis. A person reviewing a scaled-down board cannot see a 2 px gap, and
@@ -364,6 +365,9 @@ but no script measured it.
 3. A badge or tooltip that hangs over an edge on purpose, or a list
    drawn mid-scroll, is marked in the board with its reason:
    `data-allow="contain: the count badge sits over the corner it numbers"`.
+4. A board's CSS clips to rounded corners; GPUI clips to a rectangle. In
+   a GPUI app, a child in a rounded corner rounds that corner itself
+   ([rust/gpui.md](../rust/gpui.md#rounded-corners-dont-clip)).
 
 **Check.** `.practices/bin/check-ui` measures every element against the
 surface it is drawn on, and every clipping box against its content, at
@@ -908,8 +912,8 @@ and text of an `aria-hidden` or `inert` page aren't measured.
 
 **What.** Screens speak in the product's own voice. Dialogs use little
 text and a button that names and does the action. Serious moments get
-calm words, not jokes. Who speaks (the app, never "we") is in
-[common/voice.md](../common/voice.md).
+calm words, not jokes. Who speaks (the app, never "we", except a
+companion's inclusive "we") is in [common/voice.md](../common/voice.md).
 
 **Why.** Tern's first-run lines carry its idea ("Bring your mail home.",
 "Only you hold the key."). Its inbox zero carried a meme, which a review
@@ -976,10 +980,57 @@ have said nothing.
 
 **Apply.**
 1. Use the product's own mark or objects instead of a generic spinner
-   wherever it waits.
+   wherever it waits. Every wait over about a second shows it, and a
+   pressed control shows it too ([feedback.md](feedback.md)).
 2. Play one-off moments once. Loop only while work is actually
    happening.
 3. Give every motion a still frame for reduced motion that still makes
    sense.
 
-**Check.** Turn on reduced motion. Every screen still reads correctly.
+A resize is motion too: its frames never show squashed words
+([below](#a-resize-never-shows-a-squashed-frame)).
+
+**Check.** `check-ui` (motion) renders every board with reduced motion,
+and flags any animation that still loops there. A loop that is the
+content itself is marked `data-allow="motion: …"`. Every other check
+measures the same reduced-motion render. Whether every screen still
+reads correctly with reduced motion, and whether a motion tells the
+product's story, is review.
+
+## A resize never shows a squashed frame
+
+**What.** When a window or a panel changes size, its content is laid out
+at the new size for every frame it shows. No frame shows content scaled
+to a size it wasn't laid out for: words never stretch or squash, even
+for a tenth of a second.
+
+**Why.** Gentes' Settings window shrinks to fit each tab. The owner,
+2026-11-18: "I noticed i opened Gerntes settings and went to the Privacy
+tab (which is not as tall as the first tab), and the contents were
+squashed before they re-rendered and text was looking good again, as if
+something was rendered first at 150 px (an exampple), the squashed to
+like 80 px and then re-rendered at 80 px to be nice". Then: "make this
+last re-rendering issue another rule and check pls". The window changed
+size in code, and macOS scaled the last picture it had into the new
+bounds until the app drew again, a frame or two later. Gentes f5c8854
+pins that picture to the window's top left while it resizes: cropped,
+never scaled.
+
+**Apply.**
+1. Resize without the system's frame animation, or lay the content out
+   at every frame of it.
+2. Follow what the platform does with tabs. macOS Settings windows
+   animate their height between tabs, with the content laid out at every
+   frame; a fixed-size window is the other way.
+3. Animate a panel's size (its height, a clip, a crossfade), never a
+   scale of its content. A scale that keeps the shape (a popover
+   appearing) is fine.
+4. Record the resize frame by frame (a screen recording, or animations
+   slowed down) and look at each frame. The words keep one size
+   throughout.
+
+**Check.** `check-ui` (squash) flags an element holding words that is
+drawn scaled out of its shape (`scaleY(.7)`), and one that plays a
+`@keyframes` rule that would scale it so, under any media. A drawing
+whose squash is its idea, with no words in it, isn't measured. The app's
+own resize is review: record it and look at every frame.

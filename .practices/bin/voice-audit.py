@@ -38,7 +38,10 @@ CZECH = [r"[Mm]y", r"[^\W\d_]{2,}me"]
 # Words ending in -me that are no Czech verb: a Czech "we" ends in -eme,
 # -íme, -áme, -jme, -ďme, -ěme..., never in -ome, -ame, -ime, -ume or -yme,
 # which are English ("Chrome", "Home", "Same", "Time"); and these -eme ones.
-NOT_CZECH_VERB = re.compile(r"(?:ome|ame|ime|ume|yme)$|^(?:theme|scheme|extreme|supreme|meme|acme)$", re.I)
+# And the third person singular of vzít and of the -jmout verbs: "nikdo ti
+# ho nevezme", "přijme to" say he or she (1.9.1).
+NOT_CZECH_VERB = re.compile(r"(?:ome|ame|ime|ume|yme)$|^(?:theme|scheme|extreme|supreme|meme|acme)$"
+                            r"|^(?:ne)?(?:pře)?vezme$|^(?:ne)?(?:při|na|za|po|vy|se|obe|ode|do|u)jme$", re.I)
 QUOTES_OPEN = "\"“„'‘‚«‹"
 QUOTES_CLOSE = "\"”“'’‘»›"
 
@@ -171,9 +174,16 @@ def from_jsx(text, path):
     return out
 
 
+# Voice marks in string catalog entries' comments, by (path, line of each
+# string the entry shows): from_catalog fills it, the voice check reads it.
+CATALOG_MARKS = {}
+
+
 def from_json(text, path):
     out = []
     data = json.loads(text)
+    if path.endswith(".xcstrings") and isinstance(data, dict) and isinstance(data.get("strings"), dict):
+        return from_catalog(text, path, data)
 
     def walk(v, lang):
         if isinstance(v, dict):
@@ -189,6 +199,47 @@ def from_json(text, path):
             out.append((line_at(text, at) if at >= 0 else 1, v, lang))
 
     walk(data, None)
+    return [(ln, s, lang.split("-")[0].split("_")[0] if lang else None) for ln, s, lang in out]
+
+
+def catalog_values(v):
+    """The values a catalog localization shows: stringUnit values, in its variations too."""
+    if isinstance(v, dict):
+        for k, x in v.items():
+            if k == "value" and isinstance(x, str):
+                yield x
+            elif k not in ("comment", "state"):
+                yield from catalog_values(x)
+    elif isinstance(v, list):
+        for x in v:
+            yield from catalog_values(x)
+
+
+def from_catalog(text, path, data):
+    """An Xcode string catalog. Its key is the source language's copy when the
+    entry has no localization of that language (1.9.1: an app's English was
+    never read). A stale entry doesn't ship. A real quote is marked in the
+    entry's comment, which Xcode keeps: practices-allow voice: <reason>."""
+    src = data.get("sourceLanguage")
+    out = []
+    for key, entry in data["strings"].items():
+        entry = entry if isinstance(entry, dict) else {}
+        if entry.get("extractionState") == "stale":
+            continue
+        at = text.find(json.dumps(key, ensure_ascii=False))
+        ln = line_at(text, at) if at >= 0 else 1
+        mark = ALLOW.search(entry.get("comment") or "")
+        first = len(out)
+        locs = entry.get("localizations") if isinstance(entry.get("localizations"), dict) else {}
+        if src and src not in locs and key.strip():
+            out.append((ln, key, src))
+        for lang, unit in locs.items():
+            for value in catalog_values(unit):
+                found = text.find(json.dumps(value, ensure_ascii=False)[1:-1], max(at, 0))
+                out.append((line_at(text, found) if found >= 0 else ln, value, lang))
+        if mark:
+            for line, _, _ in out[first:]:
+                CATALOG_MARKS[(path, line)] = mark.group(1).strip()
     return [(ln, s, lang.split("-")[0].split("_")[0] if lang else None) for ln, s, lang in out]
 
 
@@ -371,8 +422,8 @@ def main(argv):
             if not hits:
                 continue
             marks = [m for m in (ALLOW.search(x) for x in lines[max(0, ln - 2):ln]) if m]
-            if marks:
-                reason = re.sub(r"\s*(\*/|-->)\s*$", "", marks[-1].group(1)).strip()
+            if marks or (path, ln) in CATALOG_MARKS:
+                reason = CATALOG_MARKS.get((path, ln)) or re.sub(r"\s*(\*/|-->)\s*$", "", marks[-1].group(1)).strip()
                 if len(reason.split()) < 3:
                     findings.append((path, ln, f"marks an exception without its reason (\"practices-allow voice: {reason}\"): say why in three words or more."))
                 continue

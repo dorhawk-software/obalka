@@ -3,6 +3,230 @@
 What changed for the projects that use the practices. Written by hand,
 newest first, in the kinds common/changelog.md describes.
 
+## 1.12.0 (2026-11-23)
+
+### New
+
+- **Proposal pages pass a checklist before review**
+  (`ui/design-before-build.md`): each question beside its own images,
+  before/after pairs within one phone screen, every option drawn at its
+  best, every sentence true on its screen, each language's rules. One
+  project's pages went through three review rounds that found what the
+  list now catches first.
+- **`check-page`** reads each proposal page (`UI_PAGES`:
+  `design/proposals/` and `design/changes/`) at 375 and 390 px, as the
+  owner reads it on a phone: sideways scroll, a one-letter word at a
+  line's end where its language ties it (an option's "C" too), images
+  past the screen or drawn wider than their pixels at 2x, the doctype,
+  the charset and the language. It runs after edits, on Stop and before
+  each commit. Pages read on a desktop set `PAGE_WIDTHS` or `UI_PAGES`
+  in `.practices/config`.
+- **A subset iterates; only the full run gates** (`common/gates.md`): a
+  slow gate may run a few screens by name while you work, and says it
+  was partial; the hooks run the full set. A shared view changed for one
+  screen moved another, and only the full run saw it.
+- **Cache by content, never by time** (`common/gates.md`): a render or a
+  shot is reused only under a hash of everything it is made of, the app
+  as built included. A screenshot match with the app unchanged fell from
+  8.8 min to 35 s and boots no simulator. The commit proves the cache
+  three ways before it is trusted.
+- **A slow gate prints each phase's time** (`common/gates.md`), so a
+  claim about its speed is measured.
+- **A screenshot gate launches the app once** (`ui/design-before-build.md`):
+  later screens are switched in place under a debug-only flag, each shot
+  waits for the app's ready mark, and a guard compares a switched screen
+  with a launched one, within 2 levels of dither. A shot fell from 7.47 s
+  to 1.26 s.
+- **A stuck renderer is asked once more; a failed comparison never is**
+  (`common/testing.md`): a capture that never answers is rendered again,
+  said, and a second miss fails naming the input.
+- **Simulators run one at a time until the machine is measured** and
+  **Don't edit a script while it runs** (`common/agent-working-rules.md`):
+  three simulators at once drove a 64 GB laptop to a load average of 387
+  and 103 °C; a script edited mid-run died after minutes of work.
+
+## 1.11.0 (2026-11-22)
+
+### New
+
+- **The type is chosen for the product, never a tool's default**
+  (`ui/identity-pass.md`): three or four faces and the current one made
+  lighter, on the same screens with only the type changed, shown blind to
+  real people, each with its cost. A rounded heavy face read as
+  "AI-made"; the owner chose after a blind page.
+- **Roles by meaning** (`ui/identity-pass.md`): the voice face takes what
+  the product says, the interface face what you tap or scan and every time
+  and number, in tabular figures; never by size. check-ui's new `tabular`
+  rule measures each time's figures in its own font.
+- **A face change keeps the ink** (`ui/identity-pass.md`): small text
+  within 5 % of the agreed face's ink, measured.
+- **Every face draws the product's own language** (`ui/identity-pass.md`):
+  check-ui's new `fallback` rule asks Chrome which fonts it really drew
+  each text in, and finds letters a face lacks drawn by a system font.
+  Projects that let the system draw a sign on purpose (an arrow) mark it
+  `data-allow="fallback: <reason>"`.
+
+### Better
+
+- **Czech copy ties one-letter words to the next** (`common/voice.md`):
+  check-copy's new `one-letter-end` rule asks for a no-break space after
+  k, s, v, z, o, u, a and i, so no line ends on one ("…často s /
+  plačícím"). Existing Czech copy will have many findings: tie them
+  where the copy is written (a generator or the strings catalog), not
+  one by one.
+
+### Fixed
+
+- **Commits from a linked worktree** (`git worktree add`) were refused: in a hook git sets GIT_DIR, the kit took its own bin folder for the project's root, and check-private looked for the git-ignored terms in the worktree, which never has them. The hooks now check the tree being committed, with the main worktree's terms.
+
+## 1.10.0 (2026-11-21)
+
+### New
+
+- **The owner answers one question at a time** (`ui/design-before-build.md`):
+  open questions go in the agent's dialog, a few per round, each step
+  with the page's link, the board's name and the recommendation first.
+  The page with the boards is for looking.
+- **Cross each new event with each state before asking**
+  (`ui/design-before-build.md`): every pair the spec leaves undefined is a
+  question in the same round, not the next one. One audit's 22 answers
+  led to 8, 4 and then 3 more questions.
+- **Every control records an event or only navigates**
+  (`ui/design-before-build.md`): a choice that changes what happens next
+  and records nothing is forgotten on restart and never synced.
+- **Long gates run in the main session** and **Only the lock's own script
+  waits for the lock** (`common/agent-working-rules.md`): a sub-agent
+  waiting on a simulator suite is stopped as stalled, an orphan agent
+  holds the shared lock, and a hand-written wait loop never takes over a
+  stale lock.
+
+### Better
+
+- **Pixel by pixel** measures text line by line, and tuned type takes
+  each line's tracking from that line's browser width: a per-style
+  average left one line 1.3 pt short, and a paragraph's box hid another.
+- **Review a proposal in its place** reads every option against the
+  spec's text; an option that contradicts the spec says how the spec
+  changes.
+- **A rule a machine can check runs where the agent can't skip it**: a
+  slow gate on Stop skips while its lock is held, and when nothing it
+  checks changed since its last clean run.
+
+## 1.9.2 (2026-11-19)
+
+### Changed
+
+- **A companion may say an inclusive "we"** (`common/voice.md`). When
+  the product is a companion and "we" means it and the person together,
+  the line stays, marked `practices-allow voice: inclusive we, <who>
+  together`. The app, the company or a server still never says "we", and
+  a promise about data still names who acts. `check-voice` flagged
+  "Pojďme na to" (let's do this), a sleep-training owl's word to a tired
+  parent; naming one actor would remove what the line is for.
+
+## 1.9.1 (2026-11-18)
+
+### Fixed
+
+- **`check-voice` reads an Xcode app's English.** In a string catalog the
+  English copy is each entry's key, and keys were never read: an app's
+  "Contact us" and "kept our phones down" passed. A key is now its
+  `sourceLanguage` copy when the entry has no localization of that
+  language; a stale entry is skipped. A real quote is marked in the
+  entry's comment (`practices-allow voice: <reason>`), where Xcode keeps
+  it.
+- **Czech "nevezme" and "přijme" are he, not we.** The third person of
+  vzít and of the -jmout verbs ends in -me too; "žádný z nich ti už nikdo
+  nevezme" was a finding.
+
+## 1.9.0 (2026-11-18)
+
+### New
+
+- **Rounded corners don't clip** (`rust/gpui.md`): GPUI clips children
+  to a rectangle, so a child that fills a rounded element's corner rounds
+  that corner itself, with the parent's radius minus its border.
+  `check-gpui-clip`, in the lint gate of a GPUI app, finds an element
+  that rounds its corners and clips its children; a clip kept on purpose
+  says why with `// practices-allow clip: <reason>`. A GPUI app's
+  Settings pane showed a sidebar's square corners past its picture's
+  rounded ones, and the HTML board, whose CSS clips round, looked right.
+- **App Review** (`mobile/app-review.md`): three rejections of an iPhone
+  app in a week, each now a rule with a check. Every rejection becomes a
+  rule and a check before the build goes back to review.
+- **`check-permission-words`: "Continue", never "Allow", before a
+  permission prompt.** It reads the copy and the code, in English,
+  Czech, Spanish and Vietnamese. App Review refused an "ALLOW SCREEN
+  TIME ACCESS" button (Guideline 5.1.1(iv)). A string catalog's stale
+  entries are skipped; the rest count, used or not.
+- **`check-xcode`: each Xcode target that ships is built for the
+  declared devices, with the entitlements its frameworks need.** It
+  reads `project.pbxproj`, so it runs on Linux too. A widget that linked
+  ManagedSettings without Family Controls was stopped by App Review's
+  automated check; an earlier build shipped for iPad because XcodeGen
+  set "1,2" on each target. Set `DEVICE_FAMILY` when the project level
+  doesn't say it.
+- **`check-ios-artefact`: the archive as App Store Connect sees it.**
+  Each bundle's `UIDeviceFamily`, and each binary's linked frameworks
+  against its signed entitlements (`otool -L`, `codesign`, macOS).
+  claude-hook runs it after the agent's `xcodebuild archive` or
+  `-exportArchive`. Run on the app's archives, it finds both faults in
+  the builds App Review saw and none in the fixed one.
+- **`check-ui-tests`: UI tests that run where the reviewer looks.** A
+  file that launches the app pins its language (`UITEST_LANGUAGE`), the
+  accessibility audit runs, and a test run uses an iPhone SE simulator
+  at a large text size. An iPhone app on an iPad gets a 375 × 667 window;
+  the onboarding's Continue fell off it.
+
+### Changed
+
+- **The button before a permission prompt says "Continue"**
+  (`mobile/lifecycle.md`). The rule had asked for a button that names
+  the action ("Turn on reminders"); App Review refuses that.
+- **A native iOS project gets the mobile rules.** `bin/install` digests
+  `mobile/` into `rules.md` for a `project.yml` or an `.xcodeproj` at the
+  root, not only for `ios/` and `android/` folders.
+
+## 1.8.0 (2026-11-18)
+
+### New
+
+- **Feedback while it works** (`ui/feedback.md`): work that takes over a
+  second shows the product's own motion until its result shows, and a
+  pressed control says what is happening ("Opening Enterprise
+  Architect…"), shows that motion and takes no more presses until the
+  outcome shows. `check-ui` measures it on the boards: a control marked
+  `aria-busy="true"` must be disabled, show no pointer cursor, end its
+  words in "…" and have something moving in it. The Windows-app runner
+  showed a still egg for minutes of work, and its Open button gave no
+  sign for the 10 to 30 s an app took to show, so it could be pressed
+  again and again.
+- **`check-ui` finds a loop that doesn't stop for reduced motion**
+  (motion, `ui/visual-craft.md`, "Motion with a reason"): every board is
+  measured with reduced motion on, and an animation still looping there
+  is a finding, unless the loop is the content and is marked.
+- **`check-proven`: a commit that changes a check says how it was
+  proven.** Set `CHECK_FILES` to the project's own checks, and a commit
+  that adds or changes one needs a `Proven:` line: what was broken, and
+  which case failed (`common/gates.md`, "A new check is broken once,
+  then trusted"). `check-commit-msg` runs it, so the commit-msg hook
+  does.
+- **A resize never shows a squashed frame** (`ui/visual-craft.md`):
+  when a window or panel changes size, its content is laid out at every
+  frame. `check-ui` (squash) finds words drawn scaled out of their shape
+  on a board, now or by a `@keyframes` rule. The Windows-app runner's
+  Settings window showed the Privacy tab's words squashed for a moment
+  while it shrank to fit.
+
+### Changed
+
+- **Mutation testing is a check broken once, while it is added.** The
+  break is undone and the commit says how it went; nothing keeps or
+  reruns it. The kit's `tests/mutate`, 141 stored breaks rerun in twelve
+  CI shards on every push, is gone: a run took about an hour and proved
+  nothing new after its first. `tests/run WORD` runs one section, so a
+  break is seen failing in seconds.
+
 ## 1.7.3 (2026-11-18)
 
 ### Fixed
